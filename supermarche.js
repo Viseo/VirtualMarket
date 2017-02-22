@@ -9,7 +9,7 @@ exports.main = function(svg, param) {
 			this.component = new svg.Drawing(width,height).position(x,y);    
 		}
 	}
-
+//test
 	class ListeCategorie extends Bandeau {
 		constructor(width,height,x,y,tabVignettes)
 		{
