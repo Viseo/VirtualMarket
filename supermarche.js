@@ -253,6 +253,21 @@ exports.main = function(svg, param) {
             this.component.add(zoneChevronE).add(zoneChevronW);
         }
     }
+    
+    class Panier extends Bandeau {
+        constructor(width,height,x,y)
+        {   
+            super(width,height,x,y);
+            var test = new svg.Rect(width,height).position(width/2,height/2);
+            test.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(test);
+        
+            
+          
+            }
+            
+        }
+    
     ///////////////////////////////////////
     
     ////////////VIGNETTES//////////////////
@@ -332,7 +347,8 @@ exports.main = function(svg, param) {
     /////
     
     var categories = new ListeCategorie(market.width*0.8,market.height/5,0,market.height/20,vignettes);
-    var zoneCategories = new svg.Translation().add(categories.component);
+    var pan = new Panier(market.width*0.2,market.height*0.8,market.width*0.8,market.height/20);
+    var zoneCategories = new svg.Translation().add(categories.component).add(pan.component);
     market.add(zoneCategories);
 	
 };
