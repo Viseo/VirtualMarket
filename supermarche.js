@@ -174,6 +174,11 @@ exports.main = function(svg, param) {
                     currentN.pictogramme.dimension(height/2-2,height/2-2);
                 });
                 
+                
+                currentN.component.onClick(function(){
+                    
+                });
+                
                 if(i+1<tabVignettesR.length)
                 {
                     tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place+1,3*height/4+1).dimension(height/2-2,height/2-2);
@@ -190,6 +195,11 @@ exports.main = function(svg, param) {
                     currentS.component.onMouseOut(function()
                     {
                         currentS.pictogramme.dimension(height/2-2,height/2-2);
+                    });
+                    
+                    currentS.component.onClick(function(){
+            
+                    
                     });
                 }
                 
@@ -256,13 +266,17 @@ exports.main = function(svg, param) {
             super(width,height,x,y);
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
-            this.component.add(test);
-        
+            this.component.add(test); 
             
-          
-            }
+            
+            
+            
             
         }
+        
+        //add
+            
+    }
     
     ///////////////////////////////////////
     
@@ -299,6 +313,24 @@ exports.main = function(svg, param) {
                 this.component.add(this.printPrice);    
 		      }
 	}
+    
+    class VignettePanier extends VignetteRayon{
+        constructor(image,title,price,id){
+            super(image,title,price);
+            this.id= id;
+            this.quantity = 0;
+        }
+        
+        addQuantity(num){
+            this.quantity = this.quantity+num;
+        }
+        
+        minusQuantity(num){
+            this.quantity = this.quantity-num;
+        }
+        
+        
+    }
     //////////////////////////////////////
     
     //TEST CREATION TABLEAU VIGNETTE//
@@ -338,7 +370,7 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons","1"),
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre","1"),
         new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates","1"),
-    ]
+    ];
     
     /////
     
