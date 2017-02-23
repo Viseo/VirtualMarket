@@ -33,7 +33,8 @@ exports.main = function(svg, param) {
                
                 //GESTION SELECTION//
                 let current = tabVignettes[i];
-                
+                var rayon = null;
+                var rayonTranslation = null;
                 tabVignettes[i].component.onClick(function(){
                     
                     let tab =null;
@@ -48,18 +49,13 @@ exports.main = function(svg, param) {
                     
                     if(tab!=null)
                     {
-                        if(selected==null) 
-                        { 
-                            var rayon = new ListeRayons (market.width*0.8,market.height*0.75,0,market.height/4,tab);
-                            var rayonTranslation = new svg.Translation().add(rayon.component);
-                        }
-                        else 
+                        if(rayonTranslation!=null)
                         {
-                            rayon = new ListeRayons (market.width*0.8,market.height*0.75,0,market.height/4,tab);
-                            rayonTranslation = new svg.Translation().add(rayon.component);                           
+                            market.remove(rayonTranslation);
                         }
+                        rayon = new ListeRayons(market.width*0.8,market.height*0.75,0,market.height/4,tab);
+                        rayonTranslation = new svg.Translation().add(rayon.component);
                         market.add(rayonTranslation);
-                        //market.remove(rayonTranslation);
                     }
                     
                     for(let v=0;v<tabVignettes.length;v++)
