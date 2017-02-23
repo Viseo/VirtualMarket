@@ -174,6 +174,11 @@ exports.main = function(svg, param) {
                     currentN.pictogramme.dimension(height/2-2,height/2-2);
                 });
                 
+                
+                currentN.component.onClick(function(){
+                    panier.ajouterProduits(new VignettePanier(currentN.pictogramme.src,currentN.name,currentN.price));      
+                });
+                
                 if(i+1<tabVignettesR.length)
                 {
                     tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place+1,3*height/4+1).dimension(height/2-2,height/2-2);
@@ -190,6 +195,10 @@ exports.main = function(svg, param) {
                     currentS.component.onMouseOut(function()
                     {
                         currentS.pictogramme.dimension(height/2-2,height/2-2);
+                    });
+                    
+                    currentS.component.onClick(function(){
+                        panier.ajouterProduits(new VignettePanier(currentS.pictogramme.src,currentS.name,currentS.price));
                     });
                 }
                 
@@ -254,23 +263,22 @@ exports.main = function(svg, param) {
     }
     
     class Panier extends Bandeau {
-        constructor(width,height,x,y,tabVignettes)
+        constructor(width,height,x,y)
         {   
             super(width,height,x,y);
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
             this.component.add(test);
 
-            var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
-            total.color(svg.WHITE,2,svg.BLACK);
-            this.component.add(total); 
-
             
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
             this.VignettesProduits = [ ];
+
         
-            
+              var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
+            total.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(total);
             
             var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
             var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
@@ -327,8 +335,29 @@ exports.main = function(svg, param) {
             
         }
         
+  
+
         ajouterProduits(vignette) {
 
+            this.listeProduits.add(vignette.component);
+            this.VignettesProduits.push(vignette);
+            var width =this.component.width;
+            
+            if(this.VignettesProduits.length<2)
+            {
+                vignette.pictogramme.position(width/2,width/3).dimension(width/2,width/2);
+                vignette.title.position(width/2,vignette.pictogramme.height*0.3);
+                vignette.printPrice.position(width/2,width*0.6);
+            }
+            
+            else{
+                var ref = this.VignettesProduits[this.VignettesProduits.length-2];
+                vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width/2,width/2);
+                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height);
+                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height);
+            }
+      
+        
             this.listeProduits.add(vignette.component);
             this.tabVignettes.push(vignette.component);
                 
@@ -347,6 +376,15 @@ exports.main = function(svg, param) {
             this.component.add(new svg.Text("Supermarché Virtuel").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
         }
 
+    }
+    
+    class Payement extends Bandeau
+    {
+        constructor(width,height,x,y)
+        {
+            super(width,height,x,y);
+            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE)); 
+        }
     }
     
     ///////////////////////////////////////
@@ -375,15 +413,33 @@ exports.main = function(svg, param) {
 
 	class VignetteRayon extends Vignette {
         
-			constructor(image,title,price){
+			constructor(image,title,price)
+            {
                 super(image,title);
                 this.component.add(this.pictogramme);
                 this.component.add(this.title);
                 this.price = price;
                 this.printPrice = new svg.Text(price + " €/kilo");
                 this.component.add(this.printPrice);    
-		      }
+		    }
 	}
+    
+    class VignettePanier extends VignetteRayon{
+        constructor(image,title,price){
+            super(image,title,price);
+            this.quantity = 0;
+        }
+        
+        addQuantity(num){
+            this.quantity = this.quantity+num;
+        }
+        
+        minusQuantity(num){
+            this.quantity = this.quantity-num;
+        }
+        
+        
+    }
     //////////////////////////////////////
     
     //TEST CREATION TABLEAU VIGNETTE//
@@ -423,7 +479,7 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons","1"),
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre","1"),
         new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates","1"),
-    ]
+    ];
     
     
     
@@ -436,6 +492,8 @@ exports.main = function(svg, param) {
     var zoneCategories = new svg.Translation().add(categories.component);
     var panier = new Panier(market.width*0.2,market.height*0.8,market.width*0.8,market.height/20);
     var zonePanier = new svg.Translation().add(panier.component);
-    market.add(zoneCategories).add(zonePanier).add(zoneHeader);
+    var payement = new Payement(market.width/5,market.height*0.15,market.width*0.8,market.height*0.85);
+    var zonePayement = new svg.Translation().add(payement.component);
+    market.add(zoneCategories).add(zonePanier).add(zoneHeader).add(zonePayement);
 	
 };
