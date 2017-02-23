@@ -82,7 +82,7 @@ exports.main = function(svg, param) {
                 tabVignettes[i].pictogramme.onMouseOut(function(){
                     if(current.name!=selected) 
                         {
-                            current.pictogramme.opacity(1);
+                            current.pictogramme.opacity(1); 
                             current.pictogramme2.opacity(0);
                         }
                         
@@ -174,6 +174,11 @@ exports.main = function(svg, param) {
                     currentN.pictogramme.dimension(height/2-2,height/2-2);
                 });
                 
+                
+                currentN.component.onClick(function(){
+                    
+                });
+                
                 if(i+1<tabVignettesR.length)
                 {
                     tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place+1,3*height/4+1).dimension(height/2-2,height/2-2);
@@ -190,6 +195,11 @@ exports.main = function(svg, param) {
                     currentS.component.onMouseOut(function()
                     {
                         currentS.pictogramme.dimension(height/2-2,height/2-2);
+                    });
+                    
+                    currentS.component.onClick(function(){
+            
+                    
                     });
                 }
                 
@@ -247,18 +257,45 @@ exports.main = function(svg, param) {
             });
 
             this.component.add(zoneChevronE).add(zoneChevronW);
+            
+    
         }
+         
     }
     
     class Panier extends Bandeau {
-        constructor(width,height,x,y)
+        constructor(width,height,x,y,tabVignettes)
         {   
             super(width,height,x,y);
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
+
             this.component.add(test);
 
+            var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
+            total.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(total); 
+
+            
+            
+            
+            this.listeProduits = new svg.Translation();
+            this.component.add(this.listeProduits);
+            this.VignettesProduits = [ ];
+
         }
+
+        ajouterProduits(vignette) {
+
+                this.listeProduits.add(vignette.component);
+                this.tabVignettes.push(vignette.component);
+                
+            }
+
+            
+       
+            
+
 
     }
     
@@ -271,6 +308,7 @@ exports.main = function(svg, param) {
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE));
             this.component.add(new svg.Text("Supermarché Virtuel").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
         }
+
     }
     
     class Payement extends Bandeau
@@ -318,6 +356,24 @@ exports.main = function(svg, param) {
                 this.component.add(this.printPrice);    
 		    }
 	}
+    
+    class VignettePanier extends VignetteRayon{
+        constructor(image,title,price,id){
+            super(image,title,price);
+            this.id= id;
+            this.quantity = 0;
+        }
+        
+        addQuantity(num){
+            this.quantity = this.quantity+num;
+        }
+        
+        minusQuantity(num){
+            this.quantity = this.quantity-num;
+        }
+        
+        
+    }
     //////////////////////////////////////
     
     //TEST CREATION TABLEAU VIGNETTE//
@@ -357,7 +413,10 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons","1"),
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre","1"),
         new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates","1"),
-    ]
+    ];
+    
+    
+    
     
     /////
     
