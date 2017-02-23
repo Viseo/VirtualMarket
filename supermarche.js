@@ -266,27 +266,77 @@ exports.main = function(svg, param) {
             this.component.add(total); 
 
             
-            
-            
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
             this.VignettesProduits = [ ];
+        
+            
+            
+            var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
+            var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
+            var elipseChevronH = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,50);
+            var elipseChevronB = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,this.component.height-140);
+            var zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0.5);
+            var zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5);   
+            
+            
+           /* zoneChevronH.onClick(function(){
+                
+                if (listeProduits.y+2*height<=0) 
+                    {
+                        if(listeProduits.y+2*width==0)
+                            {
+                                zoneChevronH.opacity(0.2);
+                            }
+                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,listeProduits.y+2*height);
+                        zoneChevronB.opacity(1);
+                    }
+                else if(listeProduits.y<=0)
+                    {
+                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,0);
+                        zoneChevronH.opacity(0.2);
+                        zoneChevronB.opacity(1);
+                    }
 
+            }); 
+            
+            
+            zoneChevronB.onClick(function(){
+                
+                var heightTotal = height*tabVignettes.length;
+                var heightView = height;
+                var positionBas = listeProduits.y+heightTotal;
+                if (positionBas-2*height>=heightView)
+                    {
+                        if (positionBas-2==heightView)
+                            {
+                                zoneChevronB.opacity(0.2);
+                            }
+                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,listeProduits.y-height*2);
+                        zoneChevronB.opacity(0.2);
+                        zoneChevronH.opacity(1);
+                    }
+                
+                
+            }); */
+            
+            this.component.add(zoneChevronH).add(zoneChevronB);
+            
+            
+            this.component.add(zoneChevronH).add(zoneChevronB);
+            
         }
-
+        
         ajouterProduits(vignette) {
 
-                this.listeProduits.add(vignette.component);
-                this.tabVignettes.push(vignette.component);
+            this.listeProduits.add(vignette.component);
+            this.tabVignettes.push(vignette.component);
                 
-            }
-            
-       
-            
-
-
+        }
     }
     
+    
+  
     
     class Header extends Bandeau{
         constructor(width,height,x,y)
