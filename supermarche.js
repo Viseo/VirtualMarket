@@ -257,8 +257,7 @@ exports.main = function(svg, param) {
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
             this.component.add(test);
-            
-            
+
         }
 
     }
@@ -271,6 +270,15 @@ exports.main = function(svg, param) {
             
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE));
             this.component.add(new svg.Text("Supermarché Virtuel").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
+        }
+    }
+    
+    class Payement extends Bandeau
+    {
+        constructor(width,height,x,y)
+        {
+            super(width,height,x,y);
+            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE)); 
         }
     }
     
@@ -300,14 +308,15 @@ exports.main = function(svg, param) {
 
 	class VignetteRayon extends Vignette {
         
-			constructor(image,title,price){
+			constructor(image,title,price)
+            {
                 super(image,title);
                 this.component.add(this.pictogramme);
                 this.component.add(this.title);
                 this.price = price;
                 this.printPrice = new svg.Text(price + " €/kilo");
                 this.component.add(this.printPrice);    
-		      }
+		    }
 	}
     //////////////////////////////////////
     
@@ -358,6 +367,8 @@ exports.main = function(svg, param) {
     var zoneCategories = new svg.Translation().add(categories.component);
     var panier = new Panier(market.width*0.2,market.height*0.8,market.width*0.8,market.height/20);
     var zonePanier = new svg.Translation().add(panier.component);
-    market.add(zoneCategories).add(zonePanier).add(zoneHeader);
+    var payement = new Payement(market.width/5,market.height*0.15,market.width*0.8,market.height*0.85);
+    var zonePayement = new svg.Translation().add(payement.component);
+    market.add(zoneCategories).add(zonePanier).add(zoneHeader).add(zonePayement);
 	
 };
