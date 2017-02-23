@@ -275,9 +275,6 @@ exports.main = function(svg, param) {
             var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
             total.color(svg.WHITE,2,svg.BLACK);
             this.component.add(total); 
-
-            
-            
             
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
