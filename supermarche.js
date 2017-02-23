@@ -1,6 +1,6 @@
 exports.main = function(svg, param) {
 
-	var market = new svg.Drawing(screen.availWidth,screen.availHeight).show("content"); //Ecran Total
+	var market = new svg.Drawing(screen.width,screen.height).show("content"); //Ecran Total
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
@@ -160,7 +160,7 @@ exports.main = function(svg, param) {
                 
                 tabVignettesR[i].pictogramme .position(height/4+height/2*place+1,height/4+1)    .dimension(height/2-2,height/2-2);
                 tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK);
-                tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)    .font("Calibri",15,1).color(svg.BLACK);
+                tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
                 listeVignette.add(tabVignettesR[i].component);
                 
                 let currentN = tabVignettesR[i];
@@ -178,7 +178,7 @@ exports.main = function(svg, param) {
                 {
                     tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place+1,3*height/4+1).dimension(height/2-2,height/2-2);
                     tabVignettesR[i+1].title         .position(height/4+height/2*place,height/2*1.1)  .font("Calibri",15,1).color(svg.BLACK);
-                    tabVignettesR[i+1].printPrice    .position(height/4+height/2*place,height/2*1.95)  .font("Calibri",15,1).color(svg.BLACK);
+                    tabVignettesR[i+1].printPrice    .position(height/4+height/2*place,height/2*1.95) .font("Calibri",15,1).color(svg.BLACK);
                     listeVignette.add(tabVignettesR[i+1].component);
                     
                     let currentS = tabVignettesR[i+1];
@@ -257,12 +257,22 @@ exports.main = function(svg, param) {
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
             this.component.add(test);
-        
             
-          
-            }
             
         }
+
+    }
+    
+    
+    class Header extends Bandeau{
+        constructor(width,height,x,y)
+        {
+            super(width,height,x,y);
+            
+            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE));
+            this.component.add(new svg.Text("Supermarché Virtuel").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
+        }
+    }
     
     ///////////////////////////////////////
     
@@ -342,9 +352,12 @@ exports.main = function(svg, param) {
     
     /////
     
+    var header = new Header(market.width,market.height/20,0,0);
+    var zoneHeader = new svg.Translation().add(header.component);
     var categories = new ListeCategorie(market.width*0.8,market.height/5,0,market.height/20,vignettes);
-    var pan = new Panier(market.width*0.2,market.height*0.8,market.width*0.8,market.height/20);
-    var zoneCategories = new svg.Translation().add(categories.component).add(pan.component);
-    market.add(zoneCategories);
+    var zoneCategories = new svg.Translation().add(categories.component);
+    var panier = new Panier(market.width*0.2,market.height*0.8,market.width*0.8,market.height/20);
+    var zonePanier = new svg.Translation().add(panier.component);
+    market.add(zoneCategories).add(zonePanier).add(zoneHeader);
 	
 };
