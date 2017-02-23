@@ -53,7 +53,7 @@ exports.main = function(svg, param) {
                         {
                             market.remove(rayonTranslation);
                         }
-                        rayon = new ListeRayons(market.width*0.8,market.height*0.75,0,market.height/4,tab);
+                        rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab);
                         rayonTranslation = new svg.Translation().add(rayon.component);
                         market.add(rayonTranslation);
                     }
@@ -269,19 +269,12 @@ exports.main = function(svg, param) {
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
             this.component.add(test);
-<<<<<<< HEAD
-=======
-
-            var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
-            total.color(svg.WHITE,2,svg.BLACK);
-            this.component.add(total); 
->>>>>>> 3471c2df3c6bf8f92d67a25f9dc53678a2ae4e82
             
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
             this.VignettesProduits = [ ];
             
-            var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
+            var total = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
             total.color(svg.WHITE,2,svg.BLACK);
             this.component.add(total); 
 
@@ -295,14 +288,14 @@ exports.main = function(svg, param) {
             
             if(this.VignettesProduits.length<2)
             {
-                vignette.pictogramme.position(width/2,width/3).dimension(width/2,width/2);
-                vignette.title.position(width/2,vignette.pictogramme.height*0.3);
-                vignette.printPrice.position(width/2,width*0.6);
+                vignette.pictogramme.position(width/2,width/2).dimension(width*0.8,width*0.8);
+                vignette.title.position(width/2,vignette.pictogramme.height*0.2);
+                vignette.printPrice.position(width/2,width*0.7);
             }
             
             else{
                 var ref = this.VignettesProduits[this.VignettesProduits.length-2];
-                vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width/2,width/2);
+                vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width*0.8,width*0.8);
                 vignette.title.position(width/2,ref.title.y+ref.pictogramme.height);
                 vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height);
             }
@@ -425,20 +418,18 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons","1"),
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre","1"),
         new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates","1"),
-    ];
-    
-    
+    ];   
     
     
     /////
     
     var header = new Header(market.width,market.height/20,0,0);
     var zoneHeader = new svg.Translation().add(header.component);
-    var categories = new ListeCategorie(market.width*0.8,market.height/5,0,market.height/20,vignettes);
+    var categories = new ListeCategorie(market.width*0.85,market.height/5,0,market.height/20,vignettes);
     var zoneCategories = new svg.Translation().add(categories.component);
-    var panier = new Panier(market.width*0.2,market.height*0.8,market.width*0.8,market.height/20);
+    var panier = new Panier(market.width*0.15,market.height*0.75,market.width*0.85,market.height/20);
     var zonePanier = new svg.Translation().add(panier.component);
-    var payement = new Payement(market.width/5,market.height*0.15,market.width*0.8,market.height*0.85);
+    var payement = new Payement(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     var zonePayement = new svg.Translation().add(payement.component);
     market.add(zoneCategories).add(zonePanier).add(zoneHeader).add(zonePayement);
 	
