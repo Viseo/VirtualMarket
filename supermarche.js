@@ -269,6 +269,13 @@ exports.main = function(svg, param) {
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
             this.component.add(test);
+<<<<<<< HEAD
+=======
+
+            var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
+            total.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(total); 
+>>>>>>> 3471c2df3c6bf8f92d67a25f9dc53678a2ae4e82
             
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
@@ -317,6 +324,15 @@ exports.main = function(svg, param) {
 
     }
     
+    class Payement extends Bandeau
+    {
+        constructor(width,height,x,y)
+        {
+            super(width,height,x,y);
+            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE)); 
+        }
+    }
+    
     ///////////////////////////////////////
     
     ////////////VIGNETTES//////////////////
@@ -343,14 +359,15 @@ exports.main = function(svg, param) {
 
 	class VignetteRayon extends Vignette {
         
-			constructor(image,title,price){
+			constructor(image,title,price)
+            {
                 super(image,title);
                 this.component.add(this.pictogramme);
                 this.component.add(this.title);
                 this.price = price;
                 this.printPrice = new svg.Text(price + " €/kilo");
                 this.component.add(this.printPrice);    
-		      }
+		    }
 	}
     
     class VignettePanier extends VignetteRayon{
@@ -421,6 +438,8 @@ exports.main = function(svg, param) {
     var zoneCategories = new svg.Translation().add(categories.component);
     var panier = new Panier(market.width*0.2,market.height*0.8,market.width*0.8,market.height/20);
     var zonePanier = new svg.Translation().add(panier.component);
-    market.add(zoneCategories).add(zonePanier).add(zoneHeader);
+    var payement = new Payement(market.width/5,market.height*0.15,market.width*0.8,market.height*0.85);
+    var zonePayement = new svg.Translation().add(payement.component);
+    market.add(zoneCategories).add(zonePanier).add(zoneHeader).add(zonePayement);
 	
 };
