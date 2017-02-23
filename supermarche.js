@@ -9,7 +9,7 @@ exports.main = function(svg, param) {
 			this.component = new svg.Drawing(width,height).position(x,y);    
 		}
 	}
-//test
+
 	class ListeCategorie extends Bandeau {
 		constructor(width,height,x,y,tabVignettes)
 		{
@@ -269,13 +269,6 @@ exports.main = function(svg, param) {
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
             this.component.add(test);
-<<<<<<< HEAD
-=======
-
-            var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
-            total.color(svg.WHITE,2,svg.BLACK);
-            this.component.add(total); 
->>>>>>> 3471c2df3c6bf8f92d67a25f9dc53678a2ae4e82
             
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
