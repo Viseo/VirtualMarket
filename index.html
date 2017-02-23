@@ -13,7 +13,7 @@
     <script src="supermarche.js"></script>
 
     <script>
-        console.log(screen.width);
+        document.documentElement.style.overflow = 'hidden';
         require("lib/enhancer").Enhance();
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;
