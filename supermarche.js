@@ -357,10 +357,6 @@ exports.main = function(svg, param) {
                 vignette.title.position(width/2,ref.title.y+ref.pictogramme.height);
                 vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height);
             }
-      
-        
-            this.listeProduits.add(vignette.component);
-            this.tabVignettes.push(vignette.component);
                 
         }
     }
