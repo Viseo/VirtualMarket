@@ -86,7 +86,7 @@ exports.main = function(svg, param) {
                 tabVignettes[i].pictogramme.onMouseOut(function(){
                     if(current.name!=selected) 
                         {
-                            current.pictogramme.opacity(1);
+                            current.pictogramme.opacity(1); 
                             current.pictogramme2.opacity(0);
                         }
                         
@@ -251,22 +251,41 @@ exports.main = function(svg, param) {
             });
 
             this.component.add(zoneChevronE).add(zoneChevronW);
+            
+    
         }
+         
     }
     
     class Panier extends Bandeau {
-        constructor(width,height,x,y)
+        constructor(width,height,x,y,tabVignettes)
         {   
             super(width,height,x,y);
             var test = new svg.Rect(width,height).position(width/2,height/2);
             test.color(svg.WHITE,2,svg.BLACK);
             this.component.add(test);
-        
             
-          
+            var total = new svg.Rect(width*1.58,height*0.1).position(width*0.8,height*0.946);
+            total.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(total); 
+            
+            
+            
+            this.listeProduits = new svg.Translation();
+            this.component.add(this.listeProduits);
+            this.VignettesProduits = [ ];
+
+        }
+        ajouterProduits(vignette) {
+
+                this.listeProduits.add(vignette.component);
+                this.tabVignettes.push(vignette.component);
+                
             }
             
-        }
+       
+            
+    }
     
     ///////////////////////////////////////
     
@@ -343,6 +362,9 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre","1"),
         new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates","1"),
     ]
+    
+    
+    
     
     /////
     
