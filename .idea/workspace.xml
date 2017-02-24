@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2643b989-d5fd-4ee1-b78a-fbcc50b7d91f" name="Default" comment="" />
+    <list default="true" id="2643b989-d5fd-4ee1-b78a-fbcc50b7d91f" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tests/essaiSpec.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tests/supermarcheSpecs.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -21,6 +25,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
+<<<<<<< HEAD
       <file leaf-file-name="essaiSpec.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/essaiSpec.js">
           <provider selected="true" editor-type-id="text-editor">
@@ -32,6 +37,9 @@
         </entry>
       </file>
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+=======
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="132">
@@ -101,7 +109,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -124,6 +131,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+<<<<<<< HEAD
               <option name="myItemId" value="tests" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -138,6 +146,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+=======
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
               <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -145,6 +155,7 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -286,7 +297,11 @@
       <option name="presentableId" value="Default" />
       <updated>1487942631091</updated>
       <workItem from="1487942633075" duration="10203000" />
+<<<<<<< HEAD
       <workItem from="1487954462266" duration="426000" />
+=======
+      <workItem from="1487954584767" duration="211000" />
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
     </task>
     <servers />
   </component>
@@ -323,7 +338,11 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="10629000" />
+=======
+    <option name="totallyTimeSpent" value="10414000" />
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -338,7 +357,11 @@
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="7" />
     <editor active="true" />
     <layout>
+<<<<<<< HEAD
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24960339" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+=======
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.178125" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -367,7 +390,11 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/tests/essaiSpec.js">
+=======
+    <entry file="file://$PROJECT_DIR$/Tests/EssaiSpec.js">
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -392,14 +419,22 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/Tests/EssaiSpec.js" />
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
           <caret line="6" column="14" lean-forward="false" selection-start-line="6" selection-start-column="14" selection-end-line="6" selection-end-column="14" />
+=======
+    <entry file="file://$PROJECT_DIR$/lib/runtimemock.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="175" column="18" lean-forward="false" selection-start-line="175" selection-start-column="18" selection-end-line="175" selection-end-column="18" />
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
           <folding />
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/lib/runtimemock.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="205">
@@ -407,6 +442,8 @@
         </state>
       </provider>
     </entry>
+=======
+>>>>>>> 6f0fc3f7529a77642e0cd44a781df6bdfa9b009d
     <entry file="file://$PROJECT_DIR$/Tests/SupermarcheSpec.js" />
     <entry file="file://$PROJECT_DIR$/supermarche.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -420,6 +457,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="528">
           <caret line="27" column="32" lean-forward="false" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="14" lean-forward="false" selection-start-line="6" selection-start-column="14" selection-end-line="6" selection-end-column="14" />
           <folding />
         </state>
       </provider>
