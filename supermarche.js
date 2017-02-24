@@ -1,6 +1,6 @@
 exports.main = function(svg, param) {
-
-	var market = new svg.Drawing(screen.width,screen.height).show("content"); //Ecran Total
+    let screenSize = svg.runtime.screenSize();
+	var market = new svg.Drawing(screenSize.width,screenSize.height).show("content"); //Ecran Total
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
@@ -266,9 +266,9 @@ exports.main = function(svg, param) {
         constructor(width,height,x,y)
         {   
             super(width,height,x,y);
-            var test = new svg.Rect(width,height).position(width/2,height/2);
-            test.color(svg.WHITE,2,svg.BLACK);
-            this.component.add(test);
+            var contour = new svg.Rect(width,height).position(width/2,height/2);
+            contour.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(contour);
             
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
@@ -276,9 +276,9 @@ exports.main = function(svg, param) {
 
             
             var total = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
-
             total.color(svg.WHITE,2,svg.BLACK);
             this.component.add(total);
+
             
             var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
             var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
@@ -287,54 +287,36 @@ exports.main = function(svg, param) {
             var zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0.5);
             var zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5);   
             
-            
-           /* zoneChevronH.onClick(function(){
-                
-                if (listeProduits.y+2*height<=0) 
-                    {
-                        if(listeProduits.y+2*width==0)
-                            {
-                                zoneChevronH.opacity(0.2);
-                            }
-                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,listeProduits.y+2*height);
-                        zoneChevronB.opacity(1);
-                    }
-                else if(listeProduits.y<=0)
-                    {
-                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,0);
-                        zoneChevronH.opacity(0.2);
-                        zoneChevronB.opacity(1);
-                    }
+            var zone = this.listeProduits;
+            var hauteurBase = zone.y;
+            zoneChevronH.onClick(function(){
+               if (zone.y-height/2<=contour.y-contour.height/2)
+               {
+                   zone.smoothy(10,20).moveTo(zone.x,zone.y-contour.height/2); 
+               }
 
             }); 
             
-            
             zoneChevronB.onClick(function(){
                 
-                var heightTotal = height*tabVignettes.length;
-                var heightView = height;
-                var positionBas = listeProduits.y+heightTotal;
-                if (positionBas-2*height>=heightView)
-                    {
-                        if (positionBas-2==heightView)
-                            {
-                                zoneChevronB.opacity(0.2);
-                            }
-                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,listeProduits.y-height*2);
-                        zoneChevronB.opacity(0.2);
-                        zoneChevronH.opacity(1);
-                    }
-                
-                
-            }); */
+               if(zone.y-height/2>=contour.y-contour.height/2)
+                {
+                    zone.smoothy(10,20).moveTo(zone.x,zone.y+contour.height/2);
+                    
+                }
+                else
+                {
+                    zone.smoothy(10,20).moveTo(zone.x,contour.y-contour.height/2);
+                    
+                }
+                    
+                           
+            });
             
             this.component.add(zoneChevronH).add(zoneChevronB);
             
-            
         }
-        
-  
-
+            
         ajouterProduits(vignette) {
 
             this.listeProduits.add(vignette.component);
@@ -358,8 +340,6 @@ exports.main = function(svg, param) {
         }
     }
     
-    
-  
     
     class Header extends Bandeau{
         constructor(width,height,x,y)
@@ -479,7 +459,7 @@ exports.main = function(svg, param) {
     /////
     
     var header = new Header(market.width,market.height/20,0,0);
-    var zoneHeader = new svg.Translation().add(header.component);
+    var zoneHeader = new svg.Translation().add(header.component).mark("header");
     var categories = new ListeCategorie(market.width*0.85,market.height/5,0,market.height/20,vignettes);
     var zoneCategories = new svg.Translation().add(categories.component);
     var panier = new Panier(market.width*0.15,market.height*0.75,market.width*0.85,market.height/20);
@@ -487,5 +467,7 @@ exports.main = function(svg, param) {
     var payement = new Payement(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     var zonePayement = new svg.Translation().add(payement.component);
     market.add(zoneCategories).add(zonePanier).add(zoneHeader).add(zonePayement);
+
+    return main;
 	
 };
