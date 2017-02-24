@@ -267,7 +267,7 @@ exports.main = function(svg, param) {
         {   
             super(width,height,x,y);
             var test = new svg.Rect(width,height).position(width/2,height/2);
-            test.color(svg.WHITE,2,svg.BLACK);
+            test.color(svg.BLACK,2,svg.BLACK);
             this.component.add(test);
             
             this.listeProduits = new svg.Translation();
@@ -328,9 +328,7 @@ exports.main = function(svg, param) {
                 
             }); */
             
-            this.component.add(zoneChevronH).add(zoneChevronB);
-            
-            
+            this.component.add(zoneChevronH).add(zoneChevronB); 
         }
         
   
@@ -344,17 +342,16 @@ exports.main = function(svg, param) {
             if(this.VignettesProduits.length<2)
             {
                 vignette.pictogramme.position(width/2,width/2).dimension(width*0.8,width*0.8);
-                vignette.title.position(width/2,vignette.pictogramme.height*0.2);
-                vignette.printPrice.position(width/2,width*0.7);
+                vignette.title.position(width/2,width*0.2);
+                vignette.printPrice.position(width/2,width*0.85);
             }
             
             else{
                 var ref = this.VignettesProduits[this.VignettesProduits.length-2];
                 vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width*0.8,width*0.8);
-                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height);
-                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height);
-            }
-                
+                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height+5);
+                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height+5);
+            } 
         }
     }
     
