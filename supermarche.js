@@ -93,8 +93,8 @@ exports.main = function(svg, param) {
 
             var chevronW = new svg.Chevron(20,50,3,"W").position(30,this.component.height/2).color(svg.WHITE);
             var chevronE = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
-            var elipseChevronW = new svg.Ellipse(20,40).color(svg.BLACK).opacity(0.40).position(30,this.component.height/2);
-            var elipseChevronE = new svg.Ellipse(20,40).color(svg.BLACK).opacity(0.40).position(this.component.width-30,this.component.height/2);
+            var elipseChevronW = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
+            var elipseChevronE = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
             var zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2);
             var zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE);
             
@@ -266,9 +266,10 @@ exports.main = function(svg, param) {
         constructor(width,height,x,y)
         {   
             super(width,height,x,y);
-            var test = new svg.Rect(width,height).position(width/2,height/2);
-            test.color(svg.BLACK,2,svg.BLACK);
-            this.component.add(test);
+            
+            var contour = new svg.Rect(width,height).position(width/2,height/2);
+            contour.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(contour);
             
             this.listeProduits = new svg.Translation();
             this.component.add(this.listeProduits);
@@ -276,18 +277,19 @@ exports.main = function(svg, param) {
 
             
             var total = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
-
             total.color(svg.WHITE,2,svg.BLACK);
             this.component.add(total);
             
-            var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
-            var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
-            var elipseChevronH = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,50);
-            var elipseChevronB = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,this.component.height-140);
-            var zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0.5);
-            var zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5);   
+            var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,contour.y-contour.height*0.45).color(svg.WHITE);
+            var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,contour.y+contour.height*0.45-total.height).color(svg.WHITE);
+            var elipseChevronH = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.70)
+                                                    .position(this.component.width/2,contour.y-contour.height*0.45);
+            var elipseChevronB = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.70)
+                                                    .position(this.component.width/2,contour.y+contour.height*0.45-total.height);
+            var zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0);
+            var zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5); 
             
-            
+
            /* zoneChevronH.onClick(function(){
                 
                 if (listeProduits.y+2*height<=0) 
@@ -341,9 +343,13 @@ exports.main = function(svg, param) {
             
             if(this.VignettesProduits.length<2)
             {
-                vignette.pictogramme.position(width/2,width/2).dimension(width*0.8,width*0.8);
-                vignette.title.position(width/2,width*0.2);
-                vignette.printPrice.position(width/2,width*0.85);
+
+                vignette.pictogramme.position(width/2,market.height*0.12).dimension(width*0.8,width*0.8);
+                vignette.title.position(width/2,vignette.pictogramme.height*0.15);
+                vignette.printPrice.position(width/2,vignette.pictogramme.height*0.9); 
+                
+                var blackline = new svg.Line(0,vignette.pictogramme.height,width,vignette.pictogramme.height).color(svg.BLACK,2,svg.BLACK);
+                this.listeProduits.add(blackline);
             }
             
             else{
@@ -351,7 +357,9 @@ exports.main = function(svg, param) {
                 vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width*0.8,width*0.8);
                 vignette.title.position(width/2,ref.title.y+ref.pictogramme.height+5);
                 vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height+5);
-            } 
+
+                this.listeProduits.add(new svg.Line(0,vignette.pictogramme.y+vignette.pictogramme.height/2,width,vignette.pictogramme.y+vignette.pictogramme.height/2).color(svg.BLACK,2,svg.BLACK));
+            }    
         }
     }
     
