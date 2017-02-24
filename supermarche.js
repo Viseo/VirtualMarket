@@ -267,7 +267,7 @@ exports.main = function(svg, param) {
         constructor(width,height,x,y)
         {   
             super(width,height,x,y);
-            
+
             var contour = new svg.Rect(width,height).position(width/2,height/2);
             contour.color(svg.WHITE,2,svg.BLACK);
             this.component.add(contour);
@@ -280,62 +280,41 @@ exports.main = function(svg, param) {
             var total = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
             total.color(svg.WHITE,2,svg.BLACK);
             this.component.add(total);
-            
-            var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,contour.y-contour.height*0.45).color(svg.WHITE);
-            var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,contour.y+contour.height*0.45-total.height).color(svg.WHITE);
-            var elipseChevronH = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.70)
-                                                    .position(this.component.width/2,contour.y-contour.height*0.45);
-            var elipseChevronB = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.70)
-                                                    .position(this.component.width/2,contour.y+contour.height*0.45-total.height);
-            var zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0);
-            var zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5); 
-            
 
-           /* zoneChevronH.onClick(function(){
-                
-                if (listeProduits.y+2*height<=0) 
-                    {
-                        if(listeProduits.y+2*width==0)
-                            {
-                                zoneChevronH.opacity(0.2);
-                            }
-                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,listeProduits.y+2*height);
-                        zoneChevronB.opacity(1);
-                    }
-                else if(listeProduits.y<=0)
-                    {
-                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,0);
-                        zoneChevronH.opacity(0.2);
-                        zoneChevronB.opacity(1);
-                    }
+            var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
+            var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
+            var elipseChevronH = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,50);
+            var elipseChevronB = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,this.component.height-140);
+            var zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0.5);
+            var zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5);   
+            
+            var zone = this.listeProduits;
+            var hauteurBase = zone.y;
+            zoneChevronH.onClick(function(){
+               if (zone.y-height/2<=contour.y-contour.height/2)
+               {
+                   zone.smoothy(10,20).moveTo(zone.x,zone.y-contour.height/2); 
+               }
 
             }); 
             
-            
             zoneChevronB.onClick(function(){
                 
-                var heightTotal = height*tabVignettes.length;
-                var heightView = height;
-                var positionBas = listeProduits.y+heightTotal;
-                if (positionBas-2*height>=heightView)
-                    {
-                        if (positionBas-2==heightView)
-                            {
-                                zoneChevronB.opacity(0.2);
-                            }
-                        listeProduits.smoothy(10,20).moveTo(listeProduits.x,listeProduits.y-height*2);
-                        zoneChevronB.opacity(0.2);
-                        zoneChevronH.opacity(1);
-                    }
-                
-                
-            }); */
-            
-            this.component.add(zoneChevronH).add(zoneChevronB); 
-        }
-        
-  
+               if(zone.y-height/2>=contour.y-contour.height/2)
+                {
+                    zone.smoothy(10,20).moveTo(zone.x,zone.y+contour.height/2);
+                    
+                }
+                else
+                {
+                    zone.smoothy(10,20).moveTo(zone.x,contour.y-contour.height/2);
+                    
+                }
+            });
 
+            this.component.add(zoneChevronH).add(zoneChevronB);
+        }
+            
         ajouterProduits(vignette) {
 
             this.listeProduits.add(vignette.component);
@@ -364,8 +343,6 @@ exports.main = function(svg, param) {
         }
     }
     
-    
-  
     
     class Header extends Bandeau{
         constructor(width,height,x,y)
@@ -496,5 +473,6 @@ exports.main = function(svg, param) {
     market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
 
     return market;
+
 	
 };
