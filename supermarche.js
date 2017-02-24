@@ -1,6 +1,7 @@
 exports.main = function(svg, param) {
 
-	var market = new svg.Drawing(screen.width,screen.height).show("content"); //Ecran Total
+    let screenSize = svg.runtime.screenSize();
+	var market = new svg.Drawing(screenSize.width,screenSize.height).show("content"); //Ecran Total
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
@@ -484,13 +485,16 @@ exports.main = function(svg, param) {
     /////
     
     var header = new Header(market.width,market.height/20,0,0);
-    var zoneHeader = new svg.Translation().add(header.component);
+    var zoneHeader = new svg.Translation().add(header.component).mark("header");
     var categories = new ListeCategorie(market.width*0.85,market.height/5,0,market.height/20,vignettes);
     var zoneCategories = new svg.Translation().add(categories.component);
     var panier = new Panier(market.width*0.15,market.height*0.75,market.width*0.85,market.height/20);
     var zonePanier = new svg.Translation().add(panier.component);
     var payement = new Payement(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     var zonePayement = new svg.Translation().add(payement.component);
-    market.add(zoneCategories).add(zonePanier).add(zoneHeader).add(zonePayement);
+
+    market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
+
+    return market;
 	
 };
