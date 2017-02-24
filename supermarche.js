@@ -93,8 +93,8 @@ exports.main = function(svg, param) {
 
             var chevronW = new svg.Chevron(20,50,3,"W").position(30,this.component.height/2).color(svg.WHITE);
             var chevronE = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
-            var elipseChevronW = new svg.Ellipse(20,40).color(svg.BLACK).opacity(0.40).position(30,this.component.height/2);
-            var elipseChevronE = new svg.Ellipse(20,40).color(svg.BLACK).opacity(0.40).position(this.component.width-30,this.component.height/2);
+            var elipseChevronW = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
+            var elipseChevronE = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
             var zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2);
             var zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE);
             
@@ -266,6 +266,7 @@ exports.main = function(svg, param) {
         constructor(width,height,x,y)
         {   
             super(width,height,x,y);
+
             var contour = new svg.Rect(width,height).position(width/2,height/2);
             contour.color(svg.WHITE,2,svg.BLACK);
             this.component.add(contour);
@@ -279,7 +280,6 @@ exports.main = function(svg, param) {
             total.color(svg.WHITE,2,svg.BLACK);
             this.component.add(total);
 
-            
             var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
             var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
             var elipseChevronH = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,50);
@@ -309,12 +309,9 @@ exports.main = function(svg, param) {
                     zone.smoothy(10,20).moveTo(zone.x,contour.y-contour.height/2);
                     
                 }
-                    
-                           
             });
-            
+
             this.component.add(zoneChevronH).add(zoneChevronB);
-            
         }
             
         ajouterProduits(vignette) {
@@ -325,18 +322,23 @@ exports.main = function(svg, param) {
             
             if(this.VignettesProduits.length<2)
             {
-                vignette.pictogramme.position(width/2,width/2).dimension(width*0.8,width*0.8);
-                vignette.title.position(width/2,vignette.pictogramme.height*0.2);
-                vignette.printPrice.position(width/2,width*0.7);
+
+                vignette.pictogramme.position(width/2,market.height*0.12).dimension(width*0.8,width*0.8);
+                vignette.title.position(width/2,vignette.pictogramme.height*0.15);
+                vignette.printPrice.position(width/2,vignette.pictogramme.height*0.9); 
+                
+                var blackline = new svg.Line(0,vignette.pictogramme.height,width,vignette.pictogramme.height).color(svg.BLACK,2,svg.BLACK);
+                this.listeProduits.add(blackline);
             }
             
             else{
                 var ref = this.VignettesProduits[this.VignettesProduits.length-2];
                 vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width*0.8,width*0.8);
-                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height);
-                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height);
-            }
-                
+                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height+5);
+                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height+5);
+
+                this.listeProduits.add(new svg.Line(0,vignette.pictogramme.y+vignette.pictogramme.height/2,width,vignette.pictogramme.y+vignette.pictogramme.height/2).color(svg.BLACK,2,svg.BLACK));
+            }    
         }
     }
     
