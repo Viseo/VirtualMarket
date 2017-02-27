@@ -1,0 +1,5 @@
+# IDEA config files
+.idea/
+
+#Code coverage
+coverage/
