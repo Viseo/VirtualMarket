@@ -35,11 +35,6 @@ describe("Test Hello World",function (){
         inspect(header,{tag:"g",transform:"translate(0 0)"});
     });
 
-<<<<<<< HEAD
-});
-=======
 });
 
 
-//COUCOU
->>>>>>> ae4217d71b05b55a2dcbe1cf3a9a12d77b2d6f6e
