@@ -13,7 +13,7 @@ let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 
 
-describe("Test Hello World",function (){
+describe("Test",function (){
     beforeEach(function(){
         runtime = mockRuntime();
         runtime.declareAnchor("content");
@@ -35,7 +35,51 @@ describe("Test Hello World",function (){
         inspect(header,{tag:"g",transform:"translate(0 0)"});
     });
 
+    it("ensure that categories is well formed",function(){
+        let market = main(svg,"");
+        let categories = retrieve(market.component,"[categories]");
+        inspect(categories,{tag:"g",transform:"translate(0 0)"});
+    })
+
+    it("ensure that we can click on fruits and rayon fruits is well formed",function(){
+        let market = main(svg,"");
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        runtime.event(categories,"click",{});
+        let rayon = retrieve(market.component,"[Rayon Fruits]");
+        inspect(rayon,{tag:"g",transform:"translate(0 0)"});
+    });
+
+     it("ensure that chevronE is working",function(){
+         let market = main(svg,"");
+         let categories = retrieve(market.component,"[listeCategories]");
+         let chevronW = retrieve(market.component,"[categories].[chevronW]");
+         let chevronE= retrieve(market.component,"[categories].[chevronE]");
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronW,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         inspect(categories,{tag:"g",transform:"translate(-1325 0)"});
+     });
+
+     it("ensure that chevronW is working",function(){
+         let market = main(svg,"");
+         let categories = retrieve(market.component,"[listeCategories]");
+         let chevronW = retrieve(market.component,"[categories].[chevronW]");
+         let chevronE= retrieve(market.component,"[categories].[chevronE]");
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronW,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronW,"click",{});
+         runtime.advanceAll();
+         inspect(categories,{tag:"g",transform:"translate(0 0)"});
+
+     });
+
 });
-
-
-//COUCOU
