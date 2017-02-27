@@ -79,7 +79,7 @@ describe("Test",function (){
          runtime.event(chevronW,"click",{});
          runtime.advanceAll();
          inspect(categories,{tag:"g",transform:"translate(0 0)"});
-         
+
      })
 
 
