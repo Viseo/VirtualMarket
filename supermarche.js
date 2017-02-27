@@ -157,7 +157,9 @@ exports.main = function(svg, param) {
             
             var listeVignette = new svg.Translation();
             var place = 0;
+            
             for(var i=0;i<tabVignettesR.length;i=i+2){
+                
                 
                 tabVignettesR[i].pictogramme .position(height/4+height/2*place+1,height/4+1)    .dimension(height/2-2,height/2-2);
                 tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK);
@@ -177,7 +179,9 @@ exports.main = function(svg, param) {
                 
                 
                 currentN.component.onClick(function(){
-                    panier.ajouterProduits(new VignettePanier(currentN.pictogramme.src,currentN.name,currentN.price));      
+                    panier.ajouterProduits(new VignettePanier(currentN.pictogramme.src,currentN.name,currentN.price));
+                   
+                    
                 });
                 
                 if(i+1<tabVignettesR.length)
@@ -197,9 +201,10 @@ exports.main = function(svg, param) {
                     {
                         currentS.pictogramme.dimension(height/2-2,height/2-2);
                     });
-                    
+                  
                     currentS.component.onClick(function(){
-                        panier.ajouterProduits(new VignettePanier(currentS.pictogramme.src,currentS.name,currentS.price));
+                        panier.ajouterProduits( new VignettePanier(currentS.pictogramme.src,currentS.name,currentS.price));
+                        
                     });
                 }
                 
@@ -277,9 +282,14 @@ exports.main = function(svg, param) {
             this.VignettesProduits = [ ];
 
             
-            var total = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
-            total.color(svg.WHITE,2,svg.BLACK);
-            this.component.add(total);
+            this.zoneTotal = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
+            this.zoneTotal.color(svg.WHITE,2,svg.BLACK);
+            this.component.add(this.zoneTotal);
+            this.component.add(new svg.Text("Total: ").position(width/4,height*0.96).font("calibri",20,1).color(svg.BLACK));
+            this.prixTotal = 0;
+            this.printPrice = new svg.Text(this.prixTotal).position(width/2,height*0.96).font("calibri",20,1).color(svg.BLACK);
+            this.component.add(this.printPrice);
+      
 
             var chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
             var chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
@@ -287,20 +297,78 @@ exports.main = function(svg, param) {
             var elipseChevronB = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,this.component.height-140);
             var zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0.5);
             var zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5);   
-            
+             
+            ////////////////////////////
             var zone = this.listeProduits;
             var hauteurBase = zone.y;
             zoneChevronH.onClick(function(){
-               if (zone.y-height/2<=contour.y-contour.height/2)
+             
+             if (zone.y-height/2<=contour.y-contour.height/2)
                {
                    zone.smoothy(10,20).moveTo(zone.x,zone.y-contour.height/2); 
                }
-
+             else
+                {
+                    zone.smoothy(10,20).moveTo(zone.x,contour.y+contour.height/2);
+                    
+                }
             }); 
             
-            zoneChevronB.onClick(function(){
+           /* var zone = this.listeProduits;
+            
+            zoneChevronH.onClick(function(){ 
+                //IF PAS DE PRODUIT OU 1 PRODUIT
+                var nbrePrdt = zone.children.length/2;
                 
-               if(zone.y-height/2>=contour.y-contour.height/2)
+                
+                if (nbrePrdt > 2){
+                    var heightVignette = zone.children[0].children[0].height; 
+                    var hauteurBase = zone.y +nbrePrdt * heightVignette;
+                    
+       
+                    if (hauteurBase >=contour.height + 2* heightVignette ){
+                        zone.smoothy(10,20).moveTo(zone.x,zone.y-2*heightVignette); 
+                    }
+                    else if (hauteurBase <contour.height + heightVignette ){
+                        zone.smoothy(10,20).moveTo(zone.x,zone.y-heightVignette); 
+                    }
+                 
+                }
+            } 
+            ); */
+            
+            
+            
+            ////////////////////////////
+            
+           /*zoneChevronB.onClick(function(){ 
+                //IF PAS DE PRODUIT OU 1 PRODUIT
+                var nbrePrdt = zone.children.length/2;
+                
+                
+                if (nbrePrdt > 2){
+                    var heightVignette = zone.children[0].children[0].height; 
+                    var hauteurBase = zone.y +nbrePrdt * heightVignette ;
+       
+                    if (hauteurBase >= contour.height + 2* heightVignette ){
+                        zone.smoothy(10,20).moveTo(zone.x,zone.y+2*heightVignette); 
+                    }
+                    else{ 
+                        if (hauteurBase < contour.height + heightVignette ){
+                            zone.smoothy(10,20).moveTo(zone.x,0);
+                        }
+                    }
+
+                }
+            } 
+            ); */
+            
+            
+            
+           zoneChevronB.onClick(function(){
+
+                
+               if (zone.y-height/2>=contour.y-contour.height/2)
                 {
                     zone.smoothy(10,20).moveTo(zone.x,zone.y+contour.height/2);
                     
@@ -310,16 +378,27 @@ exports.main = function(svg, param) {
                     zone.smoothy(10,20).moveTo(zone.x,contour.y-contour.height/2);
                     
                 }
-            });
+            }); 
 
             this.component.add(zoneChevronH).add(zoneChevronB);
         }
-            
+        
+       calculerPrix(prix){
+           
+            this.prixTotal = this.prixTotal+ prix;
+            this.component.remove(this.printPrice);
+            this.printPrice = new svg.Text(this.prixTotal).position(this.component.width/2,this.component.height*0.96).font("calibri",20,1).color(svg.BLACK);
+            this.component.add(this.printPrice);
+           
+       }
+        
         ajouterProduits(vignette) {
 
             this.listeProduits.add(vignette.component);
             this.VignettesProduits.push(vignette);
             var width =this.component.width;
+            this.calculerPrix(vignette.price);
+            
             
             if(this.VignettesProduits.length<2)
             {
@@ -331,7 +410,6 @@ exports.main = function(svg, param) {
                 var blackline = new svg.Line(0,vignette.pictogramme.height,width,vignette.pictogramme.height).color(svg.BLACK,2,svg.BLACK);
                 this.listeProduits.add(blackline);
             }
-            
             else{
                 var ref = this.VignettesProduits[this.VignettesProduits.length-2];
                 vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width*0.8,width*0.8);
@@ -374,6 +452,7 @@ exports.main = function(svg, param) {
                 this.pictogramme = new svg.Image(image);
                 this.name = title;
                 this.title = new svg.Text(title);
+                
 		}
 	}
 
@@ -417,6 +496,9 @@ exports.main = function(svg, param) {
         
         
     }
+    
+   
+    
     //////////////////////////////////////
     
     //TEST CREATION TABLEAU VIGNETTE//
@@ -435,27 +517,27 @@ exports.main = function(svg, param) {
     ];
     
     var vignettesFruits = [
-        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes","1"),
-        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert","1"),
-        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines","1"),
-        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises","1"),
-        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises","1"),
-        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi","1"),
-        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue","1"),
-        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges","1"),
-        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires","1"),
-        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes","1"),
+        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1),
+        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1),
+        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1),
+        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1),
+        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1),
+        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1),
+        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1),
+        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1),
+        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1),
+        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1),
     ];
    
     var vignettesLegumes = [
-        new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes","1"),
-        new VignetteRayon("img/produits/Legumes/Chou.jpg","Chou","1"),
-        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres","1"),
-        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette","1"),
-        new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts","1"),
-        new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons","1"),
-        new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre","1"),
-        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates","1"),
+        new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes",1),
+        new VignetteRayon("img/produits/Legumes/Chou.jpg","Chou",1),
+        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1),
+        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1),
+        new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts",1),
+        new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1),
+        new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1),
+        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1),
     ];   
     
     
