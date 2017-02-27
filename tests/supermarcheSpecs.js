@@ -80,7 +80,6 @@ describe("Test",function (){
          runtime.advanceAll();
          inspect(categories,{tag:"g",transform:"translate(0 0)"});
 
-     })
-
+     });
 
 });

@@ -22,7 +22,7 @@ exports.main = function(svg, param) {
 
             //Catégorie actuellement selectionnée
             let selected = null;
-           
+
             let listeVignette = new svg.Translation().mark("listeCategories");
             for(let i=0;i<tabVignettes.length;i++){
 
@@ -97,6 +97,7 @@ exports.main = function(svg, param) {
             let chevronE = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
             let elipseChevronW = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
             let elipseChevronE = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
+
             let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronW");
             let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronE");
             
@@ -207,8 +208,7 @@ exports.main = function(svg, param) {
                 place++;
             }
             this.component.add(listeVignette);
-            
-            
+
             let chevronW = new svg.Chevron(20,70,3,"W").position(30,this.component.height/2).color(svg.WHITE);
             let chevronE = new svg.Chevron(20,70,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
             let elipseChevronW = new svg.Ellipse(30,50).color(svg.BLACK).opacity(0.40).position(30,this.component.height/2);
@@ -217,7 +217,6 @@ exports.main = function(svg, param) {
             let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE);
             
             zoneChevronW.onClick(function(){
-                console.log(listeVignette.x+height*2);
                 if(listeVignette.x+3*height/2<=0)
                 {
                     if(listeVignette.x+2*height/2==0) 
@@ -258,8 +257,6 @@ exports.main = function(svg, param) {
             });
 
             this.component.add(zoneChevronE).add(zoneChevronW);
-            
-    
         }
          
     }
@@ -283,63 +280,80 @@ exports.main = function(svg, param) {
             this.component.add(total);
 
             let chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
-            let chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-140).color(svg.WHITE);
-            let elipseChevronH = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,50);
-            let elipseChevronB = new svg.Ellipse(40,20).color(svg.BLACK).opacity(0.40).position(this.component.width/2,this.component.height-140);
-            let zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0.5);
-            let zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0.5);   
-            
-            let zone = this.listeProduits;
-           // let hauteurBase = zone.y;
-            zoneChevronH.onClick(function(){
-               if (zone.y-height/2<=contour.y-contour.height/2)
-               {
-                   zone.smoothy(10,20).moveTo(zone.x,zone.y-contour.height/2); 
-               }
+            let chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-100)
+                                                        .color(svg.WHITE);
+            let elipseChevronH = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.40).position(this.component.width/2,50);
+            let elipseChevronB = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.40)
+                                                       .position(this.component.width/2,this.component.height-100);
+            this.zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0);
+            this.zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0);
 
-            }); 
-            
-            zoneChevronB.onClick(function(){
-                
-               if(zone.y-height/2>=contour.y-contour.height/2)
+            let chevB = this.zoneChevronB;
+            let chevH = this.zoneChevronH;
+            let zone = this.listeProduits;
+            let tab = this.VignettesProduits;
+
+            this.zoneChevronH.onClick(function(){
+               if((zone.y+height/2)<0)
+               {
+                   chevB.opacity(0.5);
+                   zone.smoothy(10,20).moveTo(zone.x,zone.y+height/2);
+               }
+               else
+               {
+                   chevB.opacity(0.5);
+                   zone.smoothy(10,20).moveTo(zone.x,contour.y-height/2);
+                   chevH.opacity(0);
+               }
+            });
+
+            this.zoneChevronB.onClick(function(){
+                let heightZone = tab.length*tab[0].pictogramme.height;
+                let positionDown = zone.y + heightZone;
+                if(positionDown-height/2>contour.y+height/2)
                 {
-                    zone.smoothy(10,20).moveTo(zone.x,zone.y+contour.height/2);
-                    
+                    chevH.opacity(0.5);
+                    zone.smoothy(10,20).moveTo(zone.x,zone.y-height/2);
                 }
                 else
                 {
-                    zone.smoothy(10,20).moveTo(zone.x,contour.y-contour.height/2);
-                    
+                    chevH.opacity(0.5);
+                    zone.smoothy(10,20).moveTo(zone.x,contour.y+(contour.height*0.85)/2-heightZone);
+                    chevB.opacity(0);
                 }
             });
 
-            this.component.add(zoneChevronH).add(zoneChevronB);
+            this.component.add(this.zoneChevronH).add(this.zoneChevronB);
         }
             
         ajouterProduits(vignette) {
-
             this.listeProduits.add(vignette.component);
             this.VignettesProduits.push(vignette);
             let width =this.component.width;
-            
-            if(this.VignettesProduits.length<2)
-            {
+            vignette.pictogramme.dimension(width * 0.98, width * 0.98);
 
-                vignette.pictogramme.position(width/2,market.height*0.12).dimension(width*0.8,width*0.8);
-                vignette.title.position(width/2,vignette.pictogramme.height*0.15);
-                vignette.printPrice.position(width/2,vignette.pictogramme.height*0.9); 
-                
-                let blackline = new svg.Line(0,vignette.pictogramme.height,width,vignette.pictogramme.height).color(svg.BLACK,2,svg.BLACK);
+            vignette.pictogramme.onClick(function(){
+
+            });
+
+            if(this.VignettesProduits.length<2) {
+                vignette.pictogramme.position(width / 2, width / 2);
+                vignette.title.position(width / 2, vignette.pictogramme.height * 0.15);
+                vignette.printPrice.position(width / 2, vignette.pictogramme.height * 0.9);
+
+                let blackline = new svg.Line(0, vignette.pictogramme.height, width, vignette.pictogramme.height)
+                    .color(svg.BLACK, 2, svg.BLACK);
                 this.listeProduits.add(blackline);
             }
-            
             else{
+                if(this.VignettesProduits.length>2) this.zoneChevronB.opacity(0.5);
                 let ref = this.VignettesProduits[this.VignettesProduits.length-2];
-                vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height+5).dimension(width*0.8,width*0.8);
-                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height+5);
-                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height+5);
+                vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height);
+                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height);
+                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height);
 
-                this.listeProduits.add(new svg.Line(0,vignette.pictogramme.y+vignette.pictogramme.height/2,width,vignette.pictogramme.y+vignette.pictogramme.height/2).color(svg.BLACK,2,svg.BLACK));
+                this.listeProduits.add(new svg.Line(0,vignette.pictogramme.y+vignette.pictogramme.height/2,
+                    width,vignette.pictogramme.y+vignette.pictogramme.height/2).color(svg.BLACK,2,svg.BLACK));
             }    
         }
     }
@@ -369,19 +383,18 @@ exports.main = function(svg, param) {
     
     ////////////VIGNETTES//////////////////
 	class Vignette {
-			constructor(image,title){
-                
+			constructor(image,title)
+            {
                 this.component = new svg.Translation();
                 this.pictogramme = new svg.Image(image);
                 this.name = title;
                 this.title = new svg.Text(title);
-		}
+		    }
 	}
 
 	class VignetteCategorie extends Vignette {
         	constructor(image,image2,title){
                 super(image,title);
-
                 this.pictogramme2 = new svg.Image(image2);
                 this.component.add(this.pictogramme2);
                 this.component.add(this.pictogramme);
