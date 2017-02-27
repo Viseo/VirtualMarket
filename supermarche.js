@@ -98,8 +98,8 @@ exports.main = function(svg, param) {
             let elipseChevronW = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
             let elipseChevronE = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
 
-            let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronW");
-            let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronE");
+            let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWCategorie");
+            let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronECategorie");
             
             zoneChevronW.onClick(function(){
                 if(listeVignette.x+3*height<=0)
@@ -157,7 +157,7 @@ exports.main = function(svg, param) {
             fond.color(svg.LIGHT_GREY,5);
             this.component.add(fond);
             
-            let listeVignette = new svg.Translation();
+            let listeVignette = new svg.Translation().mark("listeRayon");
             let place = 0;
             for(let i=0;i<tabVignettesR.length;i=i+2){
                 
@@ -213,17 +213,17 @@ exports.main = function(svg, param) {
             let chevronE = new svg.Chevron(20,70,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
             let elipseChevronW = new svg.Ellipse(30,50).color(svg.BLACK).opacity(0.40).position(30,this.component.height/2);
             let elipseChevronE = new svg.Ellipse(30,50).color(svg.BLACK).opacity(0.40).position(this.component.width-30,this.component.height/2);
-            let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2);
-            let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE);
+            let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWRayon");
+            let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronERayon");
             
             zoneChevronW.onClick(function(){
-                if(listeVignette.x+3*height/2<=0)
+                if(listeVignette.x+height<=0)
                 {
-                    if(listeVignette.x+2*height/2==0) 
+                    if(listeVignette.x+height==0)
                     {
                         zoneChevronW.opacity(0.2);
                     }
-                    listeVignette.smoothy(10,20).moveTo(listeVignette.x+height/2*2,listeVignette.y);
+                    listeVignette.smoothy(10,20).moveTo(listeVignette.x+height,listeVignette.y);
                     zoneChevronE.opacity(1); 
                 }
                 else
@@ -239,13 +239,13 @@ exports.main = function(svg, param) {
                 let widthTotal = height/2*Math.ceil(tabVignettesR.length/2);
                 let widthView = width;
                 let positionRight = listeVignette.x+widthTotal;
-                if(positionRight-2*height>=widthView)
+                if(positionRight-height>=widthView)
                 {
-                    if(positionRight-2*height==widthView) 
+                    if(positionRight-height==widthView)
                     {
                         zoneChevronE.opacity(0.2);
                     }
-                    listeVignette.smoothy(10,20).moveTo(listeVignette.x-height/2*2,listeVignette.y);
+                    listeVignette.smoothy(10,20).moveTo(listeVignette.x-height,listeVignette.y);
                     zoneChevronW.opacity(1);
                 }
 
@@ -453,6 +453,16 @@ exports.main = function(svg, param) {
     ];
     
     let vignettesFruits = [
+        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes","1"),
+        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert","1"),
+        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines","1"),
+        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises","1"),
+        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises","1"),
+        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi","1"),
+        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue","1"),
+        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges","1"),
+        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires","1"),
+        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes","1"),
         new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes","1"),
         new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert","1"),
         new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines","1"),

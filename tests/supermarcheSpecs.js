@@ -49,11 +49,11 @@ describe("Test",function (){
         inspect(rayon,{tag:"g",transform:"translate(0 0)"});
     });
 
-     it("ensure that chevronE is working",function(){
+     it("ensure that chevronECategorie is working",function(){
          let market = main(svg,"");
          let categories = retrieve(market.component,"[listeCategories]");
-         let chevronW = retrieve(market.component,"[categories].[chevronW]");
-         let chevronE= retrieve(market.component,"[categories].[chevronE]");
+         let chevronW = retrieve(market.component,"[categories].[chevronWCategorie]");
+         let chevronE= retrieve(market.component,"[categories].[chevronECategorie]");
          runtime.event(chevronE,"click",{});
          runtime.advanceAll();
          runtime.event(chevronE,"click",{});
@@ -67,11 +67,11 @@ describe("Test",function (){
          inspect(categories,{tag:"g",transform:"translate(-1325 0)"});
      });
 
-     it("ensure that chevronW is working",function(){
+     it("ensure that chevronWCategorie is working",function(){
          let market = main(svg,"");
          let categories = retrieve(market.component,"[listeCategories]");
-         let chevronW = retrieve(market.component,"[categories].[chevronW]");
-         let chevronE= retrieve(market.component,"[categories].[chevronE]");
+         let chevronW = retrieve(market.component,"[categories].[chevronWCategorie]");
+         let chevronE= retrieve(market.component,"[categories].[chevronECategorie]");
          runtime.event(chevronE,"click",{});
          runtime.advanceAll();
          runtime.event(chevronW,"click",{});
@@ -81,5 +81,48 @@ describe("Test",function (){
          inspect(categories,{tag:"g",transform:"translate(0 0)"});
 
      });
+
+     it("ensure that chevronERayon is working",function(){
+         let market = main(svg,"");
+         let categories = retrieve(market.component,"[categories].[Fruits]");
+         runtime.event(categories,"click",{});
+         let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayon]");
+         inspect(rayon,{tag:"g",transform:"translate(0 0)"});
+         let chevronE = retrieve(market.component,"[Rayon Fruits].[chevronERayon]");
+         let chevronW = retrieve(market.component,"[Rayon Fruits].[chevronWRayon]");
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronW,"click",{});
+         runtime.advanceAll();
+         runtime.event(chevronE,"click",{});
+         runtime.advanceAll();
+         inspect(rayon,{tag:"g",transform:"translate(-2475 0)"});
+
+     });
+
+
+    it("ensure that chevronWRayon is working",function(){
+        let market = main(svg,"");
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        runtime.event(categories,"click",{});
+        let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayon]");
+        inspect(rayon,{tag:"g",transform:"translate(0 0)"});
+        let chevronE = retrieve(market.component,"[Rayon Fruits].[chevronERayon]");
+        let chevronW = retrieve(market.component,"[Rayon Fruits].[chevronWRayon]");
+        runtime.event(chevronE,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW,"click",{});
+        runtime.advanceAll();
+        inspect(rayon,{tag:"g",transform:"translate(0 0)"});
+
+    });
 
 });
