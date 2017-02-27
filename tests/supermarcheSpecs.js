@@ -82,4 +82,5 @@ describe("Test",function (){
 
      });
 
+     it("ensure that clicking on a product add it ")
 });
