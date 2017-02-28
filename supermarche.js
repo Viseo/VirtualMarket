@@ -479,7 +479,7 @@ exports.main = function(svg, param) {
                
     ];
 
-    var vignettesFruits = [
+    let vignettesFruits = [
         new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1.1),
         new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1),
         new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1),
@@ -503,7 +503,7 @@ exports.main = function(svg, param) {
 
     ];
    
-    var vignettesLegumes = [
+    let vignettesLegumes = [
         new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes",1),
         new VignetteRayon("img/produits/Legumes/Chou.jpg","Chou",1),
         new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1),
