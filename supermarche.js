@@ -164,6 +164,7 @@ exports.main = function(svg, param) {
                 tabVignettesR[i].pictogramme .position(height/4+height/2*place+1,height/4+1)    .dimension(height/2-2,height/2-2);
                 tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK);
                 tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
+                tabVignettesR[i].component.mark("Produit "+i)
                 listeVignette.add(tabVignettesR[i].component);
                 
                 let currentN = tabVignettesR[i];
@@ -180,8 +181,6 @@ exports.main = function(svg, param) {
                 
                 currentN.component.onClick(function(){
                     panier.ajouterProduits(new VignettePanier(currentN.pictogramme.src,currentN.name,currentN.price));
-                   
-                    
                 });
                 
                 if(i+1<tabVignettesR.length)
