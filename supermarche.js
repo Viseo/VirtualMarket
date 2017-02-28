@@ -36,7 +36,7 @@ exports.main = function(svg, param) {
                
                 //GESTION SELECTION//
                 let rayon = null;
-                let rayonTranslation = null;
+                var rayonTranslation = null;
                 tabVignettes[i].component.onClick(function(){
                     
                     let tab =null;
@@ -48,9 +48,11 @@ exports.main = function(svg, param) {
                                         break;
                         default : break;
                     }
+
                     
                     if(tab!=null)
                     {
+                        console.log(rayonTranslation);
                         if(rayonTranslation!=null)
                         {
                             market.remove(rayonTranslation);
