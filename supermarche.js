@@ -107,7 +107,7 @@ exports.main = function(svg, param) {
                     zoneChevronE.opacity(1); 
                 }
                
-                else if(listeVignette.x<=0) {
+                else{
                     listeVignette.smoothy(10, 20).moveTo(0, listeVignette.y);
                     zoneChevronW.opacity(0.2);
                     zoneChevronE.opacity(1);
@@ -118,17 +118,14 @@ exports.main = function(svg, param) {
                 let widthTotal = height*tabVignettes.length;
                 let widthView = width;
                 let positionRight = listeVignette.x+widthTotal;
-                if(positionRight-3*height>=widthView)
-                {
-                    if(positionRight-3*height==widthView) 
-                    {
+                if(positionRight-3*height>=widthView){
+                    if (positionRight - 3 * height == widthView) {
                         zoneChevronE.opacity(0.2);
                     }
-                    listeVignette.smoothy(10,20).moveTo(listeVignette.x-height*3,listeVignette.y);
+                    listeVignette.smoothy(10, 20).moveTo(listeVignette.x - height * 3, listeVignette.y);
                     zoneChevronW.opacity(1);
                 }
-               
-                else if(positionRight-widthView>=0)
+                else
                 {
                     listeVignette.smoothy(10,20).moveTo(widthView-widthTotal,listeVignette.y);
                     zoneChevronE.opacity(0.2);
@@ -154,21 +151,25 @@ exports.main = function(svg, param) {
             let place = 0;
             for(let i=0;i<tabVignettesR.length;i=i+2){
 
-                tabVignettesR[i].pictogramme .position(height/4+height/2*place+1,height/4+1)    .dimension(height/2-2,height/2-2).mark("Produit"+i);
+                let fondVignette = new svg.Rect(height/2-2,height/2-2).position(height/4+height/2*place,height/4).color(svg.WHITE);
+                listeVignette.add(fondVignette);
+
+                tabVignettesR[i].pictogramme .position(height/4+height/2*place,height/4)        .dimension(height/2-30,height/2-30).mark("Produit"+i);
                 tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK);
                 tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
                 tabVignettesR[i].component.mark("Produit "+i);
                 listeVignette.add(tabVignettesR[i].component);
+
                 
                 let currentN = tabVignettesR[i];
                 currentN.component.onMouseEnter(function()
                 {
-                    currentN.pictogramme.dimension(height/2+30,height/2+30);
+                    currentN.pictogramme.dimension(height/2-2,height/2-2);
                 });
                
                 currentN.component.onMouseOut(function()
                 {
-                    currentN.pictogramme.dimension(height/2-2,height/2-2);
+                    currentN.pictogramme.dimension(height/2-30,height/2-30);
                 });
                 
                 currentN.component.onClick(function(){
@@ -177,7 +178,10 @@ exports.main = function(svg, param) {
                 
                 if(i+1<tabVignettesR.length)
                 {
-                    tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place+1,3*height/4+1).dimension(height/2-2,height/2-2).mark("Produit"+(i+1));
+                    let fondVignetteBas = new svg.Rect(height/2-2,height/2-2).position(height/4+height/2*place,3*height/4).color(svg.WHITE);
+                    listeVignette.add(fondVignetteBas);
+                    tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place,3*height/4)
+                                                     .dimension(height/2-30,height/2-30).mark("Produit"+(i+1));
                     tabVignettesR[i+1].title         .position(height/4+height/2*place,height/2*1.1)  .font("Calibri",15,1).color(svg.BLACK);
                     tabVignettesR[i+1].printPrice    .position(height/4+height/2*place,height/2*1.95) .font("Calibri",15,1).color(svg.BLACK);
                     tabVignettesR[i+1].component.mark("Produit "+(i+1));
@@ -186,12 +190,12 @@ exports.main = function(svg, param) {
                     let currentS = tabVignettesR[i+1];
                     currentS.component.onMouseEnter(function()
                     {
-                        currentS.pictogramme.dimension(height/2+30,height/2+30);
+                        currentS.pictogramme.dimension(height/2-2,height/2-2);
                     });
 
                     currentS.component.onMouseOut(function()
                     {
-                        currentS.pictogramme.dimension(height/2-2,height/2-2);
+                        currentS.pictogramme.dimension(height/2-30,height/2-30);
                     });
                   
                     currentS.component.onClick(function(){
@@ -243,7 +247,7 @@ exports.main = function(svg, param) {
                     zoneChevronW.opacity(1);
                 }
 
-                else if(positionRight-widthView>=0){
+                else{
                     listeVignette.smoothy(10,20).moveTo(widthView-widthTotal,listeVignette.y);
                     zoneChevronE.opacity(0.2);
                     zoneChevronW.opacity(1);
@@ -333,8 +337,8 @@ exports.main = function(svg, param) {
         }
 
         ajouterProduits(vignette) {
-            let newProd = new VignettePanier(vignette.pictogramme.src, vignette.name, vignette.price, vignette.categorie)
-                .mark(vignette.name+" inBasket");
+            let newProd = new VignettePanier(vignette.pictogramme.src, vignette.name, vignette.price, vignette.categorie);
+            newProd.pictogramme.mark(vignette.name);
             this.listeProduits.add(newProd.component);
             this.VignettesProduits.push(newProd);
             let width = this.component.width;
@@ -350,20 +354,11 @@ exports.main = function(svg, param) {
                     case "Légumes":
                         tab = vignettesLegumes;
                         break;
-                    default :
-                        break;
                 }
 
-                if (tab != null) {
-
-                    if (categories.rayonTranslation != null) {
-                        console.log(categories.rayonTranslation);
-                        market.remove(categories.rayonTranslation);
-                    }
-                    categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, newProd.categorie);
-                    categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + newProd.categorie);
-                    market.add(categories.rayonTranslation);
-                }
+                categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, newProd.categorie);
+                categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + newProd.categorie);
+                market.add(categories.rayonTranslation);
 
                 for(let v=0;v<categories.tabCategories.length;v++)
                 {
@@ -389,7 +384,7 @@ exports.main = function(svg, param) {
                 this.listeProduits.add(blackline);
             }
             else {
-                if (this.VignettesProduits.length > 2) this.zoneChevronB.opacity(0.5);
+                if(this.VignettesProduits.length > 2) this.zoneChevronB.opacity(0.5);
                 let ref = this.VignettesProduits[this.VignettesProduits.length - 2];
                 newProd.pictogramme.position(width / 2, ref.pictogramme.y + ref.pictogramme.height);
                 newProd.title.position(width / 2, ref.title.y + ref.pictogramme.height);
@@ -510,8 +505,6 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"Fruits"),
         new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"Fruits"),
         new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1,"Fruits")
-
     ];
    
     var vignettesLegumes = [
