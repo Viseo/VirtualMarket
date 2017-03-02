@@ -29,8 +29,8 @@ exports.main = function(svg, param) {
                 let current = tabVignettes[i];
 
                 tabVignettes[i].pictogramme.position(height/2+height*i,height/2).dimension(height-4,height-4).mark(current.name);
-                tabVignettes[i].pictogramme2.position(height/2+height*i,height/2).dimension(height-4,height-4);
-                tabVignettes[i].title.position(height/2+i*height,height*0.93).font("Calibri",15,1).color(svg.WHITE);
+                tabVignettes[i].pictogramme2.position(height/2+height*i,height/2).dimension(height-4,height-4).mark(current.name+"2");
+                tabVignettes[i].title.position(height/2+i*height,height*0.93).font("Calibri",15,1).color(svg.WHITE).mark(current.name + " title");
                 
                 listeVignette.add(tabVignettes[i].component);
                
@@ -162,7 +162,7 @@ exports.main = function(svg, param) {
             let place = 0;
             for(let i=0;i<tabVignettesR.length;i=i+2){
 
-                tabVignettesR[i].pictogramme .position(height/4+height/2*place+1,height/4+1)    .dimension(height/2-2,height/2-2);
+                tabVignettesR[i].pictogramme .position(height/4+height/2*place+1,height/4+1)    .dimension(height/2-2,height/2-2).mark("Produit"+i);
                 tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK);
                 tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
                 tabVignettesR[i].component.mark("Produit "+i);
@@ -186,7 +186,7 @@ exports.main = function(svg, param) {
                 
                 if(i+1<tabVignettesR.length)
                 {
-                    tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place+1,3*height/4+1).dimension(height/2-2,height/2-2);
+                    tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place+1,3*height/4+1).dimension(height/2-2,height/2-2).mark("Produit"+(i+1));
                     tabVignettesR[i+1].title         .position(height/4+height/2*place,height/2*1.1)  .font("Calibri",15,1).color(svg.BLACK);
                     tabVignettesR[i+1].printPrice    .position(height/4+height/2*place,height/2*1.95) .font("Calibri",15,1).color(svg.BLACK);
                     tabVignettesR[i+1].component.mark("Produit "+(i+1));
@@ -274,7 +274,7 @@ exports.main = function(svg, param) {
             contour.color(svg.WHITE,2,svg.BLACK);
             this.component.add(contour);
             
-            this.listeProduits = new svg.Translation();
+            this.listeProduits = new svg.Translation().mark("listePanier");
             this.component.add(this.listeProduits);
             this.VignettesProduits = [ ];
 
@@ -305,7 +305,6 @@ exports.main = function(svg, param) {
             this.zoneChevronH.onClick(function(){
                if((zone.y+height/2)<0)
                {
-                   console.log("ouech");
                    chevB.opacity(0.5);
                    zone.smoothy(10,20).moveTo(zone.x,zone.y+height/2);
                }
@@ -322,7 +321,6 @@ exports.main = function(svg, param) {
                 let positionDown = zone.y + heightZone;
                 if(positionDown-height/2>contour.y+height/2)
                 {
-                    console.log("cacahuete");
                     chevH.opacity(0.5);
                     zone.smoothy(10,20).moveTo(zone.x,zone.y-height/2);
                 }
@@ -355,10 +353,6 @@ exports.main = function(svg, param) {
             this.VignettesProduits.push(vignette);
             let width =this.component.width;
             vignette.pictogramme.dimension(width * 0.98, width * 0.98);
-
-            /*vignette.pictogramme.onClick(function(){
-                
-            });*/
             
             this.calculerPrix(vignette.price);
 
