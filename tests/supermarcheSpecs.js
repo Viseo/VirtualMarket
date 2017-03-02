@@ -26,7 +26,6 @@ describe("Test",function (){
         inspect(market.component,{tag:"svg",width:1500,height:1000,children:[
             {tag:"g",transform:"translate(0 0)",id:"header"}
         ]});
-
     });
 
     it("ensure that header is well formed",function(){
