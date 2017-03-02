@@ -20,25 +20,24 @@ exports.main = function(svg, param) {
             let rectangleFond = new svg.Rect(width,height).position(width/2,height/2).color(svg.BLACK);
             this.component.add(rectangleFond);
 
-            //Catégorie actuellement selectionnée
-            let selected = null;
+            //Rayon Actuellement Selectionné
+            this.rayon = null;
+            this.rayonTranslation = null;
+            var self = this;
+
+            this.tabCategories = tabVignettes;
 
             let listeVignette = new svg.Translation().mark("listeCategories");
-            for(let i=0;i<tabVignettes.length;i++){
-
+            for(let i=0;i<tabVignettes.length;i++)
+            {
                 let current = tabVignettes[i];
-
                 tabVignettes[i].pictogramme.position(height/2+height*i,height/2).dimension(height-4,height-4).mark(current.name);
                 tabVignettes[i].pictogramme2.position(height/2+height*i,height/2).dimension(height-4,height-4).mark(current.name+"2");
                 tabVignettes[i].title.position(height/2+i*height,height*0.93).font("Calibri",15,1).color(svg.WHITE).mark(current.name + " title");
-                
                 listeVignette.add(tabVignettes[i].component);
                
                 //GESTION SELECTION//
-                let rayon = null;
-                var rayonTranslation = null;
                 tabVignettes[i].component.onClick(function(){
-                    
                     let tab =null;
                     switch(current.name)
                     {
@@ -49,16 +48,15 @@ exports.main = function(svg, param) {
                         default : break;
                     }
 
-                    
                     if(tab!=null)
                     {
-                        if(rayonTranslation!=null)
+                        if(self.rayonTranslation!=null)
                         {
-                            market.remove(rayonTranslation);
+                            market.remove(self.rayonTranslation);
                         }
-                        rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab);
-                        rayonTranslation = new svg.Translation().add(rayon.component).mark("Rayon " + current.name);
-                        market.add(rayonTranslation);
+                        self.rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab,current.name);
+                        self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + current.name);
+                        market.add(self.rayonTranslation);
                     }
                     
                     for(let v=0;v<tabVignettes.length;v++)
@@ -66,10 +64,8 @@ exports.main = function(svg, param) {
                         tabVignettes[v].pictogramme.opacity(1);
                         tabVignettes[v].pictogramme2.opacity(0);
                     }
-                    selected = current.name;
                     current.pictogramme.opacity(0);
                     current.pictogramme2.opacity(1);
-                    
                 });
                 
                 tabVignettes[i].pictogramme.onMouseEnter(function(){
@@ -83,12 +79,11 @@ exports.main = function(svg, param) {
                 });
                 
                 tabVignettes[i].pictogramme.onMouseOut(function(){
-                    if(current.name!=selected) 
-                        {
-                            current.pictogramme.opacity(1); 
-                            current.pictogramme2.opacity(0);
-                        }
-                        
+                    if(self.rayon==null || current.name!=self.rayon.name)
+                    {
+                        current.pictogramme.opacity(1);
+                        current.pictogramme2.opacity(0);
+                    }
                 });
                 /////////////////////
             }
@@ -98,7 +93,6 @@ exports.main = function(svg, param) {
             let chevronE = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
             let elipseChevronW = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
             let elipseChevronE = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
-
             let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWCategorie");
             let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronECategorie");
             
@@ -113,13 +107,11 @@ exports.main = function(svg, param) {
                     zoneChevronE.opacity(1); 
                 }
                
-                else if(listeVignette.x<=0)
-                {
-                    listeVignette.smoothy(10,20).moveTo(0,listeVignette.y);
+                else if(listeVignette.x<=0) {
+                    listeVignette.smoothy(10, 20).moveTo(0, listeVignette.y);
                     zoneChevronW.opacity(0.2);
                     zoneChevronE.opacity(1);
                 }
-                
             });
             
             zoneChevronE.onClick(function(){
@@ -150,10 +142,10 @@ exports.main = function(svg, param) {
     
     class ListeRayons extends Bandeau {
         
-		constructor(width,height,x,y,tabVignettesR)
+		constructor(width,height,x,y,tabVignettesR,cat)
 		{
 			super(width,height,x,y);
-            
+			this.name = cat;
             let fond = new svg.Rect(width, height).position(width/2,height/2);
             fond.color(svg.LIGHT_GREY,5);
             this.component.add(fond);
@@ -179,9 +171,8 @@ exports.main = function(svg, param) {
                     currentN.pictogramme.dimension(height/2-2,height/2-2);
                 });
                 
-                
                 currentN.component.onClick(function(){
-                    panier.ajouterProduits(new VignettePanier(currentN.pictogramme.src,currentN.name,currentN.price));
+                    panier.ajouterProduits(currentN);
                 });
                 
                 if(i+1<tabVignettesR.length)
@@ -204,8 +195,7 @@ exports.main = function(svg, param) {
                     });
                   
                     currentS.component.onClick(function(){
-                        panier.ajouterProduits( new VignettePanier(currentS.pictogramme.src,currentS.name,currentS.price));
-                        
+                        panier.ajouterProduits( currentS);
                     });
                 }
                 
@@ -266,34 +256,34 @@ exports.main = function(svg, param) {
     }
     
     class Panier extends Bandeau {
-        constructor(width,height,x,y)
-        {   
-            super(width,height,x,y);
+        constructor(width, height, x, y) {
+            super(width, height, x, y);
 
-            let contour = new svg.Rect(width,height).position(width/2,height/2);
-            contour.color(svg.WHITE,2,svg.BLACK);
+            let contour = new svg.Rect(width, height).position(width / 2, height / 2);
+            contour.color(svg.WHITE, 2, svg.BLACK);
             this.component.add(contour);
             
             this.listeProduits = new svg.Translation().mark("listePanier");
             this.component.add(this.listeProduits);
-            this.VignettesProduits = [ ];
+            this.VignettesProduits = [];
 
-            
-            this.zoneTotal = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
-            this.zoneTotal.color(svg.WHITE,2,svg.BLACK);
+            this.zoneTotal = new svg.Rect(width, height * 0.1).position(width / 2, height * 0.95);
+            this.zoneTotal.color(svg.WHITE, 2, svg.BLACK);
             this.component.add(this.zoneTotal);
-            this.total = new svg.Text("Total: ").position(width/4,height*0.96).font("calibri",20,1).color(svg.BLACK);
+
+            this.total = new svg.Text("Total: ").position(width / 4, height * 0.96).font("calibri", 20, 1).color(svg.BLACK);
+
             this.component.add(this.total);
             this.prixTotal = 0;
-            this.printPrice = new svg.Text(this.prixTotal).position(width/2,height*0.96).font("calibri",20,1).color(svg.BLACK);
+            this.printPrice = new svg.Text(this.prixTotal).position(width / 2, height * 0.96).font("calibri", 20, 1).color(svg.BLACK);
             this.component.add(this.printPrice);
-            
-            let chevronH = new svg.Chevron(70,20,3,"N").position(this.component.width/2,50).color(svg.WHITE);
-            let chevronB = new svg.Chevron(70,20,3,"S").position(this.component.width/2,this.component.height-100)
-                                                        .color(svg.WHITE);
-            let elipseChevronH = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.40).position(this.component.width/2,50);
-            let elipseChevronB = new svg.Ellipse(40,30).color(svg.BLACK).opacity(0.40)
-                                                       .position(this.component.width/2,this.component.height-100);
+
+            let chevronH = new svg.Chevron(70, 20, 3, "N").position(this.component.width / 2, 50).color(svg.WHITE);
+            let chevronB = new svg.Chevron(70, 20, 3, "S").position(this.component.width / 2, this.component.height - 100)
+                .color(svg.WHITE);
+            let elipseChevronH = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40).position(this.component.width / 2, 50);
+            let elipseChevronB = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40)
+                .position(this.component.width / 2, this.component.height - 100);
             this.zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0).mark("chevronHBasket");
             this.zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0).mark("chevronBBasket");
 
@@ -302,82 +292,116 @@ exports.main = function(svg, param) {
             let zone = this.listeProduits;
             let tab = this.VignettesProduits;
 
-            this.zoneChevronH.onClick(function(){
-               if((zone.y+height/2)<0)
-               {
-                   chevB.opacity(0.5);
-                   zone.smoothy(10,20).moveTo(zone.x,zone.y+height/2);
-               }
-               else
-               {
-                   chevB.opacity(0.5);
-                   zone.smoothy(10,20).moveTo(zone.x,contour.y-height/2);
-                   chevH.opacity(0);
-               }
+            this.zoneChevronH.onClick(function() {
+                if ((zone.y + height / 2) < 0) {
+                    chevB.opacity(0.5);
+                    zone.smoothy(10,20).moveTo(zone.x,zone.y+height/2);
+                }
+                else {
+                    chevB.opacity(0.5);
+                    zone.smoothy(10,20).moveTo(zone.x,contour.y-height/2);
+                    chevH.opacity(0);
+                }
             });
 
-            this.zoneChevronB.onClick(function(){
-                let heightZone = tab.length*tab[0].pictogramme.height;
+            this.zoneChevronB.onClick(function () {
+                let heightZone = tab.length * tab[0].pictogramme.height;
                 let positionDown = zone.y + heightZone;
+
                 if(positionDown-height/2>contour.y+height/2)
                 {
                     chevH.opacity(0.5);
-                    zone.smoothy(10,20).moveTo(zone.x,zone.y-height/2);
+                    zone.smoothy(10, 20).moveTo(zone.x, zone.y - height / 2);
                 }
-                else
-                {
+                else {
                     chevH.opacity(0.5);
-                    zone.smoothy(10,20).moveTo(zone.x,contour.y+(contour.height*0.85)/2-heightZone);
+                    zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height * 0.85) / 2 - heightZone);
                     chevB.opacity(0);
                 }
-            }); 
-
+            });
             this.component.add(this.zoneChevronH).add(this.zoneChevronB);
         }
-        
-       calculerPrix(prix){       
-            this.prixTotal = this.prixTotal+ prix;
+
+        calculerPrix(prix) {
+            this.prixTotal = this.prixTotal + prix;
             this.component.remove(this.printPrice);
-            this.printPrice = new svg.Text(this.prixTotal.toFixed(2) + " €").position(this.component.width*0.75,this.zoneTotal.y+10)
-                .font("calibri",30,1).color(svg.BLACK);
+            this.printPrice = new svg.Text(this.prixTotal.toFixed(2) + " €").position(this.component.width * 0.75, this.zoneTotal.y + 10)
+                .font("calibri", 30, 1).color(svg.BLACK);
             this.component.remove(this.total);
-            this.total = new svg.Text("TOTAL").position(this.component.width/4,this.zoneTotal.y+10)
-               .font("calibri",30,1).color(svg.BLACK);
-
+            this.total = new svg.Text("TOTAL").position(this.component.width / 4, this.zoneTotal.y + 10)
+                .font("calibri", 30, 1).color(svg.BLACK);
             this.component.add(this.total);
-            this.component.add(this.printPrice); 
-       }
-        
+            this.component.add(this.printPrice);
+        }
+
         ajouterProduits(vignette) {
-            this.listeProduits.add(vignette.component);
-            this.VignettesProduits.push(vignette);
-            let width =this.component.width;
-            vignette.pictogramme.dimension(width * 0.98, width * 0.98);
 
-            this.calculerPrix(vignette.price);
+            let newProd = new VignettePanier(vignette.pictogramme.src, vignette.name, vignette.price, vignette.categorie);
+            this.listeProduits.add(newProd.component);
+            this.VignettesProduits.push(newProd);
+            let width = this.component.width;
+            newProd.pictogramme.dimension(width * 0.98, width * 0.98);
 
-            if(this.VignettesProduits.length<2) {
-                vignette.pictogramme.position(width / 2, width / 2);
-                vignette.title.position(width / 2, vignette.pictogramme.height * 0.15);
-                vignette.printPrice.position(width / 2, vignette.pictogramme.height * 0.9);
+            newProd.pictogramme.onClick(function () {
+                let tab = null;
+                console.log(newProd.categorie);
+                switch (newProd.categorie) {
+                    case "Fruits" :
+                        tab = vignettesFruits;
+                        break;
+                    case "Légumes":
+                        tab = vignettesLegumes;
+                        break;
+                    default :
+                        break;
+                }
 
-                let blackline = new svg.Line(0, vignette.pictogramme.height, width, vignette.pictogramme.height)
+                if (tab != null) {
+
+                    if (categories.rayonTranslation != null) {
+                        console.log(categories.rayonTranslation);
+                        market.remove(categories.rayonTranslation);
+                    }
+                    categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, newProd.categorie);
+                    categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + newProd.categorie);
+                    market.add(categories.rayonTranslation);
+                }
+
+                for(let v=0;v<categories.tabCategories.length;v++)
+                {
+                    categories.tabCategories[v].pictogramme.opacity(1);
+                    categories.tabCategories[v].pictogramme2.opacity(0);
+                    if(categories.tabCategories[v].name==newProd.categorie)
+                    {
+                        categories.tabCategories[v].pictogramme.opacity(0);
+                        categories.tabCategories[v].pictogramme2.opacity(1);
+                    }
+                }
+
+            });
+
+
+            this.calculerPrix(newProd.price);
+
+            if (this.VignettesProduits.length < 2) {
+                newProd.pictogramme.position(width / 2, width / 2);
+                newProd.title.position(width / 2, newProd.pictogramme.height * 0.15);
+                newProd.printPrice.position(width / 2, newProd.pictogramme.height * 0.9);
+                let blackline = new svg.Line(0, newProd.pictogramme.height, width, newProd.pictogramme.height)
                     .color(svg.BLACK, 2, svg.BLACK);
                 this.listeProduits.add(blackline);
             }
-            else{
-                if(this.VignettesProduits.length>2) this.zoneChevronB.opacity(0.5);
-                let ref = this.VignettesProduits[this.VignettesProduits.length-2];
-                vignette.pictogramme.position(width/2,ref.pictogramme.y+ref.pictogramme.height);
-                vignette.title.position(width/2,ref.title.y+ref.pictogramme.height);
-                vignette.printPrice.position(width/2,ref.printPrice.y+ref.pictogramme.height);
-
-                this.listeProduits.add(new svg.Line(0,vignette.pictogramme.y+vignette.pictogramme.height/2,
-                    width,vignette.pictogramme.y+vignette.pictogramme.height/2).color(svg.BLACK,2,svg.BLACK));
-            }    
+            else {
+                if (this.VignettesProduits.length > 2) this.zoneChevronB.opacity(0.5);
+                let ref = this.VignettesProduits[this.VignettesProduits.length - 2];
+                newProd.pictogramme.position(width / 2, ref.pictogramme.y + ref.pictogramme.height);
+                newProd.title.position(width / 2, ref.title.y + ref.pictogramme.height);
+                newProd.printPrice.position(width / 2, ref.printPrice.y + ref.pictogramme.height);
+                this.listeProduits.add(new svg.Line(0, newProd.pictogramme.y + newProd.pictogramme.height / 2,
+                    width, newProd.pictogramme.y + newProd.pictogramme.height / 2).color(svg.BLACK, 2, svg.BLACK));
+            }
         }
     }
-    
     
     class Header extends Bandeau{
         constructor(width,height,x,y)
@@ -387,7 +411,6 @@ exports.main = function(svg, param) {
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE));
             this.component.add(new svg.Text("Supermarché Virtuel").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
         }
-
     }
     
     class Payement extends Bandeau
@@ -403,41 +426,41 @@ exports.main = function(svg, param) {
     
     ////////////VIGNETTES//////////////////
 	class Vignette {
-			constructor(image,title)
-            {
-                this.component = new svg.Translation();
-                this.pictogramme = new svg.Image(image);
-                this.name = title;
-                this.title = new svg.Text(title);
-		    }
+        constructor(image,title)
+        {
+            this.component = new svg.Translation();
+            this.pictogramme = new svg.Image(image);
+            this.name = title;
+            this.title = new svg.Text(title);
+        }
 	}
 
 	class VignetteCategorie extends Vignette {
-        	constructor(image,image2,title){
-                super(image,title);
-                this.pictogramme2 = new svg.Image(image2);
-                this.component.add(this.pictogramme2);
-                this.component.add(this.pictogramme);
-                this.component.add(this.title);
+        constructor(image,image2,title){
+            super(image,title);
+            this.pictogramme2 = new svg.Image(image2);
+            this.component.add(this.pictogramme2);
+            this.component.add(this.pictogramme);
+            this.component.add(this.title);
 		}
 	}
 
 	class VignetteRayon extends Vignette {
-        
-			constructor(image,title,price)
-            {
-                super(image,title);
-                this.component.add(this.pictogramme);
-                this.component.add(this.title);
-                this.price = price;
-                this.printPrice = new svg.Text(price + " €/kilo");
-                this.component.add(this.printPrice);    
-		    }
+        constructor(image,title,price,cat)
+        {
+            super(image,title);
+            this.component.add(this.pictogramme);
+            this.component.add(this.title);
+            this.price = price;
+            this.printPrice = new svg.Text(price + " €/kilo");
+            this.component.add(this.printPrice);
+            this.categorie=cat;
+        }
 	}
     
     class VignettePanier extends VignetteRayon{
-        constructor(image,title,price){
-            super(image,title,price);
+        constructor(image,title,price,cat){
+            super(image,title,price,cat);
             this.quantity = 0;
         }
         
@@ -448,12 +471,7 @@ exports.main = function(svg, param) {
         minusQuantity(num){
             this.quantity = this.quantity-num;
         }*/
-        
-        
     }
-    
-   
-    
     //////////////////////////////////////
     
     //TEST CREATION TABLEAU VIGNETTE//
@@ -475,39 +493,39 @@ exports.main = function(svg, param) {
                
     ];
 
-    let vignettesFruits = [
-        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1.1),
-        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1),
-        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1),
-        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1),
-        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1),
-        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1),
-        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1),
-        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1),
-        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1),
-        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1),
-        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1),
-        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1),
-        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1),
-        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1),
-        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1),
-        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1),
-        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1),
-        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1),
-        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1),
-        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1)
+    var vignettesFruits = [
+        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1.1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"Fruits"),
+        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1,"Fruits")
 
     ];
    
-    let vignettesLegumes = [
-        new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes",1),
-        new VignetteRayon("img/produits/Legumes/Chou.jpg","Chou",1),
-        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1),
-        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1),
-        new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts",1),
-        new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1),
-        new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1),
-        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1)
+    var vignettesLegumes = [
+        new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Chou.jpg","Chou",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"Légumes")
     ];   
     
     

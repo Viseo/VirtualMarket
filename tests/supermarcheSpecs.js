@@ -26,7 +26,6 @@ describe("Test",function (){
         inspect(market.component,{tag:"svg",width:1500,height:1000,children:[
             {tag:"g",transform:"translate(0 0)",id:"header"}
         ]});
-
     });
 
     it("ensure that header is well formed",function(){
@@ -204,5 +203,20 @@ describe("Test",function (){
         runtime.advanceAll();
         inspect(produit3,{tag:"image",width:"373",height:"373"});
     })
+
+    it("ensure that clicking on a product in the basket print the corresponding section",function(){
+        let market = main(svg,"");
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        let categories2 = retrieve(market.component,"[categories].[Légumes]");
+        runtime.event(categories,"click",{});
+        let produit = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 2]");
+        runtime.advanceAll();
+        runtime.event(categories2,"click",{});
+        let produit2 = retrieve(market.component,"[Rayon Légumes].[listeRayon].[Produit 3]");
+        runtime.event(produit2,"click",{});
+        runtime.advanceAll();
+
+        let produitBasket1 = retrieve(market.component,"[basket].[listePanier].[]");
+    });
 
 });
