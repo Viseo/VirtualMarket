@@ -274,7 +274,9 @@ exports.main = function(svg, param) {
             this.zoneTotal = new svg.Rect(width, height * 0.1).position(width / 2, height * 0.95);
             this.zoneTotal.color(svg.WHITE, 2, svg.BLACK);
             this.component.add(this.zoneTotal);
+
             this.total = new svg.Text("Total: ").position(width / 4, height * 0.96).font("calibri", 20, 1).color(svg.BLACK);
+
             this.component.add(this.total);
             this.prixTotal = 0;
             this.printPrice = new svg.Text(this.prixTotal).position(width / 2, height * 0.96).font("calibri", 20, 1).color(svg.BLACK);
@@ -372,6 +374,7 @@ exports.main = function(svg, param) {
                 }
 
             });
+
 
             this.calculerPrix(newProd.price);
 
