@@ -127,15 +127,34 @@ describe("Test",function (){
         inspect(rayon,{tag:"g",transform:"translate(0 0)"});
     });
 
-    it("ensure that clicking on a product add it to the basket",function(){
+    it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
         let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         let produit = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 2]");
+        let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 3]")
+        runtime.event(produit,"click",{});
+        runtime.event(produit2,"click",{});
+        runtime.event(produit,"click",{});
+        runtime.event(produit2,"click",{});
         runtime.event(produit,"click",{});
         runtime.event(produit,"click",{});
         runtime.event(produit,"click",{});
-        //let produitBasket = retrieve(market.component,"[].[].[]");
+        runtime.advanceAll();
+        let chevronH = retrieve(market.component,"[basket].[chevronHBasket]");
+        let chevronB = retrieve(market.component,"[basket].[chevronBBasket]");
+        runtime.event(chevronB,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronB,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronB,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronH,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronH,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronH,"click",{});
+        runtime.advanceAll();
     });
 
 });
