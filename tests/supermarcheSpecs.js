@@ -132,7 +132,7 @@ describe("Test",function (){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         let produit = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 2]");
-        let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 3]")
+        let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 3]");
         runtime.event(produit,"click",{});
         runtime.event(produit2,"click",{});
         runtime.event(produit,"click",{});
@@ -186,7 +186,7 @@ describe("Test",function (){
         runtime.event(categories,"click",{});
         runtime.advanceAll();
         let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit2]");
-        let produit3 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit3]")
+        let produit3 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit3]");
 
         runtime.event(produit2,"mouseenter");
         runtime.advanceAll();

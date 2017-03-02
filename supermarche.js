@@ -282,7 +282,7 @@ exports.main = function(svg, param) {
             this.zoneTotal = new svg.Rect(width,height*0.1).position(width/2,height*0.95);
             this.zoneTotal.color(svg.WHITE,2,svg.BLACK);
             this.component.add(this.zoneTotal);
-            this.total = new svg.Text("Total: ").position(width/4,height*0.96).font("calibri",20,1).color(svg.BLACK)
+            this.total = new svg.Text("Total: ").position(width/4,height*0.96).font("calibri",20,1).color(svg.BLACK);
             this.component.add(this.total);
             this.prixTotal = 0;
             this.printPrice = new svg.Text(this.prixTotal).position(width/2,height*0.96).font("calibri",20,1).color(svg.BLACK);
@@ -353,7 +353,7 @@ exports.main = function(svg, param) {
             this.VignettesProduits.push(vignette);
             let width =this.component.width;
             vignette.pictogramme.dimension(width * 0.98, width * 0.98);
-            
+
             this.calculerPrix(vignette.price);
 
             if(this.VignettesProduits.length<2) {
