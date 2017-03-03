@@ -159,7 +159,6 @@ describe("Test",function (){
         runtime.event(chevronH,"click",{});
         runtime.advanceAll();
         inspect(panier,{tag:"g",transform:"translate(0 0)"});
-
     });
 
     it("ensure that we can mouseover and mouseout on a categorie",function(){
@@ -177,7 +176,6 @@ describe("Test",function (){
         runtime.advanceAll();
         inspect(categories,{tag:"image",href:"img/fruits.jpg",opacity:"1"});
         inspect(categories2,{tag:"image",href:"img/fruits2.jpg",opacity:"0"});
-
         runtime.event(categories,"click",{});
         runtime.advanceAll();
         runtime.event(categories2,"mouseenter",{});
@@ -211,7 +209,7 @@ describe("Test",function (){
         runtime.event(produit3,"mouseout");
         runtime.advanceAll();
         inspect(produit3,{tag:"image",width:"345",height:"345"});
-    })
+    });
 
     it("ensure that clicking on a product in the basket print the corresponding section",function(){
         let market = main(svg,"");
@@ -235,8 +233,15 @@ describe("Test",function (){
 
         let produitBasket1 = retrieve(market.component,"[basket].[listePanier].[Bananes]");
         let produitBasket2 = retrieve(market.component,"[basket].[listePanier].[Carottes]");
-        runtime.event(produitBasket1,"click",{});
-        runtime.event(produitBasket2,"click",{});
-    });
 
+        runtime.event(produitBasket1,"click",{});
+        let rayonFruits = retrieve(market.component,"[Rayon Fruits]");
+        runtime.advanceAll();
+        inspect(rayonFruits,{tag:"g",transform:"translate(0 0)"});
+
+        runtime.event(produitBasket2,"click",{});
+        let rayonLegumes = retrieve(market.component,"[Rayon Légumes]");
+        runtime.advanceAll();
+        inspect(rayonLegumes,{tag:"g",transform:"translate(0 0)"});
+    });
 });
