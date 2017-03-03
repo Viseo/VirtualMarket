@@ -357,7 +357,7 @@ exports.main = function(svg, param) {
                         tab = vignettesLegumes;
                         break;
                 }
-
+                market.remove(categories.rayonTranslation);
                 categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, newProd.categorie);
                 categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + newProd.categorie);
                 market.add(categories.rayonTranslation);
