@@ -164,12 +164,14 @@ exports.main = function(svg, param) {
                 let currentN = tabVignettesR[i];
                 currentN.component.onMouseEnter(function()
                 {
-                    currentN.pictogramme.dimension(height/2-2,height/2-2);
+                    //currentN.pictogramme.dimension(height/2-2,height/2-2);
+                    currentN.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svghandler
                 });
                
                 currentN.component.onMouseOut(function()
                 {
-                    currentN.pictogramme.dimension(height/2-30,height/2-30);
+                    //currentN.pictogramme.dimension(height/2-30,height/2-30);
+                    currentN.pictogramme.smoothy(20,10).resizeTo(height/2-30,height/2-30);// modif dans svghandler
                 });
                 
                 currentN.component.onClick(function(){
@@ -190,12 +192,14 @@ exports.main = function(svg, param) {
                     let currentS = tabVignettesR[i+1];
                     currentS.component.onMouseEnter(function()
                     {
-                        currentS.pictogramme.dimension(height/2-2,height/2-2);
+                        //currentS.pictogramme.dimension(height/2-2,height/2-2);
+                        currentS.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svghandler
                     });
 
                     currentS.component.onMouseOut(function()
                     {
-                        currentS.pictogramme.dimension(height/2-30,height/2-30);
+                        //currentS.pictogramme.dimension(height/2-30,height/2-30);
+                        currentS.pictogramme.smoothy(20,10).resizeTo(height/2-30,height/2-30); // modif dans svghandler
                     });
                   
                     currentS.component.onClick(function(){
