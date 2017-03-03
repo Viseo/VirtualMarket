@@ -11,6 +11,8 @@ exports.main = function(svg, param) {
 		}
 	}
 
+	///COUCOU
+
 	class ListeCategorie extends Bandeau {
 		constructor(width,height,x,y,tabVignettes)
 		{
