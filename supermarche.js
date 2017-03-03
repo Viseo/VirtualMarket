@@ -93,8 +93,8 @@ exports.main = function(svg, param) {
             let chevronE = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
             let elipseChevronW = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
             let elipseChevronE = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
-            let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWCategorie");
-            let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronECategorie");
+            let zoneChevronW = new svg.Handler().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWCategorie");
+            let zoneChevronE = new svg.Handler().add(elipseChevronE).add(chevronE).mark("chevronECategorie");
             
             zoneChevronW.onClick(function(){
                 if(listeVignette.x+3*height<=0)
@@ -159,7 +159,6 @@ exports.main = function(svg, param) {
                 tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
                 tabVignettesR[i].component.mark("Produit "+i);
                 listeVignette.add(tabVignettesR[i].component);
-
                 
                 let currentN = tabVignettesR[i];
                 currentN.component.onMouseEnter(function()
@@ -211,8 +210,8 @@ exports.main = function(svg, param) {
             let chevronE = new svg.Chevron(20,70,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
             let elipseChevronW = new svg.Ellipse(30,50).color(svg.BLACK).opacity(0.40).position(30,this.component.height/2);
             let elipseChevronE = new svg.Ellipse(30,50).color(svg.BLACK).opacity(0.40).position(this.component.width-30,this.component.height/2);
-            let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWRayon");
-            let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronERayon");
+            let zoneChevronW = new svg.Handler().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWRayon");
+            let zoneChevronE = new svg.Handler().add(elipseChevronE).add(chevronE).mark("chevronERayon");
             
             zoneChevronW.onClick(function(){
                 if(listeVignette.x+height<=0)
@@ -288,8 +287,8 @@ exports.main = function(svg, param) {
             let elipseChevronH = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40).position(this.component.width / 2, 50);
             let elipseChevronB = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40)
                 .position(this.component.width / 2, this.component.height - 100);
-            this.zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0).mark("chevronHBasket");
-            this.zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0).mark("chevronBBasket");
+            this.zoneChevronH = new svg.Handler().add(elipseChevronH).add(chevronH).opacity(0).mark("chevronHBasket");
+            this.zoneChevronB = new svg.Handler().add(elipseChevronB).add(chevronB).opacity(0).mark("chevronBBasket");
 
             let chevB = this.zoneChevronB;
             let chevH = this.zoneChevronH;
@@ -348,7 +347,6 @@ exports.main = function(svg, param) {
 
             newProd.pictogramme.onClick(function () {
                 let tab = null;
-                console.log(newProd.categorie);
                 switch (newProd.categorie) {
                     case "Fruits" :
                         tab = vignettesFruits;
@@ -358,6 +356,7 @@ exports.main = function(svg, param) {
                         break;
                 }
 
+                market.remove(categories.rayonTranslation);
                 categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, newProd.categorie);
                 categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + newProd.categorie);
                 market.add(categories.rayonTranslation);
@@ -374,7 +373,6 @@ exports.main = function(svg, param) {
                 }
 
             });
-
 
             this.calculerPrix(newProd.price);
 
@@ -423,7 +421,7 @@ exports.main = function(svg, param) {
 	class Vignette {
         constructor(image,title)
         {
-            this.component = new svg.Translation();
+            this.component = new svg.Handler();
             this.pictogramme = new svg.Image(image);
             this.name = title;
             this.title = new svg.Text(title);
@@ -518,7 +516,9 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts",1,"Légumes"),
         new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1,"Légumes"),
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1,"Légumes"),
-        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"Légumes")
+        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1,"Légumes")
     ];   
     
     

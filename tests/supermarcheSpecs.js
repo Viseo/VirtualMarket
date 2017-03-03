@@ -211,7 +211,7 @@ describe("Test",function (){
         runtime.event(produit3,"mouseout");
         runtime.advanceAll();
         inspect(produit3,{tag:"image",width:"345",height:"345"});
-    })
+    });
 
     it("ensure that clicking on a product in the basket print the corresponding section",function(){
         let market = main(svg,"");
@@ -238,5 +238,4 @@ describe("Test",function (){
         runtime.event(produitBasket1,"click",{});
         runtime.event(produitBasket2,"click",{});
     });
-
 });
