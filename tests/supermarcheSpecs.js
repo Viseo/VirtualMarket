@@ -67,7 +67,7 @@ describe("Test",function (){
          runtime.advanceAll();
          runtime.event(chevronE,"click",{});
          runtime.advanceAll();
-         inspect(categories,{tag:"g",transform:"translate(-1325 0)"});
+         inspect(categories,{tag:"g",transform:"translate(-925 0)"});
      });
 
      it("ensure that chevronWCategorie is working",function(){
@@ -89,7 +89,7 @@ describe("Test",function (){
          let market = main(svg,"");
          let categories = retrieve(market.component,"[categories].[Fruits]");
          runtime.event(categories,"click",{});
-         let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayon]");
+         let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayonH]");
          inspect(rayon,{tag:"g",transform:"translate(0 0)"});
          let chevronE = retrieve(market.component,"[Rayon Fruits].[chevronERayon]");
          let chevronW = retrieve(market.component,"[Rayon Fruits].[chevronWRayon]");
@@ -113,7 +113,7 @@ describe("Test",function (){
         let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
-        let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayon]");
+        let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayonH]");
         inspect(rayon,{tag:"g",transform:"translate(0 0)"});
         let chevronE = retrieve(market.component,"[Rayon Fruits].[chevronERayon]");
         let chevronW = retrieve(market.component,"[Rayon Fruits].[chevronWRayon]");
@@ -130,8 +130,8 @@ describe("Test",function (){
         let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
-        let produit = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 2]");
-        let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 3]");
+        let produit = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Produit 2]");
+        let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayonB].[Produit 3]");
         runtime.event(produit,"click",{});
         runtime.event(produit2,"click",{});
         runtime.event(produit,"click",{});
@@ -168,14 +168,14 @@ describe("Test",function (){
         let categorieTitle = retrieve(market.component,"[categories].[Fruits title]");
         runtime.event(categories,"mouseenter",{});
         runtime.advanceAll();
-        inspect(categories,{tag:"image",href:"img/fruits.jpg",opacity:"0"});
-        inspect(categories2,{tag:"image",href:"img/fruits2.jpg",opacity:"1"});
+        inspect(categories,{tag:"image",href:"img/categories/fruits.jpg",opacity:"0"});
+        inspect(categories2,{tag:"image",href:"img/categories/fruits2.jpg",opacity:"1"});
         runtime.event(categorieTitle,"mouseenter",{});
         runtime.advanceAll();
         runtime.event(categories,"mouseout",{});
         runtime.advanceAll();
-        inspect(categories,{tag:"image",href:"img/fruits.jpg",opacity:"1"});
-        inspect(categories2,{tag:"image",href:"img/fruits2.jpg",opacity:"0"});
+        inspect(categories,{tag:"image",href:"img/categories/fruits.jpg",opacity:"1"});
+        inspect(categories2,{tag:"image",href:"img/categories/fruits2.jpg",opacity:"0"});
         runtime.event(categories,"click",{});
         runtime.advanceAll();
         runtime.event(categories2,"mouseenter",{});
@@ -191,8 +191,8 @@ describe("Test",function (){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
-        let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit2]");
-        let produit3 = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit3]");
+        let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Produit2]");
+        let produit3 = retrieve(market.component,"[Rayon Fruits].[listeRayonB].[Produit3]");
 
         runtime.event(produit2,"mouseenter");
         runtime.advanceAll();
@@ -216,14 +216,14 @@ describe("Test",function (){
 
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
-        let produit = retrieve(market.component,"[Rayon Fruits].[listeRayon].[Produit 0]");
+        let produit = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Produit 0]");
         runtime.advanceAll();
         runtime.event(produit,"click",{});
         runtime.advanceAll();
 
         let categories2 = retrieve(market.component,"[categories].[Légumes]");
         runtime.event(categories2,"click",{});
-        let produit2 = retrieve(market.component,"[Rayon Légumes].[listeRayon].[Produit 0]");
+        let produit2 = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[Produit 0]");
         runtime.advanceAll();
         runtime.event(produit2,"click",{});
         runtime.advanceAll();

@@ -686,7 +686,6 @@ exports.main = function(svg, param) {
     let zonePayement = new svg.Translation().add(payement.component);
 
     market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
-
     return market;
 	//////////////////////////////
 };
