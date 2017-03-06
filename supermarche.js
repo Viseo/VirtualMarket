@@ -41,10 +41,39 @@ exports.main = function(svg, param) {
                     let tab =null;
                     switch(current.name)
                     {
-                        case "Fruits" : tab = vignettesFruits;
-                                        break;
-                        case "Légumes": tab = vignettesLegumes;
-                                        break;
+                        case "Produits laitiers" :
+                            tab = vignettesProduitsLaitiers;
+                            break;
+                        case "Fruits" :
+                            tab = vignettesFruits;
+                            break;
+                        case "Légumes" :
+                            tab = vignettesLegumes;
+                            break;
+                        case "Electromenager" :
+                            tab= vignettesElectromenager;
+                            break;
+                        case "Voyages" :
+                            tab = vignettesVoyages;
+                            break;
+                        case "HighTech" :
+                            tab = vignettesHighTech;
+                            break;
+                        case "Boissons" :
+                            tab = vignettesBoissons;
+                            break;
+                        case "Soins du corps" :
+                            tab = vignettesSoins;
+                            break;
+                        case "Mode" :
+                            tab = vignettesMode;
+                            break;
+                        case "Mobilier" :
+                            tab = vignettesMobilier;
+                            break;
+                        case "Super Pouvoirs" :
+                            tab = vignettesSuperPouvoirs;
+                            break;
                         default : break;
                     }
 
@@ -386,7 +415,7 @@ exports.main = function(svg, param) {
         }
 
         ajouterProduits(vignette) {
-            let newProd = new VignettePanier(vignette.pictogramme.src, vignette.name, vignette.price, vignette.categorie);
+            let newProd = new VignettePanier(vignette.pictogramme.src, vignette.name, vignette.price,vignette.complement, vignette.categorie);
             newProd.pictogramme.mark(vignette.name);
             this.listeProduits.add(newProd.component);
             this.VignettesProduits.push(newProd);
@@ -396,11 +425,38 @@ exports.main = function(svg, param) {
             newProd.pictogramme.onClick(function () {
                 let tab = null;
                 switch (newProd.categorie) {
+                    case "Produits laitiers":
+                        tab = vignettesProduitsLaitiers;
+                        break;
                     case "Fruits" :
                         tab = vignettesFruits;
                         break;
                     case "Légumes":
                         tab = vignettesLegumes;
+                        break;
+                    case "Electromenager" :
+                        tab= vignettesElectromenager;
+                        break;
+                    case "Voyages" :
+                        tab = vignettesVoyages;
+                        break;
+                    case "HighTech" :
+                        tab = vignettesHighTech;
+                        break;
+                    case "Boissons" :
+                        tab = vignettesBoissons;
+                        break;
+                    case "Soins du corps" :
+                        tab = vignettesSoins;
+                        break;
+                    case "Mode" :
+                        tab = vignettesMode;
+                        break;
+                    case "Mobilier" :
+                        tab = vignettesMobilier;
+                        break;
+                    case "Super Pouvoirs" :
+                        tab = vignettesSuperPouvoirs;
                         break;
                 }
 
@@ -484,21 +540,22 @@ exports.main = function(svg, param) {
 	}
 
 	class VignetteRayon extends Vignette {
-        constructor(image,title,price,cat)
+        constructor(image,title,price,complement,cat)
         {
             super(image,title);
             this.component.add(this.pictogramme);
             this.component.add(this.title);
             this.price = price;
-            this.printPrice = new svg.Text(price + " €/kilo");
+            this.complement = complement;
+            this.printPrice = new svg.Text(price + " €" + complement);
             this.component.add(this.printPrice);
             this.categorie=cat;
         }
 	}
     
     class VignettePanier extends VignetteRayon{
-        constructor(image,title,price,cat){
-            super(image,title,price,cat);
+        constructor(image,title,price,complement,cat){
+            super(image,title,price,complement,cat);
             this.quantity = 0;
         }
         
@@ -514,52 +571,103 @@ exports.main = function(svg, param) {
     
     //TEST CREATION TABLEAU VIGNETTE//
     let vignettes = [
-        new VignetteCategorie("img/fruits.jpg","img/fruits2.jpg", "Produits laitiers"),
-        new VignetteCategorie("img/legumes.jpg","img/legumes2.jpg", "Légumes"),
-        new VignetteCategorie("img/fruits.jpg","img/fruits2.jpg", "Fruits"),
-        new VignetteCategorie("img/legumes.jpg","img/legumes2.jpg", "Electromenager"),
-        new VignetteCategorie("img/fruits.jpg","img/fruits2.jpg", "Voyages"),
-        new VignetteCategorie("img/legumes.jpg","img/legumes2.jpg", "HighTech"),
-        new VignetteCategorie("img/fruits.jpg","img/fruits2.jpg", "Boissons"),
-        new VignetteCategorie("img/legumes.jpg","img/legumes2.jpg", "Soins du corps"),
-        new VignetteCategorie("img/fruits.jpg","img/fruits2.jpg", "Mode"),
-        new VignetteCategorie("img/legumes.jpg","img/legumes2.jpg", "Mobilier"),
-        new VignetteCategorie("img/legumes.jpg","img/legumes2.jpg", "Soins du corps"),
-        new VignetteCategorie("img/fruits.jpg","img/fruits2.jpg", "Mode"),
-        new VignetteCategorie("img/legumes.jpg","img/legumes2.jpg", "Mobilier")
+        new VignetteCategorie("img/categories/produits-laitiers.jpg","img/categories/produits-laitiers2.jpg", "Produits laitiers"),
+        new VignetteCategorie("img/categories/legumes.jpg","img/categories/legumes2.jpg", "Légumes"),
+        new VignetteCategorie("img/categories/fruits.jpg","img/categories/fruits2.jpg", "Fruits"),
+        new VignetteCategorie("img/categories/electromenager.jpg","img/categories/electromenager2.jpg", "Electromenager"),
+        new VignetteCategorie("img/categories/voyages.jpg","img/categories/voyages2.jpg", "Voyages"),
+        new VignetteCategorie("img/categories/hightech.jpg","img/categories/hightech2.jpg", "HighTech"),
+        new VignetteCategorie("img/categories/boissons.jpg","img/categories/boissons2.jpg", "Boissons"),
+        new VignetteCategorie("img/categories/soinsducorps.jpg","img/categories/soinsducorps2.jpg", "Soins du corps"),
+        new VignetteCategorie("img/categories/mode.jpg","img/categories/mode2.jpg", "Mode"),
+        new VignetteCategorie("img/categories/mobilier.jpg","img/categories/mobilier2.jpg", "Mobilier"),
+        new VignetteCategorie("img/categories/superpouvoir.jpg","img/categories/superpouvoir2.jpg", "Super Pouvoirs"),
+    ];
 
-               
+    var vignettesProduitsLaitiers = [
+        new VignetteRayon("img/produits/ProduitsLaitiers/lait.jpg","Lait",2," l'unité","Produits laitiers"),
+        new VignetteRayon("img/produits/ProduitsLaitiers/yaourt.jpg","Yaourt",1," l'unité","Produits laitiers"),
     ];
 
     var vignettesFruits = [
-        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1.1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"Fruits"),
-        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"Fruits")
+        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1.1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"/kilo","Fruits"),
     ];
-   
+
     var vignettesLegumes = [
-        new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes",1,"Légumes"),
+        new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes",1,"/kilo","Légumes"),
         new VignetteRayon("img/produits/Legumes/Chou.jpg","Chou",1,"Légumes"),
-        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1,"Légumes"),
-        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1,"Légumes"),
-        new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts",1,"Légumes"),
-        new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1,"Légumes"),
-        new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1,"Légumes"),
-        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"Légumes")
+        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1,"/kilo","Légumes")
+    ];
+
+    var vignettesElectromenager = [
+        new VignetteRayon("img/produits/Electromenager/frigo.jpg","Réfrigerateur",500,"","Electromenager"),
+        new VignetteRayon("img/produits/Electromenager/microondes.jpg","Micro Ondes",100,"","Electromenager"),
+    ];
+
+    var vignettesVoyages = [
+        new VignetteRayon("img/produits/Voyages/paris.jpg","Paris",1000,"","Voyages"),
+        new VignetteRayon("img/produits/Voyages/berlin.jpg","Berlin",1000,"","Voyages"),
+        new VignetteRayon("img/produits/Voyages/newyork.jpg","New York",1000,"","Voyages"),
+        new VignetteRayon("img/produits/Voyages/sanfrancisco.jpg","San Francisco",1000,"","Voyages"),
+    ];
+
+    var vignettesHighTech = [
+        new VignetteRayon("img/produits/HighTech/ipad.jpg","Ipad",600,"","HighTech"),
+        new VignetteRayon("img/produits/HighTech/casque.jpg","Casque",200,"","HighTech"),
+    ];
+
+    var vignettesBoissons = [
+        new VignetteRayon("img/produits/Boissons/coca.jpg","Coca-Cola",1,"","Boissons"),
+        new VignetteRayon("img/produits/Boissons/cocazero.jpg","Coca-Cola Zero",1,"","Boissons"),
+        new VignetteRayon("img/produits/Boissons/cocalight.jpg","Coca-Cola Light",1,"","Boissons"),
+        new VignetteRayon("img/produits/Boissons/redbull.jpg","RedBull",2,"","Boissons"),
+    ];
+
+    var vignettesSoins = [
+        new VignetteRayon("img/produits/Soins/geldouche.jpg","Gel douche",2,"","Soins du corps"),
+        new VignetteRayon("img/produits/Soins/shampoing.jpg","Shampoing",2,"","Soins du corps"),
+    ];
+
+    var vignettesMode = [
+        new VignetteRayon("img/produits/Mode/costume.jpg","Costume",500,"","Mode"),
+        new VignetteRayon("img/produits/Mode/montre.jpg","Montre",7500,"","Mode"),
+    ];
+
+    var vignettesMobilier = [
+        new VignetteRayon("img/produits/Mobilier/canape.jpg","Canapé",500,"","Mobilier"),
+        new VignetteRayon("img/produits/Mobilier/table.jpg","Table",500,"","Mobilier"),
+        new VignetteRayon("img/produits/Mobilier/bureau.jpg","Bureau",500,"","Mobilier"),
+        new VignetteRayon("img/produits/Mobilier/chaise.jpg","Chaise",200,"","Mobilier"),
+    ];
+
+    var vignettesSuperPouvoirs = [
+        new VignetteRayon("img/produits/SuperPouvoirs/superman.png","Superman",0,"","Super Pouvoirs"),
+        new VignetteRayon("img/produits/SuperPouvoirs/flash.png","Flash",0,"","Super Pouvoirs"),
     ];
     
     /////
