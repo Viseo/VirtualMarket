@@ -561,8 +561,13 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1,"Légumes"),
         new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"Légumes")
     ];
-    
-    /////
+    /////////////
+
+    ///Functions///
+
+    //////
+
+    /////Déclaration Interface////
     let header = new Header(market.width,market.height/20,0,0);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
     let categories = new ListeCategorie(market.width*0.85,market.height/5,0,market.height/20,vignettes);
@@ -575,6 +580,5 @@ exports.main = function(svg, param) {
     market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
 
     return market;
-
-	
+	//////////////////////////////
 };
