@@ -67,7 +67,7 @@ describe("Test",function (){
          runtime.advanceAll();
          runtime.event(chevronE,"click",{});
          runtime.advanceAll();
-         inspect(categories,{tag:"g",transform:"translate(-1325 0)"});
+         inspect(categories,{tag:"g",transform:"translate(-925 0)"});
      });
 
      it("ensure that chevronWCategorie is working",function(){
@@ -168,14 +168,14 @@ describe("Test",function (){
         let categorieTitle = retrieve(market.component,"[categories].[Fruits title]");
         runtime.event(categories,"mouseenter",{});
         runtime.advanceAll();
-        inspect(categories,{tag:"image",href:"img/fruits.jpg",opacity:"0"});
-        inspect(categories2,{tag:"image",href:"img/fruits2.jpg",opacity:"1"});
+        inspect(categories,{tag:"image",href:"img/categories/fruits.jpg",opacity:"0"});
+        inspect(categories2,{tag:"image",href:"img/categories/fruits2.jpg",opacity:"1"});
         runtime.event(categorieTitle,"mouseenter",{});
         runtime.advanceAll();
         runtime.event(categories,"mouseout",{});
         runtime.advanceAll();
-        inspect(categories,{tag:"image",href:"img/fruits.jpg",opacity:"1"});
-        inspect(categories2,{tag:"image",href:"img/fruits2.jpg",opacity:"0"});
+        inspect(categories,{tag:"image",href:"img/categories/fruits.jpg",opacity:"1"});
+        inspect(categories2,{tag:"image",href:"img/categories/fruits2.jpg",opacity:"0"});
         runtime.event(categories,"click",{});
         runtime.advanceAll();
         runtime.event(categories2,"mouseenter",{});
