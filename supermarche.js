@@ -363,6 +363,7 @@ exports.main = function(svg, param) {
             let chevH = this.zoneChevronH;
             let zone = this.listeProduits;
             let tab = this.VignettesProduits;
+            let pPrice = this.printPrice;
 
             this.zoneChevronH.onClick(function() {
                 if ((zone.y + height / 2) < 0) {
@@ -400,13 +401,13 @@ exports.main = function(svg, param) {
             this.component.remove(this.total);
             if(this.prixTotal>10000){
                 this.printPrice = new svg.Text(this.prixTotal.toFixed(2) + " €").position(this.component.width * 0.65, this.zoneTotal.y + 10)
-                    .font("calibri", 25, 1).color(svg.BLACK);
+                    .font("calibri", 25, 1).color(svg.BLACK).mark("bigPrice");
                 this.total = new svg.Text("TOTAL").position(this.component.width / 5, this.zoneTotal.y + 10)
                     .font("calibri", 25, 1).color(svg.BLACK);
             }
             else{
                 this.printPrice = new svg.Text(this.prixTotal.toFixed(2) + " €").position(this.component.width * 0.75, this.zoneTotal.y + 10)
-                    .font("calibri", 30, 1).color(svg.BLACK);
+                    .font("calibri", 30, 1).color(svg.BLACK).mark("Price");
                 this.total = new svg.Text("TOTAL").position(this.component.width / 4, this.zoneTotal.y + 10)
                     .font("calibri", 30, 1).color(svg.BLACK);
             }
@@ -427,10 +428,8 @@ exports.main = function(svg, param) {
                     if (product.name == vignette.name) {
                         // alert("ok");
                         product.addQuantity(1);
-                        console.log(product.name + " , x" + product.quantity);
                         let newText=product.quantity + "x " + product.price + " €"+product.complement;
                         product.changeText(newText);
-                        console.log(product.pictogramme.height+"  "+product.pictogramme.y);
                         product.printPrice.position(width/2,product.pictogramme.y - product.pictogramme.height/2 +product.pictogramme.height * 0.9);
                         occur=1;
                         // this.calculerPrix(newProd.price);
@@ -509,9 +508,7 @@ exports.main = function(svg, param) {
             this.calculerPrix(newProd.price);
 
             if (this.VignettesProduits.length < 2 && occur==0) {
-                // alert('1');
                 newProd.pictogramme.position(width / 2, width / 2);
-                // alert(newProd.pictogramme.width+" "+newProd.pictogramme.height);
                 newProd.title.position(width / 2, newProd.pictogramme.height * 0.15);
                 newProd.printPrice.position(width / 2, newProd.pictogramme.height * 0.9);
                 let blackline = new svg.Line(0, newProd.pictogramme.height-1, width, newProd.pictogramme.height-1)
@@ -523,7 +520,6 @@ exports.main = function(svg, param) {
                     if(this.VignettesProduits.length > 2) this.zoneChevronB.opacity(0.5);
                     let ref = this.VignettesProduits[this.VignettesProduits.length - 2];
                     newProd.pictogramme.position(width / 2, ref.pictogramme.y + ref.pictogramme.height);
-                    // alert(newProd.pictogramme.width+" "+newProd.pictogramme.height);
                     newProd.title.position(width / 2, ref.title.y + ref.pictogramme.height);
                     newProd.printPrice.position(width / 2, ref.printPrice.y + ref.pictogramme.height);
                     this.listeProduits.add(new svg.Line(0, newProd.pictogramme.y + newProd.pictogramme.height / 2-1,
@@ -599,16 +595,13 @@ exports.main = function(svg, param) {
         addQuantity(num){
             this.quantity = this.quantity+num;
         }
-        minusQuantity(num){
+        /*minusQuantity(num){
             this.quantity = this.quantity-num;
-        }
+        }*/
         changeText(newText){
-            // alert(newText);
             this.component.remove(this.printPrice);
-            // alert(newText);
             this.printPrice = new svg.Text(newText);
             this.component.add(this.printPrice);
-            // this.component.add(this.printPrice);
         }
     }
     //////////////////////////////////////
@@ -671,7 +664,7 @@ exports.main = function(svg, param) {
     ];
 
     var vignettesElectromenager = [
-        new VignetteRayon("img/produits/Electromenager/frigo.jpg","Réfrigerateur",500000,"","Electromenager"),
+        new VignetteRayon("img/produits/Electromenager/frigo.jpg","Réfrigerateur",500,"","Electromenager"),
         new VignetteRayon("img/produits/Electromenager/microondes.jpg","Micro Ondes",100,"","Electromenager"),
     ];
 
