@@ -48,6 +48,14 @@ describe("Test",function (){
         runtime.event(categories1,"click",{});
         let categories2 = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories2,"click",{});
+        let categories3 = retrieve(market.component,"[categories].[Electromenager]");
+        runtime.event(categories3,"click",{});
+        let categories4 = retrieve(market.component,"[categories].[Voyages]");
+        runtime.event(categories4,"click",{});
+        let categories5 = retrieve(market.component,"[categories].[HighTech]");
+        runtime.event(categories5,"click",{});
+        let categories6 = retrieve(market.component,"[categories].[Boissons]");
+        runtime.event(categories6,"click",{});
         let rayon = retrieve(market.component,"[Rayon Fruits]");
         inspect(rayon,{tag:"g",transform:"translate(0 0)"});
     });
@@ -145,7 +153,7 @@ describe("Test",function (){
         let panier = retrieve(market.component,"[basket].[listePanier]");
         runtime.event(chevronB,"click",{});
         runtime.advanceAll();
-        inspect(panier,{tag:"g",transform:"translate(0 -375)"});
+        inspect(panier,{tag:"g",transform:"translate(0 -252.75)"});
         runtime.event(chevronB,"click",{});
         runtime.advanceAll();
         runtime.event(chevronB,"click",{});
