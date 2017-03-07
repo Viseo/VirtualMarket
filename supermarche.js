@@ -188,7 +188,7 @@ exports.main = function(svg, param) {
                 this.listeVignetteH.add(fondVignette);
 
                 tabVignettesR[i].pictogramme .position(height/4+height/2*place,height/4)        .dimension(height/2-30,height/2-30).mark("Produit"+i);
-                tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK);
+                tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK).mark("Title"+i);
                 tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
                 tabVignettesR[i].component.mark("Produit "+i);
                 this.listeVignetteH.add(tabVignettesR[i].component);
@@ -219,7 +219,7 @@ exports.main = function(svg, param) {
                     this.listeVignetteB.add(fondVignetteBas);
                     tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place,3*height/4)
                                                      .dimension(height/2-30,height/2-30).mark("Produit"+(i+1));
-                    tabVignettesR[i+1].title         .position(height/4+height/2*place,height/2*1.1)  .font("Calibri",15,1).color(svg.BLACK);
+                    tabVignettesR[i+1].title         .position(height/4+height/2*place,height/2*1.1)  .font("Calibri",15,1).color(svg.BLACK).mark("Title" +(i+1));
                     tabVignettesR[i+1].printPrice    .position(height/4+height/2*place,height/2*1.95) .font("Calibri",15,1).color(svg.BLACK);
                     tabVignettesR[i+1].component.mark("Produit "+(i+1));
                     this.listeVignetteB.add(tabVignettesR[i+1].component);
@@ -259,9 +259,6 @@ exports.main = function(svg, param) {
 
                 zoneChevronW.onClick(function () {
                     if (self.listeVignetteH.x + height+height/2 <= 0) {
-                        if (self.listeVignetteH.x + height == 0) {
-                            zoneChevronW.opacity(0.2);
-                        }
                         self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x+height,self.listeVignetteH.y);
                         zoneChevronE.opacity(1);
                     }
@@ -291,9 +288,6 @@ exports.main = function(svg, param) {
                     let widthTotalH = height / 2 * Math.ceil(tabVignettesR.length / 2);
                     let positionRightH = self.listeVignetteH.x + widthTotalH;
                     if (positionRightH - height-height/2 >= widthView) {
-                        if (positionRightH - height == widthView) {
-                            zoneChevronE.opacity(0.2);
-                        }
                         self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x - height, self.listeVignetteH.y);
                         zoneChevronW.opacity(1);
                     }
@@ -587,6 +581,8 @@ exports.main = function(svg, param) {
     var vignettesProduitsLaitiers = [
         new VignetteRayon("img/produits/ProduitsLaitiers/lait.jpg","Lait",2," l'unité","Produits laitiers"),
         new VignetteRayon("img/produits/ProduitsLaitiers/yaourt.jpg","Yaourt",1," l'unité","Produits laitiers"),
+        new VignetteRayon("img/produits/ProduitsLaitiers/oeuf.jpg","Oeufs",3,"","Produits laitiers"),
+        new VignetteRayon("img/produits/ProduitsLaitiers/camembert.jpg","Camembert",3," l'unité","Produits laitiers"),
     ];
 
     var vignettesFruits = [
@@ -646,6 +642,8 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Boissons/cocazero.jpg","Coca-Cola Zero",1,"","Boissons"),
         new VignetteRayon("img/produits/Boissons/cocalight.jpg","Coca-Cola Light",1,"","Boissons"),
         new VignetteRayon("img/produits/Boissons/redbull.jpg","RedBull",2,"","Boissons"),
+        new VignetteRayon("img/produits/Boissons/fanta.jpg","Fanta",1,"","Boissons"),
+        new VignetteRayon("img/produits/Boissons/cocacherry.jpg","Coca Cherry",1,"","Boissons"),
     ];
 
     var vignettesSoins = [

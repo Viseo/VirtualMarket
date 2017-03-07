@@ -124,6 +124,23 @@ describe("Test",function (){
         runtime.event(chevronW,"click",{});
         runtime.advanceAll();
         inspect(rayon,{tag:"g",transform:"translate(0 0)"});
+
+        let categories2 = retrieve(market.component,"[categories].[Légumes]");
+        runtime.event(categories2,"click",{});
+        let rayon2 = retrieve(market.component,"[Rayon Légumes].[listeRayonH]");
+        inspect(rayon2,{tag:"g",transform:"translate(0 0)"});
+        let chevronW2 = retrieve(market.component,"[Rayon Légumes].[chevronWRayon]");
+        let chevronE2 = retrieve(market.component,"[Rayon Légumes].[chevronERayon]");
+        runtime.event(chevronE2,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronE2,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW2,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW2,"click",{});
+        runtime.advanceAll();
+        inspect(rayon2,{tag:"g",transform:"translate(0 0)"});
+
     });
 
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
@@ -186,13 +203,15 @@ describe("Test",function (){
         runtime.advanceAll();
     });
 
-    it("ensure that we can mouseover and mouseout on a product",function(){
+    it("ensure that we can mouseover and mouseout on a product and it title",function(){
         let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
         let produit2 = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Produit2]");
         let produit3 = retrieve(market.component,"[Rayon Fruits].[listeRayonB].[Produit3]");
+        let title2 = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Title2]");
+        let title3 = retrieve(market.component,"[Rayon Fruits].[listeRayonB].[Title3]");
 
         runtime.event(produit2,"mouseenter");
         runtime.advanceAll();
@@ -207,6 +226,22 @@ describe("Test",function (){
         inspect(produit3,{tag:"image",width:"373",height:"373"});
 
         runtime.event(produit3,"mouseout");
+        runtime.advanceAll();
+        inspect(produit3,{tag:"image",width:"345",height:"345"});
+
+        runtime.event(title2,"mouseenter");
+        runtime.advanceAll();
+        inspect(produit2,{tag:"image",width:"373",height:"373"});
+
+        runtime.event(title2,"mouseout");
+        runtime.advanceAll();
+        inspect(produit2,{tag:"image",width:"345",height:"345"});
+
+        runtime.event(title3,"mouseenter");
+        runtime.advanceAll();
+        inspect(produit3,{tag:"image",width:"373",height:"373"});
+
+        runtime.event(title3,"mouseout");
         runtime.advanceAll();
         inspect(produit3,{tag:"image",width:"345",height:"345"});
     });
