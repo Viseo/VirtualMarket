@@ -87,7 +87,7 @@ exports.main = function(svg, param) {
                         self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + current.name);
                         market.add(self.rayonTranslation);
                     }
-                    
+
                     for(let v=0;v<tabVignettes.length;v++)
                     {
                         tabVignettes[v].pictogramme.opacity(1);
