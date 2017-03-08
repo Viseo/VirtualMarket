@@ -85,7 +85,7 @@ exports.main = function(svg, param) {
                     self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + current.name);
                     market.add(self.rayonTranslation);
 
-                    
+
                     for(let v=0;v<tabVignettes.length;v++)
                     {
                         tabVignettes[v].pictogramme.opacity(1);
@@ -659,12 +659,12 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1,"/kilo","Légumes"),
         new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1,"/kilo","Légumes"),
         new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1,"/kilo","Légumes")
+        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombre",1,"/kilo","Légumes"),
+        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgettes",1,"/kilo","Légumes")
     ];
 
     var vignettesElectromenager = [
-        new VignetteRayon("img/produits/Electromenager/frigo.jpg","Réfrigerateur",500,"","Electromenager"),
+        new VignetteRayon("img/produits/Electromenager/frigo.jpg","Refrigerateur",500,"","Electromenager"),
         new VignetteRayon("img/produits/Electromenager/microondes.jpg","Micro Ondes",100,"","Electromenager"),
     ];
 
@@ -686,7 +686,7 @@ exports.main = function(svg, param) {
         new VignetteRayon("img/produits/Boissons/cocalight.jpg","Coca-Cola Light",1,"","Boissons"),
         new VignetteRayon("img/produits/Boissons/redbull.jpg","RedBull",2,"","Boissons"),
         new VignetteRayon("img/produits/Boissons/fanta.jpg","Fanta",1,"","Boissons"),
-        new VignetteRayon("img/produits/Boissons/cocacherry.jpg","Coca Cherry",1,"","Boissons"),
+        new VignetteRayon("img/produits/Boissons/cocacherry.jpg","Coca-Cola Cherry",1,"","Boissons"),
     ];
 
     var vignettesSoins = [
