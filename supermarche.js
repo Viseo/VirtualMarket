@@ -432,7 +432,7 @@ exports.main = function(svg, param) {
                         product.addQuantity(1);
                         let newText=product.quantity + "x " + product.price + " €"+product.complement;
                         product.changeText(newText);
-                        product.printPrice.position(width/2,product.pictogramme.y - product.pictogramme.height/2 +product.pictogramme.height * 0.9);
+                        product.printPrice.position(width/2,product.pictogramme.y - product.pictogramme.height/2 +product.pictogramme.height * 0.92);
                         occur=1;
                         // this.calculerPrix(newProd.price);
                     }
@@ -513,8 +513,8 @@ exports.main = function(svg, param) {
 
             if (this.VignettesProduits.length < 2 && occur==0) {
                 newProd.pictogramme.position(width / 2, width / 2);
-                newProd.title.position(width / 2, newProd.pictogramme.height * 0.15);
-                newProd.printPrice.position(width / 2, newProd.pictogramme.height * 0.9);
+                newProd.title.position(width / 2, newProd.pictogramme.height * 0.10);
+                newProd.printPrice.position(width / 2, newProd.pictogramme.height * 0.92);
                 let blackline = new svg.Line(0, newProd.pictogramme.height-1, width, newProd.pictogramme.height-1)
                     .color(svg.BLACK, 2, svg.BLACK);
                 this.listeProduits.add(blackline);
