@@ -1,7 +1,13 @@
-exports.main = function(svg, param) {
+exports.main = function(svg,param) {
 
     let screenSize = svg.runtime.screenSize();
+    let GUI = require("./lib/svggui").Gui;
+    let gui = GUI(svg, "");
+    let canvas = new gui.Canvas(screenSize.width,screenSize.height).show("content");
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show("content"); //Ecran Total
+   /* canvas.component.glass.onMouseDown(function(){
+        alert("X : "+ event.pageX + "\nY : "+ event.pageY);
+    });*/
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
@@ -114,7 +120,7 @@ exports.main = function(svg, param) {
                 });
                 /////////////////////
             }
-            this.component.add(listeVignette); 
+            this.component.add(listeVignette);
 
             let chevronW = new svg.Chevron(20,50,3,"W").position(30,this.component.height/2).color(svg.WHITE);
             let chevronE = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
@@ -736,6 +742,7 @@ exports.main = function(svg, param) {
     let zonePayement = new svg.Translation().add(payement.component);
 
     market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
+    canvas.add(market);
     return market;
 	//////////////////////////////
 };
