@@ -1,0 +1,83 @@
+{
+  "Produits laitiers" : {
+    "Lait" : "img/produits/ProduitsLaitier/lait.jpg",
+    "Camembert" : "img/produits/ProduitsLaitier/camembert.jpg",
+    "Oeufs" : "img/produits/ProduitsLaitier/oeuf.jpg",
+    "Yaourt" : "img/produits/ProduitsLaitier/yaourt.jpg"
+
+  },
+
+  "Légumes" : {
+    "Carottes" : "img/produits/Legumes/carotte.jpg",
+    "Chou" : "img/produits/Legumes/Chou.jpg",
+    "Concombre" : "img/produits/Legumes/Concombre.jpg",
+    "Courgette" : "img/produits/Legumes/Courgette.jpg",
+    "Haricots Verts" : "img/produits/Legumes/Harticot vert.jpg",
+    "Oignon" : "img/produits/Legumes/oignon.jpg",
+    "Pommes de terre" : "img/produits/Legumes/Pomme de terre.jpg",
+    "Tomates" : "img/produits/Legumes/Tomates.jpg"
+  },
+
+  "Fruits" : {
+    "Bananes" : "img/produits/Fruits/Bananes.jpg",
+    "Citron vert" : "img/produits/Fruits/Citron vert.jpg",
+    "Clementines" : "img/produits/Fruits/Clementines.jpg",
+    "Fraises" : "img/produits/Fruits/Fraises.jpg",
+    "Framboises" : "img/produits/Fruits/Framboises.jpg",
+    "Kiwi" : "img/produits/Fruits/Kiwi.jpg",
+    "Mangue" : "img/produits/Fruits/Mangue.jpg",
+    "Orange" : "img/produits/Fruits/Orange.jpg",
+    "Poires" : "img/produits/Fruits/Bananes.jpg",
+    "Pommes" : "img/produits/Fruits/Pommes.jpg"
+  },
+
+  "Electromenager" : {
+    "Réfrigerateur" : "img/produits/Electromenager/frigo.jpg",
+    "Micro Ondes" : "img/produits/Electromenager/microondes.jpg"
+  },
+
+  "Voyages" : {
+    "Paris" : "img/produits/Voyages/paris.jpg",
+    "Berlin" : "img/produits/Voyages/berlin.jpg",
+    "New York" : "img/produits/Voyages/newyork.jpg",
+    "San Francisco" : "img/produits/Voyages/sanfrancisco.jpg"
+
+  },
+
+  "HighTech" : {
+      "Casque" : "img/produits/HighTech/Casque.jpg",
+      "Ipad" : "img/produits/HighTech/ipad.jpg"
+  },
+
+  "Boissons" : {
+    "Coca-Cola" : "img/produits/Boissons/coca.jpg",
+    "Coca-Cola Zero" : "img/produits/Boissons/cocazero.jpg",
+    "Coca-Cola Light" : "img/produits/Boissons/cocalight.jpg",
+    "Coca-Cola Cherry" : "img/produits/Boissons/cocacherry.jpg",
+    "Fanta" : "img/produits/Boissons/fanta.jpg",
+    "RedBull" : "img/produits/Boissons/redbull.jpg"
+  },
+
+  "Soins du corps" : {
+    "Gel douche" : "img/proudits/Soins/geldouche.jpg",
+    "Shampoing" : "img/proudits/Soins/shampoing.jpg"
+  },
+
+  "Mode" : {
+    "Costume" : "img/produits/Mode/costume.jpg",
+    "Montre" : "img/produits/Mode/montre.jpg"
+
+  },
+
+  "Mobilier" : {
+    "Bureau" : "img/produits/Mobilier/bureau.jpg",
+    "Canapé" : "img/produits/Mobilier/canape.jpg",
+    "Table" : "img/produits/Mobilier/table.jpg",
+    "Chaise" : "img/produits/Mobilier/chaise.jpg"
+  },
+
+  "Super Pouvoirs" : {
+    "Superman" : "img/produits/SuperPouvoirs/Superman.png",
+    "Flash" : "img/produits/SuperPouvoirs/Flash.png"
+  }
+}
