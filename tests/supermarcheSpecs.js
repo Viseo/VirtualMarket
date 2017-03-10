@@ -343,9 +343,20 @@ describe("Test",function (){
         inspect(costume,{tag:"image", href:"img/produits/Mode/costume.jpg"})
     });
 
-    it("ensure that drag an item from ray to basket is adding it to the basket ",function(){
+    it("ensure that drag an item from ray to the void is not adding it to the basket ",function(){
         let market = main(svg,"");
-
+        let catMode = retrieve(market.component,"[categories].[Mode]");
+        runtime.event(catMode,"click",{});
+        let produit = retrieve(market.component,"[Rayon Mode].[listeRayonB].[Produit 1]");
+        runtime.advanceAll();
+        runtime.event(produit,"mousedown",{pageX:0,pageY:0});
+        let vignette = retrieve(market.component,"[Glass].[GlassVignette]");
+        runtime.event(vignette,"mousemove",{pageX:500,pageY:500});
+        runtime.advanceAll();
+        runtime.event(vignette,"mouseup",{pageX:500,pageY:500});
+        runtime.advanceAll();
+        let montre = retrieve(market.component,"[basket].[listePanier].[Montre]");
+        assert.ok(!montre);
     });
 
 

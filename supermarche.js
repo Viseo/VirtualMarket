@@ -1,5 +1,5 @@
 exports.main = function(svg,param) {
-    
+
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
 	let glassDnD = new svg.Translation().mark("Glass");
@@ -394,7 +394,7 @@ exports.main = function(svg,param) {
                 }
                 else {
                     chevH.opacity(0.5);
-                    zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height * 0.85) / 2 - heightZone);
+                    zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height * 0.80) / 2 - heightZone);
                     chevB.opacity(0);
                 }
             });
@@ -746,11 +746,10 @@ exports.main = function(svg,param) {
         let clicky=e.pageY;
 
         tmp.component.onMouseMove(function(e){
-            if (!e.processed) {
-                tmp.pictogramme.position(e.pageX,e.pageY);
-                tmp.title.position(e.pageX,e.pageY-tmp.pictogramme.height*0.4);
-                tmp.fond.position(e.pageX,e.pageY);
-            }
+            tmp.pictogramme.position(e.pageX,e.pageY);
+            tmp.title.position(e.pageX,e.pageY-tmp.pictogramme.height*0.4);
+            tmp.fond.position(e.pageX,e.pageY);
+
         });
 
         tmp.component.onMouseUp(function(e){
