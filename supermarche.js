@@ -1,13 +1,8 @@
 exports.main = function(svg,param) {
 
     let screenSize = svg.runtime.screenSize();
-    let GUI = require("./lib/svggui").Gui;
-    let gui = GUI(svg, "");
-    let canvas = new gui.Canvas(screenSize.width,screenSize.height).show("content");
-	let market = new svg.Drawing(screenSize.width,screenSize.height).show("content"); //Ecran Total
-   /* canvas.component.glass.onMouseDown(function(){
-        alert("X : "+ event.pageX + "\nY : "+ event.pageY);
-    });*/
+	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
+	let glassDnD = new svg.Translation().mark("Glass");
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
@@ -101,7 +96,7 @@ exports.main = function(svg,param) {
                     current.pictogramme2.opacity(1);
                 });
                 
-                tabVignettes[i].pictogramme.onMouseEnter(function(){
+                tabVignettes[i].component.onMouseEnter(function(){
                     current.pictogramme.opacity(0);
                     current.pictogramme2.opacity(1);
                 });
@@ -111,7 +106,7 @@ exports.main = function(svg,param) {
                     current.pictogramme2.opacity(1);
                 });
                 
-                tabVignettes[i].pictogramme.onMouseOut(function(){
+                tabVignettes[i].component.onMouseOut(function(){
                     if(self.rayon==null || current.name!=self.rayon.name)
                     {
                         current.pictogramme.opacity(1);
@@ -126,8 +121,8 @@ exports.main = function(svg,param) {
             let chevronE = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
             let elipseChevronW = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
             let elipseChevronE = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
-            let zoneChevronW = new svg.Handler().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWCategorie");
-            let zoneChevronE = new svg.Handler().add(elipseChevronE).add(chevronE).mark("chevronECategorie");
+            let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWCategorie");
+            let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronECategorie");
             
             zoneChevronW.onClick(function(){
                 if(listeVignette.x+3*height<=0)
@@ -188,9 +183,7 @@ exports.main = function(svg,param) {
             let place = 0;
             for(let i=0;i<tabVignettesR.length;i=i+2){
 
-                let fondVignette = new svg.Rect(height/2-2,height/2-2).position(height/4+height/2*place,height/4).color(svg.WHITE);
-                this.listeVignetteH.add(fondVignette);
-
+                tabVignettesR[i].fond        .position(height/4+height/2*place,height/4)        .dimension(height/2-2,height/2-2);
                 tabVignettesR[i].pictogramme .position(height/4+height/2*place,height/4)        .dimension(height/2-30,height/2-30).mark("Produit"+i);
                 tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK).mark("Title"+i);
                 tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
@@ -200,12 +193,12 @@ exports.main = function(svg,param) {
                 let currentN = tabVignettesR[i];
                 currentN.component.onMouseEnter(function()
                 {
-                    currentN.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svghandler
+                    currentN.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                 });
 
                 currentN.title.onMouseEnter(function()
                 {
-                    currentN.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svghandler
+                    currentN.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                 });
 
                 currentN.component.onMouseOut(function()
@@ -215,6 +208,10 @@ exports.main = function(svg,param) {
 
                 currentN.component.onClick(function(){
                     panier.ajouterProduits(currentN);
+                });
+
+                currentN.component.onMouseDown(function(e){
+                    dragRayon(e,currentN)
                 });
                 
                 if(i+1<tabVignettesR.length)
@@ -231,12 +228,12 @@ exports.main = function(svg,param) {
                     let currentS = tabVignettesR[i+1];
                     currentS.component.onMouseEnter(function()
                     {
-                        currentS.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svghandler
+                        currentS.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                     });
 
                     currentS.title.onMouseEnter(function()
                     {
-                        currentS.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svghandler
+                        currentS.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                     });
 
                     currentS.component.onMouseOut(function()
@@ -244,8 +241,12 @@ exports.main = function(svg,param) {
                         currentS.pictogramme.smoothy(20,10).resizeTo(height/2-30,height/2-30);
                     });
                   
-                    currentS.component.onClick(function(){
+                    /*currentS.component.onClick(function(){
                         panier.ajouterProduits( currentS);
+                    });*/
+
+                    currentS.component.onMouseDown(function(e){
+                        dragRayon(e,currentS)
                     });
                 }
                 place++;
@@ -258,8 +259,8 @@ exports.main = function(svg,param) {
                 let chevronE = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
                 let elipseChevronW = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40).position(30, this.component.height / 2);
                 let elipseChevronE = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40).position(this.component.width - 30, this.component.height / 2);
-                let zoneChevronW = new svg.Handler().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWRayon");
-                let zoneChevronE = new svg.Handler().add(elipseChevronE).add(chevronE).mark("chevronERayon");
+                let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWRayon");
+                let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronERayon");
 
                 zoneChevronW.onClick(function () {
                     if (self.listeVignetteH.x + height+height/2 <= 0) {
@@ -362,8 +363,8 @@ exports.main = function(svg,param) {
             let elipseChevronH = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40).position(this.component.width / 2, 50);
             let elipseChevronB = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40)
                 .position(this.component.width / 2, this.component.height - 100);
-            this.zoneChevronH = new svg.Handler().add(elipseChevronH).add(chevronH).opacity(0).mark("chevronHBasket");
-            this.zoneChevronB = new svg.Handler().add(elipseChevronB).add(chevronB).opacity(0).mark("chevronBBasket");
+            this.zoneChevronH = new svg.Translation().add(elipseChevronH).add(chevronH).opacity(0).mark("chevronHBasket");
+            this.zoneChevronB = new svg.Translation().add(elipseChevronB).add(chevronB).opacity(0).mark("chevronBBasket");
 
             let chevB = this.zoneChevronB;
             let chevH = this.zoneChevronH;
@@ -562,10 +563,14 @@ exports.main = function(svg,param) {
 	class Vignette {
         constructor(image,title)
         {
-            this.component = new svg.Handler();
+            this.component = new svg.Translation();
             this.pictogramme = new svg.Image(image);
             this.name = title;
             this.title = new svg.Text(title);
+            this.fond = new svg.Rect().color(svg.WHITE);
+            this.component.add(this.fond);
+            this.component.add(this.pictogramme);
+            this.component.add(this.title);
         }
 	}
 
@@ -573,8 +578,9 @@ exports.main = function(svg,param) {
         constructor(image,image2,title){
             super(image,title);
             this.pictogramme2 = new svg.Image(image2);
+            this.pictogramme2.opacity(0);
+            this.pictogramme.opacity(1);
             this.component.add(this.pictogramme2);
-            this.component.add(this.pictogramme);
             this.component.add(this.title);
             this.name = title;
 		}
@@ -728,7 +734,42 @@ exports.main = function(svg,param) {
     /////////////
 
     ///Functions///
+    function dragRayon(e,current) {
+        market.add(glassDnD);
+        let tmp = new Vignette(current.pictogramme.src,current.name);
+        tmp.pictogramme.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
+            .dimension(current.pictogramme.width,current.pictogramme.height);
+        tmp.title.position(current.title.x,current.title.y+market.height/4).font("Calibri",15,1).color(svg.BLACK);
+        tmp.fond.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
+            .dimension(current.fond.height,current.fond.width);
+        glassDnD.add(tmp.component);
+        tmp.component.mark("GlassVignette");
+        let clickx=e.pageX;
+        let clicky=e.pageY;
 
+        tmp.component.onMouseMove(function(e){
+            if (!e.processed) {
+                tmp.pictogramme.position(e.pageX,e.pageY);
+                tmp.title.position(e.pageX,e.pageY-tmp.pictogramme.height*0.4);
+                tmp.fond.position(e.pageX,e.pageY);
+            }
+        });
+
+        tmp.component.onMouseUp(function(e){
+            let upx=e.pageX;
+            let upy=e.pageY;
+            if((tmp.pictogramme.x>market.width*0.85)&&(tmp.pictogramme.y<market.height*0.80))
+            {
+                panier.ajouterProduits(current);
+            }
+            else if(clickx==upx && clicky==upy){
+                panier.ajouterProduits(current);
+            }
+
+            glassDnD.remove(tmp.component);
+            market.remove(glassDnD);
+        });
+    }
     //////
 
     /////Déclaration Interface////
@@ -742,7 +783,7 @@ exports.main = function(svg,param) {
     let zonePayement = new svg.Translation().add(payement.component);
 
     market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
-    canvas.add(market);
+
     return market;
 	//////////////////////////////
 };
