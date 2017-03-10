@@ -1,5 +1,5 @@
 exports.main = function(svg,param) {
-
+    
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
 	let glassDnD = new svg.Translation().mark("Glass");
@@ -216,8 +216,7 @@ exports.main = function(svg,param) {
                 
                 if(i+1<tabVignettesR.length)
                 {
-                    let fondVignetteBas = new svg.Rect(height/2-2,height/2-2).position(height/4+height/2*place,3*height/4).color(svg.WHITE);
-                    this.listeVignetteB.add(fondVignetteBas);
+                    tabVignettesR[i+1].fond.dimension(height/2-2,height/2-2).position(height/4+height/2*place,3*height/4).color(svg.WHITE);
                     tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place,3*height/4)
                                                      .dimension(height/2-30,height/2-30).mark("Produit"+(i+1));
                     tabVignettesR[i+1].title         .position(height/4+height/2*place,height/2*1.1)  .font("Calibri",15,1).color(svg.BLACK).mark("Title" +(i+1));
@@ -643,7 +642,6 @@ exports.main = function(svg,param) {
         new VignetteRayon("img/produits/ProduitsLaitiers/yaourt.jpg","Yaourt",1," l'unité","Produits laitiers"),
         new VignetteRayon("img/produits/ProduitsLaitiers/oeuf.jpg","Oeufs",3,"","Produits laitiers"),
         new VignetteRayon("img/produits/ProduitsLaitiers/camembert.jpg","Camembert",3," l'unité","Produits laitiers"),
-
     ];
 
     var vignettesFruits = [
@@ -769,6 +767,8 @@ exports.main = function(svg,param) {
             glassDnD.remove(tmp.component);
             market.remove(glassDnD);
         });
+
+        //gui.installDnD(current.component,glassDnD,{StartInDragMode:true});
     }
     //////
 
