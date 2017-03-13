@@ -5,7 +5,7 @@ exports.main = function(svg,param) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
-	let glassDnD = new svg.Translation().mark("Glass");
+
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
@@ -735,8 +735,10 @@ exports.main = function(svg,param) {
     /////////////
 
     ///Functions///
+    let glassDnD = new gui.Frame(3000,3000);
+    market.add(glassDnD.component);
     function dragRayon(e,current) {
-        market.add(glassDnD);
+
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.pictogramme.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
             .dimension(current.pictogramme.width,current.pictogramme.height);
@@ -770,7 +772,8 @@ exports.main = function(svg,param) {
             market.remove(glassDnD);
         });*/
 
-        gui.installDnD(tmp.component,glassDnD,{StartInDragMode:true});
+        glassDnD.component.add(tmp.component);
+        glassDnD.installDnD(tmp.component,{StartInDragMode:true});
     }
     //////
 

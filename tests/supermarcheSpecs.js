@@ -358,6 +358,4 @@ describe("Test",function (){
         let montre = retrieve(market.component,"[basket].[listePanier].[Montre]");
         assert.ok(!montre);
     });
-
-
 });
