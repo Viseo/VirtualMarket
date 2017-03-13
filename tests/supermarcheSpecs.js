@@ -7,10 +7,15 @@ let testUtil = require ("./testutils");
 let mockRuntime = require("../lib/runtimemock").mockRuntime;
 let main = require("../supermarche").main;
 
+let DATA = require("../data").data;
+let data = DATA();
+var jsonProduits = data.getJson();
+
 let runtime;
 let svg;
 let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
+let market;
 
 
 describe("Test",function (){
@@ -18,10 +23,11 @@ describe("Test",function (){
         runtime = mockRuntime();
         runtime.declareAnchor("content");
         svg = SVG(runtime);
+        market = main(svg,{jsonData : jsonProduits});
     });
 
     it("ensure that page structure is ok at start",function(){
-        let market = main(svg,"");
+        
         assert.ok(market);
         inspect(market.component,{tag:"svg",width:1500,height:1000,children:[
             {tag:"g",transform:"translate(0 0)",id:"header"}
@@ -29,19 +35,16 @@ describe("Test",function (){
     });
 
     it("ensure that header is well formed",function(){
-        let market = main(svg,"");
         let header = retrieve(market.component,"[header]");
         inspect(header,{tag:"g",transform:"translate(0 0)"});
     });
 
     it("ensure that categories is well formed",function(){
-        let market = main(svg,"");
         let categories = retrieve(market.component,"[categories]");
         inspect(categories,{tag:"g",transform:"translate(0 0)"});
     });
 
     it("ensure that we can click on fruits and rayon fruits is well formed",function(){
-        let market = main(svg,"");
         let categories0 = retrieve(market.component,"[categories].[Produits laitiers]");
         runtime.event(categories0,"click",{});
         let categories1 = retrieve(market.component,"[categories].[Légumes]");
@@ -53,7 +56,6 @@ describe("Test",function (){
     });
 
      it("ensure that chevronECategorie is working",function(){
-         let market = main(svg,"");
          let categories = retrieve(market.component,"[listeCategories]");
          let chevronW = retrieve(market.component,"[categories].[chevronWCategorie]");
          let chevronE= retrieve(market.component,"[categories].[chevronECategorie]");
@@ -71,7 +73,6 @@ describe("Test",function (){
      });
 
      it("ensure that chevronWCategorie is working",function(){
-         let market = main(svg,"");
          let categories = retrieve(market.component,"[listeCategories]");
          let chevronW = retrieve(market.component,"[categories].[chevronWCategorie]");
          let chevronE= retrieve(market.component,"[categories].[chevronECategorie]");
@@ -86,7 +87,6 @@ describe("Test",function (){
      });
 
      it("ensure that chevronERayon is working",function(){
-         let market = main(svg,"");
          let categories = retrieve(market.component,"[categories].[Fruits]");
          runtime.event(categories,"click",{});
          let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayonH]");
@@ -105,12 +105,11 @@ describe("Test",function (){
          runtime.advanceAll();
          runtime.event(chevronE,"click",{});
          runtime.advanceAll();
-         inspect(rayon,{tag:"g",transform:"translate(-2475 0)"});
+         inspect(rayon,{tag:"g",transform:"translate(-1725 0)"});
 
      });
 
     it("ensure that chevronWRayon is working",function(){
-        let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         let rayon = retrieve(market.component,"[Rayon Fruits].[listeRayonH]");
@@ -144,7 +143,6 @@ describe("Test",function (){
     });
 
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
-        let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         let produit = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Produit 2]");
@@ -184,7 +182,6 @@ describe("Test",function (){
     });
 
     it("ensure that we can mouseover and mouseout on a categorie",function(){
-        let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         let categories2 = retrieve(market.component,"[categories].[Fruits2]");
         let categorieTitle = retrieve(market.component,"[categories].[Fruits title]");
@@ -209,7 +206,6 @@ describe("Test",function (){
     });
 
     it("ensure that we can mouseover and mouseout on a product and it title",function(){
-        let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
@@ -252,7 +248,6 @@ describe("Test",function (){
     });
 
     it("ensure that clicking on a product in the basket print the corresponding section",function(){
-        let market = main(svg,"");
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         let produit = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Produit 0]");
@@ -280,7 +275,6 @@ describe("Test",function (){
     });
 
     it("ensure that adding the same product in the basket is working ",function(){
-        let market = main(svg,"");
         let catMode = retrieve(market.component,"[categories].[Mode]");
         runtime.event(catMode,"click",{});
         let produit = retrieve(market.component,"[Rayon Mode].[listeRayonB].[Produit 1]");

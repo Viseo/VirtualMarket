@@ -20,7 +20,12 @@
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;
         let main = require("supermarche").main;
-        main(SVG(targetRuntime()),"");
+
+        let DATA = require("data").data;
+        let data = DATA();
+        var jsonProduits = data.getJson();
+
+        main(SVG(targetRuntime()),{jsonData : jsonProduits});
         
     </script>
     

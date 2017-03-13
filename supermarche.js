@@ -555,23 +555,16 @@ exports.main = function(svg, param) {
 
     ///Functions///
 
-
-
     /////////// MANAGE JSON
-
-    // Get Json file
-    var jsonPdts = getJson();
-
     // Make vignettes tab for a category
     function makeVignettesForCategory(catTitle){
         var tabVignettes = [];
         // mettre le tableau de product dans une variable
-        var cat = jsonPdts[catTitle];
+        var cat = param.jsonData[catTitle];
         //pour chaque produit dans categorie,
         for (var product in cat){
             //mettre la valeur de img dans une var
             var data = cat[product];
-            //console.log(data.img);
             //construire une vignette
             var vignetteProduct = new VignetteRayon(data.image, data.nom, data.prix,data.complement, catTitle);
             //ajouter la vignette au tableau
@@ -581,7 +574,7 @@ exports.main = function(svg, param) {
         return tabVignettes;
     }
 
-    ////////// FIN TEST JSON
+    ///////////////////////////////////////
 
 
     /////Déclaration Interface////
@@ -596,10 +589,6 @@ exports.main = function(svg, param) {
 
     market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
 
-    return {
-        market : market,
-        Vignette:Vignette,
-        VignetteRayon:VignetteRayon
-    };
+    return market;
 	//////////////////////////////
 };
