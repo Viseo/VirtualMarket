@@ -164,12 +164,6 @@ exports.data = function() {
                     nom: "Mangue",
                     complement: "/kilo",
                 },
-                "Orange2": {
-                    image: "img/produits/Fruits/Orange.jpg",
-                    prix: 1,
-                    nom: "Orange",
-                    complement: "/kilo",
-                },
                 "Poires2": {
                     image: "img/produits/Fruits/Poires.jpg",
                     prix: 1,

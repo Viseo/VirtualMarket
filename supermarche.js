@@ -235,7 +235,7 @@ exports.main = function(svg,param) {
                         zoneChevronE.opacity(1);
                     }
 
-                    if (self.listeVignetteB.x + height <= 0) {
+                    if (self.listeVignetteB.x + height+height/2 <= 0) {
                         if (self.listeVignetteB.x + height == 0) {
                             zoneChevronW.opacity(0.2);
                         }
@@ -257,24 +257,29 @@ exports.main = function(svg,param) {
                     if (positionRightH - height-height/2 >= widthView) {
                         self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x - height, self.listeVignetteH.y);
                         zoneChevronW.opacity(1);
+                        console.log(1);
+
                     }
                     else {
                         self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(widthView - widthTotalH, self.listeVignetteH.y);
                         zoneChevronE.opacity(0.2);
                         zoneChevronW.opacity(1);
+                        console.log(11);
+
                     }
 
                     let widthTotalB = null;
                     if (tabVignettesR.length % 2 != 0) widthTotalB = widthTotalH - height / 2;
                     else widthTotalB = widthTotalH;
-
+                    console.log(self.listeVignetteB.x+" "+self.listeVignetteH.x+" "+widthTotalB+" "+widthTotalH);
                     let positionRightB = self.listeVignetteB.x + widthTotalB;
-                    if (positionRightB - height >= widthView) {
+                    if (positionRightB - height-height/2 >= widthView) {
                         if (positionRightB - height == widthView) {
                             zoneChevronE.opacity(0.2);
                         }
                         self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(self.listeVignetteB.x - height, self.listeVignetteB.y);
                         zoneChevronW.opacity(1);
+                        console.log(2);
                     }
 
                     else {
@@ -588,10 +593,10 @@ exports.main = function(svg,param) {
     function dragRayon(e,current) {
         market.add(glassDnD);
         let tmp = new Vignette(current.pictogramme.src,current.name);
-        tmp.pictogramme.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
+        tmp.pictogramme.position(current.pictogramme.x+categories.rayon.listeVignetteH.x,current.pictogramme.y+categories.rayon.listeVignetteH.y+market.height/4)
             .dimension(current.pictogramme.width,current.pictogramme.height);
         tmp.title.position(current.title.x,current.title.y+market.height/4).font("Calibri",15,1).color(svg.BLACK);
-        tmp.fond.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
+        tmp.fond.position(current.pictogramme.x+categories.rayon.listeVignetteH.x,current.pictogramme.y+categories.rayon.listeVignetteH.y+market.height/4)
             .dimension(current.fond.height,current.fond.width);
         tmp.component.mark("GlassVignette");
 
