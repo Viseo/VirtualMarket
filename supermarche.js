@@ -740,8 +740,9 @@ exports.main = function(svg,param) {
         tmp.title.position(current.title.x,current.title.y+market.height/4).font("Calibri",15,1).color(svg.BLACK);
         tmp.fond.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
             .dimension(current.fond.height,current.fond.width);
-        glassDnD.add(tmp.component);
         tmp.component.mark("GlassVignette");
+
+        glassDnD.add(tmp.component);
         let clickx=e.pageX;
         let clicky=e.pageY;
 
