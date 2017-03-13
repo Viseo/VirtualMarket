@@ -12,7 +12,7 @@
     <script src="lib/svghandler.js"></script>
     <script src="supermarche.js"></script>
     <script src="lib/svggui.js"></script>
-
+    <script src="data.js"></script>
 
     <script>
         document.documentElement.style.overflow = 'hidden';
@@ -20,7 +20,12 @@
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;
         let main = require("supermarche").main;
-        main(SVG(targetRuntime()),"");
+
+        let DATA = require("data").data;
+        let data = DATA();
+        let jsonProduits = data.getJson();
+
+        main(SVG(targetRuntime()),{jsonData : jsonProduits});
         
     </script>
     
