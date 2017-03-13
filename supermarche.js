@@ -1,5 +1,8 @@
 exports.main = function(svg,param) {
 
+    let GUI = require("lib/svggui").Gui;
+    let gui = GUI(svg,"");
+
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
 	let glassDnD = new svg.Translation().mark("Glass");
@@ -740,7 +743,7 @@ exports.main = function(svg,param) {
         tmp.title.position(current.title.x,current.title.y+market.height/4).font("Calibri",15,1).color(svg.BLACK);
         tmp.fond.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
             .dimension(current.fond.height,current.fond.width);
-        glassDnD.add(tmp.component);
+        /*glassDnD.add(tmp.component);
         tmp.component.mark("GlassVignette");
         let clickx=e.pageX;
         let clicky=e.pageY;
@@ -765,9 +768,9 @@ exports.main = function(svg,param) {
 
             glassDnD.remove(tmp.component);
             market.remove(glassDnD);
-        });
+        });*/
 
-        //gui.installDnD(current.component,glassDnD,{StartInDragMode:true});
+        gui.installDnD(tmp.component,glassDnD,{StartInDragMode:true});
     }
     //////
 
