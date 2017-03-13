@@ -38,45 +38,7 @@ exports.main = function(svg, param) {
                
                 //GESTION SELECTION//
                 tabVignettes[i].component.onClick(function(){
-                    let tab =null;
-                    switch(current.name)
-                    {
-                        case "Produits laitiers" :
-                            tab = vignettesProduitsLaitiers;
-                            break;
-                        case "Fruits" :
-                            tab = vignettesFruits;
-                            break;
-                        case "Légumes" :
-                            tab = vignettesLegumes;
-                            break;
-                        case "Electromenager" :
-                            tab= vignettesElectromenager;
-                            break;
-                        case "Voyages" :
-                            tab = vignettesVoyages;
-                            break;
-                        case "HighTech" :
-                            tab = vignettesHighTech;
-                            break;
-                        case "Boissons" :
-                            tab = vignettesBoissons;
-                            break;
-                        case "Soins du corps" :
-                            tab = vignettesSoins;
-                            break;
-                        case "Mode" :
-                            tab = vignettesMode;
-                            break;
-                        case "Mobilier" :
-                            tab = vignettesMobilier;
-                            break;
-                        case "Super Pouvoirs" :
-                            tab = vignettesSuperPouvoirs;
-                            break;
-                        default : break;
-                    }
-                    
+                    let tab =  makeVignettesForCategory(current.name);
                     if(self.rayonTranslation!=null)
                     {
                         market.remove(self.rayonTranslation);
@@ -94,12 +56,12 @@ exports.main = function(svg, param) {
                     current.pictogramme.opacity(0);
                     current.pictogramme2.opacity(1);
                 });
-                
+
                 tabVignettes[i].pictogramme.onMouseEnter(function(){
                     current.pictogramme.opacity(0);
                     current.pictogramme2.opacity(1);
                 });
-                
+
                 tabVignettes[i].title.onMouseEnter(function(){
                     current.pictogramme.opacity(0);
                     current.pictogramme2.opacity(1);
@@ -453,45 +415,8 @@ exports.main = function(svg, param) {
             }
 
             newProd.pictogramme.onClick(function () {
-                let tab = null;
 
-                switch (newProd.categorie) {
-
-                    case "Produits laitiers":
-                        tab = vignettesProduitsLaitiers;
-                        break;
-                    case "Fruits" :
-                        tab = vignettesFruits;
-                        break;
-                    case "Légumes":
-                        tab = vignettesLegumes;
-                        break;
-                    case "Electromenager" :
-                        tab= vignettesElectromenager;
-                        break;
-                    case "Voyages" :
-                        tab = vignettesVoyages;
-                        break;
-                    case "HighTech" :
-                        tab = vignettesHighTech;
-                        break;
-                    case "Boissons" :
-                        tab = vignettesBoissons;
-                        break;
-                    case "Soins du corps" :
-                        tab = vignettesSoins;
-                        break;
-                    case "Mode" :
-                        tab = vignettesMode;
-                        break;
-                    case "Mobilier" :
-                        tab = vignettesMobilier;
-                        break;
-                    case "Super Pouvoirs" :
-                        tab = vignettesSuperPouvoirs;
-                        break;
-                }
-
+                let tab =  makeVignettesForCategory(newProd.categorie);
                 market.remove(categories.rayonTranslation);
                 categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, newProd.categorie);
                 categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + newProd.categorie);
@@ -626,104 +551,38 @@ exports.main = function(svg, param) {
 
     ];
 
-    var vignettesProduitsLaitiers = [
-        new VignetteRayon("img/produits/ProduitsLaitiers/lait.jpg","Lait",2," l'unité","Produits laitiers"),
-        new VignetteRayon("img/produits/ProduitsLaitiers/yaourt.jpg","Yaourt",1," l'unité","Produits laitiers"),
-        new VignetteRayon("img/produits/ProduitsLaitiers/oeuf.jpg","Oeufs",3,"","Produits laitiers"),
-        new VignetteRayon("img/produits/ProduitsLaitiers/camembert.jpg","Camembert",3," l'unité","Produits laitiers"),
-
-    ];
-
-    var vignettesFruits = [
-        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1.1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Pommes.jpg","Pommes",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Bananes.jpg","Bananes",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Citron vert.jpg","Citron vert",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Clementines.jpg","Clementines",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Fraises.jpg","Fraises",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Framboises.jpg","Framboises",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"/kilo","Fruits"),
-    ];
-
-    var vignettesLegumes = [
-        new VignetteRayon("img/produits/Legumes/carotte.jpg","Carottes",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Chou.jpg","Chou",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombres",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgette",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Haricot vert.jpg","Haricots verts",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/oignon.jpg","Oignons",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Pomme de terre.jpg","Pommes de terre",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Tomates.jpg","Tomates",1,"/kilo","Légumes"),
-
-        new VignetteRayon("img/produits/Legumes/Concombre.jpg","Concombre",1,"/kilo","Légumes"),
-        new VignetteRayon("img/produits/Legumes/Courgette.jpg","Courgettes",1,"/kilo","Légumes")
-    ];
-
-    var vignettesElectromenager = [
-        new VignetteRayon("img/produits/Electromenager/frigo.jpg","Refrigerateur",500,"","Electromenager"),
-        new VignetteRayon("img/produits/Electromenager/microondes.jpg","Micro Ondes",100,"","Electromenager"),
-
-    ];
-
-    var vignettesVoyages = [
-        new VignetteRayon("img/produits/Voyages/paris.jpg","Paris",1000,"","Voyages"),
-        new VignetteRayon("img/produits/Voyages/berlin.jpg","Berlin",1000,"","Voyages"),
-        new VignetteRayon("img/produits/Voyages/newyork.jpg","New York",1000,"","Voyages"),
-        new VignetteRayon("img/produits/Voyages/sanfrancisco.jpg","San Francisco",1000,"","Voyages"),
-    ];
-
-    var vignettesHighTech = [
-        new VignetteRayon("img/produits/HighTech/ipad.jpg","Ipad",600,"","HighTech"),
-        new VignetteRayon("img/produits/HighTech/casque.jpg","Casque",200,"","HighTech"),
-    ];
-
-    var vignettesBoissons = [
-        new VignetteRayon("img/produits/Boissons/coca.jpg","Coca-Cola",1,"","Boissons"),
-        new VignetteRayon("img/produits/Boissons/cocazero.jpg","Coca-Cola Zero",1,"","Boissons"),
-        new VignetteRayon("img/produits/Boissons/cocalight.jpg","Coca-Cola Light",1,"","Boissons"),
-        new VignetteRayon("img/produits/Boissons/redbull.jpg","RedBull",2,"","Boissons"),
-        new VignetteRayon("img/produits/Boissons/fanta.jpg","Fanta",1,"","Boissons"),
-        new VignetteRayon("img/produits/Boissons/cocacherry.jpg","Coca-Cola Cherry",1,"","Boissons"),
-    ];
-
-    var vignettesSoins = [
-        new VignetteRayon("img/produits/Soins/geldouche.jpg","Gel douche",2,"","Soins du corps"),
-        new VignetteRayon("img/produits/Soins/shampoing.jpg","Shampoing",2,"","Soins du corps"),
-    ];
-
-    var vignettesMode = [
-        new VignetteRayon("img/produits/Mode/costume.jpg","Costume",500,"","Mode"),
-        new VignetteRayon("img/produits/Mode/montre.jpg","Montre",7500,"","Mode"),
-    ];
-
-    var vignettesMobilier = [
-        new VignetteRayon("img/produits/Mobilier/canape.jpg","Canapé",500,"","Mobilier"),
-        new VignetteRayon("img/produits/Mobilier/table.jpg","Table",500,"","Mobilier"),
-        new VignetteRayon("img/produits/Mobilier/bureau.jpg","Bureau",500,"","Mobilier"),
-        new VignetteRayon("img/produits/Mobilier/chaise.jpg","Chaise",200,"","Mobilier"),
-    ];
-
-    var vignettesSuperPouvoirs = [
-        new VignetteRayon("img/produits/SuperPouvoirs/superman.png","Superman",0,"","Super Pouvoirs"),
-        new VignetteRayon("img/produits/SuperPouvoirs/flash.png","Flash",0,"","Super Pouvoirs"),
-    ];
-
     /////////////
 
     ///Functions///
 
-    //////
+
+
+    /////////// MANAGE JSON
+
+    // Get Json file
+    var jsonPdts = getJson();
+
+    // Make vignettes tab for a category
+    function makeVignettesForCategory(catTitle){
+        var tabVignettes = [];
+        // mettre le tableau de product dans une variable
+        var cat = jsonPdts[catTitle];
+        //pour chaque produit dans categorie,
+        for (var product in cat){
+            //mettre la valeur de img dans une var
+            var data = cat[product];
+            //console.log(data.img);
+            //construire une vignette
+            var vignetteProduct = new VignetteRayon(data.image, data.nom, data.prix,data.complement, catTitle);
+            //ajouter la vignette au tableau
+            tabVignettes.push(vignetteProduct);
+        }
+
+        return tabVignettes;
+    }
+
+    ////////// FIN TEST JSON
+
 
     /////Déclaration Interface////
     let header = new Header(market.width,market.height/20,0,0);
@@ -736,6 +595,11 @@ exports.main = function(svg, param) {
     let zonePayement = new svg.Translation().add(payement.component);
 
     market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
-    return market;
+
+    return {
+        market : market,
+        Vignette:Vignette,
+        VignetteRayon:VignetteRayon
+    };
 	//////////////////////////////
 };
