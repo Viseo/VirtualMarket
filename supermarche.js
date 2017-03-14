@@ -1,17 +1,13 @@
-exports.main = function(svg,param) {
-
-    let GUI = require("lib/svggui").Gui;
-    let gui = GUI(svg,"");
+exports.main = function(svg,gui,param) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
-
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
 		constructor(width,height,x,y)
 		{
-			this.component = new svg.Drawing(width,height).position(x,y);    
+			this.component = new svg.Drawing(width,height).position(x,y);
 		}
 	}
 
@@ -35,9 +31,8 @@ exports.main = function(svg,param) {
             for(let i=0;i<tabVignettes.length;i++)
             {
                 let current = tabVignettes[i];
-                tabVignettes[i].pictogramme.position(height/2+height*i,height/2).dimension(height-4,height-4).mark(current.name);
-                tabVignettes[i].pictogramme2.position(height/2+height*i,height/2).dimension(height-4,height-4).mark(current.name+"2");
-                tabVignettes[i].title.position(height/2+i*height,height*0.93).font("Calibri",15,1).color(svg.WHITE).mark(current.name + " title");
+                tabVignettes[i].placeElements();
+                tabVignettes[i].move(height*i,0);
                 listeVignette.add(tabVignettes[i].component);
                
                 //GESTION SELECTION//
@@ -186,15 +181,12 @@ exports.main = function(svg,param) {
             let place = 0;
             for(let i=0;i<tabVignettesR.length;i=i+2){
 
-                tabVignettesR[i].fond        .position(height/4+height/2*place,height/4)        .dimension(height/2-2,height/2-2);
-                tabVignettesR[i].pictogramme .position(height/4+height/2*place,height/4)        .dimension(height/2-30,height/2-30).mark("Produit"+i);
-                tabVignettesR[i].title       .position(height/4+height/2*place,height/2*0.1)    .font("Calibri",15,1).color(svg.BLACK).mark("Title"+i);
-                tabVignettesR[i].printPrice  .position(height/4+height/2*place,height/2*0.95)   .font("Calibri",15,1).color(svg.BLACK);
-                tabVignettesR[i].component.mark("Produit "+i);
+                tabVignettesR[i].placeElements();
+                tabVignettesR[i].move(height/2*place,0);
                 this.listeVignetteH.add(tabVignettesR[i].component);
                 
                 let currentN = tabVignettesR[i];
-                currentN.component.onMouseEnter(function()
+                currentN.pictogramme.onMouseEnter(function()
                 {
                     currentN.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                 });
@@ -204,12 +196,13 @@ exports.main = function(svg,param) {
                     currentN.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                 });
 
-                currentN.component.onMouseOut(function()
+                currentN.pictogramme.onMouseOut(function()
                 {
                     currentN.pictogramme.smoothy(20,10).resizeTo(height/2-30,height/2-30);
                 });
 
-                currentN.component.onClick(function(){
+                currentN.component.onClick(function()
+                {
                     panier.ajouterProduits(currentN);
                 });
 
@@ -219,16 +212,12 @@ exports.main = function(svg,param) {
                 
                 if(i+1<tabVignettesR.length)
                 {
-                    tabVignettesR[i+1].fond.dimension(height/2-2,height/2-2).position(height/4+height/2*place,3*height/4).color(svg.WHITE);
-                    tabVignettesR[i+1].pictogramme   .position(height/4+height/2*place,3*height/4)
-                                                     .dimension(height/2-30,height/2-30).mark("Produit"+(i+1));
-                    tabVignettesR[i+1].title         .position(height/4+height/2*place,height/2*1.1)  .font("Calibri",15,1).color(svg.BLACK).mark("Title" +(i+1));
-                    tabVignettesR[i+1].printPrice    .position(height/4+height/2*place,height/2*1.95) .font("Calibri",15,1).color(svg.BLACK);
-                    tabVignettesR[i+1].component.mark("Produit "+(i+1));
+                    tabVignettesR[i+1].placeElements();
+                    tabVignettesR[i+1].move(height/2*place,height/2);
                     this.listeVignetteB.add(tabVignettesR[i+1].component);
                     
                     let currentS = tabVignettesR[i+1];
-                    currentS.component.onMouseEnter(function()
+                    currentS.pictogramme.onMouseEnter(function()
                     {
                         currentS.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                     });
@@ -238,17 +227,18 @@ exports.main = function(svg,param) {
                         currentS.pictogramme.smoothy(20,10).resizeTo(height/2-2,height/2-2);// modif dans svgTranslation
                     });
 
-                    currentS.component.onMouseOut(function()
+                    currentS.pictogramme.onMouseOut(function()
                     {
                         currentS.pictogramme.smoothy(20,10).resizeTo(height/2-30,height/2-30);
                     });
-                  
-                    /*currentS.component.onClick(function(){
-                        panier.ajouterProduits( currentS);
-                    });*/
+
+                    currentS.component.onClick(function()
+                    {
+                        panier.ajouterProduits(currentS);
+                    });
 
                     currentS.component.onMouseDown(function(e){
-                        dragRayon(e,currentS)
+                        dragRayon(e,currentS);
                     });
                 }
                 place++;
@@ -264,65 +254,48 @@ exports.main = function(svg,param) {
                 let zoneChevronW = new svg.Translation().add(elipseChevronW).add(chevronW).opacity(0.2).mark("chevronWRayon");
                 let zoneChevronE = new svg.Translation().add(elipseChevronE).add(chevronE).mark("chevronERayon");
 
-                zoneChevronW.onClick(function () {
-                    if (self.listeVignetteH.x + height+height/2 <= 0) {
-                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x+height,self.listeVignetteH.y);
+                zoneChevronW.onClick(function () {
+                    if (self.listeVignetteH.x + height*2 <= 0) {
+                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x+height,self.listeVignetteH.y);
+                        self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(self.listeVignetteB.x+height,self.listeVignetteH.y);
                         zoneChevronE.opacity(1);
                     }
-                    else {
-                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(0, self.listeVignetteH.y);
-                        zoneChevronW.opacity(0.2);
-                        zoneChevronE.opacity(1);
-                    }
-
-                    if (self.listeVignetteB.x + height <= 0) {
-                        if (self.listeVignetteB.x + height == 0) {
-                            zoneChevronW.opacity(0.2);
+                    else {
+                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(0, self.listeVignetteH.y);
+                        if (tabVignettesR.length % 2 != 0) {
+                            self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(0, self.listeVignetteB.y);
                         }
-                        self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(self.listeVignetteB.x + height, self.listeVignetteB.y);
-                        zoneChevronE.opacity(1);
-                    }
-                    else {
-                        self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(0, self.listeVignetteB.y);
+                        else{
+                            self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(0, self.listeVignetteB.y);
+                        }
                         zoneChevronW.opacity(0.2);
                         zoneChevronE.opacity(1);
                     }
                 });
 
-                zoneChevronE.onClick(function () {
-                    let widthView = width;
+                zoneChevronE.onClick(function () {
+                    let widthView = width;
 
-                    let widthTotalH = height / 2 * Math.ceil(tabVignettesR.length / 2);
-                    let positionRightH = self.listeVignetteH.x + widthTotalH;
-                    if (positionRightH - height-height/2 >= widthView) {
-                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x - height, self.listeVignetteH.y);
+                    let widthTotalH = height / 2 * Math.ceil(tabVignettesR.length / 2);
+                    let positionRightH = self.listeVignetteH.x + widthTotalH;
+                    if (positionRightH - height*2 >= widthView) {
+                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x - height, self.listeVignetteH.y);
+                        self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(self.listeVignetteB.x - height, self.listeVignetteB.y);
                         zoneChevronW.opacity(1);
                     }
-                    else {
-                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(widthView - widthTotalH, self.listeVignetteH.y);
-                        zoneChevronE.opacity(0.2);
-                        zoneChevronW.opacity(1);
-                    }
-
-                    let widthTotalB = null;
-                    if (tabVignettesR.length % 2 != 0) widthTotalB = widthTotalH - height / 2;
-                    else widthTotalB = widthTotalH;
-
-                    let positionRightB = self.listeVignetteB.x + widthTotalB;
-                    if (positionRightB - height >= widthView) {
-                        if (positionRightB - height == widthView) {
-                            zoneChevronE.opacity(0.2);
+                    else {
+                        self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(widthView - widthTotalH, self.listeVignetteH.y);
+                        if (tabVignettesR.length % 2 != 0) {
+                            self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(widthView - widthTotalH + height, self.listeVignetteB.y);
                         }
-                        self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(self.listeVignetteB.x - height, self.listeVignetteB.y);
-                        zoneChevronW.opacity(1);
-                    }
-
-                    else {
-                        self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(widthView - widthTotalB, self.listeVignetteB.y);
+                        else{
+                            self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(widthView - widthTotalH, self.listeVignetteB.y);
+                        }
                         zoneChevronE.opacity(0.2);
                         zoneChevronW.opacity(1);
                     }
                 });
+
                 this.component.add(zoneChevronE).add(zoneChevronW);
             }
             else
@@ -341,12 +314,12 @@ exports.main = function(svg,param) {
             super(width, height, x, y);
 
             let contour = new svg.Rect(width, height).position(width / 2, height / 2);
-            contour.color(svg.WHITE, 2, svg.BLACK);
+            contour.color(svg.WHITE,4,svg.BLACK);
             this.component.add(contour);
             
             this.listeProduits = new svg.Translation().mark("listePanier");
             this.component.add(this.listeProduits);
-            this.VignettesProduits = [];
+            this.vignettesProduits = [];
 
             this.zoneTotal = new svg.Rect(width, height * 0.1).position(width / 2, height * 0.95);
             this.zoneTotal.color(svg.WHITE, 2, svg.BLACK);
@@ -371,7 +344,7 @@ exports.main = function(svg,param) {
             let chevB = this.zoneChevronB;
             let chevH = this.zoneChevronH;
             let zone = this.listeProduits;
-            let tab = this.VignettesProduits;
+            let tab = this.vignettesProduits;
             let pPrice = this.printPrice;
 
             this.zoneChevronH.onClick(function() {
@@ -381,23 +354,24 @@ exports.main = function(svg,param) {
                 }
                 else {
                     chevB.opacity(0.5);
-                    zone.smoothy(10,20).moveTo(zone.x,contour.y-height/2);
+                    zone.smoothy(10,20).moveTo(zone.x,contour.y-height/2+2);
                     chevH.opacity(0);
                 }
             });
 
             this.zoneChevronB.onClick(function () {
-                let heightZone = tab.length * tab[0].pictogramme.height;
+                let heightZone = tab.length * tab[0].height;
                 let positionDown = zone.y + heightZone;
 
                 if(positionDown-height/2>contour.y+height/2)
                 {
                     chevH.opacity(0.5);
-                    zone.smoothy(10, 20).moveTo(zone.x, zone.y - height / 2);
+                    zone.smoothy(10, 20).moveTo(zone.x, zone.y - height / 2+2);
                 }
                 else {
                     chevH.opacity(0.5);
-                    zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height * 0.80) / 2 - heightZone);
+                    console.log(heightZone);
+                    zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height*0.4) - heightZone+2);
                     chevB.opacity(0);
                 }
             });
@@ -427,38 +401,31 @@ exports.main = function(svg,param) {
         ajouterProduits(vignette) {
 
             let newProd = new VignettePanier(vignette.pictogramme.src, vignette.name, vignette.price, vignette.complement, vignette.categorie);
-
-            newProd.pictogramme.mark(vignette.name);
             let width = this.component.width;
-
             let occur=0;
 
-            if (this.VignettesProduits.length > 0) {
+            if (this.vignettesProduits.length > 0) {
 
-                for (let product of this.VignettesProduits) {
+                for (let product of this.vignettesProduits) {
                     if (product.name == vignette.name) {
                         // alert("ok");
                         product.addQuantity(1);
                         let newText=product.quantity + "x " + product.price + " €"+product.complement;
                         product.changeText(newText);
-                        product.printPrice.position(width/2,product.pictogramme.y - product.pictogramme.height/2 +product.pictogramme.height * 0.92);
                         occur=1;
-                        // this.calculerPrix(newProd.price);
                     }
                 }
                 if (occur==0){
                     // alert('pas OK');
                     newProd.addQuantity(1);
                     this.listeProduits.add(newProd.component);
-                    this.VignettesProduits.push(newProd);
-                    newProd.pictogramme.dimension(width * 0.98, width * 0.98);
+                    this.vignettesProduits.push(newProd);
                 }
             }
             else{
                 newProd.addQuantity(1);
                 this.listeProduits.add(newProd.component);
-                this.VignettesProduits.push(newProd);
-                newProd.pictogramme.dimension(width * 0.98, width * 0.98);
+                this.vignettesProduits.push(newProd);
             }
 
             newProd.pictogramme.onClick(function () {
@@ -520,23 +487,20 @@ exports.main = function(svg,param) {
 
             this.calculerPrix(newProd.price);
 
-            if (this.VignettesProduits.length < 2 && occur==0) {
-                newProd.pictogramme.position(width / 2, width / 2);
-                newProd.title.position(width / 2, newProd.pictogramme.height * 0.10);
-                newProd.printPrice.position(width / 2, newProd.pictogramme.height * 0.92);
-                let blackline = new svg.Line(0, newProd.pictogramme.height-1, width, newProd.pictogramme.height-1)
-                    .color(svg.BLACK, 2, svg.BLACK);
-                this.listeProduits.add(blackline);
+            if (this.vignettesProduits.length < 2 && occur==0) {
+                newProd.placeElements();
+                newProd.move(0,0);
             }
             else {
                 if(occur==0){
-                    if(this.VignettesProduits.length > 2) this.zoneChevronB.opacity(0.5);
-                    let ref = this.VignettesProduits[this.VignettesProduits.length - 2];
-                    newProd.pictogramme.position(width / 2, ref.pictogramme.y + ref.pictogramme.height);
-                    newProd.title.position(width / 2, ref.title.y + ref.pictogramme.height);
-                    newProd.printPrice.position(width / 2, ref.printPrice.y + ref.pictogramme.height);
-                    this.listeProduits.add(new svg.Line(0, newProd.pictogramme.y + newProd.pictogramme.height / 2-1,
-                        width, newProd.pictogramme.y + newProd.pictogramme.height / 2-1).color(svg.BLACK, 2, svg.BLACK));
+                    if(this.vignettesProduits.length>2)
+                    {
+                        this.zoneChevronB.opacity(0.5);
+                    }
+                    let ref = this.vignettesProduits[this.vignettesProduits.length-2];
+                    newProd.placeElements();
+                    newProd.move(0,ref.y+ref.height);
+                    console.log(newProd.height+"   "+ref.y+"  "+newProd.height);
                 }
             }
         }
@@ -546,7 +510,7 @@ exports.main = function(svg,param) {
         constructor(width,height,x,y)
         {
             super(width,height,x,y);
-            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE));
+            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE,2,svg.BLACK));
             this.component.add(new svg.Text("Supermarché Virtuel").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
         }
     }
@@ -573,6 +537,46 @@ exports.main = function(svg,param) {
             this.component.add(this.fond);
             this.component.add(this.pictogramme);
             this.component.add(this.title);
+            this.events = [];
+
+            this.x = 0;
+            this.y = 0;
+            this.component.move(this.x,this.y);
+            this.width = 0;
+            this.height = 0;
+        }
+
+        addEvent(eventName, handler) {
+            svg.addEvent(this.component, eventName, handler);
+            this.events[eventName] = handler;
+            return this;
+        }
+
+        removeEvent(eventName) {
+            svg.removeEvent(this.component, eventName);
+            delete this.events[eventName];
+            return this;
+        }
+
+        move(x,y) {
+            this.x = x;
+            this.y = y;
+            this.component.move(x,y);
+        }
+
+        dimension(width,height)
+        {
+            this.width = width;
+            this.height= height;
+        }
+
+        placeElementsDnD(current)
+        {
+            this.width = current.width;
+            this.height = current.height;
+            this.pictogramme.position(this.width/2-2,this.height/2-2).dimension(this.width-30,this.height-30);
+            this.title      .position(this.width/2,this.height*0.1).font("Calibri",15,1).color(svg.BLACK);
+            this.fond       .position(this.width/2,this.height/2).dimension(this.width,this.height);
         }
 	}
 
@@ -585,7 +589,17 @@ exports.main = function(svg,param) {
             this.component.add(this.pictogramme2);
             this.component.add(this.title);
             this.name = title;
+
+            this.width = (market.height/5)-4;
+            this.height = (market.height/5)-4;
 		}
+
+		placeElements()
+        {
+            this.pictogramme.position(this.width/2,this.height/2+2).dimension(this.width,this.height).mark(this.name);
+            this.pictogramme2.position(this.width/2,this.height/2+2).dimension(this.width,this.height).mark(this.name+"2");
+            this.title.position(this.height/2,this.height*0.93).font("Calibri",15,1).color(svg.WHITE).mark(this.name + " title");
+        }
 	}
 
 	class VignetteRayon extends Vignette {
@@ -600,6 +614,17 @@ exports.main = function(svg,param) {
             this.component.add(this.printPrice);
             this.categorie=cat;
             this.name = title;
+
+            this.component.mark(this.name);
+            this.width = market.height*0.75/2;
+            this.height = market.height*0.75/2;
+        }
+
+        placeElements() {
+            this.pictogramme.position(this.width/2,this.height/2).dimension(this.height-30,this.height-30).mark("Produit " + this.name);
+            this.fond       .position(this.width/2,this.height/2).dimension(this.height-2,this.height-2);
+            this.title      .position(this.width/2,this.height*0.1) .font("Calibri",15,1).color(svg.BLACK).mark("Title "+this.name);
+            this.printPrice .position(this.width/2,this.height*0.95).font("Calibri",15,1).color(svg.BLACK);
         }
 	}
     
@@ -608,6 +633,12 @@ exports.main = function(svg,param) {
             super(image,title,price,complement,cat);
             this.quantity = 0;
             this.name = title;
+            this.line = new svg.Line(0,0,0,0);
+            this.component.add(this.line);
+
+            this.component.mark(this.name);
+            this.width = market.width*0.15;
+            this.height = market.width*0.15;
         }
 
         addQuantity(num){
@@ -619,7 +650,16 @@ exports.main = function(svg,param) {
         changeText(newText){
             this.component.remove(this.printPrice);
             this.printPrice = new svg.Text(newText);
+            this.printPrice.position(this.width/2,this.height*0.92).font("Calibri",15,1).color(svg.BLACK);
             this.component.add(this.printPrice);
+        }
+
+        placeElements() {
+            this.pictogramme.position(this.width/2,this.height/2).dimension(this.width*0.90,this.height*0.90).mark(this.name);
+            this.printPrice.position(this.width/2,this.height*0.92).font("Calibri",15,1).color(svg.BLACK);
+            this.title.position(this.width/2,this.height*0.10);
+            this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4);
+            this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
         }
     }
     //////////////////////////////////////
@@ -637,7 +677,6 @@ exports.main = function(svg,param) {
         new VignetteCategorie("img/categories/mode.jpg","img/categories/mode2.jpg", "Mode"),
         new VignetteCategorie("img/categories/mobilier.jpg","img/categories/mobilier2.jpg", "Mobilier"),
         new VignetteCategorie("img/categories/superpouvoir.jpg","img/categories/superpouvoir2.jpg", "Super Pouvoirs"),
-
     ];
 
     var vignettesProduitsLaitiers = [
@@ -666,7 +705,7 @@ exports.main = function(svg,param) {
         new VignetteRayon("img/produits/Fruits/Kiwi.jpg","Kiwi",1,"/kilo","Fruits"),
         new VignetteRayon("img/produits/Fruits/Mangue.jpg","Mangue",1,"/kilo","Fruits"),
         new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"/kilo","Fruits"),
-        new VignetteRayon("img/produits/Fruits/Poires.jpg","Poires",1,"/kilo","Fruits"),
+        new VignetteRayon("img/produits/Fruits/Orange.jpg","Oranges",1,"/kilo","Fruits")
     ];
 
     var vignettesLegumes = [
@@ -735,59 +774,42 @@ exports.main = function(svg,param) {
     /////////////
 
     ///Functions///
-    let glassDnD = new gui.Frame(3000,3000);
-    market.add(glassDnD.component);
+    let glassDnD = new svg.Translation();
+
     function dragRayon(e,current) {
-
         let tmp = new Vignette(current.pictogramme.src,current.name);
-        tmp.pictogramme.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
-            .dimension(current.pictogramme.width,current.pictogramme.height);
-        tmp.title.position(current.title.x,current.title.y+market.height/4).font("Calibri",15,1).color(svg.BLACK);
-        tmp.fond.position(current.pictogramme.x,current.pictogramme.y+market.height/4)
-            .dimension(current.fond.height,current.fond.width);
-        /*glassDnD.add(tmp.component);
-        tmp.component.mark("GlassVignette");
-        let clickx=e.pageX;
-        let clicky=e.pageY;
+        tmp.placeElementsDnD(current);
+        tmp.move(current.x,current.y);
+        categories.rayon.listeVignetteH.add(tmp.component);
 
-        tmp.component.onMouseMove(function(e){
-            tmp.pictogramme.position(e.pageX,e.pageY);
-            tmp.title.position(e.pageX,e.pageY-tmp.pictogramme.height*0.4);
-            tmp.fond.position(e.pageX,e.pageY);
-
+        gui.installDnD(tmp,glassDnD,{
+            moved:
+                function(tmp){
+                    if((tmp.x+tmp.width/2>market.width*0.85)&&(tmp.y+tmp.height/2<market.height*0.80)){
+                        panier.ajouterProduits(current);
+                    }
+                    market.remove(glassDnD);
+                },
+            revert:function(tmp){
+                categories.rayon.listeVignetteH.remove(tmp.component);
+            },
         });
-
-        tmp.component.onMouseUp(function(e){
-            let upx=e.pageX;
-            let upy=e.pageY;
-            if((tmp.pictogramme.x>market.width*0.85)&&(tmp.pictogramme.y<market.height*0.80))
-            {
-                panier.ajouterProduits(current);
-            }
-            else if(clickx==upx && clicky==upy){
-                panier.ajouterProduits(current);
-            }
-
-            glassDnD.remove(tmp.component);
-            market.remove(glassDnD);
-        });*/
-
-        glassDnD.component.add(tmp.component);
-        glassDnD.installDnD(tmp.component,{StartInDragMode:true});
+        svg.event(tmp.component, 'mousedown', e);
+        market.add(glassDnD);
     }
     //////
 
     /////Déclaration Interface////
-    let header = new Header(market.width,market.height/20,0,0);
+    let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
-    let categories = new ListeCategorie(market.width*0.85,market.height/5,0,market.height/20,vignettes);
+    let categories = new ListeCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,vignettes);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    let panier = new Panier(market.width*0.15,market.height*0.75,market.width*0.85,market.height/20);
+    let panier = new Panier(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
     let zonePanier = new svg.Translation().add(panier.component).mark("basket");
     let payement = new Payement(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     let zonePayement = new svg.Translation().add(payement.component);
 
-    market.add(zoneHeader).add(zoneCategories).add(zonePanier).add(zonePayement);
+    market.add(zoneCategories).add(zonePanier).add(zonePayement).add(zoneHeader);
 
     return market;
 	//////////////////////////////

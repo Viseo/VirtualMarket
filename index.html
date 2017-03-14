@@ -13,14 +13,15 @@
     <script src="supermarche.js"></script>
     <script src="lib/svggui.js"></script>
 
-
     <script>
         document.documentElement.style.overflow = 'hidden';
         require("lib/enhancer").Enhance();
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;
         let main = require("supermarche").main;
-        main(SVG(targetRuntime()),"");
+        let GUI = require("lib/svggui").Gui;
+        let svg = SVG(targetRuntime());
+        main(svg,GUI((svg),""),"");
         
     </script>
     
