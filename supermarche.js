@@ -235,8 +235,6 @@ exports.main = function(svg,gui,param) {
                         self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(self.listeVignetteH.x - height, self.listeVignetteH.y);
                         self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(self.listeVignetteB.x - height, self.listeVignetteB.y);
                         zoneChevronW.opacity(1);
-                        console.log(11);
-
                     }
                     else {
                         self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(widthView - widthTotalH, self.listeVignetteH.y);
@@ -316,17 +314,17 @@ exports.main = function(svg,gui,param) {
             this.zoneChevronB.onClick(function () {
                 let heightZone = tab.length * tab[0].height;
                 let positionDown = zone.y + heightZone;
-
-                if(positionDown-height/2>contour.y+height/2)
-                {
-                    chevH.opacity(0.5);
-                    zone.smoothy(10, 20).moveTo(zone.x, zone.y - height / 2+2);
-                }
-                else {
-                    chevH.opacity(0.5);
-                    console.log(heightZone);
-                    zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height*0.4) - heightZone+2);
-                    chevB.opacity(0);
+                if (chevB._opacity!=0) {
+                    if (positionDown - height / 2 > contour.y + height / 2) {
+                        chevH.opacity(0.5);
+                        zone.smoothy(10, 20).moveTo(zone.x, zone.y - height / 2 + 2);
+                    }
+                    else {
+                        chevH.opacity(0.5);
+                        console.log(heightZone);
+                        zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height * 0.4) - heightZone + 2);
+                        chevB.opacity(0);
+                    }
                 }
             });
             this.component.add(this.zoneChevronH).add(this.zoneChevronB);
@@ -382,24 +380,8 @@ exports.main = function(svg,gui,param) {
                 this.vignettesProduits.push(newProd);
             }
 
-            newProd.pictogramme.onClick(function () {
-
-                let tab =  makeVignettesForCategory(newProd.categorie);
-                market.remove(categories.rayonTranslation);
-                categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, newProd.categorie);
-                categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + newProd.categorie);
-                market.add(categories.rayonTranslation);
-
-                for(let v=0;v<categories.tabCategories.length;v++)
-                {
-                    categories.tabCategories[v].pictogramme.opacity(1);
-                    categories.tabCategories[v].pictogramme2.opacity(0);
-                    if(categories.tabCategories[v].name==newProd.categorie)
-                    {
-                        categories.tabCategories[v].pictogramme.opacity(0);
-                        categories.tabCategories[v].pictogramme2.opacity(1);
-                    }
-                }
+            newProd.component.onMouseDown(function(e){
+                dragBasket(e,newProd);
             });
 
             this.calculerPrix(newProd.price);
@@ -418,6 +400,37 @@ exports.main = function(svg,gui,param) {
                     newProd.placeElements();
                     newProd.move(0,ref.y+ref.height);
                 }
+            }
+        }
+
+        supprimerProduit(vignette,numberProduct){
+            let width = this.component.width;
+            let height = this.component.height;
+            let chevB = this.zoneChevronB;
+            let chevH = this.zoneChevronH;
+
+            vignette.minusQuantity(numberProduct);
+            let newText = vignette.quantity + " x " + vignette.price + " €" + vignette.complement;
+            vignette.changeText(newText);
+
+            if(vignette.quantity ==0){
+                if (this.vignettesProduits.indexOf(vignette)==this.vignettesProduits.length-1 &&this.vignettesProduits.length-1>2){
+                    let heightZone=this.vignettesProduits.length * this.vignettesProduits[0].height;
+                    this.listeProduits.smoothy(10, 20).moveTo(this.listeProduits.x,(height*0.9-heightZone+this.vignettesProduits[0].height ));
+                }else if(this.vignettesProduits.length-1<=2){
+                    this.listeProduits.smoothy(10, 20).moveTo(this.listeProduits.x, 0);
+                    chevB.opacity(0);
+                    chevH.opacity(0);
+                }
+                this.listeProduits.remove(vignette.component);
+                this.vignettesProduits.splice(this.vignettesProduits.indexOf(vignette), 1);
+                this.calculerPrix(-((vignette.price)*numberProduct));
+                for (let product of this.vignettesProduits) {
+                    product.placeElements();
+                    product.move(0,this.vignettesProduits.indexOf(product)*(product.height));
+                }
+            }else {
+                this.calculerPrix(-((vignette.price)*numberProduct));
             }
         }
     }
@@ -552,17 +565,41 @@ exports.main = function(svg,gui,param) {
             this.line = new svg.Line(0,0,0,0);
             this.component.add(this.line);
 
+            this.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0);
+            this.component.add(this.cross);
+
             this.component.mark(this.name);
             this.width = market.width*0.15;
             this.height = market.width*0.15;
+
+            let self = this;
+            this.pictogramme.onMouseEnter(function(){
+                self.cross.opacity(1);
+            });
+
+            this.title.onMouseEnter(function(){
+                self.cross.opacity(1);
+            });
+
+            this.cross.onMouseEnter(function(){
+                self.cross.opacity(1);
+            });
+
+            this.fond.onMouseEnter(function(){
+                self.cross.opacity(1);
+            });
+
+            this.component.onMouseOut(function(){
+                self.cross.opacity(0);
+            });
         }
 
         addQuantity(num){
             this.quantity = this.quantity+num;
         }
-        /*minusQuantity(num){
+        minusQuantity(num){
             this.quantity = this.quantity-num;
-        }*/
+        }
         changeText(newText){
             this.component.remove(this.printPrice);
             this.printPrice = new svg.Text(newText);
@@ -577,6 +614,7 @@ exports.main = function(svg,gui,param) {
             this.title.position(this.width/2,this.height*0.10);
             this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
+            this.cross.position(this.width*0.90,this.height*0.10);
         }
     }
     //////////////////////////////////////
@@ -641,6 +679,62 @@ exports.main = function(svg,gui,param) {
         });
         svg.event(tmp.component, 'mousedown', e);
         market.add(glassDnD);
+    }
+
+    function dragBasket(e,current) {
+        let tmp = new Vignette(current.pictogramme.src,current.name);
+        tmp.placeElementsDnD(current);
+        tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1);
+        tmp.cross.position(tmp.width*0.90,tmp.height*0.10).opacity(0);
+        tmp.component.add(tmp.cross);
+        tmp.cross.onMouseUp(function(){
+            panier.supprimerProduit(current,current.quantity);
+        });
+
+        tmp.move(current.x,current.y);
+        tmp.component.opacity(0.9).mark("tmp");
+
+        panier.listeProduits.add(tmp.component);
+
+        gui.installDnD(tmp,glassDnD,{
+            moved:
+                function(tmp){
+                    if((tmp.x+tmp.width/2<0)&&(tmp.y+tmp.height/2>market.height*0.20)){
+                        panier.supprimerProduit(current, 1);
+                        changeRay(current);
+                    }
+                },
+            revert:
+                function(tmp){
+                panier.listeProduits.remove(tmp.component);
+            },
+            clicked :
+                function(){
+                    changeRay(current);
+                }
+        });
+        svg.event(tmp.component, 'mousedown', e);
+        market.add(glassDnD);
+    }
+
+    function changeRay(vignette)
+    {
+        let tab =  makeVignettesForCategory(vignette.categorie);
+        market.remove(categories.rayonTranslation);
+        categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, vignette.categorie);
+        categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + vignette.categorie);
+        market.add(categories.rayonTranslation);
+
+        for(let v=0;v<categories.tabCategories.length;v++)
+        {
+            categories.tabCategories[v].pictogramme.opacity(1);
+            categories.tabCategories[v].pictogramme2.opacity(0);
+            if(categories.tabCategories[v].name==vignette.categorie)
+            {
+                categories.tabCategories[v].pictogramme.opacity(0);
+                categories.tabCategories[v].pictogramme2.opacity(1);
+            }
+        }
     }
     //////
 
