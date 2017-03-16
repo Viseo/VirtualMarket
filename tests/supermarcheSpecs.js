@@ -295,7 +295,7 @@ describe("Test",function (){
         inspect(produit2,{tag:"image"});
     });
 
-    /*it("ensure that clicking on a product in the basket print the corresponding section",function(){
+    it("ensure that clicking on a product in the basket print the corresponding section",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
@@ -317,22 +317,128 @@ describe("Test",function (){
         runtime.event(tmp2,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
 
-        let categories3 = retrieve(market.component,"[categories].[Voyages]");
-        runtime.event(categories3,"click",{});
-        let listePanier = retrieve(market.component,"[basket].[listePanier]");
-        console.log(listePanier);
+        let produit3 = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[Produit Concombre]");
+        runtime.event(produit3,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmp3 = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[tmp]");
+        runtime.event(tmp3,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
 
-        let produitBasket1 = retrieve(market.component,"[basket].[listePanier].[Produit panier Bananes]");
-        let produitBasket2 = retrieve(market.component,"[basket].[listePanier].[Produit panier Carottes]");
-        runtime.event(produitBasket1,"click",{});
+        runtime.event(produit3,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let rayonFruits = retrieve(market.component,"[Rayon Fruits]");
-        inspect(rayonFruits,{tag:"g",transform:"translate(0 0)"});
-        runtime.event(produitBasket2,"click",{});
-        let rayonLegumes = retrieve(market.component,"[Rayon Légumes]");
+        let tmp3bis = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[tmp]");
+        runtime.event(tmp3bis,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        inspect(rayonLegumes,{tag:"g",transform:"translate(0 0)"});
-    });*/
+
+        let produit4 = retrieve(market.component,"[Rayon Légumes].[listeRayonB].[Produit Oignon]");
+        runtime.event(produit4,"mousedown",{ pageX:5, pageY:5});
+        let tmp4 = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[tmp]");
+        runtime.advanceAll();
+        runtime.event(tmp4,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+
+        let produit5 = retrieve(market.component,"[Rayon Légumes].[listeRayonB].[Produit Tomates]");
+        runtime.event(produit5,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmp5 = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[tmp]");
+        runtime.event(tmp5,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+
+        runtime.event(categories,"click",{});
+        let basketProduct1 = retrieve(market.component,"[basket].[listePanier].[Produit panier Bananes]");
+        runtime.event(basketProduct1,"mousedown",{ pageX:10, pageY:10});
+        runtime.advanceAll();
+        let tmpBasket = retrieve(market.component,"[basket].[listePanier].[tmp]");
+        runtime.event(tmpBasket,"mouseup",{ pageX:10, pageY:10});
+        runtime.advanceAll();
+
+        runtime.event(categories,"click",{});
+        runtime.event(basketProduct1,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmpBasket2 = retrieve(market.component,"[basket].[listePanier].[tmp]");
+        runtime.event(tmpBasket2,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(tmpBasket2,"mousemove",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+        runtime.event(tmpBasket2,"mouseup",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+
+        runtime.event(basketProduct1,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmpBasket4 = retrieve(market.component,"[basket].[listePanier].[tmp]");
+        runtime.event(tmpBasket4,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(tmpBasket4,"mousemove",{ pageX:100, pageY:100});
+        runtime.advanceAll();
+        runtime.event(tmpBasket4,"mouseup",{ pageX:100, pageY:100});
+        runtime.advanceAll();
+
+        let basketProduct3 = retrieve(market.component,"[basket].[listePanier].[Produit panier Tomates]");
+        runtime.event(basketProduct3,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmpBasket3 = retrieve(market.component,"[basket].[listePanier].[tmp]");
+        runtime.event(tmpBasket3,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(tmpBasket3,"mousemove",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+        runtime.event(tmpBasket3,"mouseup",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+
+        let basketProduct5 = retrieve(market.component,"[basket].[listePanier].[Produit panier Concombre]");
+        runtime.event(basketProduct5,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmpBasket5 = retrieve(market.component,"[basket].[listePanier].[tmp]");
+        runtime.event(tmpBasket5,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(tmpBasket5,"mousemove",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+        runtime.event(tmpBasket5,"mouseup",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+
+        runtime.event(basketProduct5,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmpBasket6 = retrieve(market.component,"[basket].[listePanier].[tmp]");
+        runtime.event(tmpBasket6,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(tmpBasket6,"mousemove",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+        runtime.event(tmpBasket6,"mouseup",{ pageX:-500, pageY:market.height*0.5});
+        runtime.advanceAll();
+
+        let chevronB = retrieve(market.component,"[basket].[chevronBBasket]");
+        runtime.event(chevronB,"click",{});
+        runtime.advanceAll();
+    });
+
+    it("ensure that hoovering a product in the basket add a red cross, and that clicking on it delete this product from the basket",function(){
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        runtime.event(categories,"click",{});
+        runtime.advanceAll();
+        let produit = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[Produit Bananes]");
+        runtime.event(produit,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let tmp = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[tmp]");
+        assert.ok(tmp);
+        runtime.event(tmp,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+
+        let imagePanier = retrieve(market.component,"[basket].[listePanier].[Produit panier Bananes].[Bananes]");
+        let fondPanier = retrieve(market.component,"[basket].[listePanier].[Produit panier Bananes].[fond Bananes]");
+        let titlePanier = retrieve(market.component,"[basket].[listePanier].[Produit panier Bananes].[title Bananes]");
+        let crossPanier = retrieve(market.component,"[basket].[listePanier].[Produit panier Bananes].[cross Bananes]");
+        let compPanier = retrieve(market.component,"[basket].[listePanier].[Produit panier Bananes]");
+
+        runtime.event(imagePanier,"mouseenter");
+        runtime.advanceAll();
+        runtime.event(fondPanier,"mouseenter");
+        runtime.advanceAll();
+        runtime.event(compPanier,"mouseout");
+        runtime.advanceAll();
+        runtime.event(titlePanier,"mouseenter");
+        runtime.advanceAll();
+        runtime.event(crossPanier,"mouseenter");
+        runtime.advanceAll();
+
+        runtime.event(compPanier,"mousedown",{ pageX:10, pageY:10});
+        runtime.advanceAll();
+        let crossTmp = retrieve(market.component,"[basket].[listePanier].[tmp].[cross]");
+        runtime.event(crossTmp,"mouseup",{ pageX:10, pageY:10});
+    });
 
 
     it("ensure that adding the same product in the basket is working ",function(){

@@ -611,10 +611,10 @@ exports.main = function(svg,gui,param) {
             this.component.mark("Produit panier " + this.name);
             this.pictogramme.position(this.width/2,this.height/2).dimension(this.width*0.90,this.height*0.90).mark(this.name);
             this.printPrice.position(this.width/2,this.height*0.92).font("Calibri",15,1).color(svg.BLACK);
-            this.title.position(this.width/2,this.height*0.10);
-            this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4);
+            this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
+            this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("fond "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-            this.cross.position(this.width*0.90,this.height*0.10);
+            this.cross.position(this.width*0.90,this.height*0.10).mark("cross "+this.name);
         }
     }
     //////////////////////////////////////
@@ -684,7 +684,7 @@ exports.main = function(svg,gui,param) {
     function dragBasket(e,current) {
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.placeElementsDnD(current);
-        tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1);
+        tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
         tmp.cross.position(tmp.width*0.90,tmp.height*0.10).opacity(0);
         tmp.component.add(tmp.cross);
         tmp.cross.onMouseUp(function(){
