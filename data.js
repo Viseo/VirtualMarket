@@ -182,7 +182,7 @@ exports.data = function() {
                     nom: "Fraises",
                     complement: "/kilo",
                 },
-                "Framboises": {
+                "Framboises2": {
                     image: "img/produits/Fruits/Framboises.jpg",
                     prix: 1,
                     nom: "Framboises",

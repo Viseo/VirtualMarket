@@ -417,7 +417,6 @@ exports.main = function(svg,gui,param) {
                     let ref = this.vignettesProduits[this.vignettesProduits.length-2];
                     newProd.placeElements();
                     newProd.move(0,ref.y+ref.height);
-                    console.log(newProd.height+"   "+ref.y+"  "+newProd.height);
                 }
             }
         }
@@ -481,11 +480,11 @@ exports.main = function(svg,gui,param) {
             this.component.move(x,y);
         }
 
-        dimension(width,height)
+       /* dimension(width,height)
         {
             this.width = width;
             this.height= height;
-        }
+        }*/
 
         placeElementsDnD(current)
         {
@@ -538,7 +537,7 @@ exports.main = function(svg,gui,param) {
 
         placeElements() {
             this.component.mark("Produit " + this.name);
-            this.pictogramme.position(this.width/2,this.height/2).dimension(this.height-30,this.height-30).mark("");
+            this.pictogramme.position(this.width/2,this.height/2).dimension(this.height-30,this.height-30).mark("Image " + this.name);
             this.fond       .position(this.width/2,this.height/2).dimension(this.height-2,this.height-2);
             this.title      .position(this.width/2,this.height*0.1) .font("Calibri",15,1).color(svg.BLACK).mark("Title "+this.name);
             this.printPrice .position(this.width/2,this.height*0.95).font("Calibri",15,1).color(svg.BLACK);
@@ -572,6 +571,7 @@ exports.main = function(svg,gui,param) {
         }
 
         placeElements() {
+            this.component.mark("Produit panier " + this.name);
             this.pictogramme.position(this.width/2,this.height/2).dimension(this.width*0.90,this.height*0.90).mark(this.name);
             this.printPrice.position(this.width/2,this.height*0.92).font("Calibri",15,1).color(svg.BLACK);
             this.title.position(this.width/2,this.height*0.10);
@@ -621,6 +621,7 @@ exports.main = function(svg,gui,param) {
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.placeElementsDnD(current);
         tmp.move(current.x,current.y);
+        tmp.component.opacity(0.9).mark("tmp");
         categories.rayon.listeVignetteH.add(tmp.component);
 
         gui.installDnD(tmp,glassDnD,{
@@ -634,7 +635,7 @@ exports.main = function(svg,gui,param) {
                 categories.rayon.listeVignetteH.remove(tmp.component);
             },
             clicked :
-                function(tmp){
+                function(){
                     panier.ajouterProduits(current);
                 }
         });
