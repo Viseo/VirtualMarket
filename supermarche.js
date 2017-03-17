@@ -165,7 +165,7 @@ exports.main = function(svg,gui,param) {
                 });
 
                 currentN.component.onMouseDown(function(e){
-                    dragRayon(e,currentN)
+                    dragRayon(e,currentN,1);
                 });
                 
                 if(i+1<tabVignettesR.length)
@@ -191,7 +191,7 @@ exports.main = function(svg,gui,param) {
                     });
 
                     currentS.component.onMouseDown(function(e){
-                        dragRayon(e,currentS);
+                        dragRayon(e,currentS,0);
                     });
                 }
                 place++;
@@ -321,7 +321,6 @@ exports.main = function(svg,gui,param) {
                     }
                     else {
                         chevH.opacity(0.5);
-                        console.log(heightZone);
                         zone.smoothy(10, 20).moveTo(zone.x, contour.y + (contour.height * 0.4) - heightZone + 2);
                         chevB.opacity(0);
                     }
@@ -614,13 +613,13 @@ exports.main = function(svg,gui,param) {
             this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
             this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("fond "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-
-            this.crossRotate = new svg.Rotation();
+            //
+            // this.crossRotate = new svg.Rotation();
             this.cross.position(this.width*0.55,this.height*0.71).mark("cross "+this.name);
 
-            this.crossRotate.add(this.cross);
-            this.component.add(this.crossRotate);
-            this.crossRotate.smoothy(1,1).rotateTo(-45);
+            // this.crossRotate.add(this.cross);
+            // this.component.add(this.crossRotate);
+            this.cross.smoothy(1,1).rotateTo(-45);
         }
     }
     //////////////////////////////////////
@@ -661,12 +660,17 @@ exports.main = function(svg,gui,param) {
     ///Functions///
     let glassDnD = new svg.Translation().mark("Glass");
 
-    function dragRayon(e,current) {
+    function dragRayon(e,current,placement) {
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.placeElementsDnD(current);
         tmp.move(current.x,current.y);
         tmp.component.opacity(0.9).mark("tmp");
-        categories.rayon.listeVignetteH.add(tmp.component);
+        if(placement === 1){
+            categories.rayon.listeVignetteH.add(tmp.component);
+        }else{
+            categories.rayon.listeVignetteB.add(tmp.component);
+        }
+
 
         gui.installDnD(tmp,glassDnD,{
             moved:
@@ -676,7 +680,11 @@ exports.main = function(svg,gui,param) {
                     }
                 },
             revert:function(tmp){
-                categories.rayon.listeVignetteH.remove(tmp.component);
+                if(placement === 1){
+                    categories.rayon.listeVignetteH.remove(tmp.component);
+                }else{
+                    categories.rayon.listeVignetteB.remove(tmp.component);
+                }
             },
             clicked :
                 function(){
@@ -691,7 +699,8 @@ exports.main = function(svg,gui,param) {
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.placeElementsDnD(current);
         tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
-        tmp.cross.position(tmp.width*0.90,tmp.height*0.10).opacity(0);
+        tmp.cross.smoothy(1,1).rotateTo(-45);
+        tmp.cross.position(tmp.width*0.55,tmp.height*0.71).opacity(1);
         tmp.component.add(tmp.cross);
         tmp.cross.onMouseUp(function(){
             panier.supprimerProduit(current,current.quantity);

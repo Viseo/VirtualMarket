@@ -170,7 +170,7 @@ describe("Test",function (){
 
         runtime.event(produit2,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let tmp2 = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[tmp]");
+        let tmp2 = retrieve(market.component,"[Rayon Fruits].[listeRayonB].[tmp]");
         runtime.event(tmp2,"mousedown",{ pageX:10, pageY:800});
         runtime.event(tmp2,"mousemove",{ pageX:market.width*0.95, pageY:market.height*0.5});
         runtime.advanceAll();
@@ -184,7 +184,7 @@ describe("Test",function (){
         runtime.advanceAll();
 
         runtime.event(produit4,"mousedown",{ pageX:5, pageY:5});
-        let tmp4 = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[tmp]");
+        let tmp4 = retrieve(market.component,"[Rayon Fruits].[listeRayonB].[tmp]");
         runtime.advanceAll();
         runtime.event(tmp4,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
@@ -197,7 +197,7 @@ describe("Test",function (){
 
         runtime.event(produit6,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let tmp6 = retrieve(market.component,"[Rayon Fruits].[listeRayonH].[tmp]");
+        let tmp6 = retrieve(market.component,"[Rayon Fruits].[listeRayonB].[tmp]");
         runtime.event(tmp6,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
 
@@ -332,7 +332,7 @@ describe("Test",function (){
 
         let produit4 = retrieve(market.component,"[Rayon Légumes].[listeRayonB].[Produit Oignon]");
         runtime.event(produit4,"mousedown",{ pageX:5, pageY:5});
-        let tmp4 = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[tmp]");
+        let tmp4 = retrieve(market.component,"[Rayon Légumes].[listeRayonB].[tmp]");
         runtime.advanceAll();
         runtime.event(tmp4,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
@@ -340,7 +340,7 @@ describe("Test",function (){
         let produit5 = retrieve(market.component,"[Rayon Légumes].[listeRayonB].[Produit Tomates]");
         runtime.event(produit5,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let tmp5 = retrieve(market.component,"[Rayon Légumes].[listeRayonH].[tmp]");
+        let tmp5 = retrieve(market.component,"[Rayon Légumes].[listeRayonB].[tmp]");
         runtime.event(tmp5,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
 
@@ -449,7 +449,7 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(produit,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let tmp = retrieve(market.component,"[Rayon Mode].[listeRayonH].[tmp]");
+        let tmp = retrieve(market.component,"[Rayon Mode].[listeRayonB].[tmp]");
         runtime.event(tmp,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
 
@@ -460,7 +460,7 @@ describe("Test",function (){
         assert.equal(Price["font-size"], 30);
         runtime.event(produit,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let tmp2 = retrieve(market.component,"[Rayon Mode].[listeRayonH].[tmp]");
+        let tmp2 = retrieve(market.component,"[Rayon Mode].[listeRayonB].[tmp]");
         runtime.event(tmp2,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
         let bigPrice = retrieve(market.component,"[basket].[bigPrice]");
@@ -485,7 +485,7 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(produit,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let tmp = retrieve(market.component,"[Rayon Mode].[listeRayonH].[tmp]");
+        let tmp = retrieve(market.component,"[Rayon Mode].[listeRayonB].[tmp]");
         runtime.event(tmp,"mouseup",{ pageX:500, pageY:500});
         runtime.advanceAll();
         let montre = retrieve(market.component,"[basket].[listePanier].[Montre]");
