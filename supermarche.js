@@ -239,7 +239,7 @@ exports.main = function(svg,gui,param) {
                     else {
                         self.listeVignetteH.smoothy(10, 20).onChannel("rayonHaut").moveTo(widthView - widthTotalH, self.listeVignetteH.y);
                         if (tabVignettesR.length % 2 != 0) {
-                            self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(widthView - widthTotalH + height, self.listeVignetteB.y);
+                            self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(widthView - widthTotalH + height/2, self.listeVignetteB.y);
                         }
                         else{
                             self.listeVignetteB.smoothy(10, 20).onChannel("rayonBas").moveTo(widthView - widthTotalH, self.listeVignetteB.y);
