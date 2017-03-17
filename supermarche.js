@@ -614,7 +614,13 @@ exports.main = function(svg,gui,param) {
             this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
             this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("fond "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-            this.cross.position(this.width*0.90,this.height*0.10).mark("cross "+this.name);
+
+            this.crossRotate = new svg.Rotation();
+            this.cross.position(this.width*0.55,this.height*0.71).mark("cross "+this.name);
+
+            this.crossRotate.add(this.cross);
+            this.component.add(this.crossRotate);
+            this.crossRotate.smoothy(1,1).rotateTo(-45);
         }
     }
     //////////////////////////////////////
@@ -665,7 +671,7 @@ exports.main = function(svg,gui,param) {
         gui.installDnD(tmp,glassDnD,{
             moved:
                 function(tmp){
-                    if((tmp.x+tmp.width/2>market.width*0.85)&&(tmp.y+tmp.height/2<market.height*0.80)){
+                    if((tmp.x+tmp.width/2>market.width*0.85)&&(tmp.y+tmp.height/2<market.height*0.50)){
                         panier.ajouterProduits(current);
                     }
                 },
