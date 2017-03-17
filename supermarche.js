@@ -413,7 +413,7 @@ exports.main = function(svg,gui,param) {
             vignette.changeText(newText);
 
             if(vignette.quantity ==0){
-                if (this.vignettesProduits.indexOf(vignette)==this.vignettesProduits.length-1 &&this.vignettesProduits.length-1>2){
+                if ((this.vignettesProduits.indexOf(vignette)==this.vignettesProduits.length-1 || this.vignettesProduits.indexOf(vignette)==this.vignettesProduits.length-2) && this.vignettesProduits.length-1>2){
                     let heightZone=this.vignettesProduits.length * this.vignettesProduits[0].height;
                     this.listeProduits.smoothy(10, 20).moveTo(this.listeProduits.x,(height*0.9-heightZone+this.vignettesProduits[0].height ));
                 }else if(this.vignettesProduits.length-1<=2){
