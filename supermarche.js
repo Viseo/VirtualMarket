@@ -675,7 +675,8 @@ exports.main = function(svg,gui,param) {
         gui.installDnD(tmp,glassDnD,{
             moved:
                 function(tmp){
-                    if((tmp.x+tmp.width/2>market.width*0.85)&&(tmp.y+tmp.height/2<market.height*0.50)){
+                    console.log(current.x+" "+tmp.x);
+                    if((market.width*0.85-e.pageX<tmp.x-current.x)&&(tmp.y+tmp.height/2<market.height*0.5)){
                         panier.ajouterProduits(current);
                     }
                 },
