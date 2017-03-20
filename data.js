@@ -239,6 +239,66 @@ exports.data = function() {
                     prix: 100,
                     nom: "Micro ondes",
                     complement: "",
+                },
+                "Four": {
+                    image: "img/produits/Electromenager/four.jpg",
+                    prix: 200,
+                    nom: "Four",
+                    complement: "",
+                },
+                "Blender": {
+                    image: "img/produits/Electromenager/blender.jpg",
+                    prix: 50,
+                    nom: "Blender",
+                    complement: "",
+                },
+                "GrillePain": {
+                    image: "img/produits/Electromenager/grillePain.jpg",
+                    prix: 40,
+                    nom: "Grille-Pain",
+                    complement: "",
+                },
+                "LaveLinge": {
+                    image: "img/produits/Electromenager/laveLinge.jpg",
+                    prix: 200,
+                    nom: "Lave-linge",
+                    complement: "",
+                },
+                "Aspirateur": {
+                    image: "img/produits/Electromenager/aspirateur.jpg",
+                    prix: 100,
+                    nom: "Aspirateur",
+                    complement: "",
+                },
+                "Bouilloire": {
+                    image: "img/produits/Electromenager/bouilloire.jpg",
+                    prix: 20,
+                    nom: "Bouilloire",
+                    complement: "",
+                },
+                "Gaufrier": {
+                    image: "img/produits/Electromenager/gaufrier.jpg",
+                    prix: 30,
+                    nom: "Gaufrier",
+                    complement: "",
+                },
+                "FeraRepasser": {
+                    image: "img/produits/Electromenager/feraRepasser.jpg",
+                    prix: 70,
+                    nom: "Fer à repasser",
+                    complement: "",
+                },
+                "SecheCheveux": {
+                    image: "img/produits/Electromenager/secheCheveux.jpg",
+                    prix: 100,
+                    nom: "Séche-Cheveux",
+                    complement: "",
+                },
+                "Cafetiere": {
+                    image: "img/produits/Electromenager/cafetiere.jpg",
+                    prix: 150,
+                    nom: "Cafetière",
+                    complement: "",
                 }
             },
 
@@ -257,14 +317,56 @@ exports.data = function() {
                 },
                 "New York": {
                     image: "img/produits/Voyages/newyork.jpg",
-                    prix: 1000,
+                    prix: 2000,
                     nom: "New York",
                     complement: "",
                 },
                 "San Francisco": {
                     image: "img/produits/Voyages/sanfrancisco.jpg",
-                    prix: 1000,
+                    prix: 2000,
                     nom: "San Francisco",
+                    complement: "",
+                },
+                "Tokyo": {
+                    image: "img/produits/Voyages/tokyo.jpg",
+                    prix: 1500,
+                    nom: "Tokyo",
+                    complement: "",
+                },
+                "Barcelone": {
+                    image: "img/produits/Voyages/barcelone.jpg",
+                    prix: 500,
+                    nom: "Barcelone",
+                    complement: "",
+                },
+                "Casablanca": {
+                    image: "img/produits/Voyages/casablanca.jpg",
+                    prix: 300,
+                    nom: "Casablanca",
+                    complement: "",
+                },
+                "Bali": {
+                    image: "img/produits/Voyages/bali.jpg",
+                    prix: 1000,
+                    nom: "Bali",
+                    complement: "",
+                },
+                "Rome": {
+                    image: "img/produits/Voyages/rome.jpg",
+                    prix: 500,
+                    nom: "Rome",
+                    complement: "",
+                },
+                "Mexico": {
+                    image: "img/produits/Voyages/mexico.jpg",
+                    prix: 1000,
+                    nom: "Mexico",
+                    complement: "",
+                },
+                "Londres": {
+                    image: "img/produits/Voyages/londres.jpg",
+                    prix: 1000,
+                    nom: "Londres",
                     complement: "",
                 }
 
@@ -370,6 +472,7 @@ exports.data = function() {
                     nom: "RedBull",
                     complement: "",
                 },
+
                 "Get 27": {
                     image: "img/produits/Boissons/get27.jpg",
                     prix: 2,
@@ -394,6 +497,7 @@ exports.data = function() {
                     nom: "Jagermeister",
                     complement: "",
                 },
+
             },
 
             "Soins du corps": {
@@ -407,6 +511,54 @@ exports.data = function() {
                     image: "img/produits/Soins/shampoing.jpg",
                     prix: 2,
                     nom: "Shampoing",
+                    complement: "",
+                },
+                "Savon": {
+                    image: "img/produits/Soins/savon.jpg",
+                    prix: 2,
+                    nom: "Savon",
+                    complement: "",
+                },
+                "Dentifrice": {
+                    image: "img/produits/Soins/dentifrice.jpg",
+                    prix: 2,
+                    nom: "Dentifrice",
+                    complement: "",
+                },
+                "Creme": {
+                    image: "img/produits/Soins/creme.jpg",
+                    prix: 2,
+                    nom: "Crème hydratante",
+                    complement: "",
+                },
+                "Masque": {
+                    image: "img/produits/Soins/masque.jpg",
+                    prix: 2,
+                    nom: "masque Cheveux",
+                    complement: "",
+                },
+                "Deodorant": {
+                    image: "img/produits/Soins/deodorant.jpg",
+                    prix: 2,
+                    nom: "Déodorant",
+                    complement: "",
+                },
+                "Demaquillant": {
+                    image: "img/produits/Soins/demaquillant.jpg",
+                    prix: 2,
+                    nom: "Démaquillant",
+                    complement: "",
+                },
+                "ApresShampoing": {
+                    image: "img/produits/Soins/apresShampoing.jpg",
+                    prix: 2,
+                    nom: "Après shampoing",
+                    complement: "",
+                },
+                "CotonTige": {
+                    image: "img/produits/Soins/coton.jpg",
+                    prix: 2,
+                    nom: "Coton-tige",
                     complement: "",
                 },
             },
