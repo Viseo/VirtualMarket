@@ -27,15 +27,15 @@ exports.data = function() {
                     complement: " l'unite",
                 },
                 "Beurre" : {
-                    image:"img/produits/ProduitsLaitiers/yaourt.jpg",
+                    image:"img/produits/ProduitsLaitiers/beurre.jpg",
                     prix: 1,
                     nom: "Beurre",
                     complement: " l'unite",
                 },
-                "Compte" : {
-                    image:"img/produits/ProduitsLaitiers/camembert.jpg",
+                "Comte" : {
+                    image:"img/produits/ProduitsLaitiers/comte.jpg",
                     prix: 1,
-                    nom: "Compté",
+                    nom: "Comté",
                     complement: " l'unite",
                 },
                 "Roquefort" : {
@@ -114,18 +114,18 @@ exports.data = function() {
                     nom: "Tomates",
                     complement: "/kilo",
                 },
-                "Concombres": {
-                    image: "img/produits/Legumes/concombre.jpg",
+                "Aubergine": {
+                    image: "img/produits/Legumes/aubergine.jpg",
                     prix: 1,
-                    nom: "Concombre",
+                    nom: "Aubergine",
                     complement: "/kilo",
                 },
-                "Courgettes": {
-                    image: "img/produits/Legumes/courgette.jpg",
+                "Poireaux": {
+                    image: "img/produits/Legumes/poireau.jpg",
                     prix: 1,
-                    nom: "Courgette",
+                    nom: "Poireaux",
                     complement: "/kilo",
-                }
+                },
             },
 
             "Fruits": {
@@ -188,43 +188,8 @@ exports.data = function() {
                     prix: 1,
                     nom: "Pommes",
                     complement: "/kilo",
-                },
-                "Kiwi2": {
-                    image: "img/produits/Fruits/Kiwi.jpg",
-                    prix: 1,
-                    nom: "Kiwi",
-                    complement: "/kilo",
-                },
-                "Mangue2": {
-                    image: "img/produits/Fruits/Mangue.jpg",
-                    prix: 1,
-                    nom: "Mangue",
-                    complement: "/kilo",
-                },
-                "Poires2": {
-                    image: "img/produits/Fruits/Poires.jpg",
-                    prix: 1,
-                    nom: "Poires",
-                    complement: "/kilo",
-                },
-                "Pommes2": {
-                    image: "img/produits/Fruits/Pommes.jpg",
-                    prix: 1,
-                    nom: "Pommes",
-                    complement: "/kilo",
-                },
-                "Fraises": {
-                    image: "img/produits/Fruits/Fraises.jpg",
-                    prix: 1,
-                    nom: "Fraises",
-                    complement: "/kilo",
-                },
-                "Framboises2": {
-                    image: "img/produits/Fruits/Framboises.jpg",
-                    prix: 1,
-                    nom: "Framboises",
-                    complement: "/kilo",
                 }
+
             },
 
             "Electromenager": {
