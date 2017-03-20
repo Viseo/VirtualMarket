@@ -491,4 +491,15 @@ describe("Test",function (){
         let montre = retrieve(market.component,"[basket].[listePanier].[Montre]");
         assert.ok(!montre);
     });
+
+    it("ensure that you can drag the card in the terminal and that it shows the payement interface",function(){
+        let payment_zone = retrieve(market.component,"[payment]");
+        assert.ok(payment_zone);
+        let card = retrieve(market.component,"[payment].[card]");
+        assert.ok(card);
+        runtime.event(card,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(card,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+    });
 });

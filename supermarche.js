@@ -448,8 +448,47 @@ exports.main = function(svg,gui,param) {
         constructor(width,height,x,y)
         {
             super(width,height,x,y);
-            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE)); 
+            this.fond = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE,2,svg.BLACK);
+            this.card = new svg.Image("img/Carte-Visa-Classic.png").dimension(width/2,height/3).position(width*0.75,height/2).mark("card");
+            this.tpeFond = new svg.Image("img/tpeFond.png").dimension(width/2,height*0.75).position(width*0.25,height/2);
+            this.tpe = new svg.Image("img/tpe.png").dimension(width/2,height*0.75).position(width*0.25,height/2);
+            this.glassDnd = new svg.Translation();
+
+            this.component.add(this.fond);
+            this.component.add(this.tpeFond);
+            this.component.add(this.card);
+            this.component.add(this.glassDnd);
+            this.component.add(this.tpe);
+
+            let self = this;
+            this.card.onMouseDown(function(e){
+                self.dragCard(e);
+            });
         }
+
+        dragCard(e)
+        {
+            let qsd = new test();
+            qsd.component.add(this.card);
+
+            gui.installDnD(qsd,this.glassDnd,{
+                moved:
+                    function(tmp){
+
+                    },
+                revert:
+                    function(tmp){
+
+                    },
+                clicked :
+                    function(){
+
+                    }
+            });
+            svg.event(tmp, 'mousedown', e);
+        }
+
+
     }
     ///////////////////////////////////////
     
@@ -613,12 +652,7 @@ exports.main = function(svg,gui,param) {
             this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
             this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("fond "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-            //
-            // this.crossRotate = new svg.Rotation();
             this.cross.position(this.width*0.55,this.height*0.71).mark("cross "+this.name);
-
-            // this.crossRotate.add(this.cross);
-            // this.component.add(this.crossRotate);
             this.cross.smoothy(1,1).rotateTo(-45);
         }
     }
@@ -671,11 +705,9 @@ exports.main = function(svg,gui,param) {
             categories.rayon.listeVignetteB.add(tmp.component);
         }
 
-
         gui.installDnD(tmp,glassDnD,{
             moved:
                 function(tmp){
-                    console.log(current.x+" "+tmp.x);
                     if((market.width*0.85-e.pageX<tmp.x-current.x)&&(tmp.y+tmp.height/2<market.height*0.5)){
                         panier.ajouterProduits(current);
                     }
@@ -762,10 +794,11 @@ exports.main = function(svg,gui,param) {
     let panier = new Panier(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
     let zonePanier = new svg.Translation().add(panier.component).mark("basket");
     let payement = new Payement(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
-    let zonePayement = new svg.Translation().add(payement.component);
+    let zonePayement = new svg.Translation().add(payement.component).mark("payment");
 
     market.add(zoneCategories).add(zonePanier).add(zonePayement).add(zoneHeader);
     market.add(glassDnD);
+
     return market;
 	//////////////////////////////
 };
