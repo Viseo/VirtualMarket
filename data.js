@@ -25,7 +25,44 @@ exports.data = function() {
                     prix: 1,
                     nom: "yaourt",
                     complement: " l'unite",
+                },
+                "Beurre" : {
+                    image:"img/produits/ProduitsLaitiers/yaourt.jpg",
+                    prix: 1,
+                    nom: "Beurre",
+                    complement: " l'unite",
+                },
+                "Compte" : {
+                    image:"img/produits/ProduitsLaitiers/camembert.jpg",
+                    prix: 1,
+                    nom: "Compté",
+                    complement: " l'unite",
+                },
+                "Roquefort" : {
+                    image:"img/produits/ProduitsLaitiers/roquefort.jpg",
+                    prix: 1,
+                    nom: "Roquefort",
+                    complement: " l'unite",
+                },
+                "Gruyere" : {
+                    image:"img/produits/ProduitsLaitiers/gruyere.jpg",
+                    prix: 1,
+                    nom: "Gruyère",
+                    complement: " l'unite",
+                },
+                "Yop Chocolat" : {
+                    image:"img/produits/ProduitsLaitiers/yopchocolat.jpg",
+                    prix: 1,
+                    nom: "Yop Chocolat",
+                    complement: " l'unite",
+                },
+                "Danette Chcoloat" : {
+                    image:"img/produits/ProduitsLaitiers/danettechocolat.jpg",
+                    prix: 1,
+                    nom: "Danette Chocolat",
+                    complement: " l'unite",
                 }
+
             },
 
             "Légumes": {
@@ -236,16 +273,64 @@ exports.data = function() {
             "HighTech": {
                 "Casque": {
                     image: "img/produits/HighTech/Casque.jpg",
-                    prix: 600,
+                    prix: 200,
                     nom: "Casque",
                     complement: "",
                 },
                 "Ipad": {
                     image: "img/produits/HighTech/ipad.jpg",
-                    prix: 200,
+                    prix: 600,
                     nom: "Ipad",
                     complement: "",
+                },
+                "Souris": {
+                    image: "img/produits/HighTech/souris.jpg",
+                    prix: 80,
+                    nom: "Souris",
+                    complement: "",
+                },
+                "Clavier": {
+                    image: "img/produits/HighTech/clavier.jpg",
+                    prix: 100,
+                    nom: "Clavier",
+                    complement: "",
+                },
+                "Ecran": {
+                    image: "img/produits/HighTech/ecran.jpg",
+                    prix: 300,
+                    nom: "Ecran",
+                    complement: "",
+                },
+                "iPhone": {
+                    image: "img/produits/HighTech/iPhone.jpg",
+                    prix: 1100,
+                    nom: "iPhone",
+                    complement: "",
+                },"Webcam": {
+                    image: "img/produits/HighTech/webcam.jpg",
+                    prix: 100,
+                    nom: "Webcam",
+                    complement: "",
                 }
+                ,"Television": {
+                    image: "img/produits/HighTech/tele.jpg",
+                    prix: 2000,
+                    nom: "Television",
+                    complement: "",
+                }
+                ,"Ordinateur": {
+                    image: "img/produits/HighTech/ordinateur.jpg",
+                    prix: 1500,
+                    nom: "Ordinateur",
+                    complement: "",
+                }
+                ,"Drone": {
+                    image: "img/produits/HighTech/drone.jpg",
+                    prix: 300,
+                    nom: "Drone",
+                    complement: "",
+                }
+
             },
 
             "Boissons": {
@@ -284,7 +369,31 @@ exports.data = function() {
                     prix: 2,
                     nom: "RedBull",
                     complement: "",
-                }
+                },
+                "Get 27": {
+                    image: "img/produits/Boissons/get27.jpg",
+                    prix: 2,
+                    nom: "Get 27",
+                    complement: "",
+                },
+                "Whisky": {
+                    image: "img/produits/Boissons/whisky.jpg",
+                    prix: 2,
+                    nom: "Whisky",
+                    complement: "",
+                },
+                "Vodka": {
+                    image: "img/produits/Boissons/vodka.jpg",
+                    prix: 2,
+                    nom: "Vodka",
+                    complement: "",
+                },
+                "Jagermeister": {
+                    image: "img/produits/Boissons/jagermeister.jpg",
+                    prix: 2,
+                    nom: "Jagermeister",
+                    complement: "",
+                },
             },
 
             "Soins du corps": {
