@@ -451,6 +451,29 @@ exports.main = function(svg,gui,param) {
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE)); 
         }
     }
+
+    class Code {
+	    constructor(width,height,x,y)
+        {
+            this.component = new svg.Translation();
+            this.title = new svg.Text("Saisir le code de sécurité ");
+            this.component.add(this.title);
+            this.code = new svg.text()
+
+
+            this.x = 0;
+            this.y = 0;
+            this.component.move(x,y);
+            this.width = width;
+            this.height = height;
+
+        }
+
+        placeElements()
+        {
+            this.title.position(this.width/2,this.height*0.1).font("calibri", 20, 1).color(svg.BLACK);
+        }
+    }
     ///////////////////////////////////////
     
     ////////////VIGNETTES//////////////////
@@ -764,8 +787,14 @@ exports.main = function(svg,gui,param) {
     let payement = new Payement(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     let zonePayement = new svg.Translation().add(payement.component);
 
+    let zoneCode = new Code(market.width/2,market.height/2,market.width/2,market.height/2);
+
+
+
+
     market.add(zoneCategories).add(zonePanier).add(zonePayement).add(zoneHeader);
     market.add(glassDnD);
+    market.add(zoneCode.component);
     return market;
 	//////////////////////////////
 };
