@@ -334,15 +334,57 @@ exports.data = function() {
                 "Table": {
                     image: "img/produits/Mobilier/table.jpg",
                     prix: 500,
-                    nom: "Chaise",
+                    nom: "Table",
                     complement: "",
                 },
                 "Chaise": {
                     image: "img/produits/Mobilier/chaise.jpg",
                     prix: 500,
-                    nom: "Table",
+                    nom: "Chaise",
                     complement: "",
                 },
+                "Bibliotheque": {
+                    image: "img/produits/Mobilier/bibliotheque.jpg",
+                    prix: 1200,
+                    nom: "Bibliothèque",
+                    complement: "",
+                },
+                "Commode": {
+                    image: "img/produits/Mobilier/commode.jpg",
+                    prix: 500,
+                    nom: "Commode",
+                    complement: "",
+                },
+                "Etageres": {
+                    image: "img/produits/Mobilier/etageres.jpg",
+                    prix: 1200,
+                    nom: "Etagères",
+                    complement: "",
+                },
+                "Fauteuil": {
+                    image: "img/produits/Mobilier/fauteuil.jpg",
+                    prix: 500,
+                    nom: "Fauteuil",
+                    complement: "",
+                },
+                "Lit": {
+                    image: "img/produits/Mobilier/lit.jpg",
+                    prix: 1200,
+                    nom: "Lit",
+                    complement: "",
+                },
+                "Table Basse": {
+                    image: "img/produits/Mobilier/table-basse.jpg",
+                    prix: 500,
+                    nom: "Table Basse",
+                    complement: "",
+                },
+                "Tabouret": {
+                    image: "img/produits/Mobilier/tabouret.jpg",
+                    prix: 500,
+                    nom: "Tabouret",
+                    complement: "",
+                }
             },
 
             "Super Pouvoirs": {
@@ -357,6 +399,54 @@ exports.data = function() {
                     prix: 0,
                     nom: "flash",
                     complement: "",
+                },
+                "Green Lantern": {
+                    image: "img/produits/SuperPouvoirs/green-lantern.png",
+                    prix: 15000,
+                    nom: "Green Lantern",
+                    complement: "",
+                },
+                "Batman": {
+                    image: "img/produits/SuperPouvoirs/batman.png",
+                    prix: 0,
+                    nom: "Batman",
+                    complement: "",
+                },
+                "Daredevil": {
+                    image: "img/produits/SuperPouvoirs/daredevil.png",
+                    prix: 0,
+                    nom: "Daredevil",
+                    complement: "",
+                },
+                "Wonder Woman": {
+                    image: "img/produits/SuperPouvoirs/wonder-woman.png",
+                    prix: 0,
+                    nom: "flash",
+                    complement: "",
+                },
+                "Iron Man": {
+                    image: "img/produits/SuperPouvoirs/iron man.png",
+                    prix: 0,
+                    nom: "iron man",
+                    complement: "",
+                },
+                "Hulk": {
+                    image: "img/produits/SuperPouvoirs/hulk.png",
+                    prix: 0,
+                    nom: "Hulk",
+                    complement: "",
+                },
+                "Shazam": {
+                    image: "img/produits/SuperPouvoirs/shazam.png",
+                    prix: 0,
+                    nom: "Shazam",
+                    complement: "",
+                },
+                "Spiderman": {
+                    image: "img/produits/SuperPouvoirs/spiderman.png",
+                    prix: 0,
+                    nom: "Spiderman",
+                    complement: ""
                 }
             }
         }
