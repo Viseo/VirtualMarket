@@ -31,7 +31,7 @@ describe("Test",function (){
     it("ensure that page structure is ok at start",function(){
         assert.ok(market);
         inspect(market.component,{tag:"svg",width:1500,height:1000,children:[
-            {tag:"g",transform:"translate(0 0)",id:"categories"}
+            {tag:"g",transform:"translate(0 0)",id:"Rayon HighTech"}
         ]});
     });
 

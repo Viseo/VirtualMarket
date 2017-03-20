@@ -37,13 +37,16 @@ exports.main = function(svg,gui,param) {
                
                 //GESTION SELECTION//
                 tabVignettes[i].component.onClick(function(){
+                    // tab contient tous les produits et composants des rayons
                     let tab =  makeVignettesForCategory(current.name);
                     if(self.rayonTranslation!=null)
                     {
                         market.remove(self.rayonTranslation);
                     }
+                    // Ces 3 lignes permettent de créer un rayon et de l'afficher
                     self.rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab,current.name);
                     self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + current.name);
+                    // c'est avec cette commande qu'on peut afficher
                     market.add(self.rayonTranslation);
 
 
@@ -123,6 +126,16 @@ exports.main = function(svg,gui,param) {
             });
 
             this.component.add(zoneChevronE).add(zoneChevronW);
+
+
+            let tab =  makeVignettesForCategory("HighTech");
+            self.rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab,"HighTech");
+            self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + "HighTech");
+            tabVignettes[5].pictogramme.opacity(0);
+            tabVignettes[5].pictogramme2.opacity(1);
+            market.add(self.rayonTranslation);
+
+
 		}
 	}
     
@@ -439,7 +452,10 @@ exports.main = function(svg,gui,param) {
         {
             super(width,height,x,y);
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE,2,svg.BLACK));
-            this.component.add(new svg.Text("Supermarché Virtuel").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
+            this.component.add(new svg.Text("Digimarket").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
+            this.micro = new svg.Image("img/microphone.png");
+            this.component.add(this.micro);
+            this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
         }
     }
     
@@ -587,7 +603,9 @@ exports.main = function(svg,gui,param) {
             this.line = new svg.Line(0,0,0,0);
             this.component.add(this.line);
 
-            this.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0);
+
+            this.cross = new svg.Image("img/icone-supprimer.jpg");
+
             this.component.add(this.cross);
 
             this.component.mark(this.name);
@@ -636,13 +654,9 @@ exports.main = function(svg,gui,param) {
             this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
             this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("fond "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-            //
-            // this.crossRotate = new svg.Rotation();
-            this.cross.position(this.width*0.55,this.height*0.71).mark("cross "+this.name);
 
-            // this.crossRotate.add(this.cross);
-            // this.component.add(this.crossRotate);
-            this.cross.smoothy(1,1).rotateTo(-45);
+            this.cross.position(this.width*0.90,this.height*0.1).mark("cross "+this.name).dimension(this.width*0.1,this.height*0.1).opacity(0);
+
         }
     }
     //////////////////////////////////////
@@ -698,7 +712,6 @@ exports.main = function(svg,gui,param) {
         gui.installDnD(tmp,glassDnD,{
             moved:
                 function(tmp){
-                    console.log(current.x+" "+tmp.x);
                     if((market.width*0.85-e.pageX<tmp.x-current.x)&&(tmp.y+tmp.height/2<market.height*0.5)){
                         panier.ajouterProduits(current);
                     }
@@ -722,9 +735,8 @@ exports.main = function(svg,gui,param) {
     function dragBasket(e,current) {
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.placeElementsDnD(current);
-        tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
-        tmp.cross.smoothy(1,1).rotateTo(-45);
-        tmp.cross.position(tmp.width*0.55,tmp.height*0.71).opacity(1);
+        tmp.cross = new svg.Image("img/icone-supprimer.jpg").mark("cross");
+        tmp.cross.position(tmp.width*0.9,tmp.height*0.1).dimension(tmp.width*0.1,tmp.height*0.1).opacity(1);
         tmp.component.add(tmp.cross);
         tmp.cross.onMouseUp(function(){
             panier.supprimerProduit(current,current.quantity);
