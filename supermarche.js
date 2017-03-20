@@ -127,7 +127,10 @@ exports.main = function(svg,gui,param) {
             let tab =  makeVignettesForCategory("HighTech");
             self.rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab,"HighTech");
             self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + "HighTech");
+            tabVignettes[5].pictogramme.opacity(0);
+            tabVignettes[5].pictogramme2.opacity(1);
             market.add(self.rayonTranslation);
+
 		}
 	}
     
