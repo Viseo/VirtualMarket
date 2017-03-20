@@ -622,6 +622,7 @@ exports.main = function(svg,gui,param) {
             this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("fond "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
             this.cross.position(this.width*0.90,this.height*0.1).mark("cross "+this.name).dimension(this.width*0.1,this.height*0.1).opacity(0);
+            console.log(this.name);
         }
     }
     //////////////////////////////////////
@@ -677,7 +678,6 @@ exports.main = function(svg,gui,param) {
         gui.installDnD(tmp,glassDnD,{
             moved:
                 function(tmp){
-                    console.log(current.x+" "+tmp.x);
                     if((market.width*0.85-e.pageX<tmp.x-current.x)&&(tmp.y+tmp.height/2<market.height*0.5)){
                         panier.ajouterProduits(current);
                     }
@@ -701,7 +701,7 @@ exports.main = function(svg,gui,param) {
     function dragBasket(e,current) {
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.placeElementsDnD(current);
-        tmp.cross = new svg.Image("img/icone-supprimer.jpg");
+        tmp.cross = new svg.Image("img/icone-supprimer.jpg").mark("cross");
         tmp.cross.position(tmp.width*0.9,tmp.height*0.1).dimension(tmp.width*0.1,tmp.height*0.1).opacity(1);
         tmp.component.add(tmp.cross);
         tmp.cross.onMouseUp(function(){
