@@ -37,13 +37,16 @@ exports.main = function(svg,gui,param) {
                
                 //GESTION SELECTION//
                 tabVignettes[i].component.onClick(function(){
+                    // tab contient tous les produits et composants des rayons
                     let tab =  makeVignettesForCategory(current.name);
                     if(self.rayonTranslation!=null)
                     {
                         market.remove(self.rayonTranslation);
                     }
+                    // Ces 3 lignes permettent de créer un rayon et de l'afficher
                     self.rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab,current.name);
                     self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + current.name);
+                    // c'est avec cette commande qu'on peut afficher
                     market.add(self.rayonTranslation);
 
 
@@ -123,6 +126,12 @@ exports.main = function(svg,gui,param) {
             });
 
             this.component.add(zoneChevronE).add(zoneChevronW);
+            // récupère que les vignettes des Produits laitiers
+            let tab=makeVignettesForCategory("Produits laitiers");
+            self.rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab,"Produits laitiers");
+            self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + "Produits laitiers");
+            // c'est avec cette commande qu'on peut afficher
+            market.add(self.rayonTranslation);
 		}
 	}
     
@@ -564,7 +573,7 @@ exports.main = function(svg,gui,param) {
             this.line = new svg.Line(0,0,0,0);
             this.component.add(this.line);
 
-            this.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0);
+            this.cross = new svg.Image("img/icone-supprimer.png").color(svg.RED, 2, svg.RED).opacity(0);
             this.component.add(this.cross);
 
             this.component.mark(this.name);
@@ -613,13 +622,7 @@ exports.main = function(svg,gui,param) {
             this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
             this.fond.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("fond "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-            //
-            // this.crossRotate = new svg.Rotation();
-            this.cross.position(this.width*0.55,this.height*0.71).mark("cross "+this.name);
-
-            // this.crossRotate.add(this.cross);
-            // this.component.add(this.crossRotate);
-            this.cross.smoothy(1,1).rotateTo(-45);
+            this.cross.position(this.width*0.90,this.height*0.10).dimension(this.width*0.10,this.height*0.10).mark("cross "+this.name);
         }
     }
     //////////////////////////////////////
@@ -699,9 +702,8 @@ exports.main = function(svg,gui,param) {
     function dragBasket(e,current) {
         let tmp = new Vignette(current.pictogramme.src,current.name);
         tmp.placeElementsDnD(current);
-        tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
-        tmp.cross.smoothy(1,1).rotateTo(-45);
-        tmp.cross.position(tmp.width*0.55,tmp.height*0.71).opacity(1);
+        tmp.cross = new svg.Image("img/icone-supprimer.png").opacity(1).mark("cross");
+        tmp.cross.position(tmp.width*0.90,tmp.height*0.10).dimension(tmp.width*0.10,tmp.height*0.10);
         tmp.component.add(tmp.cross);
         tmp.cross.onMouseUp(function(){
             panier.supprimerProduit(current,current.quantity);

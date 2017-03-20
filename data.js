@@ -314,8 +314,91 @@ exports.data = function() {
                     prix: 7500,
                     nom: "Montre",
                     complement: "",
+                },
+                "Bonnet": {
+                    image: "img/produits/Mode/bonnet.jpg",
+                    prix: 20,
+                    nom: "Bonnet",
+                    complement: "",
+                },
+                "Bottes": {
+                    image: "img/produits/Mode/bottes.jpg",
+                    prix: 20,
+                    nom: "Bottes",
+                    complement: "",
+                },
+                "Echarpe": {
+                    image: "img/produits/Mode/écharpe.jpg",
+                    prix: 20,
+                    nom: "Echarpe",
+                    complement: "",
+                },
+                "Jean": {
+                    image: "img/produits/Mode/jeanhomme.jpg",
+                    prix: 120,
+                    nom: "Jean",
+                    complement: "",
+                },
+                "Jupe": {
+                    image: "img/produits/Mode/jupe.jpg",
+                    prix: 50,
+                    nom: "Jupe",
+                    complement: "",
+                },
+                "Manteau femme": {
+                    image: "img/produits/Mode/manteaufemme.jpg",
+                    prix: 220,
+                    nom: "Manteau femme",
+                    complement: "",
+                },
+                "Manteau homme": {
+                    image: "img/produits/Mode/manteauhomme.jpg",
+                    prix: 200,
+                    nom: "Manteau homme",
+                    complement: "",
+                },
+                "Pantalon": {
+                    image: "img/produits/Mode/pantalonfemme.jpg",
+                    prix: 200,
+                    nom: "Pantalon",
+                    complement: "",
+                },
+                "Robe d'été": {
+                    image: "img/produits/Mode/robe-été.jpg",
+                    prix: 100,
+                    nom: "Robe d'été",
+                    complement: "",
+                },
+                "Sandales": {
+                    image: "img/produits/Mode/Sandales-a-talon.jpg",
+                    prix: 100,
+                    nom: "Sandales",
+                    complement: "",
+                },
+                "Short": {
+                    image: "img/produits/Mode/short.jpg",
+                    prix: 30,
+                    nom: "Short",
+                    complement: "",
+                },
+                "Tee-shirt": {
+                    image: "img/produits/Mode/tee-shirt.jpg",
+                    prix: 30,
+                    nom: "Tee-shirt",
+                    complement: "",
+                },
+                "Pull": {
+                    image: "img/produits/Mode/pull.jpg",
+                    prix: 30,
+                    nom: "Pull",
+                    complement: "",
+                },
+                "Tunique": {
+                    image: "img/produits/Mode/tunique.jpg",
+                    prix: 30,
+                    nom: "Tunique",
+                    complement: "",
                 }
-
             },
 
             "Mobilier": {
