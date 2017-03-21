@@ -13,7 +13,7 @@ exports.main = function(svg,gui,param) {
 	}
 
 	class ListeCategorie extends Bandeau {
-		constructor(width,height,x,y,tabVignettes)
+		constructor(width,height,x,y)
 		{
 			super(width,height,x,y);
             
@@ -26,33 +26,33 @@ exports.main = function(svg,gui,param) {
             this.rayonTranslation = null;
             var self = this;
 
-            this.tabCategories = tabVignettes;
+            this.tabCategories = param.data.makeVignettesForCategories(VignetteCategorie);
 
             let listeVignette = new svg.Translation().mark("listeCategories");
-            for(let i=0;i<tabVignettes.length;i++)
+            for(let i=0;i<this.tabCategories.length;i++)
             {
-                let current = tabVignettes[i];
-                tabVignettes[i].placeElements();
-                tabVignettes[i].move(height*i,0);
-                listeVignette.add(tabVignettes[i].component);
+                let current = this.tabCategories[i];
+                current.placeElements();
+                current.move(height*i,0);
+                listeVignette.add(current.component);
                
                 //GESTION SELECTION//
-                tabVignettes[i].component.onClick(function(){
+                current.component.onClick(function(){
                     changeRay(current.name);
                 });
 
-                tabVignettes[i].component.onMouseEnter(function(){
+                current.component.onMouseEnter(function(){
 
                     current.pictogramme.opacity(0);
                     current.pictogramme2.opacity(1);
                 });
 
-                tabVignettes[i].title.onMouseEnter(function(){
+                current.title.onMouseEnter(function(){
                     current.pictogramme.opacity(0);
                     current.pictogramme2.opacity(1);
                 });
                 
-                tabVignettes[i].component.onMouseOut(function(){
+                current.component.onMouseOut(function(){
                     if(self.rayon==null || current.name!=self.rayon.name)
                     {
                         current.pictogramme.opacity(1);
@@ -89,7 +89,7 @@ exports.main = function(svg,gui,param) {
             });
             
             zoneChevronE.onClick(function(){
-                let widthTotal = height*tabVignettes.length;
+                let widthTotal = height*self.tabCategories.length;
                 let widthView = width;
                 let positionRight = listeVignette.x+widthTotal;
                 if(positionRight-3*height>=widthView){
@@ -500,10 +500,10 @@ exports.main = function(svg,gui,param) {
         {
             super(width,height,x,y);
             this.fond = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE,2,svg.BLACK);
-            this.card = new svg.Image("img/Carte-Visa-Classic.png").dimension(width/2,height/3).position(width*0.75,height/2).mark("card");
-            this.tpeFond = new svg.Image("img/tpeFond.png").dimension(width/2,height*0.75).position(width*0.3,height/2);
-            this.tpe = new svg.Image("img/tpe.png").dimension(width/2,height*0.75).position(width*0.3,height/2);
-            this.glassDnd = new svg.Translation();
+            this.card = new svg.Image("img/credit-card.png").dimension(width*0.65,height*0.65).position(width*0.1,height/2).mark("card");
+            this.tpeFond = new svg.Image("img/tpeFond.png").dimension(width,height).position(width,height/2);
+            this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
+            this.glassDnd = new svg.Translation().mark("glass");
 
             this.width = width;
             this.height = height;
@@ -536,17 +536,17 @@ exports.main = function(svg,gui,param) {
             tmp.move = function(x){
                 this.x = x;
                 this.component.move(x,0);
-                if((this.x<-(self.width*0.1))&&(self.cardIn==false))
+                if((this.x>self.width*0.2)&&(self.cardIn==false))
                 {
                     svg.event(tmp.component, 'mouseup', e);
-                    self.card.position(self.width*0.50,self.height/2);
+                    self.card.position(self.width*0.6,self.height/2);
                     self.cardIn=true;
-                    self.showCode();
+                    //self.showCode();
                 }
-                else if((this.x>(self.width*0.1))&&(self.cardIn==true))
+                else if((this.x<-self.width*0.2)&&(self.cardIn==true))
                 {
                     svg.event(tmp.component, 'mouseup', e);
-                    self.card.position(self.width*0.75,self.height/2);
+                    self.card.position(self.width*0.1,self.height/2);
                     self.cardIn=false;
                 }
             };
@@ -557,8 +557,8 @@ exports.main = function(svg,gui,param) {
                 return this;
             };
 
-            tmp.component = new svg.Translation();
-            tmp.component.add(new svg.Image(this.card.src).dimension(this.width/2,this.height/3).position(this.card.x,this.card.y));
+            tmp.component = new svg.Translation().mark("tmp");
+            tmp.component.add(new svg.Image(this.card.src).dimension(this.card.width,this.card.height).position(this.card.x,this.card.y));
 
             this.component.add(tmp.component);
             this.card.opacity(0);
@@ -583,10 +583,10 @@ exports.main = function(svg,gui,param) {
             svg.event(tmp.component, 'mousedown', e);
         }
 
-        showCode()
+        /*showCode()
         {
 
-        }
+        }*/
 
     }
     ///////////////////////////////////////
@@ -728,9 +728,11 @@ exports.main = function(svg,gui,param) {
         addQuantity(num){
             this.quantity = this.quantity+num;
         }
+
         minusQuantity(num){
             this.quantity = this.quantity-num;
         }
+
         changeText(newText){
             this.component.remove(this.printPrice);
             this.printPrice = new svg.Text(newText);
@@ -750,49 +752,11 @@ exports.main = function(svg,gui,param) {
         }
     }
     //////////////////////////////////////
-    
-    //TEST CREATION TABLEAU VIGNETTE//
-    let vignettes = [
-        new VignetteCategorie("img/categories/produits-laitiers.jpg","img/categories/produits-laitiers2.jpg", "Produits laitiers"),
-        new VignetteCategorie("img/categories/legumes.jpg","img/categories/legumes2.jpg", "Légumes"),
-        new VignetteCategorie("img/categories/fruits.jpg","img/categories/fruits2.jpg", "Fruits"),
-        new VignetteCategorie("img/categories/electromenager.jpg","img/categories/electromenager2.jpg", "Electromenager"),
-        new VignetteCategorie("img/categories/voyages.jpg","img/categories/voyages2.jpg", "Voyages"),
-        new VignetteCategorie("img/categories/hightech.jpg","img/categories/hightech2.jpg", "HighTech"),
-        new VignetteCategorie("img/categories/boissons.jpg","img/categories/boissons2.jpg", "Boissons"),
-        new VignetteCategorie("img/categories/soinsducorps.jpg","img/categories/soinsducorps2.jpg", "Soins du corps"),
-        new VignetteCategorie("img/categories/mode.jpg","img/categories/mode2.jpg", "Mode"),
-        new VignetteCategorie("img/categories/mobilier.jpg","img/categories/mobilier2.jpg", "Mobilier"),
-        new VignetteCategorie("img/categories/superpouvoir.jpg","img/categories/superpouvoir2.jpg", "Super Pouvoirs"),
-    ];
-
-    /////////// MANAGE JSON
-    // Make vignettes tab for a category
-    function makeVignettesForRay(catTitle){
-        var tabVignettes = [];
-        // mettre le tableau de product dans une variable
-        var cat = param.jsonData[catTitle];
-        //pour chaque produit dans categorie,
-        for (var product in cat){
-            //mettre la valeur de img dans une var
-            var data = cat[product];
-            //construire une vignette
-            var vignetteProduct = new VignetteRayon(data.image, data.nom, data.prix,data.complement, catTitle);
-            //ajouter la vignette au tableau
-            tabVignettes.push(vignetteProduct);
-        }
-        return tabVignettes;
-    }
-
-    function makeVignettesForCategories(){
-
-    }
 
     ///Functions///
-
     function changeRay(name)
     {
-        let tab =  makeVignettesForRay(name);
+        let tab =  param.data.makeVignettesForRay(name,VignetteRayon);
         if(categories.rayonTranslation!=null)
         {
             market.remove(categories.rayonTranslation);
@@ -817,7 +781,7 @@ exports.main = function(svg,gui,param) {
     /////Déclaration Interface////
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
-    let categories = new ListeCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,vignettes);
+    let categories = new ListeCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
     let panier = new Panier(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
     let zonePanier = new svg.Translation().add(panier.component).mark("basket");

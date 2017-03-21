@@ -499,7 +499,36 @@ describe("Test",function (){
         assert.ok(card);
         runtime.event(card,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        runtime.event(card,"mouseup",{ pageX:5, pageY:5});
+        let tmp = retrieve(market.component,"[payment].[tmp]");
+        assert.ok(tmp);
+        runtime.event(tmp,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+
+        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        runtime.advanceAll();
+        let tmp3 = retrieve(market.component,"[payment].[tmp]");
+        assert.ok(tmp);
+        runtime.event(tmp3,"mousemove",{pageX:market.width*0.80+6,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(tmp3,"mouseup",{ pageX:market.width*0.80+6,pageY:market.height*0.90});
+        runtime.advanceAll();
+
+        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        runtime.advanceAll();
+        let tmp2 = retrieve(market.component,"[payment].[tmp]");
+        assert.ok(tmp);
+        runtime.event(tmp2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(tmp2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+
+        runtime.event(card,"mousedown",{pageX:market.width*0.90,pageY:market.height*0.90});
+        runtime.advanceAll();
+        let tmp4 = retrieve(market.component,"[payment].[tmp]");
+        assert.ok(tmp);
+        runtime.event(tmp4,"mousemove",{pageX:market.width*0.90-60,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(tmp4,"mouseup",{ pageX:market.width*0.90-60,pageY:market.height*0.90});
         runtime.advanceAll();
     });
 });

@@ -23,10 +23,9 @@
 
         let DATA = require("data").data;
         let data = DATA();
-        let jsonProduits = data.getJson();
         let GUI = require("lib/svggui").Gui;
         let svg = SVG(targetRuntime());
-        main(SVG(targetRuntime()),GUI((svg),""),{jsonData : jsonProduits});
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data});
     </script>
     
 </body>

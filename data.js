@@ -28,7 +28,7 @@ exports.data = function() {
                 }
             },
 
-            "Légumes": {
+            "Legumes": {
                 "Carottes": {
                     image: "img/produits/Legumes/carotte.jpg",
                     prix: 1,
@@ -361,5 +361,42 @@ exports.data = function() {
             }
         }
     }
-    return {getJson : getJson};
+
+    /////////// MANAGE JSON
+    // Make vignettes tab for a category
+    function makeVignettesForRay(catTitle,typeVig){
+        let jsonData = getJson();
+        var tabVignettes = [];
+        // mettre le tableau de product dans une variable
+        var cat = jsonData[catTitle];
+        //pour chaque produit dans categorie,
+        for (var product in cat){
+            //mettre la valeur de img dans une var
+            var data = cat[product];
+            //construire une vignette
+            var vignetteProduct = new typeVig(data.image, data.nom, data.prix,data.complement, catTitle);
+            //ajouter la vignette au tableau
+            tabVignettes.push(vignetteProduct);
+        }
+        return tabVignettes;
+    }
+
+    function makeVignettesForCategories(typeVig){
+        let jsonData = getJson();
+        var tabVignettes = [];
+        // mettre le tableau de product dans une variable
+        var cat = jsonData;
+        //pour chaque produit dans categorie,
+        for (var product in cat){
+            let name = product.toLowerCase();
+            name = name.replace(/ /g,"");
+            //ajouter la vignette au tableau
+            tabVignettes.push(new typeVig("img/categories/"+name+".jpg","img/categories/"+name+"2.jpg",product));
+        }
+        return tabVignettes;
+    }
+
+    return {    getJson : getJson,
+                makeVignettesForRay:makeVignettesForRay,
+                makeVignettesForCategories:makeVignettesForCategories};
 };
