@@ -2,6 +2,7 @@ exports.main = function(svg,gui,param) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
+    let glassDnD = new svg.Translation().mark("Glass");
 
     ///////////////BANDEAUX/////////////////
 	class Bandeau {
@@ -37,23 +38,7 @@ exports.main = function(svg,gui,param) {
                
                 //GESTION SELECTION//
                 tabVignettes[i].component.onClick(function(){
-                    let tab =  makeVignettesForCategory(current.name);
-                    if(self.rayonTranslation!=null)
-                    {
-                        market.remove(self.rayonTranslation);
-                    }
-                    self.rayon = new ListeRayons(market.width*0.85,market.height*0.75,0,market.height/4,tab,current.name);
-                    self.rayonTranslation = new svg.Translation().add(self.rayon.component).mark("Rayon " + current.name);
-                    market.add(self.rayonTranslation);
-
-
-                    for(let v=0;v<tabVignettes.length;v++)
-                    {
-                        tabVignettes[v].pictogramme.opacity(1);
-                        tabVignettes[v].pictogramme2.opacity(0);
-                    }
-                    current.pictogramme.opacity(0);
-                    current.pictogramme2.opacity(1);
+                    changeRay(current.name);
                 });
 
                 tabVignettes[i].component.onMouseEnter(function(){
@@ -165,7 +150,7 @@ exports.main = function(svg,gui,param) {
                 });
 
                 currentN.component.onMouseDown(function(e){
-                    dragRayon(e,currentN,1);
+                    self.dragRayon(e,currentN,1);
                 });
                 
                 if(i+1<tabVignettesR.length)
@@ -191,7 +176,7 @@ exports.main = function(svg,gui,param) {
                     });
 
                     currentS.component.onMouseDown(function(e){
-                        dragRayon(e,currentS,0);
+                        self.dragRayon(e,currentS,0);
                     });
                 }
                 place++;
@@ -258,7 +243,38 @@ exports.main = function(svg,gui,param) {
                 this.component.add(whiteComplementary);
             }
         }
-         
+
+        dragRayon(e,current,placement) {
+            let tmp = new Vignette(current.pictogramme.src, current.name);
+            tmp.placeElementsDnD(current);
+            tmp.move(current.x, current.y);
+            tmp.component.opacity(0.9).mark("tmp");
+            if (placement === 1) {
+                categories.rayon.listeVignetteH.add(tmp.component);
+            } else {
+                categories.rayon.listeVignetteB.add(tmp.component);
+            }
+
+            gui.installDnD(tmp, glassDnD, {
+                moved: function (tmp) {
+                    if ((market.width * 0.85 - e.pageX < tmp.x - current.x) && (tmp.y + tmp.height / 2 < market.height * 0.5)) {
+                        panier.ajouterProduits(current);
+                    }
+                },
+                revert: function (tmp) {
+                    if (placement === 1) {
+                        categories.rayon.listeVignetteH.remove(tmp.component);
+                    } else {
+                        categories.rayon.listeVignetteB.remove(tmp.component);
+                    }
+                },
+                clicked: function () {
+                    panier.ajouterProduits(current);
+                }
+            });
+            svg.event(tmp.component, 'mousedown', e);
+            market.add(glassDnD);
+        }
     }
     
     class Panier extends Bandeau {
@@ -297,7 +313,6 @@ exports.main = function(svg,gui,param) {
             let chevH = this.zoneChevronH;
             let zone = this.listeProduits;
             let tab = this.vignettesProduits;
-            let pPrice = this.printPrice;
 
             this.zoneChevronH.onClick(function() {
                 if ((zone.y + height / 2) < 0) {
@@ -352,8 +367,8 @@ exports.main = function(svg,gui,param) {
         ajouterProduits(vignette) {
 
             let newProd = new VignettePanier(vignette.pictogramme.src, vignette.name, vignette.price, vignette.complement, vignette.categorie);
-            let width = this.component.width;
             let occur=0;
+            let self =this;
 
             if (this.vignettesProduits.length > 0) {
 
@@ -380,7 +395,7 @@ exports.main = function(svg,gui,param) {
             }
 
             newProd.component.onMouseDown(function(e){
-                dragBasket(e,newProd);
+                self.dragBasket(e,newProd);
             });
 
             this.calculerPrix(newProd.price);
@@ -432,6 +447,42 @@ exports.main = function(svg,gui,param) {
                 this.calculerPrix(-((vignette.price)*numberProduct));
             }
         }
+
+        dragBasket(e,current) {
+            let tmp = new Vignette(current.pictogramme.src,current.name);
+            tmp.placeElementsDnD(current);
+            tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
+            tmp.cross.smoothy(1,1).rotateTo(-45);
+            tmp.cross.position(tmp.width*0.55,tmp.height*0.71).opacity(1);
+            tmp.component.add(tmp.cross);
+            tmp.cross.onMouseUp(function(){
+                panier.supprimerProduit(current,current.quantity);
+            });
+
+            tmp.move(current.x,current.y);
+            tmp.component.opacity(0.9).mark("tmp");
+            panier.listeProduits.add(tmp.component);
+
+            gui.installDnD(tmp,glassDnD,{
+                moved:
+                    function(tmp){
+                        if((tmp.x+tmp.width/2<0)&&(tmp.y+tmp.height/2>market.height*0.20)){
+                            panier.supprimerProduit(current, 1);
+                            changeRay(current.categorie);
+                        }
+                    },
+                revert:
+                    function(tmp){
+                        panier.listeProduits.remove(tmp.component);
+                    },
+                clicked :
+                    function(){
+                        changeRay(current.categorie);
+                    }
+            });
+            svg.event(tmp.component, 'mousedown', e);
+            market.add(glassDnD);
+        }
     }
     
     class Header extends Bandeau{
@@ -450,9 +501,13 @@ exports.main = function(svg,gui,param) {
             super(width,height,x,y);
             this.fond = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE,2,svg.BLACK);
             this.card = new svg.Image("img/Carte-Visa-Classic.png").dimension(width/2,height/3).position(width*0.75,height/2).mark("card");
-            this.tpeFond = new svg.Image("img/tpeFond.png").dimension(width/2,height*0.75).position(width*0.25,height/2);
-            this.tpe = new svg.Image("img/tpe.png").dimension(width/2,height*0.75).position(width*0.25,height/2);
+            this.tpeFond = new svg.Image("img/tpeFond.png").dimension(width/2,height*0.75).position(width*0.3,height/2);
+            this.tpe = new svg.Image("img/tpe.png").dimension(width/2,height*0.75).position(width*0.3,height/2);
             this.glassDnd = new svg.Translation();
+
+            this.width = width;
+            this.height = height;
+            this.cardIn = false;
 
             this.component.add(this.fond);
             this.component.add(this.tpeFond);
@@ -468,26 +523,70 @@ exports.main = function(svg,gui,param) {
 
         dragCard(e)
         {
-            let qsd = new test();
-            qsd.component.add(this.card);
+            let tmp = new Object();
+            let self = this;
 
-            gui.installDnD(qsd,this.glassDnd,{
+            tmp.x = 0;
+            tmp.events = [];
+            tmp.addEvent = function(eventName, handler) {
+                svg.addEvent(this.component, eventName, handler);
+                this.events[eventName] = handler;
+                return this;
+            };
+            tmp.move = function(x){
+                this.x = x;
+                this.component.move(x,0);
+                if((this.x<-(self.width*0.1))&&(self.cardIn==false))
+                {
+                    svg.event(tmp.component, 'mouseup', e);
+                    self.card.position(self.width*0.50,self.height/2);
+                    self.cardIn=true;
+                    self.showCode();
+                }
+                else if((this.x>(self.width*0.1))&&(self.cardIn==true))
+                {
+                    svg.event(tmp.component, 'mouseup', e);
+                    self.card.position(self.width*0.75,self.height/2);
+                    self.cardIn=false;
+                }
+            };
+
+            tmp.removeEvent = function(eventName){
+                svg.removeEvent(this.component, eventName);
+                delete this.events[eventName];
+                return this;
+            };
+
+            tmp.component = new svg.Translation();
+            tmp.component.add(new svg.Image(this.card.src).dimension(this.width/2,this.height/3).position(this.card.x,this.card.y));
+
+            this.component.add(tmp.component);
+            this.card.opacity(0);
+
+            this.component.add(this.glassDnd);
+            this.component.add(this.tpe);
+
+            gui.installDnD(tmp,this.glassDnd,{
                 moved:
                     function(tmp){
-
+                        self.card.opacity(1);
                     },
                 revert:
                     function(tmp){
-
+                        self.component.remove(tmp.component);
                     },
                 clicked :
-                    function(){
-
+                    function(tmp){
+                        self.card.opacity(1);
                     }
             });
-            svg.event(tmp, 'mousedown', e);
+            svg.event(tmp.component, 'mousedown', e);
         }
 
+        showCode()
+        {
+
+        }
 
     }
     ///////////////////////////////////////
@@ -530,12 +629,6 @@ exports.main = function(svg,gui,param) {
             this.y = y;
             this.component.move(x,y);
         }
-
-       /* dimension(width,height)
-        {
-            this.width = width;
-            this.height= height;
-        }*/
 
         placeElementsDnD(current)
         {
@@ -675,7 +768,7 @@ exports.main = function(svg,gui,param) {
 
     /////////// MANAGE JSON
     // Make vignettes tab for a category
-    function makeVignettesForCategory(catTitle){
+    function makeVignettesForRay(catTitle){
         var tabVignettes = [];
         // mettre le tableau de product dans une variable
         var cat = param.jsonData[catTitle];
@@ -691,93 +784,28 @@ exports.main = function(svg,gui,param) {
         return tabVignettes;
     }
 
+    function makeVignettesForCategories(){
+
+    }
+
     ///Functions///
-    let glassDnD = new svg.Translation().mark("Glass");
 
-    function dragRayon(e,current,placement) {
-        let tmp = new Vignette(current.pictogramme.src,current.name);
-        tmp.placeElementsDnD(current);
-        tmp.move(current.x,current.y);
-        tmp.component.opacity(0.9).mark("tmp");
-        if(placement === 1){
-            categories.rayon.listeVignetteH.add(tmp.component);
-        }else{
-            categories.rayon.listeVignetteB.add(tmp.component);
-        }
-
-        gui.installDnD(tmp,glassDnD,{
-            moved:
-                function(tmp){
-                    if((market.width*0.85-e.pageX<tmp.x-current.x)&&(tmp.y+tmp.height/2<market.height*0.5)){
-                        panier.ajouterProduits(current);
-                    }
-                },
-            revert:function(tmp){
-                if(placement === 1){
-                    categories.rayon.listeVignetteH.remove(tmp.component);
-                }else{
-                    categories.rayon.listeVignetteB.remove(tmp.component);
-                }
-            },
-            clicked :
-                function(){
-                    panier.ajouterProduits(current);
-                }
-        });
-        svg.event(tmp.component, 'mousedown', e);
-        market.add(glassDnD);
-    }
-
-    function dragBasket(e,current) {
-        let tmp = new Vignette(current.pictogramme.src,current.name);
-        tmp.placeElementsDnD(current);
-        tmp.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
-        tmp.cross.smoothy(1,1).rotateTo(-45);
-        tmp.cross.position(tmp.width*0.55,tmp.height*0.71).opacity(1);
-        tmp.component.add(tmp.cross);
-        tmp.cross.onMouseUp(function(){
-            panier.supprimerProduit(current,current.quantity);
-        });
-
-        tmp.move(current.x,current.y);
-        tmp.component.opacity(0.9).mark("tmp");
-
-        panier.listeProduits.add(tmp.component);
-
-        gui.installDnD(tmp,glassDnD,{
-            moved:
-                function(tmp){
-                    if((tmp.x+tmp.width/2<0)&&(tmp.y+tmp.height/2>market.height*0.20)){
-                        panier.supprimerProduit(current, 1);
-                        changeRay(current);
-                    }
-                },
-            revert:
-                function(tmp){
-                panier.listeProduits.remove(tmp.component);
-            },
-            clicked :
-                function(){
-                    changeRay(current);
-                }
-        });
-        svg.event(tmp.component, 'mousedown', e);
-        market.add(glassDnD);
-    }
-
-    function changeRay(vignette)
+    function changeRay(name)
     {
-        let tab =  makeVignettesForCategory(vignette.categorie);
-        market.remove(categories.rayonTranslation);
-        categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, vignette.categorie);
-        categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + vignette.categorie);
+        let tab =  makeVignettesForRay(name);
+        if(categories.rayonTranslation!=null)
+        {
+            market.remove(categories.rayonTranslation);
+        }
+        categories.rayon = new ListeRayons(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
+        categories.rayonTranslation = new svg.Translation().add(categories.rayon.component).mark("Rayon " + name);
         market.add(categories.rayonTranslation);
 
         for(let v=0;v<categories.tabCategories.length;v++)
         {
             categories.tabCategories[v].pictogramme.opacity(1);
             categories.tabCategories[v].pictogramme2.opacity(0);
-            if(categories.tabCategories[v].name==vignette.categorie)
+            if(categories.tabCategories[v].name==name)
             {
                 categories.tabCategories[v].pictogramme.opacity(0);
                 categories.tabCategories[v].pictogramme2.opacity(1);
