@@ -78,6 +78,13 @@
 
   "Super Pouvoirs" : {
     "Superman" : "img/produits/SuperPouvoirs/Superman.png",
-    "Flash" : "img/produits/SuperPouvoirs/Flash.png"
-  }
+    "Flash" : "img/produits/SuperPouvoirs/Flash.png",
+    "Hulk" : "img/produits/SuperPouvoirs/hulk.png",
+    "Batman" : "img/produits/SuperPouvoirs/batman.png",
+    "Wonderwoman" : "img/produits/SuperPouvoirs/wonder-woman.png",
+    "Green Lantern" : "img/produits/SuperPouvoirs/green-lantern.png",
+    "Daredevil" : "img/produits/SuperPouvoirs/daredevil.png",
+    "Iron Man" : "img/produits/SuperPouvoirs/iron man.png",
+    "Shazam" : "img/produits/SuperPouvoirs/shazam.png",
+    "Spiderman" : "img/produits/SuperPouvoirs/spiderman.png"
 }

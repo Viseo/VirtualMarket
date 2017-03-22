@@ -35,7 +35,6 @@ exports.main = function(svg,gui,param) {
                 current.placeElements();
                 current.move(height*i,0);
                 listThumbnail.add(current.component);
-                /////////////////////
             }
             this.component.add(listThumbnail);
 
@@ -386,9 +385,9 @@ exports.main = function(svg,gui,param) {
         dragBasket(e,current) {
             let dragged = new Thumbnail(current.image.src,current.name);
             dragged.placeElementsDnD(current);
-            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
+            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
             dragged.cross.smoothy(1,1).rotateTo(-45);
-            dragged.cross.position(dragged.width*0.55,dragged.height*0.71).opacity(1);
+            dragged.cross.position(dragged.width*0.55,dragged.height*0.71);
             dragged.component.add(dragged.cross);
             dragged.cross.onMouseUp(function(){
                 basket.deleteProducts(current,current.quantity);
@@ -425,7 +424,10 @@ exports.main = function(svg,gui,param) {
         {
             super(width,height,x,y);
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE,2,svg.BLACK));
-            this.component.add(new svg.Text("DIGI Market").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
+            this.component.add(new svg.Text("Digi-Market").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
+            this.micro = new svg.Image("img/microphone.png");
+            this.component.add(this.micro);
+            this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
         }
     }
     
@@ -524,6 +526,29 @@ exports.main = function(svg,gui,param) {
         }*/
 
     }
+
+    // class Code {
+	 //    constructor(width,height,x,y)
+    //     {
+    //         this.component = new svg.Translation();
+    //         this.title = new svg.Text("Saisir le code de sécurité ");
+    //         this.component.add(this.title);
+    //         this.code = new svg.text()
+    //
+    //
+    //         this.x = 0;
+    //         this.y = 0;
+    //         this.component.move(x,y);
+    //         this.width = width;
+    //         this.height = height;
+    //
+    //     }
+    //
+    //     placeElements()
+    //     {
+    //         this.title.position(this.width/2,this.height*0.1).font("calibri", 20, 1).color(svg.BLACK);
+    //     }
+    // }
     ///////////////////////////////////////
     
     ////////////VIGNETTES//////////////////
@@ -620,8 +645,6 @@ exports.main = function(svg,gui,param) {
             this.highlightedImage.position(this.width/2,this.height/2+2).dimension(this.width,this.height).mark(this.name+"2");
             this.title.position(this.height/2,this.height*0.93).font("Calibri",15,1).color(svg.WHITE).mark(this.name + " title");
         }
-
-
 	}
 
 	class ThumbnailRayon extends Thumbnail {
@@ -681,7 +704,9 @@ exports.main = function(svg,gui,param) {
             this.line = new svg.Line(0,0,0,0);
             this.component.add(this.line);
 
-            this.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0);
+
+            this.cross = new svg.Image("img/icone-supprimer.jpg");
+
             this.component.add(this.cross);
 
             this.component.mark(this.name);
@@ -732,15 +757,13 @@ exports.main = function(svg,gui,param) {
             this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
             this.background.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("background "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-            this.cross.position(this.width*0.55,this.height*0.71).mark("cross "+this.name);
-            this.cross.smoothy(1,1).rotateTo(-45);
+            this.cross.position(this.width*0.90,this.height*0.1).mark("cross "+this.name).dimension(this.width*0.1,this.height*0.1).opacity(0);
         }
     }
     //////////////////////////////////////
 
     ///Functions///
-    function changeRay(name)
-    {
+    function changeRay(name){
         let tab =  param.data.makeVignettesForRay(name,ThumbnailRayon);
         if(categories.rayTranslation!=null)
         {
@@ -776,6 +799,7 @@ exports.main = function(svg,gui,param) {
     market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
     market.add(glassDnD);
 
+    changeRay("HighTech");
     return market;
 	//////////////////////////////
 };
