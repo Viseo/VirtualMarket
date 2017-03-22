@@ -10,7 +10,7 @@ function getTabVignettes(jsonCat){
 
     for (var x in jsonCat){
         //index.push(x);
-        let fgtdt = new superM.VignetteRayon("img/produits/ProduitsLaitiers/lait.jpg","Lait",2," l'unité",x);
+        let fgtdt = new superM.ThumbnailRayon("img/produits/ProduitsLaitiers/lait.jpg","Lait",2," l'unité",x);
         switch(x)
         {
             case "Produits laitiers" :
