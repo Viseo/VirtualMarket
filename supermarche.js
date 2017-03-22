@@ -117,66 +117,56 @@ exports.main = function(svg,gui,param) {
             }
             this.component.add(this.listThumbnailsDown).add(this.listThumbnailsUp);
 
-            if(width<height/2*Math.ceil(tabThumbnail.length/2)) {
+            let chevronWest = new svg.Chevron(20, 70, 3, "W").position(30, this.component.height / 2).color(svg.WHITE);
+            let chevronEast = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
+            let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
+                                                            .position(30, this.component.height / 2);
+            let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
+                                                            .position(this.component.width - 30, this.component.height / 2);
+            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0.2).mark("chevronWRay");
+            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).mark("chevronERay");
 
-                let chevronWest = new svg.Chevron(20, 70, 3, "W").position(30, this.component.height / 2).color(svg.WHITE);
-                let chevronEast = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
-                let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                                .position(30, this.component.height / 2);
-                let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                                .position(this.component.width - 30, this.component.height / 2);
-                let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0.2).mark("chevronWRay");
-                let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).mark("chevronERay");
+            zoneChevronWest.onClick(function () {
+                if (self.listThumbnailsUp.x + height*2 <= 0) {
+                    self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(self.listThumbnailsUp.x+height,self.listThumbnailsUp.y);
+                    self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(self.listThumbnailsDown.x+height,self.listThumbnailsUp.y);
+                    zoneChevronEast.opacity(1);
+                }
+                else {
+                    self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(0, self.listThumbnailsUp.y);
+                    if (tabThumbnail.length % 2 != 0) {
+                        self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(0, self.listThumbnailsDown.y);
+                    }
+                    else{
+                        self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(0, self.listThumbnailsDown.y);
+                    }
+                    zoneChevronWest.opacity(0.2);
+                    zoneChevronEast.opacity(1);
+                }
+            });
 
-                zoneChevronWest.onClick(function () {
-                    if (self.listThumbnailsUp.x + height*2 <= 0) {
-                        self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(self.listThumbnailsUp.x+height,self.listThumbnailsUp.y);
-                        self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(self.listThumbnailsDown.x+height,self.listThumbnailsUp.y);
-                        zoneChevronEast.opacity(1);
+            zoneChevronEast.onClick(function () {
+                let widthView = width;
+                let widthTotalH = height / 2 * Math.ceil(tabThumbnail.length / 2);
+                let positionRightH = self.listThumbnailsUp.x + widthTotalH;
+                if (positionRightH - height*2 >= widthView) {
+                    self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(self.listThumbnailsUp.x - height, self.listThumbnailsUp.y);
+                    self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(self.listThumbnailsDown.x - height, self.listThumbnailsDown.y);
+                    zoneChevronWest.opacity(1);
+                }
+                else {
+                    self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(widthView - widthTotalH, self.listThumbnailsUp.y);
+                    if (tabThumbnail.length % 2 != 0) {
+                        self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(widthView - widthTotalH + height/2, self.listThumbnailsDown.y);
                     }
-                    else {
-                        self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(0, self.listThumbnailsUp.y);
-                        if (tabThumbnail.length % 2 != 0) {
-                            self.listThumbnailsDown.smoothy(10, 20).onChannel("rayUp").moveTo(0, self.listThumbnailsDown.y);
-                        }
-                        else{
-                            self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(0, self.listThumbnailsDown.y);
-                        }
-                        zoneChevronWest.opacity(0.2);
-                        zoneChevronEast.opacity(1);
+                    else{
+                        self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(widthView - widthTotalH, self.listThumbnailsDown.y);
                     }
-                });
-
-                zoneChevronEast.onClick(function () {
-                    let widthView = width;
-                    let widthTotalH = height / 2 * Math.ceil(tabThumbnail.length / 2);
-                    let positionRightH = self.listThumbnailsUp.x + widthTotalH;
-                    if (positionRightH - height*2 >= widthView) {
-                        self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(self.listThumbnailsUp.x - height, self.listThumbnailsUp.y);
-                        self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(self.listThumbnailsDown.x - height, self.listThumbnailsDown.y);
-                        zoneChevronWest.opacity(1);
-                    }
-                    else {
-                        self.listThumbnailsUp.smoothy(10, 20).onChannel("rayUp").moveTo(widthView - widthTotalH, self.listThumbnailsUp.y);
-                        if (tabThumbnail.length % 2 != 0) {
-                            self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(widthView - widthTotalH + height/2, self.listThumbnailsDown.y);
-                        }
-                        else{
-                            self.listThumbnailsDown.smoothy(10, 20).onChannel("rayDown").moveTo(widthView - widthTotalH, self.listThumbnailsDown.y);
-                        }
-                        zoneChevronEast.opacity(0.2);
-                        zoneChevronWest.opacity(1);
-                    }
-                });
-                this.component.add(zoneChevronEast).add(zoneChevronWest);
-            }
-            else
-            {
-                let whiteComplementary = new svg.Rect(width-(height/2*Math.ceil(tabThumbnail.length/2)),height)
-                    .position(height/2*Math.ceil(tabThumbnail.length/2)+(width-(height/2*Math.ceil(tabThumbnail.length/2)))/2,height/2)
-                    .color(svg.WHITE);
-                this.component.add(whiteComplementary);
-            }
+                    zoneChevronEast.opacity(0.2);
+                    zoneChevronWest.opacity(1);
+                }
+            });
+            this.component.add(zoneChevronEast).add(zoneChevronWest);
         }
 
         dragRayon(e,current,placement) {
@@ -222,17 +212,16 @@ exports.main = function(svg,gui,param) {
             
             this.listProducts = new svg.Translation().mark("listBasket");
             this.component.add(this.listProducts);
-            this.ThumbnailsProducts = [];
+            this.thumbnailsProducts = [];
 
             this.zoneTotal = new svg.Rect(width, height * 0.1).position(width / 2, height * 0.95);
             this.zoneTotal.color(svg.WHITE, 2, svg.BLACK);
             this.component.add(this.zoneTotal);
 
-            this.total = new svg.Text("Total: ").position(width / 4, height * 0.96).font("calibri", 20, 1).color(svg.BLACK);
-
+            this.total = new svg.Text("Total: ");
             this.component.add(this.total);
             this.totalPrice = 0;
-            this.printPrice = new svg.Text(this.totalPrice).position(width / 2, height * 0.96).font("calibri", 20, 1).color(svg.BLACK);
+            this.printPrice = new svg.Text(this.totalPrice);
             this.component.add(this.printPrice);
 
             let chevronUp = new svg.Chevron(70, 20, 3, "N").position(this.component.width / 2, 50).color(svg.WHITE);
@@ -247,7 +236,7 @@ exports.main = function(svg,gui,param) {
             let chevDown = this.zoneChevronDown;
             let chevUp = this.zoneChevronUp;
             let zone = this.listProducts;
-            let tab = this.ThumbnailsProducts;
+            let tab = this.thumbnailsProducts;
 
             this.zoneChevronUp.onClick(function() {
                 if ((zone.y + height / 2) < 0) {
@@ -277,6 +266,8 @@ exports.main = function(svg,gui,param) {
                 }
             });
             this.component.add(this.zoneChevronUp).add(this.zoneChevronDown);
+
+            this.calculatePrice(0);
         }
 
         calculatePrice(price) {
@@ -285,15 +276,15 @@ exports.main = function(svg,gui,param) {
             this.component.remove(this.total);
             if(this.totalPrice>10000){
                 this.printPrice = new svg.Text(this.totalPrice.toFixed(2) + " €").position(this.component.width * 0.65, this.zoneTotal.y + 10)
-                    .font("calibri", 25, 1).color(svg.BLACK).mark("bigPrice");
+                    .font("calibri", this.zoneTotal.height*0.40, 1).color(svg.BLACK).mark("bigPrice");
                 this.total = new svg.Text("TOTAL").position(this.component.width / 5, this.zoneTotal.y + 10)
-                    .font("calibri", 25, 1).color(svg.BLACK);
+                    .font("calibri", this.zoneTotal.height*0.40, 1).color(svg.BLACK);
             }
             else{
-                this.printPrice = new svg.Text(this.totalPrice.toFixed(2) + " €").position(this.component.width * 0.75, this.zoneTotal.y + 10)
-                    .font("calibri", 30, 1).color(svg.BLACK).mark("Price");
+                this.printPrice = new svg.Text(this.totalPrice.toFixed(2) + " €").position(this.component.width * 0.70, this.zoneTotal.y + 10)
+                    .font("calibri", this.zoneTotal.height*0.50, 1).color(svg.BLACK).mark("Price");
                 this.total = new svg.Text("TOTAL").position(this.component.width / 4, this.zoneTotal.y + 10)
-                    .font("calibri", 30, 1).color(svg.BLACK);
+                    .font("calibri", this.zoneTotal.height*0.50, 1).color(svg.BLACK);
             }
             this.component.add(this.total);
             this.component.add(this.printPrice);
@@ -305,9 +296,9 @@ exports.main = function(svg,gui,param) {
             let occur=0;
             let self =this;
 
-            if (this.ThumbnailsProducts.length > 0) {
+            if (this.thumbnailsProducts.length > 0) {
 
-                for (let product of this.ThumbnailsProducts) {
+                for (let product of this.thumbnailsProducts) {
                     if (product.name == thumbnail.name) {
                         // alert("ok");
                         product.addQuantity(1);
@@ -320,13 +311,13 @@ exports.main = function(svg,gui,param) {
                     // alert('pas OK');
                     newProd.addQuantity(1);
                     this.listProducts.add(newProd.component);
-                    this.ThumbnailsProducts.push(newProd);
+                    this.thumbnailsProducts.push(newProd);
                 }
             }
             else{
                 newProd.addQuantity(1);
                 this.listProducts.add(newProd.component);
-                this.ThumbnailsProducts.push(newProd);
+                this.thumbnailsProducts.push(newProd);
             }
 
             newProd.component.onMouseDown(function(e){
@@ -335,17 +326,17 @@ exports.main = function(svg,gui,param) {
 
             this.calculatePrice(newProd.price);
 
-            if (this.ThumbnailsProducts.length < 2 && occur==0) {
+            if (this.thumbnailsProducts.length < 2 && occur==0) {
                 newProd.placeElements();
                 newProd.move(0,0);
             }
             else {
                 if(occur==0){
-                    if(this.ThumbnailsProducts.length>2)
+                    if(this.thumbnailsProducts.length>2)
                     {
                         this.zoneChevronDown.opacity(0.5);
                     }
-                    let ref = this.ThumbnailsProducts[this.ThumbnailsProducts.length-2];
+                    let ref = this.thumbnailsProducts[this.thumbnailsProducts.length-2];
                     newProd.placeElements();
                     newProd.move(0,ref.y+ref.height);
                 }
@@ -362,20 +353,22 @@ exports.main = function(svg,gui,param) {
             thumbnail.changeText(newText);
 
             if(thumbnail.quantity ==0){
-                if (this.ThumbnailsProducts.indexOf(thumbnail)==this.ThumbnailsProducts.length-1 &&this.ThumbnailsProducts.length-1>2){
-                    let heightZone=this.ThumbnailsProducts.length * this.ThumbnailsProducts[0].height;
-                    this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x,(height*0.9-heightZone+this.ThumbnailsProducts[0].height ));
-                }else if(this.ThumbnailsProducts.length-1<=2){
+                if (this.thumbnailsProducts.indexOf(thumbnail)==this.thumbnailsProducts.length-1
+                                        ||(this.thumbnailsProducts.indexOf(thumbnail)==this.thumbnailsProducts.length-2)
+                                        && this.thumbnailsProducts.length-1>2 ){
+                    let heightZone=this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
+                    this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x,(height*0.9-heightZone+this.thumbnailsProducts[0].height ));
+                }else if(this.thumbnailsProducts.length-1<=2){
                     this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x, 0);
                     chevB.opacity(0);
                     chevH.opacity(0);
                 }
                 this.listProducts.remove(thumbnail.component);
-                this.ThumbnailsProducts.splice(this.ThumbnailsProducts.indexOf(thumbnail), 1);
+                this.thumbnailsProducts.splice(this.thumbnailsProducts.indexOf(thumbnail), 1);
                 this.calculatePrice(-((thumbnail.price)*numberProduct));
-                for (let product of this.ThumbnailsProducts) {
+                for (let product of this.thumbnailsProducts) {
                     product.placeElements();
-                    product.move(0,this.ThumbnailsProducts.indexOf(product)*(product.height));
+                    product.move(0,this.thumbnailsProducts.indexOf(product)*(product.height));
                 }
             }else {
                 this.calculatePrice(-((thumbnail.price)*numberProduct));
@@ -424,7 +417,7 @@ exports.main = function(svg,gui,param) {
         {
             super(width,height,x,y);
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE,2,svg.BLACK));
-            this.component.add(new svg.Text("Digi-Market").position(100,height/2+5).font("Calibri",20,1).color(svg.WHITE));
+            this.component.add(new svg.Text("Digi-Market").position(100,height*0.75).font("Calibri",this.component.height*0.75,1).color(svg.WHITE));
             this.micro = new svg.Image("img/microphone.png");
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);

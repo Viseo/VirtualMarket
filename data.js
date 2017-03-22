@@ -2,7 +2,7 @@ exports.data = function() {
     function getJson() {
         return {
             "Produits laitiers": {
-                Lait: {
+                "Lait": {
                     image: "img/produits/ProduitsLaitiers/lait.jpg",
                     prix: 15,
                     nom: "lait",
@@ -14,7 +14,7 @@ exports.data = function() {
                     nom: "Camembert",
                     complement: " l'unite",
                 },
-                "Oeufs": {
+                "Oeuf": {
                     image: "img/produits/ProduitsLaitiers/oeuf.jpg",
                     prix: 3,
                     nom: "oeuf",
@@ -56,7 +56,7 @@ exports.data = function() {
                     nom: "Yop Chocolat",
                     complement: " l'unite",
                 },
-                "Danette Chcoloat" : {
+                "Danette Chocolat" : {
                     image:"img/produits/ProduitsLaitiers/danettechocolat.jpg",
                     prix: 1,
                     nom: "Danette Chocolat",
@@ -66,10 +66,10 @@ exports.data = function() {
             },
 
             "Legumes": {
-                "Carottes": {
+                "Carotte": {
                     image: "img/produits/Legumes/carotte.jpg",
                     prix: 1,
-                    nom: "Carottes",
+                    nom: "Carotte",
                     complement: "/kilo",
                 },
                 "Chou": {
@@ -90,10 +90,10 @@ exports.data = function() {
                     nom: "Courgette",
                     complement: "/kilo",
                 },
-                "Haricots Verts": {
+                "Haricot Vert": {
                     image: "img/produits/Legumes/Haricot vert.jpg",
                     prix: 1,
-                    nom: "Haricots Verts",
+                    nom: "Haricot Vert",
                     complement: "/kilo",
                 },
                 "Oignon": {
@@ -102,16 +102,16 @@ exports.data = function() {
                     nom: "Oignon",
                     complement: "/kilo",
                 },
-                "Pommes de terre": {
+                "Pomme de terre": {
                     image: "img/produits/Legumes/Pomme de terre.jpg",
                     prix: 1,
                     nom: "Pomme de terre",
                     complement: "/kilo",
                 },
-                "Tomates": {
+                "Tomate": {
                     image: "img/produits/Legumes/Tomates.jpg",
                     prix: 1,
-                    nom: "Tomates",
+                    nom: "Tomate",
                     complement: "/kilo",
                 },
                 "Aubergine": {
@@ -120,19 +120,19 @@ exports.data = function() {
                     nom: "Aubergine",
                     complement: "/kilo",
                 },
-                "Poireaux": {
+                "Poireau": {
                     image: "img/produits/Legumes/poireau.jpg",
                     prix: 1,
-                    nom: "Poireaux",
+                    nom: "Poireau",
                     complement: "/kilo",
                 },
             },
 
             "Fruits": {
-                "Bananes": {
+                "Banane": {
                     image: "img/produits/Fruits/Bananes.jpg",
                     prix: 1.1,
-                    nom: "Bananes",
+                    nom: "Banane",
                     complement: "/kilo",
                 },
                 "Citron vert": {
@@ -141,22 +141,22 @@ exports.data = function() {
                     nom: "Citron vert",
                     complement: "/kilo",
                 },
-                "Clementines": {
+                "Clementine": {
                     image: "img/produits/Fruits/Clementines.jpg",
                     prix: 1,
-                    nom: "Clementines",
+                    nom: "Clementine",
                     complement: "/kilo",
                 },
-                "Fraises": {
+                "Fraise": {
                     image: "img/produits/Fruits/Fraises.jpg",
                     prix: 1,
-                    nom: "Fraises",
+                    nom: "Fraise",
                     complement: "/kilo",
                 },
-                "Framboises": {
+                "Framboise": {
                     image: "img/produits/Fruits/Framboises.jpg",
                     prix: 1,
-                    nom: "Framboises",
+                    nom: "Framboise",
                     complement: "/kilo",
                 },
                 "Kiwi": {
@@ -177,19 +177,72 @@ exports.data = function() {
                     nom: "Orange",
                     complement: "/kilo",
                 },
-                "Poires": {
+                "Poire": {
                     image: "img/produits/Fruits/Poires.jpg",
                     prix: 1,
-                    nom: "Poires",
+                    nom: "Poire",
                     complement: "/kilo",
                 },
-                "Pommes": {
-                    image: "img/produits/Fruits/Pommes.jpg",
+                "Abricot": {
+                    image: "img/produits/Fruits/abricot.jpg",
                     prix: 1,
-                    nom: "Pommes",
+                    nom: "Abricot",
+                    complement: "/kilo",
+                },
+                "Ananas": {
+                    image: "img/produits/Fruits/ananas.jpg",
+                    prix: 1,
+                    nom: "Ananas",
+                    complement: "/kilo",
+                },
+                "Cerise": {
+                    image: "img/produits/Fruits/Cerise.jpg",
+                    prix: 1,
+                    nom: "Cerise",
+                    complement: "/kilo",
+                },
+                "Fruit de la Passion": {
+                    image: "img/produits/Fruits/fruit-de-la-passion.jpg",
+                    prix: 1,
+                    nom: "Fruit de la Passion",
+                    complement: "/kilo",
+                },
+                "Litchi": {
+                    image: "img/produits/Fruits/Litchi.jpg",
+                    prix: 1,
+                    nom: "Litchi",
+                    complement: "/kilo",
+                },
+                "Melon": {
+                    image: "img/produits/Fruits/melon.jpg",
+                    prix: 1,
+                    nom: "Melon",
+                    complement: "/kilo",
+                },
+                "Pasteque": {
+                    image: "img/produits/Fruits/pasteque.jpg",
+                    prix: 1,
+                    nom: "Pasteque",
+                    complement: "/kilo",
+                },
+                "Peche": {
+                    image: "img/produits/Fruits/peche.jpg",
+                    prix: 1,
+                    nom: "Peche",
+                    complement: "/kilo",
+                },
+                "Grenade": {
+                    image: "img/produits/Fruits/grenade.jpg",
+                    prix: 1,
+                    nom: "Grenade",
+                    complement: "/kilo",
+                },
+                "Fruit de mer": {
+                    image: "img/produits/Fruits/fruits-de-mer.jpg",
+                    prix: 1,
+                    nom: "Fruit de mer",
                     complement: "/kilo",
                 }
-
             },
 
             "Electromenager": {
