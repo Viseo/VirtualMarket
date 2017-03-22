@@ -424,7 +424,7 @@ exports.main = function(svg,gui,param) {
         }
     }
     
-    class Payement extends DrawingZone
+    class Payment extends DrawingZone
     {
         constructor(width,height,x,y)
         {
@@ -471,7 +471,7 @@ exports.main = function(svg,gui,param) {
                     svg.event(dragged.component, 'mouseup', e);
                     self.card.position(self.width*0.6,self.height/2);
                     self.cardIn=true;
-                    //self.showCode();
+                    self.showCode();
                 }
                 else if((this.x<-self.width*0.2)&&(self.cardIn==true))
                 {
@@ -513,36 +513,98 @@ exports.main = function(svg,gui,param) {
             svg.event(dragged.component, 'mousedown', e);
         }
 
-        /*showCode()
+        showCode()
         {
-
-        }*/
+            this.zoneCode = new SecurityCode(market.width*0.3,market.height*0.75,market.width*0.3,market.height*0.15);
+            this.zoneCode.component.opacity(1);
+            this.zoneCode.placeElements();
+            market.add(this.zoneCode.component);
+        }
 
     }
 
-    // class Code {
-	 //    constructor(width,height,x,y)
-    //     {
-    //         this.component = new svg.Translation();
-    //         this.title = new svg.Text("Saisir le code de sécurité ");
-    //         this.component.add(this.title);
-    //         this.code = new svg.text()
-    //
-    //
-    //         this.x = 0;
-    //         this.y = 0;
-    //         this.component.move(x,y);
-    //         this.width = width;
-    //         this.height = height;
-    //
-    //     }
-    //
-    //     placeElements()
-    //     {
-    //         this.title.position(this.width/2,this.height*0.1).font("calibri", 20, 1).color(svg.BLACK);
-    //     }
-    // }
-    ///////////////////////////////////////
+    class SecurityButton {
+        constructor(value, leftWidth, upperHeight){
+            this.value = value;
+            var unit = 120;
+            var gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * unit;
+            var gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * unit;
+
+            this.color = svg.BLACK;
+            // Dessiner les boutons
+            this.component = new svg.Circle(30).position(gapX ,gapY).color(svg.BLACK).opacity(1);
+            let self = this;
+            this.component.onMouseDown(function(){
+                payment.zoneCode.onDrawing = true;
+                payment.zoneCode.code= ""+self.value;
+            });
+            this.component.onMouseEnter(function(){
+                if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
+                {
+                    payment.zoneCode.code+= self.value;
+                }
+            });
+        }
+        // Récupérer les boutons
+        get(){
+            return this.component;
+        }
+    }
+    class SecurityCode {
+        constructor(width,height,x,y)
+        {
+            this.component = new svg.Translation();
+            //Rectangle de background
+            this.background = new svg.Rect().corners(10,10);
+            this.title = new svg.Text("Saisir le code de sécurité");
+            this.buttons = new svg.Translation();
+            this.blur = new svg.Rect(market.width*1.5,market.height*1.75).position(0,0).color(svg.WHITE).opacity(0.5);
+            this.falseCode = new svg.Text("Code erroné!!");
+            this.timer = new svg.Text("30");
+            this.circleTimer = new svg.Circle(30);
+            this.onDrawing = false;
+            let self = this;
+            this.component.onMouseUp(function(){
+                if (self.onDrawing){
+                    self.onDrawing = false;
+                    alert(self.code);
+                }
+
+            });
+            this.component.onMouseDown(function(){
+                self.onDrawing = true;
+                self.code= "";
+            });
+            this.code = "";
+
+            this.component.add(this.blur);
+            this.component.add(this.background);
+            this.component.add(this.title);
+            this.component.add(this.buttons);
+            this.component.add(this.falseCode);
+            this.component.add(this.circleTimer);
+            this.component.add(this.timer);
+
+            for (let num = 1; num <10; num ++){
+                let button = new SecurityButton(num, width/2, height*0.5);
+                this.buttons.add(button.get());
+            }
+
+            this.x = x;
+            this.y = y;
+            this.component.move(x,y);
+            this.width = width;
+            this.height = height;
+        }
+        placeElements()
+        {
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
+            this.title.position(this.width/2,this.height*0.1).font("calibri",40,1).color(svg.BLACK);
+            this.falseCode.position(this.width/2,this.height*0.85).font("calibri",20,1).color(svg.BLACK);
+            this.timer.position(this.width/2,this.height*0.93).font("calibri",20,1).color(svg.BLACK);
+            this.circleTimer.position(this.width/2,this.height*0.92).color(svg.LIGHT_GREY,5,svg.ORANGE);
+        }
+    }
     
     ////////////VIGNETTES//////////////////
 	class Thumbnail {
@@ -786,13 +848,13 @@ exports.main = function(svg,gui,param) {
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
     let basket = new Basket(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
     let zoneBasket = new svg.Translation().add(basket.component).mark("basket");
-    let payment = new Payement(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
+    let payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(payment.component).mark("payment");
 
     market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
     market.add(glassDnD);
-
     changeRay("HighTech");
+
     return market;
 	//////////////////////////////
 };
