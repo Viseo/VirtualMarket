@@ -631,8 +631,6 @@ describe("Test",function (){
             inspect(valide,{tag:"text"});
             runtime.advanceAll();
 
-
-
             //Test the red cross to quit
             runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
             runtime.advanceAll();
