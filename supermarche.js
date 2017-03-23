@@ -300,7 +300,6 @@ exports.main = function(svg,gui,param) {
 
                 for (let product of this.thumbnailsProducts) {
                     if (product.name == thumbnail.name) {
-                        // alert("ok");
                         product.addQuantity(1);
                         let newText=product.quantity + "x " + product.price + " €"+product.complement;
                         product.changeText(newText);
@@ -308,7 +307,6 @@ exports.main = function(svg,gui,param) {
                     }
                 }
                 if (occur==0){
-                    // alert('pas OK');
                     newProd.addQuantity(1);
                     this.listProducts.add(newProd.component);
                     this.thumbnailsProducts.push(newProd);
@@ -560,6 +558,7 @@ exports.main = function(svg,gui,param) {
             this.buttons = new svg.Translation();
             this.blur = new svg.Rect(market.width*1.5,market.height*1.75).position(0,0).color(svg.WHITE).opacity(0.5);
             this.timer = new svg.Text("30");
+            this.message = new svg.Text("");
             this.circleTimer = new svg.Circle(30);
             this.onDrawing = false;
             let self = this;
@@ -567,12 +566,11 @@ exports.main = function(svg,gui,param) {
             this.component.onMouseUp(function(){
                 if (self.onDrawing){
                     self.onDrawing = false;
-                    alert(self.code);
                     let check=checkPassword(self.code);
                     if(check===false){
                         iteration++;
                         if (iteration>3){
-                            launchTimer(30,false);
+                            launchTimer(10,false);
                         }
                     }else{
                         launchTimer(4,true);
@@ -592,6 +590,7 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.buttons);
             this.component.add(this.circleTimer);
             this.component.add(this.timer);
+            this.component.add(this.message);
 
             for (let num = 1; num <10; num ++){
                 let button = new SecurityButton(num, width/2, height*0.5);
@@ -616,14 +615,23 @@ exports.main = function(svg,gui,param) {
 
         changeTimer(newTimer){
             this.circleTimer.opacity(1);
-            let message = new svg.Text("Code erroné");
-            this.component.add(message);
-            message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(svg.BLACK).opacity(1);
             this.component.remove(this.timer);
             this.timer = new svg.Text(newTimer);
             this.timer.position(this.width/2,this.height*0.93).font("Calibri",20,1).color(svg.BLACK);
             this.component.add(this.timer);
         }
+
+        changeText(message,color){
+            this.component.remove(this.message);
+            this.message = new svg.Text(message);
+            this.message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(color).opacity(1);
+            this.component.add(this.message);
+        }
+        hideCircle(){
+            this.changeTimer("");
+            this.circleTimer.opacity(0);
+        }
+
     }
     
     ////////////VIGNETTES//////////////////
@@ -869,9 +877,7 @@ exports.main = function(svg,gui,param) {
         function updateClock(){
             let t=0;
             if(state===true){
-                let message = new svg.Text("Code correct");
-                payment.zoneCode.component.add(message);
-                message.position(payment.zoneCode.width/2,payment.zoneCode.height*0.85).font("calibri",20,1).color(svg.LIGHT_GREEN).opacity(1);
+                payment.zoneCode.changeText("Code correct",svg.GREEN);
                 t = getTimeRemaining(deadline);
                 if (t <= 0) {
                     clearInterval(timeInterval);
@@ -881,9 +887,12 @@ exports.main = function(svg,gui,param) {
             }else{
                 t = getTimeRemaining(deadline);
                 payment.zoneCode.changeTimer(t);
+                payment.zoneCode.changeText("Code erronné",svg.BLACK);
                 if (t <= 0) {
                     clearInterval(timeInterval);
                     market.remove(glassTimer);
+                    payment.zoneCode.changeText("");
+                    payment.zoneCode.hideCircle();
                 }
             }
         }
