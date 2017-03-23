@@ -515,7 +515,7 @@ exports.main = function(svg,gui,param) {
 
         showCode()
         {
-            this.zoneCode = new SecurityCode(market.width*0.3,market.height*0.75,market.width*0.3,market.height*0.15);
+            this.zoneCode = new SecurityCode(market.width*0.3,market.height*0.75,market.width*0.35,market.height*0.15);
             this.zoneCode.component.opacity(1);
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -559,15 +559,24 @@ exports.main = function(svg,gui,param) {
             this.title = new svg.Text("Saisir le code de sécurité");
             this.buttons = new svg.Translation();
             this.blur = new svg.Rect(market.width*1.5,market.height*1.75).position(0,0).color(svg.WHITE).opacity(0.5);
-            this.falseCode = new svg.Text("Code erroné!!");
             this.timer = new svg.Text("30");
             this.circleTimer = new svg.Circle(30);
             this.onDrawing = false;
             let self = this;
+            let iteration=1;
             this.component.onMouseUp(function(){
                 if (self.onDrawing){
                     self.onDrawing = false;
                     alert(self.code);
+                    let check=checkPassword(self.code);
+                    if(check===false){
+                        iteration++;
+                        if (iteration>3){
+                            launchTimer(30,false);
+                        }
+                    }else{
+                        launchTimer(4,true);
+                    }
                 }
 
             });
@@ -581,7 +590,6 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.background);
             this.component.add(this.title);
             this.component.add(this.buttons);
-            this.component.add(this.falseCode);
             this.component.add(this.circleTimer);
             this.component.add(this.timer);
 
@@ -596,13 +604,25 @@ exports.main = function(svg,gui,param) {
             this.width = width;
             this.height = height;
         }
+
         placeElements()
         {
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
             this.title.position(this.width/2,this.height*0.1).font("calibri",40,1).color(svg.BLACK);
-            this.falseCode.position(this.width/2,this.height*0.85).font("calibri",20,1).color(svg.BLACK);
-            this.timer.position(this.width/2,this.height*0.93).font("calibri",20,1).color(svg.BLACK);
-            this.circleTimer.position(this.width/2,this.height*0.92).color(svg.LIGHT_GREY,5,svg.ORANGE);
+            // this.message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(svg.BLACK).opacity(0);
+            this.timer.position(this.width/2,this.height*0.93).font("calibri",20,1).color(svg.BLACK).opacity(0);
+            this.circleTimer.position(this.width/2,this.height*0.92).color(svg.LIGHT_GREY,5,svg.ORANGE).opacity(0);
+        }
+
+        changeTimer(newTimer){
+            this.circleTimer.opacity(1);
+            let message = new svg.Text("Code erroné");
+            this.component.add(message);
+            message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(svg.BLACK).opacity(1);
+            this.component.remove(this.timer);
+            this.timer = new svg.Text(newTimer);
+            this.timer.position(this.width/2,this.height*0.93).font("Calibri",20,1).color(svg.BLACK);
+            this.component.add(this.timer);
         }
     }
     
@@ -839,9 +859,67 @@ exports.main = function(svg,gui,param) {
             }
         }
     }
+
+    function getTimeRemaining(deadline) {
+        let t = Date.parse(deadline) - Date.parse(new Date());
+        return seconds = Math.floor((t / 1000) % 60);
+    }
+
+    function initializeClock(deadline,state){
+        function updateClock(){
+            let t=0;
+            if(state===true){
+                let message = new svg.Text("Code correct");
+                payment.zoneCode.component.add(message);
+                message.position(payment.zoneCode.width/2,payment.zoneCode.height*0.85).font("calibri",20,1).color(svg.LIGHT_GREEN).opacity(1);
+                t = getTimeRemaining(deadline);
+                if (t <= 0) {
+                    clearInterval(timeInterval);
+                    market.remove(glassTimer);
+                    market.remove(payment.zoneCode.component);
+                }
+            }else{
+                t = getTimeRemaining(deadline);
+                payment.zoneCode.changeTimer(t);
+                if (t <= 0) {
+                    clearInterval(timeInterval);
+                    market.remove(glassTimer);
+                }
+            }
+        }
+
+        let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
+        glassTimer.add(fillGlass);
+        market.add(glassTimer);
+        updateClock();
+
+        let timeInterval = setInterval(updateClock, 1000);
+
+    }
+
+    function launchTimer(seconds,state){
+        let deadline = new Date(Date.parse(new Date()) + seconds * 1000);
+        if(state===false){
+            initializeClock(deadline,false);
+        }
+        else{
+            initializeClock(deadline,true);
+        }
+
+    }
+
+    function checkPassword(password){
+        if(password === "321456987"){
+            return true;
+        }
+        return false;
+    }
+
+
     //////
 
     /////Déclaration Interface////
+    let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
     let categories = new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05);
