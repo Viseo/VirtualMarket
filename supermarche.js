@@ -532,9 +532,11 @@ exports.main = function(svg,gui,param) {
             // Dessiner les boutons
             this.component = new svg.Circle(30).position(gapX ,gapY).color(svg.BLACK).opacity(1);
             let self = this;
-            this.component.onMouseDown(function(){
-                payment.zoneCode.onDrawing = true;
-                payment.zoneCode.code= ""+self.value;
+            this.component.onMouseOut(function(){
+                if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
+                {
+                    payment.zoneCode.code+= self.value;
+                }
             });
             this.component.onMouseEnter(function(){
                 if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
