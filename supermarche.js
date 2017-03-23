@@ -341,19 +341,17 @@ exports.main = function(svg,gui,param) {
             }
         }
 
-        deleteProducts(thumbnail, numberProduct){
+        deleteProducts(vignette,numberProduct){
             let height = this.component.height;
             let chevB = this.zoneChevronDown;
             let chevH = this.zoneChevronUp;
 
-            thumbnail.minusQuantity(numberProduct);
-            let newText = thumbnail.quantity + " x " + thumbnail.price + " €" + thumbnail.complement;
-            thumbnail.changeText(newText);
+            vignette.minusQuantity(numberProduct);
+            let newText = vignette.quantity + " x " + vignette.price + " €" + vignette.complement;
+            vignette.changeText(newText);
 
-            if(thumbnail.quantity ==0){
-                if (this.thumbnailsProducts.indexOf(thumbnail)==this.thumbnailsProducts.length-1
-                                        ||(this.thumbnailsProducts.indexOf(thumbnail)==this.thumbnailsProducts.length-2)
-                                        && this.thumbnailsProducts.length-1>2 ){
+            if(vignette.quantity ==0){
+                if ((this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-1 || this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-2) && this.thumbnailsProducts.length-1>2){
                     let heightZone=this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
                     this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x,(height*0.9-heightZone+this.thumbnailsProducts[0].height ));
                 }else if(this.thumbnailsProducts.length-1<=2){
@@ -361,15 +359,15 @@ exports.main = function(svg,gui,param) {
                     chevB.opacity(0);
                     chevH.opacity(0);
                 }
-                this.listProducts.remove(thumbnail.component);
-                this.thumbnailsProducts.splice(this.thumbnailsProducts.indexOf(thumbnail), 1);
-                this.calculatePrice(-((thumbnail.price)*numberProduct));
+                this.listProducts.remove(vignette.component);
+                this.thumbnailsProducts.splice(this.thumbnailsProducts.indexOf(vignette), 1);
+                this.calculatePrice(-((vignette.price)*numberProduct));
                 for (let product of this.thumbnailsProducts) {
                     product.placeElements();
                     product.move(0,this.thumbnailsProducts.indexOf(product)*(product.height));
                 }
             }else {
-                this.calculatePrice(-((thumbnail.price)*numberProduct));
+                this.calculatePrice(-((vignette.price)*numberProduct));
             }
         }
 
@@ -518,19 +516,18 @@ exports.main = function(svg,gui,param) {
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
         }
-
     }
 
     class SecurityButton {
         constructor(value, leftWidth, upperHeight){
             this.value = value;
-            var unit = 120;
-            var gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * unit;
-            var gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * unit;
+            this.unit = upperHeight*0.5;
+            this.gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * this.unit;
+            this.gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * this.unit;
 
             this.color = svg.BLACK;
             // Dessiner les boutons
-            this.component = new svg.Circle(30).position(gapX ,gapY).color(svg.BLACK).opacity(1);
+            this.component = new svg.Circle(upperHeight*0.12).position(this.gapX ,this.gapY).color(svg.BLACK).opacity(1);
             let self = this;
             this.component.onMouseOut(function(){
                 if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
@@ -541,6 +538,11 @@ exports.main = function(svg,gui,param) {
             this.component.onMouseEnter(function(){
                 if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
                 {
+                    if(payment.zoneCode.code.length>0){
+                        let buttonBefore = payment.zoneCode.tabButtons[parseInt(payment.zoneCode.code.charAt(payment.zoneCode.code.length-1))-1];
+                        payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,self.gapX,self.gapY).color(svg.BLACK,5,svg.BLACK));
+                        payment.zoneCode.buttons.add(payment.zoneCode.lines[payment.zoneCode.lines.length-1]);
+                    }
                     payment.zoneCode.code+= self.value;
                 }
             });
@@ -563,6 +565,16 @@ exports.main = function(svg,gui,param) {
             this.message = new svg.Text("");
             this.circleTimer = new svg.Circle(30);
             this.onDrawing = false;
+            this.cross = new svg.Image("img/icone-supprimer.png");
+            this.lines = [];
+            this.currentLine=new svg.Line();
+
+            this.cross.onClick(function(){
+                market.remove(payment.zoneCode.component);
+                payment.card.position(payment.width*0.1,payment.height/2);
+                payment.cardIn=false;
+            });
+
             let self = this;
             let iteration=1;
             this.component.onMouseUp(function(){
@@ -577,14 +589,29 @@ exports.main = function(svg,gui,param) {
                     }else{
                         launchTimer(4,true);
                     }
+                    for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
+                    self.lines = [];
+                    self.buttons.remove(self.currentLine);
+                    self.currentLine=new svg.Line();
+                    self.buttons.add(self.currentLine);
                 }
-
             });
             this.component.onMouseDown(function(){
                 self.onDrawing = true;
                 self.code= "";
             });
             this.code = "";
+
+            //Ligne qui suis la souris
+            this.component.onMouseMove(function(e){
+                if(self.onDrawing && self.code.length>0) {
+                    self.buttons.remove(self.currentLine);
+                    let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
+                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX-self.width,e.pageY-self.height*0.2)
+                                                                .color(svg.BLACK,5,svg.BLACK);
+                    self.buttons.add(self.currentLine);
+                }
+            });
 
             this.component.add(this.blur);
             this.component.add(this.background);
@@ -593,11 +620,15 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.circleTimer);
             this.component.add(this.timer);
             this.component.add(this.message);
+            this.component.add(this.cross);
 
+
+            this.tabButtons = [];
             for (let num = 1; num <10; num ++){
-                let button = new SecurityButton(num, width/2, height*0.5);
-                this.buttons.add(button.get());
+                this.tabButtons.push(new SecurityButton(num, width/2, height*0.45));
+                this.buttons.add(this.tabButtons[num-1].get());
             }
+            this.buttons.add(this.currentLine);
 
             this.x = x;
             this.y = y;
@@ -610,9 +641,10 @@ exports.main = function(svg,gui,param) {
         {
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
             this.title.position(this.width/2,this.height*0.1).font("calibri",40,1).color(svg.BLACK);
-            // this.message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(svg.BLACK).opacity(0);
-            this.timer.position(this.width/2,this.height*0.93).font("calibri",20,1).color(svg.BLACK).opacity(0);
             this.circleTimer.position(this.width/2,this.height*0.92).color(svg.LIGHT_GREY,5,svg.ORANGE).opacity(0);
+            this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK);
+            this.circleTimer.position(this.width/2,this.height*0.89).color(svg.LIGHT_GREY,5,svg.ORANGE);
+            this.cross.position(this.width,0).dimension(this.width*0.1,this.width*0.1);
         }
 
         changeTimer(newTimer){
@@ -629,11 +661,11 @@ exports.main = function(svg,gui,param) {
             this.message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(color).opacity(1);
             this.component.add(this.message);
         }
+
         hideCircle(){
             this.changeTimer("");
             this.circleTimer.opacity(0);
         }
-
     }
     
     ////////////VIGNETTES//////////////////
@@ -775,7 +807,6 @@ exports.main = function(svg,gui,param) {
 
             let current = this;
             this.component.onMouseDown(function(e){
-
                 categories.ray.dragRayon(e,current,place);
             });
         }
@@ -789,9 +820,7 @@ exports.main = function(svg,gui,param) {
             this.line = new svg.Line(0,0,0,0);
             this.component.add(this.line);
 
-
-            this.cross = new svg.Image("img/icone-supprimer.jpg");
-
+            this.cross = new svg.Image("img/icone-supprimer.png");
             this.component.add(this.cross);
 
             this.component.mark(this.name);

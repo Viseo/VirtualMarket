@@ -531,4 +531,20 @@ describe("Test",function (){
         runtime.event(dragged4,"mouseup",{ pageX:market.width*0.90-60,pageY:market.height*0.90});
         runtime.advanceAll();
     });
+
+    it("ensure that you can drag the card in the terminal and that it shows the payement interface",function(){
+        let payment_zone = retrieve(market.component,"[payment]");
+        assert.ok(payment_zone);
+        let card = retrieve(market.component,"[payment].[card]");
+        assert.ok(card);
+
+        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        runtime.advanceAll();
+        let dragged2 = retrieve(market.component,"[payment].[dragged]");
+        assert.ok(dragged2);
+        runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+    });
 });
