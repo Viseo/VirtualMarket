@@ -431,6 +431,7 @@ exports.main = function(svg,gui,param) {
             this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
             this.glassDnd = new svg.Translation().mark("glass");
 
+            this.iteration=1;
             this.width = width;
             this.height = height;
             this.cardIn = false;
@@ -512,7 +513,7 @@ exports.main = function(svg,gui,param) {
         showCode()
         {
             this.zoneCode = new SecurityCode(market.width*0.3,market.height*0.75,market.width*0.35,market.height*0.15);
-            this.zoneCode.component.opacity(1);
+            this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
         }
@@ -527,7 +528,7 @@ exports.main = function(svg,gui,param) {
 
             this.color = svg.BLACK;
             // Dessiner les boutons
-            this.component = new svg.Circle(upperHeight*0.12).position(this.gapX ,this.gapY).color(svg.BLACK).opacity(1);
+            this.component = new svg.Circle(upperHeight*0.12).position(this.gapX ,this.gapY).color(svg.BLACK).opacity(1).mark("button"+value);
             let self = this;
             this.component.onMouseOut(function(){
                 if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
@@ -559,13 +560,13 @@ exports.main = function(svg,gui,param) {
             //Rectangle de background
             this.background = new svg.Rect().corners(10,10);
             this.title = new svg.Text("Saisir le code de sécurité");
-            this.buttons = new svg.Translation();
+            this.buttons = new svg.Translation().mark("buttonGroup");
             this.blur = new svg.Rect(market.width*1.5,market.height*1.75).position(0,0).color(svg.WHITE).opacity(0.5);
             this.timer = new svg.Text("30");
             this.message = new svg.Text("");
             this.circleTimer = new svg.Circle(30);
             this.onDrawing = false;
-            this.cross = new svg.Image("img/icone-supprimer.png");
+            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
             this.lines = [];
             this.currentLine=new svg.Line();
 
@@ -576,18 +577,21 @@ exports.main = function(svg,gui,param) {
             });
 
             let self = this;
-            let iteration=1;
             this.component.onMouseUp(function(){
                 if (self.onDrawing){
                     self.onDrawing = false;
-                    let check=checkPassword(self.code);
+                    let check=self.checkPassword(self.code);
                     if(check===false){
-                        iteration++;
-                        if (iteration>3){
-                            launchTimer(10,false);
+                        if(self.code.length>1){
+                            payment.iteration++;
+                            if (payment.iteration > 3) {
+                                self.launchTimer(10, false);
+                            }
                         }
                     }else{
-                        launchTimer(4,true);
+                        self.launchTimer(4,true);
+                        payment.card.position(payment.width*0.1,payment.height/2);
+                        payment.cardIn=false;
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -607,7 +611,7 @@ exports.main = function(svg,gui,param) {
                 if(self.onDrawing && self.code.length>0) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
-                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX-self.width,e.pageY-self.height*0.2)
+                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX-self.width*1.15,e.pageY-self.height*0.2)
                                                                 .color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
@@ -621,7 +625,6 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.timer);
             this.component.add(this.message);
             this.component.add(this.cross);
-
 
             this.tabButtons = [];
             for (let num = 1; num <10; num ++){
@@ -642,8 +645,7 @@ exports.main = function(svg,gui,param) {
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
             this.title.position(this.width/2,this.height*0.1).font("calibri",40,1).color(svg.BLACK);
             this.circleTimer.position(this.width/2,this.height*0.92).color(svg.LIGHT_GREY,5,svg.ORANGE).opacity(0);
-            this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK);
-            this.circleTimer.position(this.width/2,this.height*0.89).color(svg.LIGHT_GREY,5,svg.ORANGE);
+            this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK).opacity(0);
             this.cross.position(this.width,0).dimension(this.width*0.1,this.width*0.1);
         }
 
@@ -657,7 +659,7 @@ exports.main = function(svg,gui,param) {
 
         changeText(message,color){
             this.component.remove(this.message);
-            this.message = new svg.Text(message);
+            this.message = new svg.Text(message).mark("result");
             this.message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(color).opacity(1);
             this.component.add(this.message);
         }
@@ -665,6 +667,61 @@ exports.main = function(svg,gui,param) {
         hideCircle(){
             this.changeTimer("");
             this.circleTimer.opacity(0);
+        }
+
+        getTimeRemaining(deadline) {
+            let t = Date.parse(deadline) - Date.parse(new Date());
+            return Math.floor((t / 1000) % 60);
+        }
+
+        initializeClock(deadline,state){
+            function updateClock(){
+                let t=0;
+                if(state===true){
+                    payment.zoneCode.changeText("Code correct",svg.GREEN);
+                    t = payment.zoneCode.getTimeRemaining(deadline);
+                    if (t <= 0) {
+                        clearInterval(timeInterval);
+                        market.remove(glassTimer);
+                        market.remove(payment.zoneCode.component);
+                    }
+                }else{
+                    t = payment.zoneCode.getTimeRemaining(deadline);
+                    payment.zoneCode.changeTimer(t);
+                    payment.zoneCode.changeText("Code erronné",svg.BLACK);
+                    if (t <= 0) {
+                        clearInterval(timeInterval);
+                        market.remove(glassTimer);
+                        payment.zoneCode.changeText("");
+                        payment.zoneCode.hideCircle();
+                    }
+                }
+            }
+
+            let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
+            glassTimer.add(fillGlass);
+            market.add(glassTimer);
+            updateClock();
+
+            let timeInterval = setInterval(updateClock, 1000);
+        }
+
+        launchTimer(seconds,state){
+            let deadline = new Date(Date.parse(new Date()) + seconds * 1000);
+            if(state===false){
+                this.initializeClock(deadline,false);
+            }
+            else{
+                this.initializeClock(deadline,true);
+            }
+
+        }
+
+        checkPassword(password){
+            if(password === "321456987"){
+                return true;
+            }
+            return false;
         }
     }
     
@@ -897,62 +954,6 @@ exports.main = function(svg,gui,param) {
                 categories.tabCategories[v].highlightedImage.opacity(1);
             }
         }
-    }
-
-    function getTimeRemaining(deadline) {
-        let t = Date.parse(deadline) - Date.parse(new Date());
-        return seconds = Math.floor((t / 1000) % 60);
-    }
-
-    function initializeClock(deadline,state){
-        function updateClock(){
-            let t=0;
-            if(state===true){
-                payment.zoneCode.changeText("Code correct",svg.GREEN);
-                t = getTimeRemaining(deadline);
-                if (t <= 0) {
-                    clearInterval(timeInterval);
-                    market.remove(glassTimer);
-                    market.remove(payment.zoneCode.component);
-                }
-            }else{
-                t = getTimeRemaining(deadline);
-                payment.zoneCode.changeTimer(t);
-                payment.zoneCode.changeText("Code erronné",svg.BLACK);
-                if (t <= 0) {
-                    clearInterval(timeInterval);
-                    market.remove(glassTimer);
-                    payment.zoneCode.changeText("");
-                    payment.zoneCode.hideCircle();
-                }
-            }
-        }
-
-        let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
-        glassTimer.add(fillGlass);
-        market.add(glassTimer);
-        updateClock();
-
-        let timeInterval = setInterval(updateClock, 1000);
-
-    }
-
-    function launchTimer(seconds,state){
-        let deadline = new Date(Date.parse(new Date()) + seconds * 1000);
-        if(state===false){
-            initializeClock(deadline,false);
-        }
-        else{
-            initializeClock(deadline,true);
-        }
-
-    }
-
-    function checkPassword(password){
-        if(password === "321456987"){
-            return true;
-        }
-        return false;
     }
 
 

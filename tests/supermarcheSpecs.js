@@ -532,7 +532,7 @@ describe("Test",function (){
         runtime.advanceAll();
     });
 
-    it("ensure that you can drag the card in the terminal and that it shows the payement interface",function(){
+    it("ensure that the interface to enter the code pattern is working",function(){
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
         let card = retrieve(market.component,"[payment].[card]");
@@ -546,5 +546,106 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
         runtime.advanceAll();
+
+        let code = retrieve(market.component,"[code]");
+        assert.ok(code);
+        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+        assert.ok(buttonGroup);
+        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+        assert.ok(button1);
+        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+        assert.ok(button2);
+        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+        assert.ok(button3);
+
+        runtime.event(code, "mousemove", {pageX:100,pageY:100});
+        runtime.advanceAll();
+        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+        runtime.event(code, "mousemove", {pageX:100,pageY:100});
+        runtime.advanceAll();
+        runtime.event(button2, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(code, "mousemove", {pageX:100,pageY:100});
+        runtime.advanceAll();
+        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+
+        for(let i = 0;i<4;i++) {
+            runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+            runtime.advanceAll();
+            runtime.event(button2, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button1, "mouseout", {});
+            runtime.advanceAll();
+            runtime.event(button2, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button3, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button2, "mouseout", {});
+            runtime.advanceAll();
+            runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+            runtime.advanceAll();
+        }
+
+        runtime.timeout(function(){
+            let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+            assert.ok(button4);
+            let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+            assert.ok(button5);
+            let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+            assert.ok(button6);
+            let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+            assert.ok(button7);
+            let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+            assert.ok(button8);
+            let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+            assert.ok(button9);
+
+            //Password ok
+            runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+            runtime.advanceAll();
+            runtime.event(button3, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button2, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button1, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button4, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button5, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button6, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button9, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button8, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button7, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+            runtime.advanceAll();
+            let valide = retrieve(market.component,"[code].[result]");
+            inspect(valide,{tag:"text"});
+            runtime.advanceAll();
+
+
+
+            //Test the red cross to quit
+            runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+            runtime.advanceAll();
+            let dragged3 = retrieve(market.component,"[payment].[dragged]");
+            assert.ok(dragged3);
+            runtime.event(dragged3,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+            runtime.advanceAll();
+            runtime.event(dragged3,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+            runtime.advanceAll();
+            let cross = retrieve(market.component,"[code].[cross]");
+            runtime.event(cross, "click", {});
+            runtime.advanceAll();
+
+        },11000);
     });
 });
