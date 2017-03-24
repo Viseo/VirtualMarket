@@ -594,7 +594,7 @@ exports.main = function(svg,gui,param) {
                         self.launchTimer(4,true);
                         payment.card.position(payment.width*0.1,payment.height/2);
                         payment.cardIn=false;
-                        payment.iteration=0;
+                        payment.iteration=1;
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
