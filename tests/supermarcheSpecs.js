@@ -19,6 +19,7 @@ let market;
 
 
 describe("Test",function (){
+    this.timeout(30000);
     beforeEach(function(){
         runtime = mockRuntime();
         runtime.declareAnchor("content");
@@ -532,7 +533,7 @@ describe("Test",function (){
         runtime.advanceAll();
     });
 
-    it("ensure that the interface to enter the code pattern is working",function(){
+    it("ensure that the interface to enter the code pattern is working",function(done){
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
         let card = retrieve(market.component,"[payment].[card]");
@@ -590,6 +591,7 @@ describe("Test",function (){
             runtime.advanceAll();
         }
 
+
         let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
         assert.ok(button4);
         let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
@@ -625,6 +627,8 @@ describe("Test",function (){
             runtime.advanceAll();
             runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
             runtime.advanceAll();
+
+
             //Test the red cross to quit
             runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
             runtime.advanceAll();
@@ -637,6 +641,11 @@ describe("Test",function (){
             let cross = retrieve(market.component,"[code].[cross]");
             runtime.event(cross, "click", {});
             runtime.advanceAll();
+
+            setTimeout(function(){
+                done();
+            },15000);
+
 
     });
 });
