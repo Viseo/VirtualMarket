@@ -426,9 +426,9 @@ exports.main = function(svg,gui,param) {
         {
             super(width,height,x,y);
             this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE,2,svg.BLACK);
-            this.card = new svg.Image("img/credit-card.png").dimension(width*0.65,height*0.65).position(width*0.1,height/2).mark("card");
-            this.tpeBack = new svg.Image("img/tpeFond.png").dimension(width,height).position(width,height/2);
-            this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
+            this.card = new svg.Image("img/card.png").dimension(width*0.65,height*0.75).position(width*0.1,height/2).mark("card");
+            this.tpeBack = new svg.Image("img/atm-empty-background.png").dimension(width,height).position(width,height/2);
+            this.tpe = new svg.Image("img/atm-empty.png").dimension(width,height).position(width,height/2);
             this.glassDnd = new svg.Translation().mark("glass");
 
             this.iteration=1;
