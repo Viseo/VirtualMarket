@@ -585,7 +585,7 @@ exports.main = function(svg,gui,param) {
                     if(check===false){
                         if(self.code.length>1){
                             payment.iteration++;
-                            if (payment.iteration > 3) {
+                            if (payment.iteration >3) {
                                 self.launchTimer(10, false);
                             }
                         }
@@ -670,55 +670,41 @@ exports.main = function(svg,gui,param) {
             this.circleTimer.opacity(0);
         }
 
-        getTimeRemaining(deadline) {
-            let t = Date.parse(deadline) - Date.parse(new Date());
-            return Math.floor((t / 1000) % 60);
-        }
+      launchTimer(seconds,state){
+          let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
+          glassTimer.add(fillGlass);
+          market.add(glassTimer);
+          if(state===false){
+              for(let i =0;i<seconds+1;i++){
+                  setTimeout(function(i){
+                      return function(){
+                          payment.zoneCode.changeTimer(seconds-i);
+                          payment.zoneCode.changeText("Code erronnée",svg.BLACK);
+                          if (i===seconds){
+                              market.remove(glassTimer);
+                              payment.zoneCode.changeText("");
+                              payment.zoneCode.hideCircle();
+                          }
+                      }
+                  }(i),i*1000);
+              }
+          }
+          else{
+              for(let i =0;i<seconds+1;i++){
+                  setTimeout(function(i){
+                      return function(){
+                          payment.zoneCode.changeText("Code correct",svg.GREEN);
+                          if (i===seconds){
+                              market.remove(glassTimer);
+                              market.remove(payment.zoneCode.component);
+                          }
+                      }
+                  }(i),i*1000);
+              }
+          }
+       }
 
-        initializeClock(deadline,state){
-            function updateClock(){
-                let t=0;
-                if(state===true){
-                    payment.zoneCode.changeText("Code correct",svg.GREEN);
-                    t = payment.zoneCode.getTimeRemaining(deadline);
-                    if (t <= 0) {
-                        clearInterval(timeInterval);
-                        market.remove(glassTimer);
-                        market.remove(payment.zoneCode.component);
-                    }
-                }else{
-                    t = payment.zoneCode.getTimeRemaining(deadline);
-                    payment.zoneCode.changeTimer(t);
-                    payment.zoneCode.changeText("Code erronné",svg.BLACK);
-                    if (t <= 0) {
-                        clearInterval(timeInterval);
-                        market.remove(glassTimer);
-                        payment.zoneCode.changeText("");
-                        payment.zoneCode.hideCircle();
-                    }
-                }
-            }
-
-            let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
-            glassTimer.add(fillGlass);
-            market.add(glassTimer);
-            updateClock();
-
-            let timeInterval = setInterval(updateClock, 1000);
-        }
-
-        launchTimer(seconds,state){
-            let deadline = new Date(Date.parse(new Date()) + seconds * 1000);
-            if(state===false){
-                this.initializeClock(deadline,false);
-            }
-            else{
-                this.initializeClock(deadline,true);
-            }
-
-        }
-
-        checkPassword(password){
+       checkPassword(password){
             if(password === "321456987"){
                 return true;
             }
