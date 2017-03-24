@@ -510,16 +510,10 @@ exports.main = function(svg,gui,param) {
             svg.event(dragged.component, 'mousedown', e);
         }
 
-<<<<<<< HEAD
         showCode()
         {
             this.zoneCode = new SecurityCode(market.width*0.3,market.height*0.75,market.width*0.35,market.height*0.15);
             this.zoneCode.component.opacity(1).mark("code");
-=======
-        showCode(){
-            this.zoneCode = new SecurityCode(market.width*0.3,market.height*0.75,market.width*0.3,market.height*0.15);
-            this.zoneCode.component.opacity(1);
->>>>>>> 790025768067e04fd1cb12efeeacbba92d40f078
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
         }
@@ -534,11 +528,8 @@ exports.main = function(svg,gui,param) {
 
             this.color = svg.BLACK;
             // Dessiner les boutons
-<<<<<<< HEAD
             this.component = new svg.Circle(upperHeight*0.12).position(this.gapX ,this.gapY).color(svg.BLACK).opacity(1).mark("button"+value);
-=======
-            this.component = new svg.Circle(upperHeight*0.12).position(this.gapX ,this.gapY).color(svg.BLACK).opacity(1);
->>>>>>> 790025768067e04fd1cb12efeeacbba92d40f078
+
             let self = this;
             this.component.onMouseOut(function(){
                 if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
@@ -576,11 +567,7 @@ exports.main = function(svg,gui,param) {
             this.message = new svg.Text("");
             this.circleTimer = new svg.Circle(30);
             this.onDrawing = false;
-<<<<<<< HEAD
             this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
-=======
-            this.cross = new svg.Image("img/icone-supprimer.png");
->>>>>>> 790025768067e04fd1cb12efeeacbba92d40f078
             this.lines = [];
             this.currentLine=new svg.Line();
 
@@ -594,7 +581,6 @@ exports.main = function(svg,gui,param) {
             this.component.onMouseUp(function(){
                 if (self.onDrawing){
                     self.onDrawing = false;
-<<<<<<< HEAD
                     let check=self.checkPassword(self.code);
                     if(check===false){
                         if(self.code.length>1){
@@ -608,8 +594,6 @@ exports.main = function(svg,gui,param) {
                         payment.card.position(payment.width*0.1,payment.height/2);
                         payment.cardIn=false;
                     }
-=======
->>>>>>> 790025768067e04fd1cb12efeeacbba92d40f078
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
                     self.buttons.remove(self.currentLine);
@@ -628,11 +612,7 @@ exports.main = function(svg,gui,param) {
                 if(self.onDrawing && self.code.length>0) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
-<<<<<<< HEAD
                     self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX-self.width*1.15,e.pageY-self.height*0.2)
-=======
-                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX-self.width,e.pageY-self.height*0.2)
->>>>>>> 790025768067e04fd1cb12efeeacbba92d40f078
                                                                 .color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
@@ -644,10 +624,7 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.buttons);
             this.component.add(this.circleTimer);
             this.component.add(this.timer);
-<<<<<<< HEAD
             this.component.add(this.message);
-=======
->>>>>>> 790025768067e04fd1cb12efeeacbba92d40f078
             this.component.add(this.cross);
 
             this.tabButtons = [];
@@ -664,7 +641,6 @@ exports.main = function(svg,gui,param) {
             this.height = height;
         }
 
-<<<<<<< HEAD
         placeElements()
         {
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
@@ -747,15 +723,6 @@ exports.main = function(svg,gui,param) {
                 return true;
             }
             return false;
-=======
-        placeElements(){
-            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
-            this.title.position(this.width/2,this.height*0.1).font("calibri",40,1).color(svg.BLACK);
-            this.falseCode.position(this.width/2,this.height*0.80).font("calibri",20,1).color(svg.BLACK);
-            this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK);
-            this.circleTimer.position(this.width/2,this.height*0.89).color(svg.LIGHT_GREY,5,svg.ORANGE);
-            this.cross.position(this.width,0).dimension(this.width*0.1,this.width*0.1);
->>>>>>> 790025768067e04fd1cb12efeeacbba92d40f078
         }
     }
     
