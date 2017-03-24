@@ -229,7 +229,7 @@ describe("Test",function (){
         inspect(listBasket,{tag:"g",transform:"translate(0 2)"});
     });
 
-    it("ensure that we can mouseover and mouseout on a categorie",function(){
+    it("ensure that we can mousehover and mouseout on a categorie",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         let categories2 = retrieve(market.component,"[categories].[Fruits2]");
         let categorieTitle = retrieve(market.component,"[categories].[Fruits title]");
@@ -589,7 +589,6 @@ describe("Test",function (){
             runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
             runtime.advanceAll();
         }
-
 
         let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
         assert.ok(button4);
