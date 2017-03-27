@@ -106,6 +106,7 @@ exports.main = function(svg,gui,param) {
                 tabThumbnail[i].placeElements(1);
                 tabThumbnail[i].move(height/2*place,0);
                 this.listThumbnailsUp.add(tabThumbnail[i].component);
+
                 
                 if(i+1<tabThumbnail.length)
                 {
@@ -846,6 +847,18 @@ exports.main = function(svg,gui,param) {
                 current.image.smoothy(20,10).resizeTo(current.width-30,current.height-30);
             });
 
+            function getNumber(number){
+                for(let i=0;i<number;i++){
+                    basket.addProducts(current);
+                }
+            }
+
+            this.component.onMouseDown(function(){
+                let drawNumber = new svg.Drawing(0,0);
+                init_draw(drawNumber,0,0,current.name, getNumber);
+                glassCanvas.add(drawNumber);
+            });
+
         }
 
         placeElements(place) {
@@ -856,9 +869,9 @@ exports.main = function(svg,gui,param) {
             this.printPrice .position(this.width/2,this.height*0.95).font("Calibri",15,1).color(svg.BLACK);
 
             let current = this;
-            this.component.onMouseDown(function(e){
-                categories.ray.dragRayon(e,current,place);
-            });
+            // this.component.onMouseDown(function(e){
+            //     categories.ray.dragRayon(e,current,place);
+            // });
         }
 	}
     
@@ -962,9 +975,10 @@ exports.main = function(svg,gui,param) {
     let zoneBasket = new svg.Translation().add(basket.component).mark("basket");
     let payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(payment.component).mark("payment");
+    let glassCanvas= new svg.Translation().mark("glassCanvas");
 
     market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
-    market.add(glassDnD);
+    market.add(glassDnD).add(glassCanvas);
     changeRay("HighTech");
 
     return market;
