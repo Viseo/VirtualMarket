@@ -276,15 +276,15 @@ exports.main = function(svg,gui,param) {
             this.component.remove(this.total);
             if(this.totalPrice>10000){
                 this.printPrice = new svg.Text(this.totalPrice.toFixed(2) + " €").position(this.component.width * 0.65, this.zoneTotal.y + 10)
-                    .font("calibri", this.zoneTotal.height*0.40, 1).color(svg.BLACK).mark("bigPrice");
+                    .font("calibri", this.zoneTotal.height*0.35, 1).color(svg.BLACK).mark("bigPrice");
                 this.total = new svg.Text("TOTAL").position(this.component.width / 5, this.zoneTotal.y + 10)
-                    .font("calibri", this.zoneTotal.height*0.40, 1).color(svg.BLACK);
+                    .font("calibri", this.zoneTotal.height*0.35, 1).color(svg.BLACK);
             }
             else{
                 this.printPrice = new svg.Text(this.totalPrice.toFixed(2) + " €").position(this.component.width * 0.70, this.zoneTotal.y + 10)
-                    .font("calibri", this.zoneTotal.height*0.50, 1).color(svg.BLACK).mark("Price");
+                    .font("calibri", this.zoneTotal.height*0.40, 1).color(svg.BLACK).mark("Price");
                 this.total = new svg.Text("TOTAL").position(this.component.width / 4, this.zoneTotal.y + 10)
-                    .font("calibri", this.zoneTotal.height*0.50, 1).color(svg.BLACK);
+                    .font("calibri", this.zoneTotal.height*0.40, 1).color(svg.BLACK);
             }
             this.component.add(this.total);
             this.component.add(this.printPrice);
@@ -446,6 +446,19 @@ exports.main = function(svg,gui,param) {
             this.card.onMouseDown(function(e){
                 self.dragCard(e);
             });
+
+            svg.addEvent(this.card,"touchstart",function(){
+                svg.addEvent(self.card,"touchmove",function(e){
+                    if(self.card.x+self.card.width/2<self.tpe.x-self.tpe.width/4)
+                        self.card.position(e.touches[0].clientX-x,self.card.y);
+                    else if(self.cardIn==false){
+                        self.showCode();
+                        self.card.position(self.width*0.6,self.height/2);
+                        self.cardIn=true;
+                        svg.event(self.card, 'touchend', e);
+                    }
+                });
+            });
         }
 
         dragCard(e)
@@ -463,15 +476,13 @@ exports.main = function(svg,gui,param) {
             dragged.move = function(x){
                 this.x = x;
                 this.component.move(x,0);
-                if((this.x>self.width*0.2)&&(self.cardIn==false))
-                {
+                if((this.x+self.card.width/2>self.tpe.x-self.tpe.width/2)&&(self.cardIn==false)) {
                     svg.event(dragged.component, 'mouseup', e);
                     self.card.position(self.width*0.6,self.height/2);
                     self.cardIn=true;
                     self.showCode();
                 }
-                else if((this.x<-self.width*0.2)&&(self.cardIn==true))
-                {
+                else if(self.cardIn==true) {
                     svg.event(dragged.component, 'mouseup', e);
                     self.card.position(self.width*0.1,self.height/2);
                     self.cardIn=false;
@@ -537,12 +548,14 @@ exports.main = function(svg,gui,param) {
                     payment.zoneCode.code+= self.value;
                 }
             });
+
             this.component.onMouseEnter(function(){
                 if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
                 {
                     if(payment.zoneCode.code.length>0){
                         let buttonBefore = payment.zoneCode.tabButtons[parseInt(payment.zoneCode.code.charAt(payment.zoneCode.code.length-1))-1];
-                        payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,self.gapX,self.gapY).color(svg.BLACK,5,svg.BLACK));
+                        payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,self.gapX,self.gapY)
+                            .color(svg.BLACK,5,svg.BLACK));
                         payment.zoneCode.buttons.add(payment.zoneCode.lines[payment.zoneCode.lines.length-1]);
                     }
                     payment.zoneCode.code+= self.value;
@@ -554,6 +567,7 @@ exports.main = function(svg,gui,param) {
             return this.component;
         }
     }
+
     class SecurityCode {
         constructor(width,height,x,y)
         {
@@ -602,7 +616,36 @@ exports.main = function(svg,gui,param) {
                     self.buttons.add(self.currentLine);
                 }
             });
+            svg.addEvent(this.component,"touchend",function(){
+                if (self.onDrawing){
+                    self.onDrawing = false;
+                    let check=self.checkPassword(self.code);
+                    if(check===false){
+                        if(self.code.length>1){
+                            payment.iteration++;
+                            if (payment.iteration >3) {
+                                self.launchTimer(10, false);
+                            }
+                        }
+                    }else{
+                        self.launchTimer(4,true);
+                        payment.card.position(payment.width*0.1,payment.height/2);
+                        payment.cardIn=false;
+                        payment.iteration=0;
+                    }
+                    for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
+                    self.lines = [];
+                    self.buttons.remove(self.currentLine);
+                    self.currentLine=new svg.Line();
+                    self.buttons.add(self.currentLine);
+                }
+            });
+
             this.component.onMouseDown(function(){
+                self.onDrawing = true;
+                self.code= "";
+            });
+            svg.addEvent(this.component,"touchstart",function() {
                 self.onDrawing = true;
                 self.code= "";
             });
@@ -615,6 +658,49 @@ exports.main = function(svg,gui,param) {
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
                     self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX-self.width*1.15,e.pageY-self.height*0.2)
                                                                 .color(svg.BLACK,5,svg.BLACK);
+                    self.buttons.add(self.currentLine);
+                }
+            });
+            this.onButton=false;
+            let button;
+
+            //Gestion Tactile
+            svg.addEvent(this.component,"touchmove",function(e) {
+                let element = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+                //Simulate mouseEnter
+                if((element.tagName=="circle")&&(self.onButton==false)){
+
+                    for(let i=0;i<self.tabButtons.length;i++)
+                    {
+                        if((Math.ceil(self.tabButtons[i].component.x)==Math.ceil(element.cx.animVal.value))
+                            &&(Math.ceil(self.tabButtons[i].component.y)==Math.ceil(element.cy.animVal.value)))
+                        {
+                            button = self.tabButtons[i];
+                        }
+                    }
+
+                    if ((self.onDrawing) && (self.code.indexOf("" + button.value) == -1)) {
+                        if(self.code.length>0) {
+                            let buttonBefore = self.tabButtons[parseInt(self.code.charAt(self.code.length - 1)) - 1];
+                            self.lines.push(new svg.Line(buttonBefore.gapX, buttonBefore.gapY, button.gapX, button.gapY)
+                                .color(svg.BLACK, 5, svg.BLACK));
+                            self.buttons.add(self.lines[self.lines.length - 1]);
+                        }
+                        self.code += button.value;
+                    }
+                }
+                //Simulate mouseOut
+                else if((element.tagName!="circle")&&(self.onButton==true)){
+                    self.onButton=false;
+                }
+
+                //Dessin Dynamique
+                if(self.onDrawing && self.code.length>0) {
+                    self.buttons.remove(self.currentLine);
+                    let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
+                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,
+                        e.touches[0].clientX-self.width*1.15,e.touches[0].clientY-self.height*0.2)
+                        .color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
             });
