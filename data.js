@@ -35,7 +35,7 @@ exports.data = function() {
                 "Comte" : {
                     image:"img/produits/ProduitsLaitiers/comte.jpg",
                     prix: 1,
-                    nom: "Comté",
+                    nom: "Comte",
                     complement: " l'unite",
                 },
                 "Roquefort" : {
@@ -309,7 +309,7 @@ exports.data = function() {
                 "SecheCheveux": {
                     image: "img/produits/Electromenager/secheCheveux.jpg",
                     prix: 100,
-                    nom: "Séche-Cheveux",
+                    nom: "Seche-Cheveux",
                     complement: "",
                 },
                 "Cafetiere": {
@@ -558,13 +558,13 @@ exports.data = function() {
                 "Deodorant": {
                     image: "img/produits/Soins/deodorant.jpg",
                     prix: 2,
-                    nom: "Déodorant",
+                    nom: "Deodorant",
                     complement: "",
                 },
                 "Demaquillant": {
                     image: "img/produits/Soins/demaquillant.jpg",
                     prix: 2,
-                    nom: "Démaquillant",
+                    nom: "Demaquillant",
                     complement: "",
                 },
                 "ApresShampoing": {
@@ -607,7 +607,7 @@ exports.data = function() {
                     complement: "",
                 },
                 "Echarpe": {
-                    image: "img/produits/Mode/écharpe.jpg",
+                    image: "img/produits/Mode/echarpe.jpg",
                     prix: 20,
                     nom: "Echarpe",
                     complement: "",
@@ -643,9 +643,9 @@ exports.data = function() {
                     complement: "",
                 },
                 "Robe d'été": {
-                    image: "img/produits/Mode/robe-été.jpg",
+                    image: "img/produits/Mode/robe-ete.jpg",
                     prix: 100,
-                    nom: "Robe d'été",
+                    nom: "Robe d'ete",
                     complement: "",
                 },
                 "Sandales": {
