@@ -2,7 +2,6 @@
  * Created by TNA3624 on -17/-13/2017.
  */
 
-
 var DOWNSAMPLE_WIDTH = 5;
 var DOWNSAMPLE_HEIGHT = 8;
 
@@ -20,7 +19,6 @@ function init_draw(element,x,y,name,callback) {
 
     element.component.addEventListener("mouseup", function(){
         bestchar=ev_recognize();
-        console.log("zertyui : "+bestchar);
         callback(bestchar);
     });
 
@@ -50,7 +48,6 @@ function init_draw(element,x,y,name,callback) {
                 }
             }
         }
-        console.log("dessin "+dessinpropre);
 
         var bestChar = '??';
         var bestScore = 0;
@@ -75,11 +72,8 @@ function init_draw(element,x,y,name,callback) {
 
         }
 
-        // console.log('I believe you typed: ' + bestChar );
-
         for (var q in charData[bestChar]){
             if(q%5==0){
-                console.log("mod" +p%5);
                 if(charData[bestChar][q]=="-1"){
                     charchosen+="\n0,";
                 }else{
@@ -94,8 +88,6 @@ function init_draw(element,x,y,name,callback) {
                 }
             }
         }
-        console.log("charchosen "+charchosen);
-
 
         drawingArea.clear();
         clearDownSample();

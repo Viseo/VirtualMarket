@@ -9,8 +9,13 @@
     "url": "https://github.com/Viseo/VirtualMarket.git"
   },
   "dependencies": {
-    "primus": "*",
     "lib": "lib/*",
-    "node-module": "node-modules/*"
+    "mock-browser": "^0.92.14",
+    "node-module": "node-modules/*",
+    "primus": "*"
+  },
+  "devDependencies": {
+    "jsdom": "9.12.0",
+    "jsdom-global": "2.1.1"
   }
 }

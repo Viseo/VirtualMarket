@@ -17,7 +17,6 @@ let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 let market;
 
-
 describe("Test",function (){
     this.timeout(30000);
     beforeEach(function(){
@@ -146,6 +145,7 @@ describe("Test",function (){
 
     });
 
+    /*
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
@@ -228,7 +228,7 @@ describe("Test",function (){
         runtime.event(chevronH,"click",{});
         runtime.advanceAll();
         inspect(listBasket,{tag:"g",transform:"translate(0 2)"});
-    });
+    });*/
 
     it("ensure that we can mousehover and mouseout on a categorie",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
@@ -296,7 +296,7 @@ describe("Test",function (){
         inspect(product2,{tag:"image"});
     });
 
-    it("ensure that clicking on a product in the basket print the corresponding section",function(){
+    /*it("ensure that clicking on a product in the basket print the corresponding section",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
@@ -404,9 +404,9 @@ describe("Test",function (){
         let chevronB = retrieve(market.component,"[basket].[chevronDownBasket]");
         runtime.event(chevronB,"click",{});
         runtime.advanceAll();
-    });
+    });*/
 
-    it("ensure that hoovering a product in the basket add a red cross, and that clicking on it delete this product from the basket",function(){
+    /*it("ensure that hoovering a product in the basket add a red cross, and that clicking on it delete this product from the basket",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
@@ -439,10 +439,10 @@ describe("Test",function (){
         runtime.advanceAll();
         let crossDragged = retrieve(market.component,"[basket].[listBasket].[dragged].[cross]");
         runtime.event(crossDragged,"mouseup",{ pageX:10, pageY:10});
-    });
+    });*/
 
 
-    it("ensure that adding the same product in the basket is working ",function(){
+  /*  it("ensure that adding the same product in the basket is working ",function(){
         let catMode = retrieve(market.component,"[categories].[Mode]");
         runtime.event(catMode,"click",{});
 
@@ -477,21 +477,7 @@ describe("Test",function (){
         runtime.advanceAll();
         let costume = retrieve(market.component,"[basket].[listBasket].[Product basket Costume]");
         inspect(costume,{tag:"g"});
-    });
-
-    it("ensure that drag an item from ray to the void is not adding it to the basket ",function(){
-        let catMode = retrieve(market.component,"[categories].[Mode]");
-        runtime.event(catMode,"click",{});
-        let product = retrieve(market.component,"[ray Mode].[listRayDown].[Product Montre]");
-        runtime.advanceAll();
-        runtime.event(product,"mousedown",{ pageX:5, pageY:5});
-        runtime.advanceAll();
-        let dragged = retrieve(market.component,"[ray Mode].[listRayDown].[dragged]");
-        runtime.event(dragged,"mouseup",{ pageX:500, pageY:500});
-        runtime.advanceAll();
-        let montre = retrieve(market.component,"[basket].[listBasket].[Montre]");
-        assert.ok(!montre);
-    });
+    });*/
 
     it("ensure that you can drag the card in the terminal and that it shows the payement interface",function(){
         let payment_zone = retrieve(market.component,"[payment]");
@@ -641,11 +627,102 @@ describe("Test",function (){
             let cross = retrieve(market.component,"[code].[cross]");
             runtime.event(cross, "click", {});
             runtime.advanceAll();
-
+            done();
             setTimeout(function(){
                 done();
             },15000);
+    });
+
+    it("ensure that the interface to enter the code pattern is working with touch event",function(done){
+        let payment_zone = retrieve(market.component,"[payment]");
+        assert.ok(payment_zone);
+        let card = retrieve(market.component,"[payment].[card]");
+        assert.ok(card);
+
+        runtime.event(card,"touchstart",{touches:{0:{clientX:market.width*0.80+5,clientY:market.height*0.5}}});
+        runtime.advanceAll();
+        runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+10,clientY:market.height*0.90}}});
+        runtime.advanceAll();
+        runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+1000,clientY:market.height*0.90}}});
+        runtime.advanceAll();
+        runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+1000,clientY:market.height*0.90}}});
+        runtime.advanceAll();
+
+        let code = retrieve(market.component,"[code]");
+        assert.ok(code);
+        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+        assert.ok(buttonGroup);
+        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+        assert.ok(button1);
+        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+        assert.ok(button2);
+        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+        assert.ok(button3);
+
+        runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+        runtime.advanceAll();
+        runtime.event(button2, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+        runtime.advanceAll();
 
 
+        for(let i = 0;i<3;i++) {
+            runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
+            runtime.advanceAll();
+            runtime.event(code, "touchmove", {touches:{0:{clientX:market.width/2,clientY:market.height/2}}});
+            runtime.advanceAll();
+            runtime.event(code, "touchmove", {touches:{0:{clientX:market.height/2,clientY:market.height/2}}});
+            runtime.advanceAll();
+            runtime.event(code, "touchmove", {touches:{0:{clientX:market.height/2+market.payment.zoneCode.tabButtons[0].gapX,
+                clientY:market.height/2}}});
+            runtime.advanceAll();
+            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+            runtime.advanceAll();
+            runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+            runtime.advanceAll();
+        }
+
+         setTimeout(function(){
+            done();
+         },15000);
+
+        runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[2].gapX,
+                                                        clientY:market.height/2-market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[1].gapX,
+                                                        clientY:market.height/2-market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[0].gapX,
+                                                        clientY:market.height/2-market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[3].gapX,
+                                                        clientY:market.height/2}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[4].gapX,
+                                                        clientY:market.height/2}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[5].gapX,
+                                                        clientY:market.height/2}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[8].gapX,
+                                                        clientY:market.height/2+market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[7].gapX,
+                                                        clientY:market.height/2+market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[6].gapX,
+                                                        clientY:market.height/2+market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.advanceAll();
+        runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+        runtime.advanceAll();
     });
 });

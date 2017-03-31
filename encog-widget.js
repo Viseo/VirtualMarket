@@ -213,14 +213,14 @@ ENCOG.GUI.Drawing.create = function (element,x,y,name) {
     result.canvasDiv = element.component;
     result.canvasWidth = element.width;
     result.canvasHeight = element.height;
-    result.canvasDiv.innerHTML = '<foreignObject width="'
+    result.canvasDiv.innerHTML = '<foreignObject opacity=0 width="'
         + result.canvasWidth + '" height="' + result.canvasHeight + '" x="'+(0)+'" y="'+(0)+'"> '
         + '<canvas id="'+name+'" width="' + (2000) + '"' + ' height="' + (2000)+'">'
         + 'Browser not supported.</canvas></foreignObject>';
 
     result.canvas = result.canvasDiv.getElementById(name);
     result.drawingContext = result.canvas.getContext('2d');
-    result.drawingContext.strokeStyle="red";
+    result.drawingContext.globalAlpha=0;
 
     // Attach the mousedown, mousemove and mouseup event listeners.
     result.canvas.addEventListener('mousedown', function (e) {
@@ -230,6 +230,7 @@ ENCOG.GUI.Drawing.create = function (element,x,y,name) {
         result.ev_canvas(e)
     }, true);
     result.canvas.addEventListener('mouseup', function (e) {
+        result.drawingContext.globalAlpha=1;
         result.ev_canvas(e)
     }, true);
     result.canvas.addEventListener('touchstart', function (e) {

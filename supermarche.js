@@ -170,7 +170,7 @@ exports.main = function(svg,gui,param) {
             this.component.add(zoneChevronEast).add(zoneChevronWest);
         }
 
-        dragRayon(e,current,placement) {
+        /*dragRayon(e,current,placement) {
             let dragged = new Thumbnail(current.image.src, current.name);
             dragged.placeElementsDnD(current);
             dragged.move(current.x, current.y);
@@ -200,7 +200,7 @@ exports.main = function(svg,gui,param) {
             });
             svg.event(dragged.component, 'mousedown', e);
             market.add(glassDnD);
-        }
+        }*/
     }
     
     class Basket extends DrawingZone {
@@ -291,39 +291,32 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.printPrice);
         }
 
-        addProducts(thumbnail) {
+        addProducts(thumbnail,quantity) {
 
             let newProd = new ThumbnailBasket(thumbnail.image.src, thumbnail.name, thumbnail.price, thumbnail.complement, thumbnail.categorie);
             let occur=0;
             let self =this;
-
-            if (this.thumbnailsProducts.length > 0) {
-
-                for (let product of this.thumbnailsProducts) {
-                    if (product.name == thumbnail.name) {
-                        product.addQuantity(1);
-                        let newText=product.quantity + "x " + product.price + " €"+product.complement;
-                        product.changeText(newText);
-                        occur=1;
-                    }
-                }
-                if (occur==0){
-                    newProd.addQuantity(1);
-                    this.listProducts.add(newProd.component);
-                    this.thumbnailsProducts.push(newProd);
+            for (let product of this.thumbnailsProducts) {
+                if (product.name == thumbnail.name) {
+                    product.addQuantity(quantity);
+                    let newText=product.quantity + "x " + product.price + " €"+product.complement;
+                    product.changeText(newText);
+                    occur=1;
                 }
             }
-            else{
-                newProd.addQuantity(1);
+            if (occur==0){
+                newProd.addQuantity(quantity);
                 this.listProducts.add(newProd.component);
                 this.thumbnailsProducts.push(newProd);
+                let newText=newProd.quantity + "x " + newProd.price + " €"+newProd.complement;
+                newProd.changeText(newText);
             }
 
             newProd.component.onMouseDown(function(e){
                 self.dragBasket(e,newProd);
             });
 
-            this.calculatePrice(newProd.price);
+            this.calculatePrice(newProd.price*quantity);
 
             if (this.thumbnailsProducts.length < 2 && occur==0) {
                 newProd.placeElements();
@@ -537,29 +530,30 @@ exports.main = function(svg,gui,param) {
             this.unit = upperHeight*0.5;
             this.gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * this.unit;
             this.gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * this.unit;
+            this.ray = upperHeight*0.12;
 
             this.color = svg.BLACK;
             // Dessiner les boutons
-            this.component = new svg.Circle(upperHeight*0.12).position(this.gapX ,this.gapY).color(svg.BLACK).opacity(1).mark("button"+value);
+            this.component = new svg.Circle(this.ray).position(this.gapX ,this.gapY).color(svg.BLACK).opacity(1).mark("button"+value);
 
             let self = this;
             this.component.onMouseOut(function(){
-                if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
+                if ((market.payment.zoneCode.onDrawing)&& (market.payment.zoneCode.code.indexOf(""+self.value)== -1))
                 {
-                    payment.zoneCode.code+= self.value;
+                    market.payment.zoneCode.code+= self.value;
                 }
             });
 
             this.component.onMouseEnter(function(){
-                if ((payment.zoneCode.onDrawing)&& (payment.zoneCode.code.indexOf(""+self.value)== -1))
+                if ((market.payment.zoneCode.onDrawing)&& (market.payment.zoneCode.code.indexOf(""+self.value)== -1))
                 {
-                    if(payment.zoneCode.code.length>0){
-                        let buttonBefore = payment.zoneCode.tabButtons[parseInt(payment.zoneCode.code.charAt(payment.zoneCode.code.length-1))-1];
-                        payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,self.gapX,self.gapY)
+                    if(market.payment.zoneCode.code.length>0){
+                        let buttonBefore = market.payment.zoneCode.tabButtons[parseInt(market.payment.zoneCode.code.charAt(market.payment.zoneCode.code.length-1))-1];
+                        market.payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,self.gapX,self.gapY)
                             .color(svg.BLACK,5,svg.BLACK));
-                        payment.zoneCode.buttons.add(payment.zoneCode.lines[payment.zoneCode.lines.length-1]);
+                        market.payment.zoneCode.buttons.add(market.payment.zoneCode.lines[market.payment.zoneCode.lines.length-1]);
                     }
-                    payment.zoneCode.code+= self.value;
+                    market.payment.zoneCode.code+= self.value;
                 }
             });
         }
@@ -588,9 +582,9 @@ exports.main = function(svg,gui,param) {
             this.currentLine=new svg.Line();
 
             this.cross.onClick(function(){
-                market.remove(payment.zoneCode.component);
-                payment.card.position(payment.width*0.1,payment.height/2);
-                payment.cardIn=false;
+                market.remove(market.payment.zoneCode.component);
+                market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
+                market.payment.cardIn=false;
             });
 
             let self = this;
@@ -600,16 +594,16 @@ exports.main = function(svg,gui,param) {
                     let check=self.checkPassword(self.code);
                     if(check===false){
                         if(self.code.length>1){
-                            payment.iteration++;
-                            if (payment.iteration >3) {
+                            market.payment.iteration++;
+                            if (market.payment.iteration >3) {
                                 self.launchTimer(10, false);
                             }
                         }
                     }else{
                         self.launchTimer(4,true);
-                        payment.card.position(payment.width*0.1,payment.height/2);
-                        payment.cardIn=false;
-                        payment.iteration=1;
+                        market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
+                        market.payment.cardIn=false;
+                        market.payment.iteration=1;
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -624,16 +618,16 @@ exports.main = function(svg,gui,param) {
                     let check=self.checkPassword(self.code);
                     if(check===false){
                         if(self.code.length>1){
-                            payment.iteration++;
-                            if (payment.iteration >3) {
+                            market.payment.iteration++;
+                            if (market.payment.iteration >3) {
                                 self.launchTimer(10, false);
                             }
                         }
                     }else{
                         self.launchTimer(4,true);
-                        payment.card.position(payment.width*0.1,payment.height/2);
-                        payment.cardIn=false;
-                        payment.iteration=0;
+                        market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
+                        market.payment.cardIn=false;
+                        market.payment.iteration=0;
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -664,36 +658,28 @@ exports.main = function(svg,gui,param) {
                 }
             });
             this.onButton=false;
-            let button;
 
             //Gestion Tactile
             svg.addEvent(this.component,"touchmove",function(e) {
-                let element = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-                //Simulate mouseEnter
-                if((element.tagName=="circle")&&(self.onButton==false)){
-
-                    for(let i=0;i<self.tabButtons.length;i++)
-                    {
-                        if((Math.ceil(self.tabButtons[i].component.x)==Math.ceil(element.cx.animVal.value))
-                            &&(Math.ceil(self.tabButtons[i].component.y)==Math.ceil(element.cy.animVal.value)))
-                        {
-                            button = self.tabButtons[i];
-                        }
-                    }
-
-                    if ((self.onDrawing) && (self.code.indexOf("" + button.value) == -1)) {
-                        if(self.code.length>0) {
-                            let buttonBefore = self.tabButtons[parseInt(self.code.charAt(self.code.length - 1)) - 1];
-                            self.lines.push(new svg.Line(buttonBefore.gapX, buttonBefore.gapY, button.gapX, button.gapY)
-                                .color(svg.BLACK, 5, svg.BLACK));
-                            self.buttons.add(self.lines[self.lines.length - 1]);
-                        }
-                        self.code += button.value;
+                let button=null;
+                for(let i = 0;i<self.tabButtons.length;i++) {
+                    if ((e.touches[0].clientX > (self.x + self.tabButtons[i].gapX) - self.tabButtons[i].ray) &&
+                        (e.touches[0].clientX < (self.x + self.tabButtons[i].gapX) + self.tabButtons[i].ray) &&
+                        (e.touches[0].clientY > (self.y + self.tabButtons[i].gapY) - self.tabButtons[i].ray) &&
+                        (e.touches[0].clientY < (self.y + self.tabButtons[i].gapY) + self.tabButtons[i].ray)) {
+                        button=self.tabButtons[i];
                     }
                 }
-                //Simulate mouseOut
-                else if((element.tagName!="circle")&&(self.onButton==true)){
-                    self.onButton=false;
+
+                //Simulate mouseEnter
+                if(button!=null&&(self.onButton==false)){
+                    if(self.code.length>0) {
+                        let buttonBefore = self.tabButtons[parseInt(self.code.charAt(self.code.length - 1)) - 1];
+                        self.lines.push(new svg.Line(buttonBefore.gapX, buttonBefore.gapY, button.gapX, button.gapY)
+                            .color(svg.BLACK, 5, svg.BLACK));
+                        self.buttons.add(self.lines[self.lines.length - 1]);
+                    }
+                    self.code += button.value;
                 }
 
                 //Dessin Dynamique
@@ -771,12 +757,12 @@ exports.main = function(svg,gui,param) {
                  for(let i =0;i<seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
-                             payment.zoneCode.changeTimer(seconds-i);
-                             payment.zoneCode.changeText("Code erronnée",svg.BLACK);
+                             market.payment.zoneCode.changeTimer(seconds-i);
+                             market.payment.zoneCode.changeText("Code erronnée",svg.BLACK);
                              if (i===seconds){
                                  market.remove(glassTimer);
-                                 payment.zoneCode.changeText("");
-                                 payment.zoneCode.hideCircle();
+                                 market.payment.zoneCode.changeText("");
+                                 market.payment.zoneCode.hideCircle();
                              }
                          }
                      }(i),i*1000);
@@ -786,10 +772,10 @@ exports.main = function(svg,gui,param) {
                  for(let i =0;i<seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
-                             payment.zoneCode.changeText("Code correct",svg.GREEN);
+                             market.payment.zoneCode.changeText("Code correct",svg.GREEN);
                              if (i===seconds){
                                  market.remove(glassTimer);
-                                 market.remove(payment.zoneCode.component);
+                                 market.remove(market.payment.zoneCode.component);
                              }
                          }
                      }(i),i*1000);
@@ -913,38 +899,40 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.printPrice);
             this.categorie=cat;
             this.name = title;
-
             this.width = market.height*0.75/2;
             this.height = market.height*0.75/2;
 
-            let current = this;
+            let self = this;
             this.image.onMouseEnter(function()
             {
-                current.image.smoothy(20,10).resizeTo(current.width-2,current.height-2);// modif dans svgTranslation
+                self.image.smoothy(20,10).resizeTo(self.width-2,self.height-2);// modif dans svgTranslation
             });
 
             this.title.onMouseEnter(function()
             {
-                current.image.smoothy(20,10).resizeTo(current.width-2,current.height-2);// modif dans svgTranslation
+                self.image.smoothy(20,10).resizeTo(self.width-2,self.height-2);// modif dans svgTranslation
             });
 
             this.image.onMouseOut(function()
             {
-                current.image.smoothy(20,10).resizeTo(current.width-30,current.height-30);
+                self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
             function getNumber(number){
-                for(let i=0;i<number;i++){
-                    basket.addProducts(current);
-                }
+                self.addAnimation(number);
+                basket.addProducts(self,parseInt(number));
+                glassCanvas.remove(self.drawNumber);
             }
 
+            this.drawNumber = null;
             this.component.onMouseDown(function(){
-                let drawNumber = new svg.Drawing(0,0);
-                init_draw(drawNumber,0,0,current.name, getNumber);
-                glassCanvas.add(drawNumber);
+                self.drawNumber = new svg.Drawing(0,0);
+                init_draw(self.drawNumber,0,0,self.name, getNumber);
+                glassCanvas.add(self.drawNumber);
+                self.drawNumber.opacity(0);
             });
 
+            this.toAdd =null;
         }
 
         placeElements(place) {
@@ -953,11 +941,15 @@ exports.main = function(svg,gui,param) {
             this.background       .position(this.width/2,this.height/2).dimension(this.height-2,this.height-2);
             this.title      .position(this.width/2,this.height*0.1) .font("Calibri",15,1).color(svg.BLACK).mark("Title "+this.name);
             this.printPrice .position(this.width/2,this.height*0.95).font("Calibri",15,1).color(svg.BLACK);
+        }
 
-            let current = this;
-            // this.component.onMouseDown(function(e){
-            //     categories.ray.dragRayon(e,current,place);
-            // });
+        addAnimation(number){
+            if(this.toAdd!=null) this.component.remove(this.toAdd);
+            this.toAdd = new svg.Image("img/chiffres/"+number+".png").position(this.width/2,this.height/2)
+                    .dimension(this.width*0.5,this.height*0.5).opacity(0.7);
+            this.component.add(this.toAdd);
+            this.toAdd.smoothy(20,5).resizeTo(this.width*0.75,this.height*0.75).onChannel("test");
+            this.toAdd.smoothy(10,10).opacityTo(0).onChannel("test");
         }
 	}
     
@@ -1059,14 +1051,19 @@ exports.main = function(svg,gui,param) {
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
     let basket = new Basket(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
     let zoneBasket = new svg.Translation().add(basket.component).mark("basket");
-    let payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
-    let zonePayment = new svg.Translation().add(payment.component).mark("payment");
+    market.payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
+    let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
 
-    market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
-    market.add(glassDnD).add(glassCanvas);
+    function addAllParts()
+    {
+        market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
+        market.add(glassDnD);
+        if(categories.ray!=null) market.add(categories.rayTranslation);
+        market.add(glassCanvas);
+    }
+    addAllParts();
     changeRay("HighTech");
-
     return market;
 	//////////////////////////////
 };
