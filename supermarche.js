@@ -679,7 +679,8 @@ exports.main = function(svg,gui,param) {
                             .color(svg.BLACK, 5, svg.BLACK));
                         self.buttons.add(self.lines[self.lines.length - 1]);
                     }
-                    self.code += button.value;
+
+                    if(!self.code.includes(button.value)) self.code += button.value;
                 }
 
                 //Dessin Dynamique
@@ -758,7 +759,7 @@ exports.main = function(svg,gui,param) {
                      setTimeout(function(i){
                          return function(){
                              market.payment.zoneCode.changeTimer(seconds-i);
-                             market.payment.zoneCode.changeText("Code erronnée",svg.BLACK);
+                             market.payment.zoneCode.changeText("Code erronné",svg.BLACK);
                              if (i===seconds){
                                  market.remove(glassTimer);
                                  market.payment.zoneCode.changeText("");
