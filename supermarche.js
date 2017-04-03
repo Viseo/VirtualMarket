@@ -623,7 +623,8 @@ exports.main = function(svg,gui,param) {
                                 self.launchTimer(10, false);
                             }
                         }
-                    }else{
+                    }
+                    else{
                         self.launchTimer(4,true);
                         market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
                         market.payment.cardIn=false;
@@ -679,7 +680,7 @@ exports.main = function(svg,gui,param) {
                             .color(svg.BLACK, 5, svg.BLACK));
                         self.buttons.add(self.lines[self.lines.length - 1]);
                     }
-                    self.code += button.value;
+                    if(!self.code.includes(button.value)) self.code += button.value;
                 }
 
                 //Dessin Dynamique
@@ -709,7 +710,6 @@ exports.main = function(svg,gui,param) {
                 this.buttons.add(this.tabButtons[num-1].get());
             }
             this.buttons.add(this.currentLine);
-
             this.x = x;
             this.y = y;
             this.component.move(x,y);
@@ -918,14 +918,25 @@ exports.main = function(svg,gui,param) {
                 self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
-            function getNumber(number){
-                self.addAnimation(number);
-                basket.addProducts(self,parseInt(number));
-                glassCanvas.remove(self.drawNumber);
+            function getNumber(number,e){
+                if(mousePos.x==e.pageX && mousePos.y==e.pageY) {
+                    basket.addProducts(self,1);
+                }
+
+                if(number!="??") {
+                    self.addAnimation(number);
+                    basket.addProducts(self, parseInt(number));
+                    glassCanvas.remove(self.drawNumber);
+
+                }
             }
 
             this.drawNumber = null;
-            this.component.onMouseDown(function(){
+            let mousePos ={};
+            this.component.onMouseDown(function(e){
+                mousePos = {x:e.pageX,y:e.pageY};
+                console.log(mousePos.x);
+
                 self.drawNumber = new svg.Drawing(0,0);
                 init_draw(self.drawNumber,0,0,self.name, getNumber);
                 glassCanvas.add(self.drawNumber);
