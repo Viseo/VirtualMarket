@@ -940,7 +940,6 @@ exports.main = function(svg,gui,param) {
                     self.addAnimation(number);
                     basket.addProducts(self, parseInt(number));
                     glassCanvas.remove(self.drawNumber);
-
                 }
             }
 
@@ -948,8 +947,6 @@ exports.main = function(svg,gui,param) {
             let mousePos ={};
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
-                console.log(mousePos.x);
-
                 self.drawNumber = new svg.Drawing(0,0);
                 init_draw(self.drawNumber,0,0,self.name, getNumber);
                 glassCanvas.add(self.drawNumber);

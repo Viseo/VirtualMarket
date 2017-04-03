@@ -14,7 +14,6 @@ function init_draw(element,x,y,name,callback) {
     let bestchar;
     // Find the canvas element.
     drawingArea = ENCOG.GUI.Drawing.create(element,x,y,name);
-    //downSampleData = drawingArea.performDownSample(x,y);
     preload();
 
     element.component.addEventListener("mouseup", function(e){
