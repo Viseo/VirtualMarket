@@ -728,6 +728,11 @@ exports.main = function(svg,gui,param) {
             this.cross.position(this.width,0).dimension(this.width*0.1,this.width*0.1);
         }
 
+        changeCircleTimer(color){
+            this.circleTimer.color(svg.LIGHT_GREY,2,color);
+            this.needle.color(color,2,color);
+        }
+
         changeTimer(newTimer){
             this.needle.end(this.width/2 + 30*Math.cos( (Math.PI / 180)*(360/10)*(7.5-newTimer)), this.height*0.92 + 30*Math.sin( (Math.PI / 180)*(360/10)*(7.5-newTimer))).opacity(1);
             this.circleTimer.opacity(1);
@@ -754,13 +759,20 @@ exports.main = function(svg,gui,param) {
              let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
              glassTimer.add(fillGlass);
              market.add(glassTimer);
+             market.payment.zoneCode.changeCircleTimer(svg.RED);
              if(state===false){
-                 for(let i =0;i<seconds+1;i++){
+                 for(let i =0;i<=seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
                              market.payment.zoneCode.changeTimer(seconds-i);
-                             market.payment.zoneCode.changeText("Code erronné",svg.BLACK);
-                             if (i===seconds){
+                             market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
+                             if(i===(seconds/2)){
+                                 market.payment.zoneCode.changeCircleTimer(svg.LIGHT_ORANGE);
+                             }
+                            else if(i===(seconds-2)){
+                                 market.payment.zoneCode.changeCircleTimer(svg.GREEN);
+                             }
+                             else if (i===seconds+1){
                                  market.remove(glassTimer);
                                  market.payment.zoneCode.changeText("");
                                  market.payment.zoneCode.hideCircle();
