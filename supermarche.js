@@ -624,7 +624,8 @@ exports.main = function(svg,gui,param) {
                                 self.launchTimer(10, false);
                             }
                         }
-                    }else{
+                    }
+                    else{
                         self.launchTimer(4,true);
                         market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
                         market.payment.cardIn=false;
@@ -679,7 +680,6 @@ exports.main = function(svg,gui,param) {
                             .color(svg.BLACK, 5, svg.BLACK));
                         self.buttons.add(self.lines[self.lines.length - 1]);
                     }
-
                     if(!self.code.includes(button.value)) self.code += button.value;
                 }
 
@@ -710,7 +710,6 @@ exports.main = function(svg,gui,param) {
                 this.buttons.add(this.tabButtons[num-1].get());
             }
             this.buttons.add(this.currentLine);
-
             this.x = x;
             this.y = y;
             this.component.move(x,y);
@@ -727,6 +726,11 @@ exports.main = function(svg,gui,param) {
             this.needle.start(this.width/2,this.height*0.93).end(this.width/2,this.height*0.93-15).color(svg.RED,2,svg.RED).opacity(0);
             this.cross.position(this.width/2,this.height*0.80).dimension(this.width*0.1,this.width*0.05).color(svg.BLACK).opacity(1);
 
+        }
+
+        changeCircleTimer(color){
+            this.circleTimer.color(svg.LIGHT_GREY,2,color);
+            this.needle.color(color,2,color);
         }
 
         changeTimer(newTimer){
@@ -755,13 +759,20 @@ exports.main = function(svg,gui,param) {
              let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
              glassTimer.add(fillGlass);
              market.add(glassTimer);
+             market.payment.zoneCode.changeCircleTimer(svg.RED);
              if(state===false){
-                 for(let i =0;i<seconds+1;i++){
+                 for(let i =0;i<=seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
                              market.payment.zoneCode.changeTimer(seconds-i);
-                             market.payment.zoneCode.changeText("Code erronné",svg.BLACK);
-                             if (i===seconds){
+                             market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
+                             if(i===(seconds/2)){
+                                 market.payment.zoneCode.changeCircleTimer(svg.LIGHT_ORANGE);
+                             }
+                            else if(i===(seconds-2)){
+                                 market.payment.zoneCode.changeCircleTimer(svg.GREEN);
+                             }
+                             else if (i===seconds+1){
                                  market.remove(glassTimer);
                                  market.payment.zoneCode.changeText("");
                                  market.payment.zoneCode.hideCircle();
@@ -920,14 +931,25 @@ exports.main = function(svg,gui,param) {
                 self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
-            function getNumber(number){
-                self.addAnimation(number);
-                basket.addProducts(self,parseInt(number));
-                glassCanvas.remove(self.drawNumber);
+            function getNumber(number,e){
+                if(mousePos.x==e.pageX && mousePos.y==e.pageY) {
+                    basket.addProducts(self,1);
+                }
+
+                if(number!="??") {
+                    self.addAnimation(number);
+                    basket.addProducts(self, parseInt(number));
+                    glassCanvas.remove(self.drawNumber);
+
+                }
             }
 
             this.drawNumber = null;
-            this.component.onMouseDown(function(){
+            let mousePos ={};
+            this.component.onMouseDown(function(e){
+                mousePos = {x:e.pageX,y:e.pageY};
+                console.log(mousePos.x);
+
                 self.drawNumber = new svg.Drawing(0,0);
                 init_draw(self.drawNumber,0,0,self.name, getNumber);
                 glassCanvas.add(self.drawNumber);

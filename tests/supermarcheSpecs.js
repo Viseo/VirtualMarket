@@ -627,6 +627,10 @@ describe("Test",function (){
             let cross = retrieve(market.component,"[code].[cross]");
             runtime.event(cross, "click", {});
             runtime.advanceAll();
+<<<<<<< HEAD
+
+=======
+>>>>>>> 207c85589d222b7fd04eb8fa8da9ce7c67c4fb8e
             setTimeout(function(){
                 done();
             },15000);

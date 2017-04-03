@@ -17,9 +17,9 @@ function init_draw(element,x,y,name,callback) {
     //downSampleData = drawingArea.performDownSample(x,y);
     preload();
 
-    element.component.addEventListener("mouseup", function(){
+    element.component.addEventListener("mouseup", function(e){
         bestchar=ev_recognize();
-        callback(bestchar);
+        callback(bestchar,e);
     });
 
     /////////////////////////////////////////////////////////////////////////////
@@ -72,23 +72,7 @@ function init_draw(element,x,y,name,callback) {
 
         }
 
-        for (var q in charData[bestChar]){
-            if(q%5==0){
-                if(charData[bestChar][q]=="-1"){
-                    charchosen+="\n0,";
-                }else{
-                    charchosen+="\n"+charData[bestChar][q]+",";
-                }
-            }else{
-                if(charData[bestChar][q]=="-1"){
-                    charchosen+="0,";
-                }else{
-                    charchosen+=charData[bestChar][q]+",";
-
-                }
-            }
-        }
-
+        if(bestScore>=6.5) bestChar = "??";
         drawingArea.clear();
         clearDownSample();
         return bestChar;
@@ -113,7 +97,6 @@ function preload()
     defineChar("7", new Array(1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1) );
     defineChar("8", new Array(1,1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1) );
     defineChar("9", new Array(1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1) );
-
 }
 
 // Define a character, add it to the list and to the map.
