@@ -59,7 +59,6 @@ function init_draw(element,x,y,name,callback,e) {
 
     // Find the canvas element.
     drawingArea = ENCOG.GUI.Drawing.create(element,x,y,name);
-    //downSampleData = drawingArea.performDownSample(x,y);
     preload();
 
     setTimeout((function(){
