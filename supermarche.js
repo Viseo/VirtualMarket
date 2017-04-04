@@ -913,6 +913,8 @@ exports.main = function(svg,gui,param) {
             this.name = title;
             this.width = market.height*0.75/2;
             this.height = market.height*0.75/2;
+            // this.showNum= new svg.Translation();
+            this.toAdd=[];
 
             let self = this;
             this.image.onMouseEnter(function()
@@ -931,15 +933,17 @@ exports.main = function(svg,gui,param) {
             });
 
             function getNumber(number,e){
-                if(mousePos.x==e.pageX && mousePos.y==e.pageY) {
-                    basket.addProducts(self,1);
+                if(number=="click") {
+                    self.addAnimation("1");
+                    basket.addProducts(self,"1");
                 }
-
-                if(number!="??") {
+                else if(number!="?") {
+                    for(var c of number.split('')){
+                        if(c=="?") return;
+                    }
                     self.addAnimation(number);
-                    basket.addProducts(self, parseInt(number));
+                    basket.addProducts(self, number);
                     glassCanvas.remove(self.drawNumber);
-
                 }
             }
 
@@ -947,15 +951,12 @@ exports.main = function(svg,gui,param) {
             let mousePos ={};
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
-                console.log(mousePos.x);
 
                 self.drawNumber = new svg.Drawing(0,0);
-                init_draw(self.drawNumber,0,0,self.name, getNumber);
+                init_draw(self.drawNumber,0,0,self.name, getNumber,e);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
-
-            this.toAdd =null;
         }
 
         placeElements(place) {
@@ -967,12 +968,22 @@ exports.main = function(svg,gui,param) {
         }
 
         addAnimation(number){
-            if(this.toAdd!=null) this.component.remove(this.toAdd);
-            this.toAdd = new svg.Image("img/chiffres/"+number+".png").position(this.width/2,this.height/2)
-                    .dimension(this.width*0.5,this.height*0.5).opacity(0.7);
-            this.component.add(this.toAdd);
-            this.toAdd.smoothy(20,5).resizeTo(this.width*0.75,this.height*0.75).onChannel("test");
-            this.toAdd.smoothy(10,10).opacityTo(0).onChannel("test");
+            var n =number.split('');
+            let self =this;
+            function removeNumber(){
+                if(self.toAdd!=[]){
+                    for(var c=0;c<self.toAdd.length;c++){
+                        self.component.remove(self.toAdd[c]);
+                    }
+                }
+            }
+            for(let i=0; i<number.length;i++){
+                this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5).font("Calibri",this.height/1.5,1).color(svg.BLACK).opacity(0.7);
+                this.component.add(this.toAdd[i]);
+            }
+            setTimeout(function () {
+                removeNumber();
+            },1000);
         }
 	}
     
@@ -1014,11 +1025,11 @@ exports.main = function(svg,gui,param) {
         }
 
         addQuantity(num){
-            this.quantity = this.quantity+num;
+            this.quantity = this.quantity+parseInt(num);
         }
 
         minusQuantity(num){
-            this.quantity = this.quantity-num;
+            this.quantity = this.quantity-parseInt(num);
         }
 
         changeText(newText){
