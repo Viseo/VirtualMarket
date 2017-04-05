@@ -545,6 +545,8 @@ exports.main = function(svg,gui,param) {
             });
 
             this.component.onMouseEnter(function(){
+                if (market.payment.zoneCode.onDrawing)
+                {
                     if(market.payment.zoneCode.code.length>0){
                         let buttonBefore = market.payment.zoneCode.tabButtons[parseInt(market.payment.zoneCode.code.charAt(market.payment.zoneCode.code.length-1))-1];
                         market.payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,self.gapX,self.gapY)
@@ -554,6 +556,9 @@ exports.main = function(svg,gui,param) {
                     if (self.value != market.payment.zoneCode.code.slice(-1)){
                         market.payment.zoneCode.code+= self.value;
                     }
+
+
+                }
             });
         }
         // Récupérer les boutons

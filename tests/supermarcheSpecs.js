@@ -590,6 +590,11 @@ describe("Test",function (){
         assert.ok(button8);
         let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
         assert.ok(button9);
+        //check 
+            runtime.event(button3, "mouseenter", {});
+            runtime.advanceAll();
+            runtime.event(button2, "mouseenter", {});
+            runtime.advanceAll();
         //Password ok
             runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
             runtime.advanceAll();
