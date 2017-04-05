@@ -34,7 +34,6 @@ function init_draw(element,x,y,name,callback,e) {
     }
     else{
         if(numToSend.element==name){
-            console.log("meme")
             element.component.addEventListener("mouseup", function(){
                 bestchar=ev_recognize();
                 numToSend.num+=bestchar;

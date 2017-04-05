@@ -575,11 +575,11 @@ exports.main = function(svg,gui,param) {
             this.timer = new svg.Text("30");
             this.message = new svg.Text("");
             this.circleTimer = new svg.Circle(30);
+            this.arcTimer = new svg.Path(0,0);
             this.onDrawing = false;
             //this.cancelButton= new svg.Translation();
-            this.cross = new svg.Image("img/icone-supprimer.png");
+            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
             this.lines = [];
-            this.needle = new svg.Line(0,0,0,0);
             this.currentLine=new svg.Line();
 
             this.cross.onClick(function(){
@@ -699,9 +699,9 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.title);
             this.component.add(this.buttons);
             this.component.add(this.circleTimer);
+            this.component.add(this.arcTimer);
             this.component.add(this.timer);
             this.component.add(this.message);
-            this.component.add(this.needle);
             this.component.add(this.cross);
 
             this.tabButtons = [];
@@ -719,26 +719,29 @@ exports.main = function(svg,gui,param) {
 
         placeElements()
         {
+            this.arcTimer.move(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0).arc(30,30,0,1,0,this.width/2,this.height*0.93);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
             this.title.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
             this.circleTimer.position(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0);
             this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK).opacity(0);
-            this.needle.start(this.width/2,this.height*0.93).end(this.width/2,this.height*0.93-15).color(svg.RED,2,svg.RED).opacity(0);
             this.cross.position(this.width/2,this.height*0.80).dimension(this.width*0.1,this.width*0.05).color(svg.BLACK).opacity(1);
 
         }
 
-        changeCircleTimer(color){
-            this.circleTimer.color(svg.LIGHT_GREY,2,color);
-            this.needle.color(color,2,color);
-        }
-
-        changeTimer(newTimer){
-            this.needle.end(this.width/2 + 30*Math.cos( (Math.PI / 180)*(360/10)*(7.5-newTimer)), this.height*0.93 + 30*Math.sin( (Math.PI / 180)*(360/10)*(7.5-newTimer))).opacity(1);
-            this.circleTimer.opacity(1);
+        changeTimer(newTimer,color){
+            var x=this.width/2 + 30*Math.cos( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
+            var y=this.height*0.93 + 30*Math.sin( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
+            var lf=1;
+            if(10-newTimer>10/2)lf=0;
+            if(newTimer==10){this.circleTimer.opacity(1).color(svg.LIGHT_GREY,5,svg.RED);}
+            else{this.circleTimer.opacity(1).color(svg.LIGHT_GREY,5,svg.LIGHT_GREY);}
+            this.component.remove(this.arcTimer);
             this.component.remove(this.timer);
             this.timer = new svg.Text(newTimer);
             this.timer.position(this.width/2,this.height*0.935).font("Calibri",20,1).color(svg.BLACK);
+            this.arcTimer = new svg.Path(this.width/2,this.height*0.93-30);
+            this.arcTimer.arc(30,30,0,lf,0,x,y).color(svg.LIGHT_GREY,5,color);
+            this.component.add(this.arcTimer);
             this.component.add(this.timer);
         }
 
@@ -752,25 +755,24 @@ exports.main = function(svg,gui,param) {
         hideCircle(){
             this.changeTimer("");
             this.circleTimer.opacity(0);
-            this.needle.opacity(0);
         }
 
         launchTimer(seconds,state){
              let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
              glassTimer.add(fillGlass);
              market.add(glassTimer);
-             market.payment.zoneCode.changeCircleTimer(svg.RED);
+             market.payment.zoneCode.changeTimer(seconds,svg.RED);
              if(state===false){
                  for(let i =0;i<=seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
-                             market.payment.zoneCode.changeTimer(seconds-i);
+                             market.payment.zoneCode.changeTimer(seconds-i,svg.RED);
                              market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
-                             if(i===(seconds/2)){
-                                 market.payment.zoneCode.changeCircleTimer(svg.LIGHT_ORANGE);
+                             if(seconds-2>i && i>=(seconds/2)){
+                                 market.payment.zoneCode.changeTimer(seconds-i,svg.ORANGE);
                              }
-                            else if(i===(seconds-2)){
-                                 market.payment.zoneCode.changeCircleTimer(svg.GREEN);
+                            else if(i>=(seconds-2) && i!=seconds+1){
+                                 market.payment.zoneCode.changeTimer(seconds-i,svg.GREEN);
                              }
                              else if (i===seconds+1){
                                  market.remove(glassTimer);
