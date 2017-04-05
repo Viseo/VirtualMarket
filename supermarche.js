@@ -755,6 +755,7 @@ exports.main = function(svg,gui,param) {
         hideCircle(){
             this.changeTimer("");
             this.circleTimer.opacity(0);
+            this.arcTimer.opacity(0);
         }
 
         launchTimer(seconds,state){
@@ -787,6 +788,7 @@ exports.main = function(svg,gui,param) {
                  for(let i =0;i<seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
+                             market.payment.zoneCode.hideCircle();
                              market.payment.zoneCode.changeText("Code correct",svg.GREEN);
                              if (i===seconds){
                                  market.remove(glassTimer);
