@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param) {
+exports.main = function(svg,gui,param,neural) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -930,29 +930,24 @@ exports.main = function(svg,gui,param) {
                 self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
-            function getNumber(number,e){
+            function getNumber(number,e,element){
                 if(mousePos.x==e.pageX && mousePos.y==e.pageY) {
-                    basket.addProducts(self,1);
+                    basket.addProducts(element,1);
                 }
 
                 if(number!="??") {
-                    self.addAnimation(number);
-                    basket.addProducts(self, parseInt(number));
-                    glassCanvas.remove(self.drawNumber);
-
+                    element.addAnimation(number);
+                    basket.addProducts(element, parseInt(number));
                 }
             }
 
-            this.drawNumber = null;
             let mousePos ={};
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
-                console.log(mousePos.x);
-
-                self.drawNumber = new svg.Drawing(0,0);
-                init_draw(self.drawNumber,0,0,self.name, getNumber);
-                glassCanvas.add(self.drawNumber);
-                self.drawNumber.opacity(0);
+                let drawNumber = new svg.Drawing(0,0).mark("drawing "+self.name);
+                neural.init_draw(drawNumber,0,0,self.name,getNumber,self,glassCanvas);
+                glassCanvas.add(drawNumber);
+                drawNumber.opacity(0);
             });
 
             this.toAdd =null;
@@ -1062,8 +1057,6 @@ exports.main = function(svg,gui,param) {
             }
         }
     }
-
-
     //////
 
     /////Déclaration Interface////
@@ -1082,7 +1075,6 @@ exports.main = function(svg,gui,param) {
     {
         market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
         market.add(glassDnD);
-        if(categories.ray!=null) market.add(categories.rayTranslation);
         market.add(glassCanvas);
     }
     addAllParts();

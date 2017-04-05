@@ -23,12 +23,13 @@
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;
         let main = require("supermarche").main;
-
         let DATA = require("data").data;
         let data = DATA();
         let GUI = require("lib/svggui").Gui;
         let svg = SVG(targetRuntime());
-        main(SVG(targetRuntime()),GUI((svg),""),{data:data});
+        let NEURAL = require("neuralNetDrawing").neural;
+        let neural = NEURAL(targetRuntime());
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural);
     </script>
 </body>
 </html>	
