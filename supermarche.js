@@ -530,7 +530,7 @@ exports.main = function(svg,gui,param) {
             this.unit = upperHeight*0.5;
             this.gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * this.unit;
             this.gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * this.unit;
-            this.ray = upperHeight*0.12;
+            this.ray = upperHeight*0.08;
 
             this.color = svg.BLACK;
             // Dessiner les boutons
@@ -545,16 +545,15 @@ exports.main = function(svg,gui,param) {
             });
 
             this.component.onMouseEnter(function(){
-                if ((market.payment.zoneCode.onDrawing)&& (market.payment.zoneCode.code.indexOf(""+self.value)== -1))
-                {
                     if(market.payment.zoneCode.code.length>0){
                         let buttonBefore = market.payment.zoneCode.tabButtons[parseInt(market.payment.zoneCode.code.charAt(market.payment.zoneCode.code.length-1))-1];
                         market.payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,self.gapX,self.gapY)
                             .color(svg.BLACK,5,svg.BLACK));
                         market.payment.zoneCode.buttons.add(market.payment.zoneCode.lines[market.payment.zoneCode.lines.length-1]);
                     }
-                    market.payment.zoneCode.code+= self.value;
-                }
+                    if (self.value != market.payment.zoneCode.code.slice(-1)){
+                        market.payment.zoneCode.code+= self.value;
+                    }
             });
         }
         // Récupérer les boutons
@@ -688,7 +687,7 @@ exports.main = function(svg,gui,param) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
                     self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,
-                        e.touches[0].clientX-self.width*1.15,e.touches[0].clientY-self.height*0.2)
+                        e.touches[0].clientX,e.touches[0].clientY)
                         .color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }

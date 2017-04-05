@@ -599,6 +599,10 @@ describe("Test",function (){
             runtime.advanceAll();
             runtime.event(button1, "mouseenter", {});
             runtime.advanceAll();
+            runtime.event(button1, "mouseout", {});
+            runtime.advanceAll();
+            runtime.event(button1, "mouseenter", {});
+            runtime.advanceAll();
             runtime.event(button4, "mouseenter", {});
             runtime.advanceAll();
             runtime.event(button5, "mouseenter", {});
