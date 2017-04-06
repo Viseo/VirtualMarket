@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param) {
+exports.main = function(svg,gui,param,neural) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -941,28 +941,26 @@ exports.main = function(svg,gui,param) {
                 self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
-            function getNumber(number,e){
-                if(number=="click") {
-                    self.addAnimation("1");
+
+            function getNumber(number,e,element){
+                if((number=="click")||(mousePos.x==e.pageX && mousePos.y==e.pageY)) {
+                    element.addAnimation("1");
                     basket.addProducts(self,"1");
                 }
                 else if(number!="?") {
                     for(var c of number.split('')){
                         if(c=="?") return;
                     }
-                    self.addAnimation(number);
-                    basket.addProducts(self, number);
-                    glassCanvas.remove(self.drawNumber);
+                    element.addAnimation(number);
+                    basket.addProducts(element, parseInt(number));
                 }
             }
 
-            this.drawNumber = null;
             let mousePos ={};
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
-
-                self.drawNumber = new svg.Drawing(0,0);
-                init_draw(self.drawNumber,0,0,self.name, getNumber,e);
+                self.drawNumber = new svg.Drawing(0,0).mark("drawing "+self.name);
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,e,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
@@ -980,10 +978,8 @@ exports.main = function(svg,gui,param) {
             let n =number.split('');
             let self =this;
             function removeNumber(){
-                if(self.toAdd!=[]){
                     for(var c=0;c<self.toAdd.length;c++){
                         self.component.remove(self.toAdd[c]);
-                    }
                 }
             }
             for(let i=0; i<number.length;i++){
@@ -1082,8 +1078,6 @@ exports.main = function(svg,gui,param) {
             }
         }
     }
-
-
     //////
 
     /////Déclaration Interface////
@@ -1102,7 +1096,6 @@ exports.main = function(svg,gui,param) {
     {
         market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
         market.add(glassDnD);
-        if(categories.ray!=null) market.add(categories.rayTranslation);
         market.add(glassCanvas);
     }
     addAllParts();
