@@ -13,7 +13,7 @@ exports.main = function(svg,gui,param,neural) {
 	}
 
 	class ListCategorie extends DrawingZone {
-		constructor(width,height,x,y)
+		constructor(width,height,x,y,tabCat)
 		{
 			super(width,height,x,y);
             
@@ -25,11 +25,11 @@ exports.main = function(svg,gui,param,neural) {
             this.ray = null;
             this.rayTranslation = null;
             var self = this;
+            this.currentSearch=[];
 
-            this.tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
+            this.tabCategories = tabCat;
             let listThumbnail = new svg.Translation().mark("listeCategories");
-            for(let i=0;i<this.tabCategories.length;i++)
-            {
+            for(let i=0;i<this.tabCategories.length;i++) {
                 let current = this.tabCategories[i];
                 current.placeElements();
                 current.move(height*i,0);
@@ -168,38 +168,6 @@ exports.main = function(svg,gui,param,neural) {
             });
             this.component.add(zoneChevronEast).add(zoneChevronWest);
         }
-
-        /*dragRayon(e,current,placement) {
-            let dragged = new Thumbnail(current.image.src, current.name);
-            dragged.placeElementsDnD(current);
-            dragged.move(current.x, current.y);
-            dragged.component.opacity(0.9).mark("dragged");
-            if (placement === 1) {
-                categories.ray.listThumbnailsUp.add(dragged.component);
-            } else {
-                categories.ray.listThumbnailsDown.add(dragged.component);
-            }
-
-            gui.installDnD(dragged, glassDnD, {
-                moved: function (dragged) {
-                    if ((market.width * 0.85 - e.pageX < dragged.x - current.x) && (dragged.y + dragged.height / 2 < market.height * 0.5)) {
-                        basket.addProducts(current);
-                    }
-                },
-                revert: function (dragged) {
-                    if (placement === 1) {
-                        categories.ray.listThumbnailsUp.remove(dragged.component);
-                    } else {
-                        categories.ray.listThumbnailsDown.remove(dragged.component);
-                    }
-                },
-                clicked: function () {
-                    basket.addProducts(current);
-                }
-            });
-            svg.event(dragged.component, 'mousedown', e);
-            market.add(glassDnD);
-        }*/
     }
     
     class Basket extends DrawingZone {
@@ -410,13 +378,19 @@ exports.main = function(svg,gui,param,neural) {
             this.micro = new svg.Image("img/microphone.png").mark("micro");
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
+
             this.micro.onClick(function(){
-                search("Lait Banane Carotte Fruits Maison Mode Concombre Tomates");
                 market.remove(categories.rayTranslation);
-                let tabSearch = search("Lait Banane Carotte Fruits Maison Mode Concombre Tomates");
-                categories.ray = new Ray(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tabSearch, "Recherche");
-                categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("raySearch");
-                market.add(categories.rayTranslation);
+                zoneCategories.remove(categories.component);
+                let tab = search("Lait Banane Carotte Fruits Maison Mode Concombre Tomates");
+                let tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
+                tabCategories.push(new ThumbnailCategorie("img/search.png","img/search2.png","Recherche"));
+                categories=new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
+                categories.currentSearch=tab;
+                zoneCategories.add(categories.component);
+                market.add(zoneCategories);
+
+                changeRay("Recherche");
             });
         }
     }
@@ -1083,7 +1057,12 @@ exports.main = function(svg,gui,param,neural) {
 
     ///Functions///
     function changeRay(name){
-        let tab =  param.data.makeVignettesForRay(name,ThumbnailRayon);
+        let tab=[];
+	    if(name=="Recherche")
+        {
+            tab = categories.currentSearch;
+        }
+        else tab = param.data.makeVignettesForRay(name,ThumbnailRayon);
         if(categories.rayTranslation!=null)
         {
             market.remove(categories.rayTranslation);
@@ -1091,7 +1070,7 @@ exports.main = function(svg,gui,param,neural) {
         categories.ray = new Ray(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         market.add(categories.rayTranslation);
-        for(let v=0;v<categories.tabCategories.length-1;v++)
+        for(let v=0;v<categories.tabCategories.length;v++)
         {
             categories.tabCategories[v].image.opacity(1);
             categories.tabCategories[v].highlightedImage.opacity(0);
@@ -1139,7 +1118,8 @@ exports.main = function(svg,gui,param,neural) {
     let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
-    let categories = new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05);
+    let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
+    let categories = new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
     let basket = new Basket(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
     let zoneBasket = new svg.Translation().add(basket.component).mark("basket");
