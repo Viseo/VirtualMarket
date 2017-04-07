@@ -922,9 +922,11 @@ exports.main = function(svg,gui,param,neural) {
             this.name = title;
             this.width = market.height*0.75/2;
             this.height = market.height*0.75/2;
-            // this.showNum= new svg.Translation();
             this.toAdd=[];
-
+            this.waitingNumber = new svg.Text("");
+            this.numberArea = new svg.Rect(0,0);
+            this.component.add(this.numberArea);
+            this.component.add(this.waitingNumber);
             let self = this;
             this.image.onMouseEnter(function()
             {
@@ -941,6 +943,22 @@ exports.main = function(svg,gui,param,neural) {
                 self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
+            function printNumber(number){
+            self.component.remove(self.waitingNumber);
+            self.component.remove(self.numberArea);
+            if(number==="") {
+                self.numberArea = new svg.Rect(0,0);
+                self.component.add(self.numberArea);
+                }
+                else {
+                    self.numberArea = new svg.Rect(self.width*0.12,self.height*0.1).position(self.width*0.1,self.height*0.08).color(svg.WHITE,2,svg.BLACK);
+                    self.component.add(self.numberArea);
+
+                }
+            self.waitingNumber = new svg.Text(number);
+            self.waitingNumber.position(self.width*0.1,self.height*0.1).font("Calibri",self.width*0.075,1);
+            self.component.add(self.waitingNumber);
+            }
 
             function getNumber(number,e,element){
                 if((number=="click")||(mousePos.x==e.pageX && mousePos.y==e.pageY)) {
@@ -960,7 +978,7 @@ exports.main = function(svg,gui,param,neural) {
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
                 self.drawNumber = new svg.Drawing(0,0).mark("drawing "+self.name);
-                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,e,self,glassCanvas);
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });

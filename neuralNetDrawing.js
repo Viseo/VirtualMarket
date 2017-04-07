@@ -351,7 +351,7 @@ exports.neural = function(runtime,Canvas) {
     var set = false;
     var ondraw=false;
 
-    function init_draw(element,x,y,name,callback,e,prod,glass) {
+    function init_draw(element,x,y,name,callback,printNumber,e,prod,glass) {
         // clearTimeout();
         let drawingArea;
         let bestchar;
@@ -365,9 +365,16 @@ exports.neural = function(runtime,Canvas) {
             bestchar = ev_recognize();
             drawingArea.ev_canvas(e, "mouseup");
             numToSend.num += bestchar;
+            if(numToSend.num.length<3) {
+                printNumber(numToSend.num+"_");
+            }
+            else {
+                printNumber(numToSend.num);
+            }
             console.log(numToSend.element + " " + numToSend.num);
             if (numToSend.num == "click") {
                 clearTimeout();
+                printNumber("");
                 callback(numToSend.num, e, prod);
                 numToSend.num = "";
                 numToSend.element = "";
@@ -378,8 +385,14 @@ exports.neural = function(runtime,Canvas) {
                     setTimeout((function () {
                         console.log("current : " + numToSend.num + " de " + numToSend.element);
                         drawingArea.ev_canvas(e, "mouseup");
-                        if (isNaN(parseInt(numToSend.num))) numToSend.num = "";
-                        if (numToSend.num != "") callback(numToSend.num, e, prod);
+                        if (isNaN(parseInt(numToSend.num))){
+                            numToSend.num = "";
+                            printNumber("");
+                        }
+                        if (numToSend.num != "") {
+                            printNumber("");
+                            callback(numToSend.num, e, prod);
+                        }
                         numToSend.num = "";
                         numToSend.element = "";
                         ondraw = false;
