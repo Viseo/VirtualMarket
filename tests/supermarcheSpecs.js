@@ -627,9 +627,10 @@ describe("Test",function (){
             let cross = retrieve(market.component,"[code].[cross]");
             runtime.event(cross, "click", {});
             runtime.advanceAll();
-            setTimeout(function(){
-                done();
-            },15000);
+            // setTimeout(function(){
+            //     done();
+            // },15000);
+            done();
     });
 
     it("ensure that the interface to enter the code pattern is working with touch event",function(done){
@@ -688,9 +689,9 @@ describe("Test",function (){
             runtime.advanceAll();
         }
 
-         setTimeout(function(){
-            done();
-         },15000);
+         // setTimeout(function(){
+         //    done();
+         // },15000);
 
         runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
         runtime.advanceAll();
@@ -723,5 +724,16 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
         runtime.advanceAll();
+        done();
+    });
+
+    it("ensures that we can click on the micro", function(){
+        let header = retrieve(market.component,"[header]");
+        let micro = retrieve(market.component, "[header].[micro]");
+        assert(header);
+        assert(micro);
+        runtime.event(micro,"click",{});
+        let raySearch = retrieve(market.component, "[raySearch]");
+        assert(raySearch);
     });
 });

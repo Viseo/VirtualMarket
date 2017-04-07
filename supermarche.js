@@ -27,7 +27,6 @@ exports.main = function(svg,gui,param) {
             var self = this;
 
             this.tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-
             let listThumbnail = new svg.Translation().mark("listeCategories");
             for(let i=0;i<this.tabCategories.length;i++)
             {
@@ -408,9 +407,17 @@ exports.main = function(svg,gui,param) {
             super(width,height,x,y);
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE,2,svg.BLACK));
             this.component.add(new svg.Text("Digi-Market").position(100,height*0.75).font("Calibri",this.component.height*0.75,1).color(svg.WHITE));
-            this.micro = new svg.Image("img/microphone.png");
+            this.micro = new svg.Image("img/microphone.png").mark("micro");
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
+            this.micro.onClick(function(){
+                search("Lait Banane Carotte Fruits Maison Mode Concombre Tomates");
+                market.remove(categories.rayTranslation);
+                let tabSearch = search("Lait Banane Carotte Fruits Maison Mode Concombre Tomates");
+                categories.ray = new Ray(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tabSearch, "Recherche");
+                categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("raySearch");
+                market.add(categories.rayTranslation);
+            });
         }
     }
     
@@ -530,7 +537,7 @@ exports.main = function(svg,gui,param) {
             this.unit = upperHeight*0.5;
             this.gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * this.unit;
             this.gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * this.unit;
-            this.ray = upperHeight*0.12;
+            this.ray = upperHeight*0.08;
 
             this.color = svg.BLACK;
             // Dessiner les boutons
@@ -1028,8 +1035,7 @@ exports.main = function(svg,gui,param) {
         categories.ray = new Ray(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         market.add(categories.rayTranslation);
-
-        for(let v=0;v<categories.tabCategories.length;v++)
+        for(let v=0;v<categories.tabCategories.length-1;v++)
         {
             categories.tabCategories[v].image.opacity(1);
             categories.tabCategories[v].highlightedImage.opacity(0);
@@ -1039,7 +1045,38 @@ exports.main = function(svg,gui,param) {
                 categories.tabCategories[v].highlightedImage.opacity(1);
             }
         }
+
     }
+
+    function search(sentence){
+        let jsonFile = param.data.getJson();
+        let words = sentence.split(" ");
+        var tabProduct = [];
+        var tabTotalCat = [];
+        for (var i in words){
+            for (var cat in jsonFile){
+                if(words[i]== cat){
+                    var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
+                    tabTotalCat = tabTotalCat.concat(tabCat);
+                }
+                var products = jsonFile[cat];
+
+                for (var prodName in products){
+                    if ((words[i] == prodName)){
+                        var prod = products[prodName];
+                        var thumbnailProduct = new ThumbnailRayon(prod.image,prod.nom, prod.prix,prod.complement, cat);
+                        tabProduct.push(thumbnailProduct);
+                    }
+                }
+            }
+        }
+        // console.log(tabProduct);
+        // console.log(tabTotalCat);
+        var tabThumbnailProd = tabTotalCat.concat(tabProduct);
+        // console.log(tabThumbnailProd);
+        return tabThumbnailProd;
+    }
+    // search("Lait Banane Carotte Fruits Maison Mode Concombre Tomates ");
 
 
     //////
