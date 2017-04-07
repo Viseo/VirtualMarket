@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param) {
+exports.main = function(svg,gui,param,neural) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -524,7 +524,7 @@ exports.main = function(svg,gui,param) {
 
         showCode()
         {
-            this.zoneCode = new SecurityCode(market.width*0.3,market.height*0.75,market.width*0.35,market.height*0.15);
+            this.zoneCode = new SecurityCode(market.width,market.height,0,0);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -552,7 +552,7 @@ exports.main = function(svg,gui,param) {
             });
 
             this.component.onMouseEnter(function(){
-                if ((market.payment.zoneCode.onDrawing)&& (market.payment.zoneCode.code.indexOf(""+self.value)== -1))
+                if (market.payment.zoneCode.onDrawing)
                 {
                     if(market.payment.zoneCode.code.length>0){
                         let buttonBefore = market.payment.zoneCode.tabButtons[parseInt(market.payment.zoneCode.code.charAt(market.payment.zoneCode.code.length-1))-1];
@@ -560,7 +560,11 @@ exports.main = function(svg,gui,param) {
                             .color(svg.BLACK,5,svg.BLACK));
                         market.payment.zoneCode.buttons.add(market.payment.zoneCode.lines[market.payment.zoneCode.lines.length-1]);
                     }
-                    market.payment.zoneCode.code+= self.value;
+                    if (self.value != market.payment.zoneCode.code.slice(-1)){
+                        market.payment.zoneCode.code+= self.value;
+                    }
+
+
                 }
             });
         }
@@ -575,17 +579,18 @@ exports.main = function(svg,gui,param) {
         {
             this.component = new svg.Translation();
             //Rectangle de background
-            this.background = new svg.Rect().corners(10,10);
+            this.background = new svg.Rect();
             this.title = new svg.Text("Saisir le code de sécurité");
             this.buttons = new svg.Translation().mark("buttonGroup");
-            this.blur = new svg.Rect(market.width*1.5,market.height*1.75).position(0,0).color(svg.WHITE).opacity(0.5);
+            // this.blur = new svg.Rect(market.width*1.5,market.height*1.75).position(0,0).color(svg.WHITE).opacity(0.5);
             this.timer = new svg.Text("30");
             this.message = new svg.Text("");
             this.circleTimer = new svg.Circle(30);
+            this.arcTimer = new svg.Path(0,0);
             this.onDrawing = false;
+            //this.cancelButton= new svg.Translation();
             this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
             this.lines = [];
-            this.needle = new svg.Line(0,0,0,0);
             this.currentLine=new svg.Line();
 
             this.cross.onClick(function(){
@@ -630,7 +635,8 @@ exports.main = function(svg,gui,param) {
                                 self.launchTimer(10, false);
                             }
                         }
-                    }else{
+                    }
+                    else{
                         self.launchTimer(4,true);
                         market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
                         market.payment.cardIn=false;
@@ -659,8 +665,7 @@ exports.main = function(svg,gui,param) {
                 if(self.onDrawing && self.code.length>0) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
-                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX-self.width*1.15,e.pageY-self.height*0.2)
-                                                                .color(svg.BLACK,5,svg.BLACK);
+                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX,e.pageY).color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
             });
@@ -686,7 +691,6 @@ exports.main = function(svg,gui,param) {
                             .color(svg.BLACK, 5, svg.BLACK));
                         self.buttons.add(self.lines[self.lines.length - 1]);
                     }
-
                     if(!self.code.includes(button.value)) self.code += button.value;
                 }
 
@@ -695,21 +699,21 @@ exports.main = function(svg,gui,param) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
                     self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,
-                        e.touches[0].clientX-self.width*1.15,e.touches[0].clientY-self.height*0.2)
+                        e.touches[0].clientX,e.touches[0].clientY)
                         .color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
             });
 
-            this.component.add(this.blur);
+            // this.component.add(this.blur);
             this.component.add(this.background);
             this.component.add(this.title);
             this.component.add(this.buttons);
             this.component.add(this.circleTimer);
+            this.component.add(this.arcTimer);
             this.component.add(this.timer);
             this.component.add(this.message);
             this.component.add(this.cross);
-            this.component.add(this.needle);
 
             this.tabButtons = [];
             for (let num = 1; num <10; num ++){
@@ -717,7 +721,6 @@ exports.main = function(svg,gui,param) {
                 this.buttons.add(this.tabButtons[num-1].get());
             }
             this.buttons.add(this.currentLine);
-
             this.x = x;
             this.y = y;
             this.component.move(x,y);
@@ -727,47 +730,63 @@ exports.main = function(svg,gui,param) {
 
         placeElements()
         {
+            this.arcTimer.move(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0).arc(30,30,0,1,0,this.width/2,this.height*0.93);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
-            this.title.position(this.width/2,this.height*0.1).font("calibri",40,1).color(svg.BLACK);
-            this.circleTimer.position(this.width/2,this.height*0.92).color(svg.LIGHT_GREY,5,svg.RED).opacity(0);
+            this.title.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
+            this.circleTimer.position(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0);
             this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK).opacity(0);
-            this.needle.start(this.width/2,this.height*0.92).end(this.width/2,this.height*0.92-30).color(svg.RED,2,svg.RED).opacity(0);
-            this.cross.position(this.width,0).dimension(this.width*0.1,this.width*0.1);
+            this.cross.position(this.width/2,this.height*0.80).dimension(this.width*0.1,this.width*0.05).color(svg.BLACK).opacity(1);
+
         }
 
-        changeTimer(newTimer){
-            this.needle.end(this.width/2 + 30*Math.cos( (Math.PI / 180)*(360/10)*(7.5-newTimer)), this.height*0.92 + 30*Math.sin( (Math.PI / 180)*(360/10)*(7.5-newTimer))).opacity(1);
-            this.circleTimer.opacity(1);
+        changeTimer(newTimer,color){
+            var x=this.width/2 + 30*Math.cos( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
+            var y=this.height*0.93 + 30*Math.sin( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
+            var lf=1;
+            if(10-newTimer>10/2)lf=0;
+            if(newTimer==10){this.circleTimer.opacity(1).color(svg.LIGHT_GREY,5,svg.RED);}
+            else{this.circleTimer.opacity(1).color(svg.LIGHT_GREY,5,svg.LIGHT_GREY);}
+            this.component.remove(this.arcTimer);
             this.component.remove(this.timer);
             this.timer = new svg.Text(newTimer);
-            this.timer.position(this.width/2,this.height*0.93).font("Calibri",20,1).color(svg.BLACK);
+            this.timer.position(this.width/2,this.height*0.935).font("Calibri",20,1).color(svg.BLACK);
+            this.arcTimer = new svg.Path(this.width/2,this.height*0.93-30);
+            this.arcTimer.arc(30,30,0,lf,0,x,y).color(svg.LIGHT_GREY,5,color);
+            this.component.add(this.arcTimer);
             this.component.add(this.timer);
         }
 
         changeText(message,color){
             this.component.remove(this.message);
             this.message = new svg.Text(message).mark("result");
-            this.message.position(this.width/2,this.height*0.85).font("calibri",20,1).color(color).opacity(1);
+            this.message.position(this.width/2,this.height*0.87).font("calibri",20,1).color(color).opacity(1);
             this.component.add(this.message);
         }
 
         hideCircle(){
             this.changeTimer("");
             this.circleTimer.opacity(0);
-            this.needle.opacity(0);
+            this.arcTimer.opacity(0);
         }
 
         launchTimer(seconds,state){
              let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
              glassTimer.add(fillGlass);
              market.add(glassTimer);
+             market.payment.zoneCode.changeTimer(seconds,svg.RED);
              if(state===false){
-                 for(let i =0;i<seconds+1;i++){
+                 for(let i =0;i<=seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
-                             market.payment.zoneCode.changeTimer(seconds-i);
-                             market.payment.zoneCode.changeText("Code erronné",svg.BLACK);
-                             if (i===seconds){
+                             market.payment.zoneCode.changeTimer(seconds-i,svg.RED);
+                             market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
+                             if(seconds-2>i && i>=(seconds/2)){
+                                 market.payment.zoneCode.changeTimer(seconds-i,svg.ORANGE);
+                             }
+                            else if(i>=(seconds-2) && i!=seconds+1){
+                                 market.payment.zoneCode.changeTimer(seconds-i,svg.GREEN);
+                             }
+                             else if (i===seconds+1){
                                  market.remove(glassTimer);
                                  market.payment.zoneCode.changeText("");
                                  market.payment.zoneCode.hideCircle();
@@ -780,6 +799,7 @@ exports.main = function(svg,gui,param) {
                  for(let i =0;i<seconds+1;i++){
                      setTimeout(function(i){
                          return function(){
+                             market.payment.zoneCode.hideCircle();
                              market.payment.zoneCode.changeText("Code correct",svg.GREEN);
                              if (i===seconds){
                                  market.remove(glassTimer);
@@ -909,6 +929,8 @@ exports.main = function(svg,gui,param) {
             this.name = title;
             this.width = market.height*0.75/2;
             this.height = market.height*0.75/2;
+            // this.showNum= new svg.Translation();
+            this.toAdd=[];
 
             let self = this;
             this.image.onMouseEnter(function()
@@ -926,21 +948,29 @@ exports.main = function(svg,gui,param) {
                 self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
-            function getNumber(number){
-                self.addAnimation(number);
-                basket.addProducts(self,parseInt(number));
-                glassCanvas.remove(self.drawNumber);
+
+            function getNumber(number,e,element){
+                if((number=="click")||(mousePos.x==e.pageX && mousePos.y==e.pageY)) {
+                    element.addAnimation("1");
+                    basket.addProducts(self,"1");
+                }
+                else if(number!="?") {
+                    for(var c of number.split('')){
+                        if(c=="?") return;
+                    }
+                    element.addAnimation(number);
+                    basket.addProducts(element, parseInt(number));
+                }
             }
 
-            this.drawNumber = null;
-            this.component.onMouseDown(function(){
-                self.drawNumber = new svg.Drawing(0,0);
-                init_draw(self.drawNumber,0,0,self.name, getNumber);
+            let mousePos ={};
+            this.component.onMouseDown(function(e){
+                mousePos = {x:e.pageX,y:e.pageY};
+                self.drawNumber = new svg.Drawing(0,0).mark("drawing "+self.name);
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,e,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
-
-            this.toAdd =null;
         }
 
         placeElements(place) {
@@ -952,12 +982,20 @@ exports.main = function(svg,gui,param) {
         }
 
         addAnimation(number){
-            if(this.toAdd!=null) this.component.remove(this.toAdd);
-            this.toAdd = new svg.Image("img/chiffres/"+number+".png").position(this.width/2,this.height/2)
-                    .dimension(this.width*0.5,this.height*0.5).opacity(0.7);
-            this.component.add(this.toAdd);
-            this.toAdd.smoothy(20,5).resizeTo(this.width*0.75,this.height*0.75).onChannel("test");
-            this.toAdd.smoothy(10,10).opacityTo(0).onChannel("test");
+            let n =number.split('');
+            let self =this;
+            function removeNumber(){
+                    for(var c=0;c<self.toAdd.length;c++){
+                        self.component.remove(self.toAdd[c]);
+                }
+            }
+            for(let i=0; i<number.length;i++){
+                this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5).font("Calibri",this.height/1.5,1).color(svg.BLACK).opacity(0.7);
+                this.component.add(this.toAdd[i]);
+            }
+            setTimeout(function () {
+                removeNumber();
+            },1000);
         }
 	}
     
@@ -999,11 +1037,11 @@ exports.main = function(svg,gui,param) {
         }
 
         addQuantity(num){
-            this.quantity = this.quantity+num;
+            this.quantity = this.quantity+parseInt(num);
         }
 
         minusQuantity(num){
-            this.quantity = this.quantity-num;
+            this.quantity = this.quantity-parseInt(num);
         }
 
         changeText(newText){
@@ -1076,8 +1114,6 @@ exports.main = function(svg,gui,param) {
         // console.log(tabThumbnailProd);
         return tabThumbnailProd;
     }
-    // search("Lait Banane Carotte Fruits Maison Mode Concombre Tomates ");
-
 
     //////
 
@@ -1097,7 +1133,6 @@ exports.main = function(svg,gui,param) {
     {
         market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
         market.add(glassDnD);
-        if(categories.ray!=null) market.add(categories.rayTranslation);
         market.add(glassCanvas);
     }
     addAllParts();
