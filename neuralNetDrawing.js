@@ -364,7 +364,8 @@ exports.neural = function(runtime,Canvas) {
             if(numToSend.element=="") numToSend.element=name;
             bestchar = ev_recognize();
             drawingArea.ev_canvas(e, "mouseup");
-            numToSend.num += bestchar;
+            if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
+            else numToSend.num += bestchar;
             if(numToSend.num.length<3) {
                 printNumber(numToSend.num+"_");
             }
