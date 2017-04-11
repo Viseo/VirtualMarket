@@ -699,7 +699,7 @@ describe("Test",function (){
 
             setTimeout(function(){
                 done();
-            },15000);
+            },15);
     });
 
     it("ensure that the interface to enter the code pattern is working with touch event",function(done){
@@ -760,7 +760,7 @@ describe("Test",function (){
 
          setTimeout(function(){
             done();
-         },15000);
+         },15);
 
 
         runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
@@ -796,7 +796,6 @@ describe("Test",function (){
         runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
 
         runtime.advanceAll();
-        done();
     });
 
     it("ensures that we can click on the micro", function(){
@@ -805,7 +804,7 @@ describe("Test",function (){
         assert(header);
         assert(micro);
         runtime.event(micro,"click",{});
-        let raySearch = retrieve(market.component, "[raySearch]");
+        let raySearch = retrieve(market.component, "[ray Recherche]");
         assert(raySearch);
     });
 });
