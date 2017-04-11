@@ -822,28 +822,99 @@ exports.main = function(svg,gui,param,neural) {
 
 
     class Calendar {
-	    constructor(width,height,x,y){
-	        this.component = new svg.Translation();
-	        this.background = new svg.Rect();
-	        this.title = new svg.Rect();
-	        this.titleText = new svg.Text();
+        constructor(width,height,x,y){
+            this.component = new svg.Translation();
+            this.background = new svg.Rect();
+            this.title = new svg.Rect();
+            this.titleText = new svg.Text("Avril 2017");
+            this.calendarFirstRow = new svg.Translation();
+            this.calendarFirstColumn = new svg.Translation();
+            this.calendarContent = new svg.Translation();
+            this.calendarCases = [];
+            this.monthChoice = new svg.Translation();
 
-	        this.component.add(this.background);
-	        this.component.add(this.title);
-	        this.component.add(this.titleText);
+            this.component.add(this.background);
+            this.component.add(this.title);
+            this.component.add(this.titleText);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.monthChoice);
 
             this.x = x;
             this.y = y;
             this.component.move(x,y);
             this.width = width;
             this.height = height;
+            this.calendarWidth = width*0.9;
+            this.calendarHeight = height*0.8;
+
         }
         placeElements(){
-            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.RED,1,svg.RED).opacity(0.8);
-            this.title.position(this.width/2,this.height*0.1).dimension(this.width,this.height*0.3).color(svg.RED,1,svg.RED).opacity(0.8);
-            this.titleText.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
+            console.log("test2");
+            let caseWidth = this.calendarWidth/12;
+            let caseHeight = this.calendarHeight/10;
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.WHITE).opacity(0.8);
+            this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(0.8);
+            this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
+            this.monthChoice.add(this.title).add(this.titleText);
+            this.monthChoice.move(this.width*0.6-caseWidth, this.height*0.05+this.title.height/2);
+
+            let date = new Date();
+            for(let j=0;j<11;j++)
+            {
+                let dayCase = new svg.Translation();
+                dayCase.add(new svg.Rect(caseWidth,caseHeight).color(svg.ORANGE,1,svg.BLACK));
+                let text = "";
+                if (j==0){
+                   text = "Dates";
+                }
+                else if (j ==1){
+                    text = "Aujourd'hui";
+                }
+                else if (j ==2){
+                    text = "Demain";
+                }
+                else {
+                    text = this.getWeekDay()[((j-1)+date.getDay())%7]+ " " + (date.getDate()+j-1);
+                }
+                dayCase.add(new svg.Text(text).font("calibri", this.width /70, 1).color(svg.BLACK));
+                this.calendarFirstColumn.add(dayCase);
+                dayCase.move(0,j*caseHeight);
+                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+            for (var i=0;i<11;i++){
+                let hourCase = new svg.Translation();
+                hourCase.add(new svg.Rect(caseWidth,caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
+                hourCase.add(new svg.Text((i+8)+"h-"+(i+9)+"h").font("calibri",this.width/55,1).color(svg.BLACK));
+                hourCase.move(i*caseWidth,0);
+                this.calendarFirstRow.add(hourCase);
+                this.calendarFirstRow.move(this.width*0.6-this.title.width/2+caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+
+            for (var i=0;i<11;i++){
+                let line = new svg.Translation();
+                for (var j=0;j<11;j++){
+                    let element = new svg.Rect(caseWidth,caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*caseWidth,0);
+                    line.add(element);
+                    this.calendarCases.push({background:element,hour:(j+8)+"h-"+(j+9)+"h",day:"jour "+(i+1)});
+                }
+                line.move(this.width*0.6-this.title.width/2+caseWidth/2,this.height*0.05+this.title.height*1.5+caseHeight+caseHeight*i);
+                this.calendarContent.add(line);
+            }
         }
 
+        getWeekDay(){
+            return {
+                0: "Dimanche",
+                1: "Lundi",
+                2: "Mardi",
+                3: "Mercredi",
+                4: "Jeudi",
+                5: "Vendredi",
+                6: "Samedi",
+            }
+        }
     }
     
 
@@ -1270,13 +1341,15 @@ exports.main = function(svg,gui,param,neural) {
         market.add(glassCanvas);
     }
 
-    // let calendar = new Calendar(market.width,market.height,market.width*0.2,market.height*0.8);
-    // let zoneCalendar = new svg.Translation().add(calendar.component);;
-    // market.add(zoneCalendar);
+
+    let calendar = new Calendar(market.width,market.height,0,0);
+    calendar.placeElements();
+    let zoneCalendar = new svg.Translation().add(calendar.component);
     console.log("Test");
 
     addAllParts();
     changeRay("HighTech");
+    market.add(zoneCalendar);
     return market;
 	//////////////////////////////
 };
