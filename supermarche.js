@@ -1154,8 +1154,10 @@ exports.main = function(svg,gui,param,neural) {
                                 bef="";
                             }
                             let bef2 = message[message.indexOf(tab[i].name.toLowerCase())-4];
+
+
                             if(bef2<"0"&&bef2>"9") {
-                                bef2
+                                bef2="";
                             }
                             basket.addProducts(tab[i], parseInt(""+bef2+bef+quantity));
                         }
@@ -1200,11 +1202,15 @@ exports.main = function(svg,gui,param,neural) {
                 }
                 else {
                     console.log("PAS KOMPRI");
+                    var msg = new SpeechSynthesisUtterance("Je n'ai pas compris");
+                    window.speechSynthesis.speak(msg);
                 }
             }
         }
         else {
             console.log("S'il te plait puisses-tu discuter?");
+            var msg = new SpeechSynthesisUtterance("Désolé, je n'ai pas entendu");
+            window.speechSynthesis.speak(msg);
         }
     }
     //////

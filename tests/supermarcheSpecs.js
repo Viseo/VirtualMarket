@@ -807,4 +807,6 @@ describe("Test",function (){
         let raySearch = retrieve(market.component, "[ray Recherche]");
         assert(raySearch);
     });
+
+    it("ensure")
 });
