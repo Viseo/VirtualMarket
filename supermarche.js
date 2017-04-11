@@ -206,6 +206,7 @@ exports.main = function(svg,gui,param,neural) {
         constructor(width, height, x, y) {
             super(width, height, x, y);
 
+
             let stroke = new svg.Rect(width, height).position(width / 2, height / 2);
             stroke.color(svg.WHITE,4,svg.BLACK);
             this.component.add(stroke);
@@ -363,6 +364,16 @@ exports.main = function(svg,gui,param,neural) {
                 this.calculatePrice(-((vignette.price)*numberProduct));
             }
         }
+
+        emptyBasket() {
+            for (var i=this.thumbnailsProducts.length-1; i>=0; i--){
+                console.log(this.thumbnailsProducts[i].component);
+                basket.deleteProducts(this.thumbnailsProducts[i],this.thumbnailsProducts[i].quantity);
+            }
+            this.thumbnailsProducts.splice(0,this.thumbnailsProducts.length);
+            console.log(this.thumbnailsProducts);
+        }
+
 
         dragBasket(e,current) {
             let dragged = new Thumbnail(current.image.src,current.name);
@@ -818,6 +829,31 @@ exports.main = function(svg,gui,param,neural) {
               return false;
         }
     }
+
+    class Calendar {
+	    constructor(width,height,x,y){
+	        this.component = new svg.Translation();
+	        this.background = new svg.Rect();
+	        this.title = new svg.Rect();
+	        this.titleText = new svg.Text();
+
+	        this.component.add(this.background);
+	        this.component.add(this.title);
+	        this.component.add(this.titleText);
+
+            this.x = x;
+            this.y = y;
+            this.component.move(x,y);
+            this.width = width;
+            this.height = height;
+        }
+        placeElements(){
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.RED,1,svg.RED).opacity(0.8);
+            this.title.position(this.width/2,this.height*0.1).dimension(this.width,this.height*0.3).color(svg.RED,1,svg.RED).opacity(0.8);
+            this.titleText.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
+        }
+
+    }
     
     ////////////VIGNETTES//////////////////
 	class Thumbnail {
@@ -1108,10 +1144,7 @@ exports.main = function(svg,gui,param,neural) {
                 }
             }
         }
-        // console.log(tabProduct);
-        // console.log(tabTotalCat);
         var tabThumbnailProd = tabTotalCat.concat(tabProduct);
-        // console.log(tabThumbnailProd);
         return tabThumbnailProd;
     }
 
@@ -1127,6 +1160,9 @@ exports.main = function(svg,gui,param,neural) {
     let zoneBasket = new svg.Translation().add(basket.component).mark("basket");
     market.payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
+    // zonePayment.onClick(function(){
+    //     basket.emptyBasket();
+    // });
     let glassCanvas= new svg.Translation().mark("glassCanvas");
 
     function addAllParts()
@@ -1135,6 +1171,12 @@ exports.main = function(svg,gui,param,neural) {
         market.add(glassDnD);
         market.add(glassCanvas);
     }
+
+    // let calendar = new Calendar(market.width,market.height,market.width*0.2,market.height*0.8);
+    // let zoneCalendar = new svg.Translation().add(calendar.component);;
+    // market.add(zoneCalendar);
+    console.log("Test");
+
     addAllParts();
     changeRay("HighTech");
     return market;
