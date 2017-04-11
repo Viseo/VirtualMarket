@@ -1,99 +1,18 @@
 /**
  * Created by TNA3624 on -17/-13/2017.
  */
-exports.neural = function(runtime,Canvas) {
+exports.neural = function(runtime) {
 
-    /*
-     * Encog(tm) Core v0.1 - Javascript Version
-     * http://www.heatonresearch.com/encog/
-     * http://code.google.com/p/encog-java/
-     * Copyright 2008-2012 Heaton Research, Inc.
-
-    /**
-     * The main Encog namespace.  This is the only global property created by Encog.
-     * @type {*}
-     */
     var ENCOG = ENCOG || {
-            /**
-             * The version of Encog that this is.
-             * @property property
-             * @type String
-             * @final
-             */
             VERSION: '0.1',
-
-            /**
-             * The Encog platform being used.
-             * @property property
-             * @type String
-             * @final
-             */
             PLATFORM: 'javascript',
-
-            /**
-             * The precision that Encog uses.
-             * @property precision
-             * @type String
-             * @final
-             */
             precision: 1e-10,
-            /**
-             * A newline character.
-             * @property property
-             * @type String
-             * @final
-             */
             NEWLINE: '\n',
-
-            /**
-             * The Encog type for activation functions.
-             * @property ENCOG_TYPE_ACTIVATION
-             * @type String
-             * @final
-             */
             ENCOG_TYPE_ACTIVATION: 'ActivationFunction',
-
-            /**
-             * The Encog type for RBF functions.
-             * @property ENCOG_TYPE_ACTIVATION
-             * @type String
-             * @final
-             */
             ENCOG_TYPE_RBF: 'RBF'
         };
 
-    /**
-     * The namespace function, used to define new namespaces.
-     * @param namespaceString The namespace that is to be defined.
-     * @method namespace
-     * @return {Object} The newly created namespace, or existing one.
-     */
-    ENCOG.namespace = function (namespaceString) {
-        'use strict';
-
-    };
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// ArrayUtil: The following code provides array utilities for Encog                                          //
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * The Encog array utilities.
-     * @class ArrayUtil
-     * @constructor
-     */
-    ENCOG.ArrayUtil = function(){
-        'use strict';
-    };
-    /**
-     * Fill an array with a specific value.
-     * @method fillArray
-     * @param arr The array to fill.
-     * @param start The starting index.
-     * @param stop The stopping index.
-     * @param v The value to fill.
-     */
-    ENCOG.ArrayUtil.fillArray = function (arr, start, stop, v) {
+    ENCOG.fillArray = function (arr, start, stop, v) {
         'use strict';
         var i;
 
@@ -102,12 +21,7 @@ exports.neural = function(runtime,Canvas) {
         }
     };
 
-    /**
-     * Allocate an array of zeros of the specified size.
-     * @method allocate1D
-     * @param x The size of the array.
-     */
-    ENCOG.ArrayUtil.allocate1D = function (x) {
+    ENCOG.allocate1D = function (x) {
         'use strict';
         var i, result;
 
@@ -119,13 +33,8 @@ exports.neural = function(runtime,Canvas) {
         return result;
     };
 
-
-    ENCOG.namespace('ENCOG.Drawing');
-    ENCOG.Drawing = function () {
-        'use strict'
-    };
-
-    ENCOG.Drawing.create = function (element, x, y, name,glass) {
+    ENCOG.Drawing = function(){};
+    ENCOG.drawingCreate = function (element, x, y, name,glass) {
         'use strict';
         let result = new ENCOG.Drawing();
         result.y = y;
@@ -134,6 +43,8 @@ exports.neural = function(runtime,Canvas) {
         result.canvasDiv = element.component;
         result.canvasWidth = element.width;
         result.canvasHeight = element.height;
+        result.width = 1600;
+        result.height = 1000;
         result.glass = glass;
 
         result.foreign = runtime.create("foreignObject");
@@ -143,16 +54,16 @@ exports.neural = function(runtime,Canvas) {
         runtime.attrNS(result.foreign,"y",0);
         runtime.add(result.canvasDiv,result.foreign);
         result.canvas = runtime.createDOM("canvas");
-        runtime.attr(result.canvas,"width",2000);
-        runtime.attr(result.canvas,"height",2000);
+        runtime.attr(result.canvas,"width",result.width);
+        runtime.attr(result.canvas,"height",result.height);
         runtime.mark(result.canvas,"draw "+name);
         runtime.add(result.foreign,result.canvas);
 
         result.drawing = [];
-        for(var i = 0;i<2000;i++)
+        for(var i = 0;i<result.width;i++)
         {
             let line = [];
-            for(var j = 0;j<2000;j++)
+            for(var j = 0;j<result.height;j++)
             {
                 line.push(0);
             }
@@ -163,7 +74,7 @@ exports.neural = function(runtime,Canvas) {
         return result;
     };
 
-    ENCOG.Drawing.delete = function (glass,element) {
+    ENCOG.drawingDelete = function (glass,element) {
         'use strict';
         glass.remove(element);
     };
@@ -182,8 +93,8 @@ exports.neural = function(runtime,Canvas) {
             drawing:null,
             currentX:0,
             currentY:0,
-            width:2000,
-            height:2000,
+            width:0,
+            height:0,
             glass:null,
 
             // Handle events to the canvas.  This allows drawing to occur.
@@ -211,11 +122,11 @@ exports.neural = function(runtime,Canvas) {
                     this.currentY=ev._y;
                 }
                 // This is called when you release the mouse button.
-                else if (ev.type === 'mouseup'||control=="mouseup") {
-
+                else //if(ev.type === 'mouseup'||control=="mouseup"){
+                {
                     if (this.started) {
                         this.started = false;
-                        ENCOG.Drawing.delete(this.glass,this.element);
+                        ENCOG.drawingDelete(this.glass,this.element);
                     }
                 }
                 /*else if (ev.type === 'mouseout'||control=="mouseout") {
@@ -242,8 +153,7 @@ exports.neural = function(runtime,Canvas) {
                     }
                 }*/
             },
-        // Determine if the specificed horizontal line is clear.
-        // This is used to find the top and bottom cropping lines.
+
         isHLineClear: function (row) {
             for(var i=0;i<this.width-1;i++)
             {
@@ -252,8 +162,6 @@ exports.neural = function(runtime,Canvas) {
             return true;
         },
 
-        // Determine if the specificed vertical line is clear.
-        // This is used to find the left and right cropping lines.
         isVLineClear: function (col) {
             for(var i=0;i<this.height;i++)
             {
@@ -290,8 +198,8 @@ exports.neural = function(runtime,Canvas) {
 
 
             if (bottom < top) {
-                result = ENCOG.ArrayUtil.allocate1D(this.downsampleHeight * this.downsampleWidth);
-                ENCOG.ArrayUtil.fillArray(result, 0, result.length, -1);
+                result = ENCOG.allocate1D(this.downsampleHeight * this.downsampleWidth);
+                ENCOG.fillArray(result, 0, result.length, -1);
                 return result;
             }
 
@@ -352,12 +260,10 @@ exports.neural = function(runtime,Canvas) {
     var ondraw=false;
 
     function init_draw(element,x,y,name,callback,printNumber,e,prod,glass) {
-        // clearTimeout();
         let drawingArea;
         let bestchar;
         ondraw=true;
-        // Find the canvas element.
-        drawingArea = ENCOG.Drawing.create(element,x,y,name,glass);
+        drawingArea = ENCOG.drawingCreate(element,x,y,name,glass);
         preload();
 
         runtime.addEvent(drawingArea.canvas,'mouseup', function (e) {
@@ -372,7 +278,6 @@ exports.neural = function(runtime,Canvas) {
             else {
                 printNumber(numToSend.num);
             }
-            console.log(numToSend.element + " " + numToSend.num);
             if (numToSend.num == "click") {
                 clearTimeout();
                 printNumber("");
@@ -384,7 +289,6 @@ exports.neural = function(runtime,Canvas) {
                 if (!set) {
                     set=true;
                     setTimeout((function () {
-                        console.log("current : " + numToSend.num + " de " + numToSend.element);
                         drawingArea.ev_canvas(e, "mouseup");
                         if (isNaN(parseInt(numToSend.num))){
                             numToSend.num = "";
@@ -419,11 +323,6 @@ exports.neural = function(runtime,Canvas) {
             drawingArea.ev_canvas(e,"mouseout");
         }, true);*/
 
-/////////////////////////////////////////////////////////////////////////////
-// Event functions
-/////////////////////////////////////////////////////////////////////////////
-
-        // Called when we want to recognize what's been drawn
         function ev_recognize() {
             downSampleData = drawingArea.performDownSample();
             var dessinpropre = "";
@@ -486,13 +385,11 @@ exports.neural = function(runtime,Canvas) {
         }
 
         function clearDownSample() {
-            downSampleData = ENCOG.ArrayUtil.allocate1D(DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT);
-            ENCOG.ArrayUtil.fillArray(downSampleData, 0, downSampleData.length, -1);
+            downSampleData = ENCOG.allocate1D(DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT);
+            ENCOG.fillArray(downSampleData, 0, downSampleData.length, -1);
         }
     }
 
-
-// Preload the digits, so that the user can quickly do some OCR if desired.
 function preload()
 {
     defineChar("click", new Array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1) );
@@ -508,7 +405,6 @@ function preload()
     defineChar("9", new Array(1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1) );
 }
 
-// Define a character, add it to the list and to the map.
     function defineChar(charEntered, data) {
         charData[charEntered] = data;
     }

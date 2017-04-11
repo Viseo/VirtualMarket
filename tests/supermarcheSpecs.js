@@ -506,38 +506,66 @@ describe("Test",function (){
         runtime.advanceAll();
 
         setTimeout(function(){
-            let product4 = retrieve(market.component,"[ray Mode].[listRayUp].[Product Bonnet]");
-            runtime.event(product4,"mousedown",{ pageX:400, pageY:380});
+            runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
             runtime.advanceAll();
-            let drawing4 = retrieve(market.component,"[draw Bonnet]");
-            assert(drawing4);
-            runtime.event(drawing4,"mousedown",{ pageX:400, pageY:380});
+            runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
             runtime.advanceAll();
-            runtime.event(drawing4,"mousemove",{ pageX:400, pageY:380});
+            runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
             runtime.advanceAll();
-            runtime.event(drawing4,"mousemove",{ pageX:500, pageY:380});
+            runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
             runtime.advanceAll();
-            runtime.event(drawing4,"mousemove",{ pageX:500, pageY:500});
+            runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500});
             runtime.advanceAll();
-            runtime.event(drawing4,"mouseup",{ pageX:500, pageY:500});
+            runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
             runtime.advanceAll();
             setTimeout(function() {
-                let product4 = retrieve(market.component, "[ray Mode].[listRayUp].[Product Bonnet]");
-                runtime.event(product4, "mousedown", {pageX: 400, pageY: 380});
+                runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
                 runtime.advanceAll();
-                let drawing4 = retrieve(market.component, "[draw Bonnet]");
-                assert(drawing4);
-                runtime.event(drawing4, "mousedown", {pageX: 400, pageY: 380});
+                runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
                 runtime.advanceAll();
-                runtime.event(drawing4, "mousemove", {pageX: 400, pageY: 380});
+                runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
                 runtime.advanceAll();
-                runtime.event(drawing4, "mousemove", {pageX: 500, pageY: 380});
+                runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
                 runtime.advanceAll();
-                runtime.event(drawing4, "mouseup", {pageX: 500, pageY: 500});
+                runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500});
                 runtime.advanceAll();
-                done();
-            },2500);
-         },2500);
+                runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
+                runtime.advanceAll();
+            },1500);
+         },1500);
+
+        runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
+        runtime.advanceAll();
+        runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
+        runtime.advanceAll();
+        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
+        runtime.advanceAll();
+        runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
+        runtime.advanceAll();
+        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500});
+        runtime.advanceAll();
+        runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
+        runtime.advanceAll();
+        setTimeout(function() {
+            runtime.event(product2, "mousedown", {pageX: 400, pageY: 380});
+            runtime.advanceAll();
+            let drawing7 = retrieve(market.component, "[draw Costume]");
+            assert(drawing7);
+            runtime.event(drawing7, "mousedown", {pageX: 400, pageY: 380});
+            runtime.advanceAll();
+            runtime.event(drawing7, "mouseup", {pageX: 400, pageY: 380});
+            runtime.advanceAll();
+            done();
+        },1500);
+
+        runtime.event(product2, "mousedown", {pageX: 400, pageY: 380});
+        runtime.advanceAll();
+        let drawing8 = retrieve(market.component, "[draw Costume]");
+        assert(drawing8);
+        runtime.event(drawing8, "mousedown", {pageX: 400, pageY: 380});
+        runtime.advanceAll();
+        runtime.event(drawing8, "mouseup", {pageX: 400, pageY: 380});
+        runtime.advanceAll();
     });
 
     it("ensure that you can drag the card in the terminal and that it shows the payement interface",function(){
@@ -683,7 +711,6 @@ describe("Test",function (){
             runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
             runtime.advanceAll();
 
-
             //Test the red cross to quit
             runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
             runtime.advanceAll();
@@ -699,7 +726,7 @@ describe("Test",function (){
 
             setTimeout(function(){
                 done();
-            },15);
+            },15000);
     });
 
     it("ensure that the interface to enter the code pattern is working with touch event",function(done){
@@ -744,57 +771,63 @@ describe("Test",function (){
         for(let i = 0;i<3;i++) {
             runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
             runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:market.width/2,clientY:market.height/2}}});
+            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[1].gapX,
+                clientY:market.payment.zoneCode.tabButtons[1].gapY}}});
             runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:market.height/2,clientY:market.height/2}}});
+            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
+                clientY:market.payment.zoneCode.tabButtons[2].gapY}}});
             runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:market.height/2+market.payment.zoneCode.tabButtons[0].gapX,
-                clientY:market.height/2}}});
+            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+            runtime.advanceAll();
+            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
+                clientY:market.payment.zoneCode.tabButtons[2].gapY}}});
+            runtime.advanceAll();
+            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[0].gapX,
+                clientY:market.payment.zoneCode.tabButtons[0].gapY}}});
             runtime.advanceAll();
             runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
             runtime.advanceAll();
             runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
             runtime.advanceAll();
         }
-        console.log(market.payment.zoneCode.code);
 
-         setTimeout(function(){
+        setTimeout(function(){
             done();
-         },15);
-
+        },15000);
 
         runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[2].gapX,
-                                                        clientY:market.height/2-market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[2].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[2].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[1].gapX,
-                                                        clientY:market.height/2-market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[1].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[1].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[0].gapX,
-                                                        clientY:market.height/2-market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[0].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[0].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[3].gapX,
-                                                        clientY:market.height/2}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[3].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[3].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[4].gapX,
-                                                        clientY:market.height/2}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[4].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[4].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[5].gapX,
-                                                        clientY:market.height/2}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[5].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[5].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[8].gapX,
-                                                        clientY:market.height/2+market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[8].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[8].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[7].gapX,
-                                                        clientY:market.height/2+market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[7].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[7].gapY}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.x+market.payment.zoneCode.tabButtons[6].gapX,
-                                                        clientY:market.height/2+market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX,
+                                                        clientY:market.payment.zoneCode.tabButtons[6].gapY}}});
         runtime.advanceAll();
-
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX,
+            clientY:market.payment.zoneCode.tabButtons[6].gapY}}});
+        runtime.advanceAll();
         runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
-
         runtime.advanceAll();
     });
 
@@ -806,5 +839,19 @@ describe("Test",function (){
         runtime.event(micro,"click",{});
         let raySearch = retrieve(market.component, "[ray Recherche]");
         assert(raySearch);
+    });
+
+    it("ensures that we can control the app by sending it command that represent the voice",function(){
+        market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
+        market.vocalRecognition("je veux ajouter un concombre et 44 carottes et 365 clementines");
+        market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer 2 Souris");
+        market.vocalRecognition("");
+        market.vocalRecognition("il faudrait supprimer 2 tables");
+        market.vocalRecognition("en fait je voudrais vider le panier");
+        market.vocalRecognition("Recherche les voyages !");
+        market.vocalRecognition("Ajoute moi un voyage à Tokyo");
+        market.vocalRecognition("DigiMarket tu es bo");
+        market.vocalRecognition("");
+        market.vocalRecognition("Maintenant je veux payer");
     });
 });
