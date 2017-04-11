@@ -174,6 +174,7 @@ exports.main = function(svg,gui,param,neural) {
         constructor(width, height, x, y) {
             super(width, height, x, y);
 
+
             let stroke = new svg.Rect(width, height).position(width / 2, height / 2);
             stroke.color(svg.WHITE,4,svg.BLACK);
             this.component.add(stroke);
@@ -348,6 +349,16 @@ exports.main = function(svg,gui,param,neural) {
                 else this.deleteProducts(toDelete, quantity);
             }
         }
+
+        emptyBasket() {
+            for (var i=this.thumbnailsProducts.length-1; i>=0; i--){
+                console.log(this.thumbnailsProducts[i].component);
+                basket.deleteProducts(this.thumbnailsProducts[i],this.thumbnailsProducts[i].quantity);
+            }
+            this.thumbnailsProducts.splice(0,this.thumbnailsProducts.length);
+            console.log(this.thumbnailsProducts);
+        }
+
 
         dragBasket(e,current) {
             let dragged = new Thumbnail(current.image.src,current.name);
@@ -808,6 +819,33 @@ exports.main = function(svg,gui,param,neural) {
         }
     }
 
+
+    class Calendar {
+	    constructor(width,height,x,y){
+	        this.component = new svg.Translation();
+	        this.background = new svg.Rect();
+	        this.title = new svg.Rect();
+	        this.titleText = new svg.Text();
+
+	        this.component.add(this.background);
+	        this.component.add(this.title);
+	        this.component.add(this.titleText);
+
+            this.x = x;
+            this.y = y;
+            this.component.move(x,y);
+            this.width = width;
+            this.height = height;
+        }
+        placeElements(){
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.RED,1,svg.RED).opacity(0.8);
+            this.title.position(this.width/2,this.height*0.1).dimension(this.width,this.height*0.3).color(svg.RED,1,svg.RED).opacity(0.8);
+            this.titleText.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
+        }
+
+    }
+    
+
     ////////////VIGNETTES//////////////////
 	class Thumbnail {
         constructor(image,title)
@@ -1218,7 +1256,9 @@ exports.main = function(svg,gui,param,neural) {
             if(!oneOrderChecked) console.log("No Correct Order Given");
         }
         else {
-            console.log("No Sentence given, please speak to the microphone");
+            console.log("S'il te plait puisses-tu discuter?");
+            var msg = new SpeechSynthesisUtterance("Désolé, je n'ai pas entendu");
+            window.speechSynthesis.speak(msg);
         }
     };
     //////
