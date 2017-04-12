@@ -842,7 +842,7 @@ exports.main = function(svg,gui,param,neural) {
             this.chevronUp = new svg.Chevron(50,20,10,"N").color(svg.WHITE,3,svg.BLACK);
 
 
-            this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE);
+            this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
             this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
             this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
             this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
@@ -891,12 +891,46 @@ exports.main = function(svg,gui,param,neural) {
             this.calendarWidth = width*0.8;
             this.calendarHeight = height*0.8;
 
-            this.chevronEast.onClick(function(){
-                
+            this.date = new Date();
+            this.monthNumber = this.date.getMonth();
+            this.presentMonth = this.monthNumber;
+            this.presentYear = this.date.getYear()+1900;
+            this.month = this.getMonth()[this.monthNumber];
+            this.year = this.date.getYear()+1900;
+            self=this;
+
+            this.zoneChevronEast.onClick(function(){
+                self.monthNumber++;
+                if (self.monthNumber===12){
+                    self.monthNumber=0;
+                    self.year++;
+                }
+                self.month = self.getMonth()[self.monthNumber];
+                self.changeTitleText(self.month+" "+self.year);
+                if((self.presentMonth===self.monthNumber)&&(self.presentYear===self.year))
+                {
+                    self.chevronWest.opacity(0.5);
+                }
+                else
+                {
+                    self.chevronWest.opacity(1);
+                }
             });
 
-            this.chevronWest.onClick(function(){
-
+            this.zoneChevronWest.onClick(function(){
+                self.monthNumber--;
+                if((self.presentMonth>self.monthNumber)&&(self.presentYear===self.year)){
+                    self.monthNumber++;
+                    self.chevronWest.opacity(0.5);
+                }
+                else {
+                    if (self.monthNumber < 0) {
+                        self.monthNumber = 11;
+                        self.year--;
+                    }
+                    self.month = self.getMonth()[self.monthNumber];
+                    self.changeTitleText(self.month + " " + self.year);
+                }
             });
 
         }
@@ -918,13 +952,11 @@ exports.main = function(svg,gui,param,neural) {
             this.chevronDown.position(this.width*0.96,this.height*0.97);
             this.chevronUp.position(this.width*0.96,this.height*0.05+this.title.height*1.5+this.caseHeight);
 
-            let date = new Date();
-
-            this.changeTitleText(this.getMonth()[date.getMonth()]+" "+(date.getYear()+1900));
+            this.changeTitleText(this.month+" "+this.year);
             let tabDays = [];
             let modulator=0;
-            let daysCurrentMonth = this.daysInMonth(date.getMonth(),date.getYear());
-            for(let j=0;j<daysCurrentMonth-date.getDate();j++) {
+            let daysCurrentMonth = this.daysInMonth(this.date.getMonth(),this.date.getYear());
+            for(let j=0;j<daysCurrentMonth-this.date.getDate();j++) {
                 let dayCase = new svg.Translation();
                 dayCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ORANGE,1,svg.BLACK));
                 let text = "";
@@ -935,8 +967,8 @@ exports.main = function(svg,gui,param,neural) {
                     text = "Demain";
                 }
                 else{
-                    if(((j-1)+date.getDay())%7==0) modulator++;
-                    text = this.getWeekDay()[((j-1+modulator)+date.getDay())%7]+ " " + (date.getDate()+j-1+modulator);
+                    if(((j-1)+this.date.getDay())%7==0) modulator++;
+                    text = this.getWeekDay()[((j-1+modulator)+this.date.getDay())%7]+ " " + (this.date.getDate()+j-1+modulator);
                 }
                 dayCase.add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
                 tabDays.push(text);
@@ -995,6 +1027,7 @@ exports.main = function(svg,gui,param,neural) {
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             this.monthChoice.add(this.titleText);
         }
+
         getWeekDay(){
             return {
                 0: "Dimanche",
