@@ -931,6 +931,9 @@ exports.main = function(svg,gui,param,neural) {
                     self.month = self.getMonth()[self.monthNumber];
                     self.changeTitleText(self.month + " " + self.year);
                 }
+                if((self.presentMonth===self.monthNumber)&&(self.presentYear===self.year)){
+                    self.chevronWest.opacity(0.5);
+                }
             });
 
         }
