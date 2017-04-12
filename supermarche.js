@@ -817,21 +817,33 @@ exports.main = function(svg,gui,param,neural) {
         }
 
         printCalendar(){
-
+            market.calendar = new Calendar(market.width,market.height,0,0);
+            market.calendar.placeElements(new Date().getMonth());
+            let zoneCalendar = new svg.Translation().add(market.calendar.component);
+            market.add(zoneCalendar);
         }
     }
 
-    class Calendar {
-	    constructor(width,height,x,y){
-	        this.component = new svg.Translation();
-	        this.background = new svg.Rect();
-	        this.title = new svg.Rect();
-	        this.titleText = new svg.Text();
-	        this.calendarTab = [];
+    class Calendar{
 
-	        this.component.add(this.background);
-	        this.component.add(this.title);
-	        this.component.add(this.titleText);
+        constructor(width,height,x,y){
+            this.component = new svg.Translation();
+            this.background = new svg.Rect();
+            this.title = new svg.Rect();
+            this.titleText = new svg.Text("Avril 2017");
+            this.calendarFirstRow = new svg.Translation();
+            this.calendarFirstColumn = new svg.Translation();
+            this.calendarContent = new svg.Translation();
+            this.calendarCases = [];
+            this.monthChoice = new svg.Translation();
+
+            this.component.add(this.background);
+            this.component.add(this.title);
+            this.component.add(this.titleText);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.monthChoice);
 
             this.x = x;
             this.y = y;
@@ -841,36 +853,113 @@ exports.main = function(svg,gui,param,neural) {
 
             let self = this;
             this.picto = new svg.Image("img/user.png");
+            let onMove=false;
             this.picto.onMouseDown(function(e){
+                onMove=true;
                 let anchorPoint = {x:e.pageX-self.picto.x,y:e.pageY-self.picto.y};
-                this.picto.onMouseMove(function(e){
-                    self.picto.position(e.pageX+anchorPoint.x,e.pageY+anchorPoint.y);
+                self.picto.onMouseMove(function(e){
+                    if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
                 });
 
-                this.picto.onMouseUp(function(e){
+                self.picto.onMouseUp(function(e){
+                    onMove=false;
                     self.checkPlace(e.pageX,e.pageY);
                 });
             });
+            this.component.add(this.picto);
+
+            this.calendarWidth = width*0.9;
+            this.calendarHeight = height*0.8;
         }
 
-        placeElements(){
-            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.RED,1,svg.RED).opacity(0.8);
-            this.title.position(this.width/2,this.height*0.1).dimension(this.width,this.height*0.3).color(svg.RED,1,svg.RED).opacity(0.8);
-            this.titleText.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
+        placeElements(month){
+            this.caseWidth = this.calendarWidth/12;
+            this.caseHeight = this.calendarHeight/10;
+            this.picto.position(this.width*0.05,this.height*0.25).dimension(this.caseWidth,this.caseHeight);
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.WHITE).opacity(0.8);
+            this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(0.8);
+            this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
+            this.monthChoice.add(this.title).add(this.titleText);
+            this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
+
+            let date = new Date();
+            let tabDays = [];
+            let modulator=0;
+            for(let j=0;j<11;j++) {
+                let dayCase = new svg.Translation();
+                dayCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ORANGE,1,svg.BLACK));
+                let text = "";
+                if (j==0){
+                   text = "Dates";
+                }
+                else if ((j ==1)&&(month==date.getMonth())){
+                    text = "Aujourd'hui";
+                }
+                else if ((j ==2)&&(month==date.getMonth())){
+                    text = "Demain";
+                }
+                else{
+                    if(((j-1)+date.getDay())%7==0) modulator++;
+                    text = this.getWeekDay()[((j-1+modulator)+date.getDay())%7]+ " " + (date.getDate()+j-1+modulator);
+                }
+                dayCase.add(new svg.Text(text).font("calibri", this.width /70, 1).color(svg.BLACK));
+                tabDays.push(text);
+                this.calendarFirstColumn.add(dayCase);
+                dayCase.move(0,j*this.caseHeight);
+                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+
+            let tabHours = [];
+            for (var i=0;i<11;i++){
+                let hourCase = new svg.Translation();
+                hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
+                hourCase.add(new svg.Text((i+8)+"h-"+(i+9)+"h").font("calibri",this.width/55,1).color(svg.BLACK));
+                tabHours.push((i+8)+"h-"+(i+9)+"h");
+                hourCase.move(i*this.caseWidth,0);
+                this.calendarFirstRow.add(hourCase);
+                this.calendarFirstRow.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+
+            for(var i=0;i<11;i++){
+                let line = new svg.Translation();
+                for (var j=0;j<11;j++){
+                    let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0);
+                    line.add(element);
+                    this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
+                            x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:this.height*0.05+this.title.height*1.5+i*this.caseHeight});
+                }
+                line.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.height*0.05+this.title.height*1.5+this.caseHeight+this.caseHeight*i);
+                this.calendarContent.add(line);
+            }
         }
 
         checkPlace(x,y){
-            let centerX = this.calendarTab[0].background.width/2;
-            let centerY = this.calendarTab[0].background.height/2;
-            for(let i =0;i<this.calendarTab.length;i++){
-                if((x>this.calendarTab[i].background.x-centerX)&&(x<this.calendarTab[i].background.x+centerX)&&
-                        (y>this.calendarTab[i].background.y-centerY)&&(y>this.calendarTab[i].background.x-centerY)){
-                    this.picto.position(this.calendarTab[i].background.x,this.calendarTab[i].background.y);
-                    return this.calendarTab[i];
+            let choice = null;
+            for (let i = 0; i < this.calendarCases.length; i++) {
+                if ((x > this.calendarCases[i].x-this.caseWidth/2) && (x < this.calendarCases[i].x + this.caseWidth/2) &&
+                    (y > this.calendarCases[i].y-this.caseHeight/2) && (y > this.calendarCases[i].y - this.caseHeight/2)){
+                    choice = this.calendarCases[i];
                 }
             }
-            this.picto.position(this.width*0.10,this.height*0.20);
-            return null;
+            if(choice!=null) {
+                this.picto.position(choice.x, choice.y);
+            }
+            else{
+                this.picto.position(this.width*0.05,this.height*0.25);
+            }
+            console.log(choice.day+" "+choice.hour);
+        }
+
+        getWeekDay(){
+            return {
+                0: "Dimanche",
+                1: "Lundi",
+                2: "Mardi",
+                3: "Mercredi",
+                4: "Jeudi",
+                5: "Vendredi",
+                6: "Samedi",
+            }
         }
     }
     
@@ -1294,11 +1383,6 @@ exports.main = function(svg,gui,param,neural) {
         market.add(glassDnD);
         market.add(glassCanvas);
     }
-
-    // let calendar = new Calendar(market.width,market.height,market.width*0.2,market.height*0.8);
-    // let zoneCalendar = new svg.Translation().add(calendar.component);;
-    // market.add(zoneCalendar);
-    console.log("Test");
 
     addAllParts();
     changeRay("HighTech");
