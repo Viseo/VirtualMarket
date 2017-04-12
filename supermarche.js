@@ -565,7 +565,6 @@ exports.main = function(svg,gui,param,neural) {
                         market.payment.zoneCode.code+= self.value;
                     }
 
-
                 }
             });
         }
@@ -819,6 +818,7 @@ exports.main = function(svg,gui,param,neural) {
         printCalendar(){
             market.remove(market.payment.zoneCode.component);
             market.calendar = new Calendar(market.width,market.height,0,0);
+            market.calendar.component.mark("calendar");
             market.calendar.placeElements(new Date().getMonth());
             let zoneCalendar = new svg.Translation().add(market.calendar.component);
             market.add(zoneCalendar);
@@ -866,7 +866,7 @@ exports.main = function(svg,gui,param,neural) {
             this.height = height;
 
             let self = this;
-            this.picto = new svg.Image("img/user.png");
+            this.picto = new svg.Image("img/user.png").mark("iconUser");
             let onMove=false;
             this.picto.onMouseDown(function(e){
                 onMove=true;
@@ -901,10 +901,10 @@ exports.main = function(svg,gui,param,neural) {
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(0.8);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
 
-            this.chevronWest.position(-this.calendarWidth/2.1,0);
-            this.chevronEast.position(this.calendarWidth/2.1,0);
-            this.ellipseChevronWest.position(-this.calendarWidth/2.1,0);
-            this.ellipseChevronEast.position(this.calendarWidth/2.1,0);
+            this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
+            this.chevronEast.position(this.calendarWidth/2.1,0).mark("chevronEast");
+            this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
+            this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
             this.chevronDown.position(this.width*0.96,this.height*0.97);
