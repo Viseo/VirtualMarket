@@ -830,7 +830,7 @@ exports.main = function(svg,gui,param,neural) {
             this.component = new svg.Translation();
             this.background = new svg.Rect();
             this.title = new svg.Rect();
-            this.titleText = new svg.Text("Avril 2017");
+            this.titleText = new svg.Text("Avril");
             this.calendarFirstRow = new svg.Translation();
             this.calendarFirstColumn = new svg.Translation();
             this.calendarContent = new svg.Translation();
@@ -880,6 +880,14 @@ exports.main = function(svg,gui,param,neural) {
             this.calendarWidth = width*0.9;
             this.calendarHeight = height*0.8;
 
+            this.chevronEast.onClick(function(){
+                
+            });
+
+            this.chevronWest.onClick(function(){
+
+            });
+
         }
 
         placeElements(month){
@@ -897,9 +905,9 @@ exports.main = function(svg,gui,param,neural) {
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
 
-
-
             let date = new Date();
+
+            this.changeTitleText(this.getMonth()[date.getMonth()]+" "+(date.getYear()+1900));
             let tabDays = [];
             let modulator=0;
             for(let j=0;j<11;j++) {
@@ -967,6 +975,12 @@ exports.main = function(svg,gui,param,neural) {
             console.log(choice.day+" "+choice.hour);
         }
 
+        changeTitleText(newText){
+            this.monthChoice.remove(this.titleText);
+            this.titleText = new svg.Text(newText);
+            this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
+            this.monthChoice.add(this.titleText);
+        }
         getWeekDay(){
             return {
                 0: "Dimanche",
@@ -976,6 +990,22 @@ exports.main = function(svg,gui,param,neural) {
                 4: "Jeudi",
                 5: "Vendredi",
                 6: "Samedi",
+            }
+        }
+        getMonth(){
+            return {
+                0: "Janvier",
+                1: "Février",
+                2: "Mars",
+                3: "Avril",
+                4: "Mai",
+                5: "Juin",
+                6: "Juillet",
+                7: "Août",
+                8: "Septembre",
+                9: "Octobre",
+                10: "Novembre",
+                11: "Décembre"
             }
         }
     }
