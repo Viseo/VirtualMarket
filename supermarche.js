@@ -833,6 +833,15 @@ exports.main = function(svg,gui,param,neural) {
             this.calendarCases = [];
             this.monthChoice = new svg.Translation();
 
+
+            this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE);
+            this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
+            this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
+            this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
+            this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
+
+
             this.component.add(this.background);
             this.component.add(this.title);
             this.component.add(this.titleText);
@@ -849,6 +858,9 @@ exports.main = function(svg,gui,param,neural) {
             this.calendarWidth = width*0.9;
             this.calendarHeight = height*0.8;
 
+
+
+
         }
         placeElements(){
             console.log("test2");
@@ -857,8 +869,13 @@ exports.main = function(svg,gui,param,neural) {
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.WHITE).opacity(0.8);
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(0.8);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
-            this.monthChoice.add(this.title).add(this.titleText);
+            this.chevronWest.position(-this.calendarWidth/2.1,0);
+            this.chevronEast.position(this.calendarWidth/2.1,0);
+            this.ellipseChevronWest.position(-this.calendarWidth/2.1,0);
+            this.ellipseChevronEast.position(this.calendarWidth/2.1,0);
+            this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-caseWidth, this.height*0.05+this.title.height/2);
+
 
             let date = new Date();
             for(let j=0;j<11;j++)
