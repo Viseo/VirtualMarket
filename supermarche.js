@@ -818,7 +818,6 @@ exports.main = function(svg,gui,param,neural) {
         printCalendar(){
             market.remove(market.payment.zoneCode.component);
             market.calendar = new Calendar(market.width,market.height,0,0);
-            market.calendar.component.mark("calendar");
             market.calendar.placeElements(new Date().getMonth());
             let zoneCalendar = new svg.Translation().add(market.calendar.component);
             market.add(zoneCalendar);
@@ -828,7 +827,7 @@ exports.main = function(svg,gui,param,neural) {
     class Calendar{
 
         constructor(width,height,x,y){
-            this.component = new svg.Translation();
+            this.component = new svg.Translation().mark("calendar");
             this.background = new svg.Rect();
             this.title = new svg.Rect();
             this.titleText = new svg.Text("Avril");
@@ -837,7 +836,7 @@ exports.main = function(svg,gui,param,neural) {
             this.calendarContent = new svg.Translation();
             this.calendarPositionY = 0;
             this.calendarCases = [];
-            this.monthChoice = new svg.Translation();
+            this.monthChoice = new svg.Translation().mark("monthChoice");
             this.chevronDown = new svg.Chevron(50,20,10,"S").color(svg.WHITE,3,svg.BLACK);
             this.chevronUp = new svg.Chevron(50,20,10,"N").color(svg.WHITE,3,svg.BLACK);
 
@@ -907,14 +906,7 @@ exports.main = function(svg,gui,param,neural) {
                 }
                 self.month = self.getMonth()[self.monthNumber];
                 self.changeTitleText(self.month+" "+self.year);
-                if((self.presentMonth===self.monthNumber)&&(self.presentYear===self.year))
-                {
-                    self.chevronWest.opacity(0.5);
-                }
-                else
-                {
-                    self.chevronWest.opacity(1);
-                }
+                self.chevronWest.opacity(1);
             });
 
             this.zoneChevronWest.onClick(function(){

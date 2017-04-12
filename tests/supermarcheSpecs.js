@@ -897,7 +897,23 @@ describe("Test",function (){
 
         let calendar=retrieve(market.component,"[calendar]");
         assert.ok(calendar);
-        let chevronEst=retrieve(market.component,"[Calendar]")
+        let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
+        let chevronWest=retrieve(market.component,"[calendar].[monthChoice].[chevronWCalendar]");
+        assert.ok(chevronEast);
+        assert.ok(chevronWest);
+        runtime.event(chevronEast,"click", {});
+        runtime.advanceAll();
+        runtime.event(chevronWest,"click", {});
+        runtime.advanceAll();
+        runtime.event(chevronWest,"click", {});
+        runtime.advanceAll();
+        for (let i=0; i<9;i++){
+            runtime.event(chevronEast,"click", {});
+            runtime.advanceAll();
+        }
+        runtime.event(chevronWest,"click", {});
+        runtime.advanceAll();
+
 
 
         setTimeout(function(){
