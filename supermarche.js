@@ -416,7 +416,7 @@ exports.main = function(svg,gui,param,neural) {
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
 
             this.micro.onClick(function(){
-                market.vocalRecognition("affiche moi concombres gel Douche et tables bananes fruits");
+                market.vocalRecognition("Boissons");
             });
         }
     }
@@ -564,7 +564,6 @@ exports.main = function(svg,gui,param,neural) {
                         market.payment.zoneCode.code+= self.value;
                     }
 
-
                 }
             });
         }
@@ -578,7 +577,6 @@ exports.main = function(svg,gui,param,neural) {
         constructor(width,height,x,y)
         {
             this.component = new svg.Translation();
-            //Rectangle de background
             this.background = new svg.Rect();
             this.title = new svg.Text("Saisir le code de sécurité");
             this.buttons = new svg.Translation().mark("buttonGroup");
@@ -610,10 +608,10 @@ exports.main = function(svg,gui,param,neural) {
                             }
                         }
                     }else{
-                        self.launchTimer(4,true);
                         market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
                         market.payment.cardIn=false;
                         market.payment.iteration=1;
+                        self.printCalendar();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -636,7 +634,7 @@ exports.main = function(svg,gui,param,neural) {
                         }
                     }
                     else{
-                        self.launchTimer(4,true);
+                        self.printCalendar();
                         market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
                         market.payment.cardIn=false;
                         market.payment.iteration=0;
@@ -733,10 +731,10 @@ exports.main = function(svg,gui,param,neural) {
         {
             this.arcTimer.move(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0).arc(30,30,0,1,0,this.width/2,this.height*0.93);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
-            this.title.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
+            this.title.position(this.width/2,this.height*0.1).font("calibri",this.height/15,1).color(svg.BLACK);
             this.circleTimer.position(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0);
-            this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK).opacity(0);
-            this.cross.position(this.width/2,this.height*0.80).dimension(this.width*0.1,this.width*0.05).color(svg.BLACK).opacity(1);
+            this.timer.position(this.width/2,this.height*0.90).font("calibri",this.height/20,1).color(svg.BLACK).opacity(0);
+            this.cross.position(this.width/2,this.height*0.80).dimension(this.width*0.10,this.height*0.10).color(svg.BLACK).opacity(1);
         }
 
         changeTimer(newTimer,color){
@@ -817,34 +815,372 @@ exports.main = function(svg,gui,param,neural) {
               }
               return false;
         }
+
+        printCalendar(){
+            market.remove(market.payment.zoneCode.component);
+            market.calendar = new Calendar(market.width,market.height,0,0);
+            market.calendar.placeElements();
+            market.add(market.calendar.component);
+            market.add(zoneHeader);
+        }
     }
 
+    class Calendar{
+        constructor(width,height,x,y){
+            this.component = new svg.Translation().mark("calendar");
+            this.background = new svg.Rect();
+            this.title = new svg.Rect();
+            this.titleText = new svg.Text("Avril");
+            this.calendarFirstRow = new svg.Translation();
+            this.calendarFirstColumn = new svg.Translation();
+            this.calendarContent = new svg.Translation();
+            this.calendarPositionY = 0;
+            this.calendarCases = [];
+            this.monthChoice = new svg.Translation().mark("monthChoice");
+            this.chevronDown = new svg.Chevron(50,20,10,"S").color(svg.WHITE,3,svg.BLACK);
+            this.chevronUp = new svg.Chevron(50,20,10,"N").color(svg.WHITE,3,svg.BLACK);
+            this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
+            this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
+            this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
+            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
+            this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
+            this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
 
-    class Calendar {
-	    constructor(width,height,x,y){
-	        this.component = new svg.Translation();
-	        this.background = new svg.Rect();
-	        this.title = new svg.Rect();
-	        this.titleText = new svg.Text();
-
-	        this.component.add(this.background);
-	        this.component.add(this.title);
-	        this.component.add(this.titleText);
+            this.component.add(this.background);
+            this.component.add(this.title);
+            this.component.add(this.titleText);
+            this.component.add(this.cross);
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.monthChoice);
+            this.component.add(this.chevronDown).add(this.chevronUp);
 
             this.x = x;
             this.y = y;
             this.component.move(x,y);
             this.width = width;
             this.height = height;
-        }
-        placeElements(){
-            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.RED,1,svg.RED).opacity(0.8);
-            this.title.position(this.width/2,this.height*0.1).dimension(this.width,this.height*0.3).color(svg.RED,1,svg.RED).opacity(0.8);
-            this.titleText.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
+
+            let self = this;
+
+            this.cross.onClick(function(){
+                market.remove(market.calendar.component);
+            });
+
+            this.movement=0;
+            this.picto = new svg.Image("img/user.png").mark("iconUser");
+            let onMove=false;
+            this.picto.onMouseDown(function(e){
+                onMove=true;
+                let anchorPoint = {x:e.pageX-self.picto.x,y:e.pageY-self.picto.y};
+                self.picto.onMouseMove(function(e){
+                    if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
+                });
+
+                self.picto.onMouseUp(function(e){
+                    onMove=false;
+                    self.checkPlace(e.pageX,e.pageY);
+                });
+            });
+            this.component.add(this.picto);
+
+            this.chevronDown.onClick(function(){
+                let moveY=null;
+                let place = 0;
+                self.picto.position(self.width*0.07,self.height*0.25);
+                if(self.currentDate!=0) place = self.currentDate.getDate()-1;
+                if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
+                    self.movement = self.movement + 4;
+                    moveY = self.caseHeight * 4;
+                }
+                else {
+                    moveY = ((self.numberDaysThisMonth-10)-(self.movement+place)) * self.caseHeight;
+                    self.movement = self.numberDaysThisMonth-10-place;
+                }
+                self.calendarPositionY = self.calendarPositionY - moveY;
+                self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
+                self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
+                for (let i = 0; i < self.calendarCases.length; i++) {
+                    self.calendarCases[i].y = self.calendarCases[i].y - moveY;
+                }
+            });
+
+            this.chevronUp.onClick(function(){
+                let moveY=null;
+                let place = 0;
+                self.picto.position(self.width*0.07,self.height*0.25);
+                if(self.currentDate!=0) place = self.currentDate.getDate();
+                if ((place + self.movement - 4 >= place)) {
+                    self.movement = self.movement - 4;
+                    moveY = self.caseHeight * 4;
+                }
+                else {
+                    moveY = self.movement * self.caseHeight;
+                    self.movement = 0;
+                }
+
+                self.calendarPositionY = self.calendarPositionY + moveY;
+                self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
+                self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
+                for (let i = 0; i < self.calendarCases.length; i++) {
+                    self.calendarCases[i].y = self.calendarCases[i].y + moveY;
+                }
+            });
+            this.calendarWidth = width*0.8;
+            this.calendarHeight = height*0.8;
+
+            this.date = new Date();
+            this.monthNumber = this.date.getMonth();
+            this.presentMonth = this.monthNumber;
+            this.presentYear = this.date.getYear()+1900;
+            this.month = this.getMonth()[this.monthNumber];
+            this.year = this.date.getYear()+1900;
+            self=this;
+
+            this.zoneChevronEast.onClick(function(){
+                self.monthNumber++;
+                if (self.monthNumber===12){
+                    self.monthNumber=0;
+                    self.year++;
+                }
+                self.month = self.getMonth()[self.monthNumber];
+                self.changeTitleText(self.month+" "+self.year);
+                self.chevronWest.opacity(1);
+                self.printMonthContent(self.monthNumber,self.year);
+            });
+
+            this.zoneChevronWest.onClick(function(){
+                self.monthNumber--;
+                if((self.presentMonth>self.monthNumber)&&(self.presentYear===self.year)){
+                    self.monthNumber++;
+                    self.chevronWest.opacity(0.5);
+                }
+                else {
+                    if (self.monthNumber < 0) {
+                        self.monthNumber = 11;
+                        self.year--;
+                    }
+                    self.month = self.getMonth()[self.monthNumber];
+                    self.changeTitleText(self.month + " " + self.year);
+                    self.printMonthContent(self.monthNumber,self.year);
+                }
+                if((self.presentMonth===self.monthNumber)&&(self.presentYear===self.year)){
+                    self.chevronWest.opacity(0.5);
+                    self.printCurrentMonthContent();
+                }
+            });
         }
 
+        placeElements(){
+            this.caseWidth = this.calendarWidth/12;
+            this.caseHeight = this.calendarHeight/10;
+            this.picto.position(this.width*0.07,this.height*0.25).dimension(this.caseWidth,this.caseHeight);
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.WHITE).opacity(0.8);
+            this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(1);
+            this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
+            this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
+
+            this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
+            this.chevronEast.position(this.calendarWidth/2.1,0).mark("chevronEast");
+            this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
+            this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
+            this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
+            this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
+            this.chevronDown.position(this.width*0.96,this.height*0.97);
+            this.chevronUp.position(this.width*0.96,this.height*0.05+this.title.height*1.5+this.caseHeight);
+
+            this.printCurrentMonthContent();
+        }
+
+        printCurrentMonthContent(){
+            this.component.remove(this.calendarContent);
+            this.component.remove(this.calendarFirstColumn);
+            this.component.remove(this.calendarFirstRow);
+            this.movement=0;
+            this.currentDate = new Date();
+            this.changeTitleText(this.month+" "+this.year);
+            let tabDays = [];
+            this.numberDaysThisMonth = this.daysInMonth(this.currentDate.getMonth(),this.currentDate.getYear());
+
+            for(let j=0;j<this.numberDaysThisMonth-this.currentDate.getDate()+1;j++){
+                let dayCase = new svg.Translation();
+                dayCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ORANGE,1,svg.BLACK));
+                let text = "";
+                if (j ==0){
+                    text = "Aujourd'hui";
+                }
+                else if (j ==1){
+                    text = "Demain";
+                }
+                else{
+                    text = this.getWeekDay()[(this.currentDate.getDay()+j)%7]+" "+ (this.currentDate.getDate()+j);
+                }
+                dayCase.add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
+                tabDays.push(text);
+                this.calendarFirstColumn.add(dayCase);
+                dayCase.move(0,j*this.caseHeight);
+                this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
+                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+            }
+
+            let tabHours = [];
+            for (var i=0;i<12;i++){
+                let hourCase = new svg.Translation();
+                hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
+                if(i!=0) {
+                    hourCase.add(new svg.Text((i + 8) + "h-" + (i + 9) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                    tabHours.push((i + 8) + "h-" + (i + 9) + "h");
+                }
+                else hourCase.add(new svg.Text("Dates").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                hourCase.move(i*this.caseWidth,0);
+                this.calendarFirstRow.add(hourCase);
+                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+
+            for(var i=0;i<this.numberDaysThisMonth-this.currentDate.getDate()+1;i++){
+                let line = new svg.Translation();
+                for (var j=0;j<11;j++){
+                    let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0);
+                    line.add(element);
+                    this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
+                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                }
+                line.move(0,this.caseHeight*i);
+                this.calendarContent.add(line);
+                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+            }
+
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.monthChoice);
+            this.component.add(this.picto.position(this.width*0.07,this.height*0.25));
+        }
+
+        printMonthContent(month,year){
+            this.component.remove(this.calendarContent);
+            this.component.remove(this.calendarFirstColumn);
+            this.component.remove(this.calendarFirstRow);
+
+            this.movement=0;
+            this.currentDate=0;
+            let tabDays = [];
+            this.numberDaysThisMonth=this.daysInMonth(month,year);
+            if(this.numberDaysThisMonth==31) {
+                this.startDay=new Date(year,month,1).getDay();
+                if(this.startDay==-1){
+                    this.startDay=6;
+                }
+            }
+            else {
+                this.startDay=new Date(year,month,1).getDay();
+            }
+
+            for(let j=0;j+this.startDay<=this.numberDaysThisMonth+this.startDay;j++){
+                let dayCase = new svg.Translation();
+                dayCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ORANGE,1,svg.BLACK));
+                let text = this.getWeekDay()[(j+this.startDay)%7]+" "+(j+1);
+                dayCase.add(new svg.Text(text).font("calibri",this.calendarWidth/70, 1).color(svg.BLACK));
+                tabDays.push(text);
+                this.calendarFirstColumn.add(dayCase);
+                dayCase.move(0,j*this.caseHeight);
+                this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
+                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+            }
+
+            let tabHours = [];
+            for (var i=0;i<12;i++){
+                let hourCase = new svg.Translation();
+                hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
+                if(i!=0){
+                    hourCase.add(new svg.Text((i + 8) + "h-" + (i + 9) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                    tabHours.push((i + 8) + "h-" + (i + 9) + "h");
+                }
+                else hourCase.add(new svg.Text("Dates").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                hourCase.move(i*this.caseWidth,0);
+                this.calendarFirstRow.add(hourCase);
+                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+
+            for(var i=0;i+this.startDay<=this.numberDaysThisMonth+this.startDay;i++){
+                let line = new svg.Translation();
+                for (var j=0;j<11;j++){
+                    let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0);
+                    line.add(element);
+                    this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
+                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                }
+                line.move(0,this.caseHeight*i);
+                this.calendarContent.add(line);
+                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+            }
+
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.monthChoice);
+            this.component.add(this.picto.position(this.width*0.07,this.height*0.25));
+        }
+
+        checkPlace(x,y){
+            let choice = null;
+            for (let i = 0; i < this.calendarCases.length; i++) {
+                if ((x > this.calendarCases[i].x-this.caseWidth/2) && (x < this.calendarCases[i].x + this.caseWidth/2) &&
+                    (y > this.calendarCases[i].y-this.caseHeight/2) && (y > this.calendarCases[i].y - this.caseHeight/2)){
+                    choice = this.calendarCases[i];
+                }
+            }
+            if(choice!=null) {
+                this.picto.position(choice.x, choice.y);
+                console.log(choice.day+" "+choice.hour);
+            }
+            else{
+                this.picto.position(this.width*0.05,this.height*0.25);
+            }
+        }
+
+        changeTitleText(newText){
+            this.monthChoice.remove(this.titleText);
+            this.titleText = new svg.Text(newText);
+            this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
+            this.monthChoice.add(this.titleText);
+        }
+
+        getWeekDay(){
+            return {
+                0: "Dimanche",
+                1: "Lundi",
+                2: "Mardi",
+                3: "Mercredi",
+                4: "Jeudi",
+                5: "Vendredi",
+                6: "Samedi",
+            }
+        }
+
+        getMonth() {
+            return {
+                0: "Janvier",
+                1: "Février",
+                2: "Mars",
+                3: "Avril",
+                4: "Mai",
+                5: "Juin",
+                6: "Juillet",
+                7: "Août",
+                8: "Septembre",
+                9: "Octobre",
+                10: "Novembre",
+                11: "Décembre"
+            }
+        }
+
+        daysInMonth(month, year) {
+            return new Date(year, month+1, 0).getDate();
+        }
     }
-    
 
     ////////////VIGNETTES//////////////////
 	class Thumbnail {
