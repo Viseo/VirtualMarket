@@ -350,16 +350,6 @@ exports.main = function(svg,gui,param,neural) {
             }
         }
 
-        emptyBasket() {
-            for (var i=this.thumbnailsProducts.length-1; i>=0; i--){
-                console.log(this.thumbnailsProducts[i].component);
-                basket.deleteProducts(this.thumbnailsProducts[i],this.thumbnailsProducts[i].quantity);
-            }
-            this.thumbnailsProducts.splice(0,this.thumbnailsProducts.length);
-            console.log(this.thumbnailsProducts);
-        }
-
-
         dragBasket(e,current) {
             let dragged = new Thumbnail(current.image.src,current.name);
             dragged.placeElementsDnD(current);
