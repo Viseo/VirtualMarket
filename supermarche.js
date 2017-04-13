@@ -12,11 +12,11 @@ exports.main = function(svg,gui,param) {
 		}
 	}
 
-	class ListCategorie extends DrawingZone {
-		constructor(width,height,x,y)
-		{
-			super(width,height,x,y);
-            
+    class ListCategorie extends DrawingZone {
+        constructor(width,height,x,y,tabCat)
+        {
+            super(width,height,x,y);
+
             //Rebords
             let rectangleBackground = new svg.Rect(width,height).position(width/2,height/2).color(svg.BLACK);
             this.component.add(rectangleBackground);
@@ -25,12 +25,11 @@ exports.main = function(svg,gui,param) {
             this.ray = null;
             this.rayTranslation = null;
             var self = this;
+            this.currentSearch=[];
 
-            this.tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-
+            this.tabCategories = tabCat;
             let listThumbnail = new svg.Translation().mark("listeCategories");
-            for(let i=0;i<this.tabCategories.length;i++)
-            {
+            for(let i=0;i<this.tabCategories.length;i++) {
                 let current = this.tabCategories[i];
                 current.placeElements();
                 current.move(height*i,0);
@@ -44,7 +43,7 @@ exports.main = function(svg,gui,param) {
             let ellipseChevronEast = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
             let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0.2).mark("chevronWCategorie");
             let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).mark("chevronECategorie");
-            
+
             zoneChevronWest.onClick(function(){
                 if(listThumbnail.x+3*height<=0)
                 {
@@ -55,14 +54,14 @@ exports.main = function(svg,gui,param) {
                     listThumbnail.smoothy(10,20).moveTo(listThumbnail.x+height*3,listThumbnail.y);
                     zoneChevronEast.opacity(1);
                 }
-               
+
                 else{
                     listThumbnail.smoothy(10, 20).moveTo(0, listThumbnail.y);
                     zoneChevronWest.opacity(0.2);
                     zoneChevronEast.opacity(1);
                 }
             });
-            
+
             zoneChevronEast.onClick(function(){
                 let widthTotal = height*self.tabCategories.length;
                 let widthView = width;
@@ -83,8 +82,8 @@ exports.main = function(svg,gui,param) {
             });
 
             this.component.add(zoneChevronEast).add(zoneChevronWest);
-		}
-	}
+        }
+    }
     
     class Ray extends DrawingZone {
         
@@ -169,48 +168,17 @@ exports.main = function(svg,gui,param) {
             });
             this.component.add(zoneChevronEast).add(zoneChevronWest);
         }
-
-        /*dragRayon(e,current,placement) {
-            let dragged = new Thumbnail(current.image.src, current.name);
-            dragged.placeElementsDnD(current);
-            dragged.move(current.x, current.y);
-            dragged.component.opacity(0.9).mark("dragged");
-            if (placement === 1) {
-                categories.ray.listThumbnailsUp.add(dragged.component);
-            } else {
-                categories.ray.listThumbnailsDown.add(dragged.component);
-            }
-
-            gui.installDnD(dragged, glassDnD, {
-                moved: function (dragged) {
-                    if ((market.width * 0.85 - e.pageX < dragged.x - current.x) && (dragged.y + dragged.height / 2 < market.height * 0.5)) {
-                        basket.addProducts(current);
-                    }
-                },
-                revert: function (dragged) {
-                    if (placement === 1) {
-                        categories.ray.listThumbnailsUp.remove(dragged.component);
-                    } else {
-                        categories.ray.listThumbnailsDown.remove(dragged.component);
-                    }
-                },
-                clicked: function () {
-                    basket.addProducts(current);
-                }
-            });
-            svg.event(dragged.component, 'mousedown', e);
-            market.add(glassDnD);
-        }*/
     }
-    
+
     class Basket extends DrawingZone {
         constructor(width, height, x, y) {
             super(width, height, x, y);
 
+
             let stroke = new svg.Rect(width, height).position(width / 2, height / 2);
             stroke.color(svg.WHITE,4,svg.BLACK);
             this.component.add(stroke);
-            
+
             this.listProducts = new svg.Translation().mark("listBasket");
             this.component.add(this.listProducts);
             this.thumbnailsProducts = [];
@@ -365,32 +333,49 @@ exports.main = function(svg,gui,param) {
             }
         }
 
+        findInBasket(name)
+        {
+            for(var i=0;i<this.thumbnailsProducts.length;i++) {
+                if(this.thumbnailsProducts[i].name==name) return this.thumbnailsProducts[i];
+            }
+            return null;
+        }
+
+        deleteFromName(name,quantity)
+        {
+            let toDelete = this.findInBasket(name);
+            if(toDelete!=null) {
+                if (quantity == null || quantity >= toDelete.quantity) this.deleteProducts(toDelete, toDelete.quantity);
+                else this.deleteProducts(toDelete, quantity);
+            }
+        }
+
         dragBasket(e,current) {
             let dragged = new Thumbnail(current.image.src,current.name);
             dragged.placeElementsDnD(current);
-            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
+            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
             dragged.cross.smoothy(1,1).rotateTo(-45);
             dragged.cross.position(dragged.width*0.55,dragged.height*0.71);
             dragged.component.add(dragged.cross);
             dragged.cross.onMouseUp(function(){
-                basket.deleteProducts(current,current.quantity);
+                market.basket.deleteProducts(current,current.quantity);
             });
 
             dragged.move(current.x,current.y);
             dragged.component.opacity(0.9).mark("dragged");
-            basket.listProducts.add(dragged.component);
+            market.basket.listProducts.add(dragged.component);
 
             gui.installDnD(dragged,glassDnD,{
                 moved:
                     function(dragged){
                         if((dragged.x+dragged.width/2<0)&&(dragged.y+dragged.height/2>market.height*0.20)){
-                            basket.deleteProducts(current, 1);
+                            market.basket.deleteProducts(current, 1);
                             changeRay(current.categorie);
                         }
                     },
                 revert:
                     function(dragged){
-                        basket.listProducts.remove(dragged.component);
+                        market.basket.listProducts.remove(dragged.component);
                     },
                 clicked :
                     function(){
@@ -400,6 +385,13 @@ exports.main = function(svg,gui,param) {
             svg.event(dragged.component, 'mousedown', e);
             market.add(glassDnD);
         }
+
+        emptyBasket() {
+            for (var i=this.thumbnailsProducts.length-1; i>=0; i--){
+                market.basket.deleteProducts(this.thumbnailsProducts[i],this.thumbnailsProducts[i].quantity);
+            }
+            this.thumbnailsProducts.splice(0,this.thumbnailsProducts.length);
+        }
     }
     
     class Header extends DrawingZone{
@@ -408,9 +400,47 @@ exports.main = function(svg,gui,param) {
             super(width,height,x,y);
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color(svg.DARK_BLUE,2,svg.BLACK));
             this.component.add(new svg.Text("Digi-Market").position(100,height*0.75).font("Calibri",this.component.height*0.75,1).color(svg.WHITE));
-            this.micro = new svg.Image("img/microphone.png");
+            this.micro = new svg.Image("img/microphone-deactivated.png");
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
+            this.recording=false;
+            let micro=this.micro;
+            var voice=[];
+            let timer;
+
+            this.micro.onClick(function () {
+                let i=0;
+                voice=[];
+                if(this.recording==true){
+                    this.recording=stopRecording();
+                    console.log("je record plus" );
+                    micro.url("img/microphone-deactivated.png");
+                    timer=setInterval(function() {
+                        i++;
+                        console.log(i)
+                        voice = getMessage();
+                        if((voice['transcript'].length!=0 &&  voice['transcript']!="Je n'ai pas compris") || i==25) {
+                            clearInterval(timer);
+                            if(i==25)textToSpeech("Je n'ai rien entendu","fr");
+                            else if(voice['confidence']>0.6){
+                                // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
+                                market.vocalRecognition(voice['transcript']);
+                            }
+                            else{
+                                console.log("je n'ai pas bien saisi votre demande : "+voice['transcript']);
+                                textToSpeech("Je n'ai pas bien compris votre demande","FR");
+
+                            }
+                        }
+                    },200);
+
+                }
+                else{
+                    this.recording=startRecording();
+                    console.log("je record");
+                    micro.url("img/microphone.gif");
+                }
+            })
         }
     }
     
@@ -530,7 +560,7 @@ exports.main = function(svg,gui,param) {
             this.unit = upperHeight*0.5;
             this.gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * this.unit;
             this.gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * this.unit;
-            this.ray = upperHeight*0.12;
+            this.ray = upperHeight*0.08;
 
             this.color = svg.BLACK;
             // Dessiner les boutons
@@ -545,7 +575,7 @@ exports.main = function(svg,gui,param) {
             });
 
             this.component.onMouseEnter(function(){
-                if ((market.payment.zoneCode.onDrawing)&& (market.payment.zoneCode.code.indexOf(""+self.value)== -1))
+                if (market.payment.zoneCode.onDrawing)
                 {
                     if(market.payment.zoneCode.code.length>0){
                         let buttonBefore = market.payment.zoneCode.tabButtons[parseInt(market.payment.zoneCode.code.charAt(market.payment.zoneCode.code.length-1))-1];
@@ -553,7 +583,10 @@ exports.main = function(svg,gui,param) {
                             .color(svg.BLACK,5,svg.BLACK));
                         market.payment.zoneCode.buttons.add(market.payment.zoneCode.lines[market.payment.zoneCode.lines.length-1]);
                     }
-                    market.payment.zoneCode.code+= self.value;
+                    if (self.value != market.payment.zoneCode.code.slice(-1)){
+                        market.payment.zoneCode.code+= self.value;
+                    }
+
                 }
             });
         }
@@ -567,18 +600,15 @@ exports.main = function(svg,gui,param) {
         constructor(width,height,x,y)
         {
             this.component = new svg.Translation();
-            //Rectangle de background
             this.background = new svg.Rect();
             this.title = new svg.Text("Saisir le code de sécurité");
             this.buttons = new svg.Translation().mark("buttonGroup");
-            // this.blur = new svg.Rect(market.width*1.5,market.height*1.75).position(0,0).color(svg.WHITE).opacity(0.5);
             this.timer = new svg.Text("30");
             this.message = new svg.Text("");
             this.circleTimer = new svg.Circle(30);
             this.arcTimer = new svg.Path(0,0);
             this.onDrawing = false;
-            //this.cancelButton= new svg.Translation();
-            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
+            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
             this.lines = [];
             this.currentLine=new svg.Line();
 
@@ -601,10 +631,10 @@ exports.main = function(svg,gui,param) {
                             }
                         }
                     }else{
-                        self.launchTimer(4,true);
                         market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
                         market.payment.cardIn=false;
                         market.payment.iteration=1;
+                        self.printCalendar();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -613,6 +643,7 @@ exports.main = function(svg,gui,param) {
                     self.buttons.add(self.currentLine);
                 }
             });
+
             svg.addEvent(this.component,"touchend",function(){
                 if (self.onDrawing){
                     self.onDrawing = false;
@@ -806,8 +837,373 @@ exports.main = function(svg,gui,param) {
               }
               return false;
         }
+
+        printCalendar(){
+            market.remove(market.payment.zoneCode.component);
+            market.calendar = new Calendar(market.width,market.height,0,0);
+            market.calendar.placeElements();
+            market.add(market.calendar.component);
+            market.add(zoneHeader);
+        }
     }
-    
+
+    class Calendar{
+        constructor(width,height,x,y){
+            this.component = new svg.Translation().mark("calendar");
+            this.background = new svg.Rect();
+            this.title = new svg.Rect();
+            this.titleText = new svg.Text("Avril");
+            this.calendarFirstRow = new svg.Translation();
+            this.calendarFirstColumn = new svg.Translation();
+            this.calendarContent = new svg.Translation();
+            this.calendarPositionY = 0;
+            this.calendarCases = [];
+            this.monthChoice = new svg.Translation().mark("monthChoice");
+            this.chevronDown = new svg.Chevron(50,20,10,"S").color(svg.WHITE,3,svg.BLACK);
+            this.chevronUp = new svg.Chevron(50,20,10,"N").color(svg.WHITE,3,svg.BLACK);
+            this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
+            this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
+            this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
+            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
+            this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
+            this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
+
+            this.component.add(this.background);
+            this.component.add(this.title);
+            this.component.add(this.titleText);
+            this.component.add(this.cross);
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.monthChoice);
+            this.component.add(this.chevronDown).add(this.chevronUp);
+
+            this.x = x;
+            this.y = y;
+            this.component.move(x,y);
+            this.width = width;
+            this.height = height;
+
+            let self = this;
+
+            this.cross.onClick(function(){
+                market.remove(market.calendar.component);
+            });
+
+            this.movement=0;
+            this.picto = new svg.Image("img/user.png").mark("iconUser");
+            let onMove=false;
+            this.picto.onMouseDown(function(e){
+                onMove=true;
+                let anchorPoint = {x:e.pageX-self.picto.x,y:e.pageY-self.picto.y};
+                self.picto.onMouseMove(function(e){
+                    if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
+                });
+
+                self.picto.onMouseUp(function(e){
+                    onMove=false;
+                    self.checkPlace(e.pageX,e.pageY);
+                });
+            });
+            this.component.add(this.picto);
+
+            this.chevronDown.onClick(function(){
+                let moveY=null;
+                let place = 0;
+                self.picto.position(self.width*0.07,self.height*0.25);
+                if(self.currentDate!=0) place = self.currentDate.getDate()-1;
+                if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
+                    self.movement = self.movement + 4;
+                    moveY = self.caseHeight * 4;
+                }
+                else {
+                    moveY = ((self.numberDaysThisMonth-10)-(self.movement+place)) * self.caseHeight;
+                    self.movement = self.numberDaysThisMonth-10-place;
+                }
+                self.calendarPositionY = self.calendarPositionY - moveY;
+                self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
+                self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
+                for (let i = 0; i < self.calendarCases.length; i++) {
+                    self.calendarCases[i].y = self.calendarCases[i].y - moveY;
+                }
+            });
+
+            this.chevronUp.onClick(function(){
+                let moveY=null;
+                let place = 0;
+                self.picto.position(self.width*0.07,self.height*0.25);
+                if(self.currentDate!=0) place = self.currentDate.getDate();
+                if ((place + self.movement - 4 >= place)) {
+                    self.movement = self.movement - 4;
+                    moveY = self.caseHeight * 4;
+                }
+                else {
+                    moveY = self.movement * self.caseHeight;
+                    self.movement = 0;
+                }
+
+                self.calendarPositionY = self.calendarPositionY + moveY;
+                self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
+                self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
+                for (let i = 0; i < self.calendarCases.length; i++) {
+                    self.calendarCases[i].y = self.calendarCases[i].y + moveY;
+                }
+            });
+            this.calendarWidth = width*0.8;
+            this.calendarHeight = height*0.8;
+
+            this.date = new Date();
+            this.monthNumber = this.date.getMonth();
+            this.presentMonth = this.monthNumber;
+            this.presentYear = this.date.getYear()+1900;
+            this.month = this.getMonth()[this.monthNumber];
+            this.year = this.date.getYear()+1900;
+            self=this;
+
+            this.zoneChevronEast.onClick(function(){
+                self.monthNumber++;
+                if (self.monthNumber===12){
+                    self.monthNumber=0;
+                    self.year++;
+                }
+                self.month = self.getMonth()[self.monthNumber];
+                self.changeTitleText(self.month+" "+self.year);
+                self.chevronWest.opacity(1);
+                self.printMonthContent(self.monthNumber,self.year);
+            });
+
+            this.zoneChevronWest.onClick(function(){
+                self.monthNumber--;
+                if((self.presentMonth>self.monthNumber)&&(self.presentYear===self.year)){
+                    self.monthNumber++;
+                    self.chevronWest.opacity(0.5);
+                }
+                else {
+                    if (self.monthNumber < 0) {
+                        self.monthNumber = 11;
+                        self.year--;
+                    }
+                    self.month = self.getMonth()[self.monthNumber];
+                    self.changeTitleText(self.month + " " + self.year);
+                    self.printMonthContent(self.monthNumber,self.year);
+                }
+                if((self.presentMonth===self.monthNumber)&&(self.presentYear===self.year)){
+                    self.chevronWest.opacity(0.5);
+                    self.printCurrentMonthContent();
+                }
+            });
+        }
+
+        placeElements(){
+            this.caseWidth = this.calendarWidth/12;
+            this.caseHeight = this.calendarHeight/10;
+            this.picto.position(this.width*0.07,this.height*0.25).dimension(this.caseWidth,this.caseHeight);
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.WHITE).opacity(0.8);
+            this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(1);
+            this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
+            this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
+
+            this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
+            this.chevronEast.position(this.calendarWidth/2.1,0).mark("chevronEast");
+            this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
+            this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
+            this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
+            this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
+            this.chevronDown.position(this.width*0.96,this.height*0.97);
+            this.chevronUp.position(this.width*0.96,this.height*0.05+this.title.height*1.5+this.caseHeight);
+
+            this.printCurrentMonthContent();
+        }
+
+        printCurrentMonthContent(){
+            this.component.remove(this.calendarContent);
+            this.component.remove(this.calendarFirstColumn);
+            this.component.remove(this.calendarFirstRow);
+            this.movement=0;
+            this.currentDate = new Date();
+            this.changeTitleText(this.month+" "+this.year);
+            let tabDays = [];
+            this.numberDaysThisMonth = this.daysInMonth(this.currentDate.getMonth(),this.currentDate.getYear());
+
+            for(let j=0;j<this.numberDaysThisMonth-this.currentDate.getDate()+1;j++){
+                let dayCase = new svg.Translation();
+                dayCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ORANGE,1,svg.BLACK));
+                let text = "";
+                if (j ==0){
+                    text = "Aujourd'hui";
+                }
+                else if (j ==1){
+                    text = "Demain";
+                }
+                else{
+                    text = this.getWeekDay()[(this.currentDate.getDay()+j)%7]+" "+ (this.currentDate.getDate()+j);
+                }
+                dayCase.add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
+                tabDays.push(text);
+                this.calendarFirstColumn.add(dayCase);
+                dayCase.move(0,j*this.caseHeight);
+                this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
+                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+            }
+
+            let tabHours = [];
+            for (var i=0;i<12;i++){
+                let hourCase = new svg.Translation();
+                hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
+                if(i!=0) {
+                    hourCase.add(new svg.Text((i + 8) + "h-" + (i + 9) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                    tabHours.push((i + 8) + "h-" + (i + 9) + "h");
+                }
+                else hourCase.add(new svg.Text("Dates").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                hourCase.move(i*this.caseWidth,0);
+                this.calendarFirstRow.add(hourCase);
+                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+
+            for(var i=0;i<this.numberDaysThisMonth-this.currentDate.getDate()+1;i++){
+                let line = new svg.Translation();
+                for (var j=0;j<11;j++){
+                    let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0);
+                    line.add(element);
+                    this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
+                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                }
+                line.move(0,this.caseHeight*i);
+                this.calendarContent.add(line);
+                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+            }
+
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.monthChoice);
+            this.component.add(this.picto.position(this.width*0.07,this.height*0.25));
+        }
+
+        printMonthContent(month,year){
+            this.component.remove(this.calendarContent);
+            this.component.remove(this.calendarFirstColumn);
+            this.component.remove(this.calendarFirstRow);
+
+            this.movement=0;
+            this.currentDate=0;
+            let tabDays = [];
+            this.numberDaysThisMonth=this.daysInMonth(month,year);
+            if(this.numberDaysThisMonth==31) {
+                this.startDay=new Date(year,month,1).getDay();
+                if(this.startDay==-1){
+                    this.startDay=6;
+                }
+            }
+            else {
+                this.startDay=new Date(year,month,1).getDay();
+            }
+
+            for(let j=0;j+this.startDay<=this.numberDaysThisMonth+this.startDay;j++){
+                let dayCase = new svg.Translation();
+                dayCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ORANGE,1,svg.BLACK));
+                let text = this.getWeekDay()[(j+this.startDay)%7]+" "+(j+1);
+                dayCase.add(new svg.Text(text).font("calibri",this.calendarWidth/70, 1).color(svg.BLACK));
+                tabDays.push(text);
+                this.calendarFirstColumn.add(dayCase);
+                dayCase.move(0,j*this.caseHeight);
+                this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
+                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+            }
+
+            let tabHours = [];
+            for (var i=0;i<12;i++){
+                let hourCase = new svg.Translation();
+                hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
+                if(i!=0){
+                    hourCase.add(new svg.Text((i + 8) + "h-" + (i + 9) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                    tabHours.push((i + 8) + "h-" + (i + 9) + "h");
+                }
+                else hourCase.add(new svg.Text("Dates").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                hourCase.move(i*this.caseWidth,0);
+                this.calendarFirstRow.add(hourCase);
+                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+            }
+
+            for(var i=0;i+this.startDay<=this.numberDaysThisMonth+this.startDay;i++){
+                let line = new svg.Translation();
+                for (var j=0;j<11;j++){
+                    let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0);
+                    line.add(element);
+                    this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
+                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                }
+                line.move(0,this.caseHeight*i);
+                this.calendarContent.add(line);
+                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+            }
+
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.monthChoice);
+            this.component.add(this.picto.position(this.width*0.07,this.height*0.25));
+        }
+
+        checkPlace(x,y){
+            let choice = null;
+            for (let i = 0; i < this.calendarCases.length; i++) {
+                if ((x > this.calendarCases[i].x-this.caseWidth/2) && (x < this.calendarCases[i].x + this.caseWidth/2) &&
+                    (y > this.calendarCases[i].y-this.caseHeight/2) && (y > this.calendarCases[i].y - this.caseHeight/2)){
+                    choice = this.calendarCases[i];
+                }
+            }
+            if(choice!=null) {
+                this.picto.position(choice.x, choice.y);
+                console.log(choice.day+" "+choice.hour);
+            }
+            else{
+                this.picto.position(this.width*0.05,this.height*0.25);
+            }
+        }
+
+        changeTitleText(newText){
+            this.monthChoice.remove(this.titleText);
+            this.titleText = new svg.Text(newText);
+            this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
+            this.monthChoice.add(this.titleText);
+        }
+
+        getWeekDay(){
+            return {
+                0: "Dimanche",
+                1: "Lundi",
+                2: "Mardi",
+                3: "Mercredi",
+                4: "Jeudi",
+                5: "Vendredi",
+                6: "Samedi",
+            }
+        }
+
+        getMonth() {
+            return {
+                0: "Janvier",
+                1: "Février",
+                2: "Mars",
+                3: "Avril",
+                4: "Mai",
+                5: "Juin",
+                6: "Juillet",
+                7: "Août",
+                8: "Septembre",
+                9: "Octobre",
+                10: "Novembre",
+                11: "Décembre"
+            }
+        }
+
+        daysInMonth(month, year) {
+            return new Date(year, month+1, 0).getDate();
+        }
+    }
+
     ////////////VIGNETTES//////////////////
 	class Thumbnail {
         constructor(image,title)
@@ -904,7 +1300,7 @@ exports.main = function(svg,gui,param) {
         }
 	}
 
-	class ThumbnailRayon extends Thumbnail {
+    class ThumbnailRayon extends Thumbnail {
         constructor(image,title,price,complement,cat)
         {
             super(image,title);
@@ -918,9 +1314,11 @@ exports.main = function(svg,gui,param) {
             this.name = title;
             this.width = market.height*0.75/2;
             this.height = market.height*0.75/2;
-            // this.showNum= new svg.Translation();
             this.toAdd=[];
-
+            this.waitingNumber = new svg.Text("");
+            this.numberArea = new svg.Rect(0,0);
+            this.component.add(this.numberArea);
+            this.component.add(this.waitingNumber);
             let self = this;
             this.image.onMouseEnter(function()
             {
@@ -937,28 +1335,43 @@ exports.main = function(svg,gui,param) {
                 self.image.smoothy(20,10).resizeTo(self.width-30,self.height-30);
             });
 
-            function getNumber(number,e){
-                if(number=="click") {
-                    self.addAnimation("1");
-                    basket.addProducts(self,"1");
+            function printNumber(number){
+                self.component.remove(self.waitingNumber);
+                self.component.remove(self.numberArea);
+                if(number==="") {
+                    self.numberArea = new svg.Rect(0,0);
+                    self.component.add(self.numberArea);
+                }
+                else {
+                    self.numberArea = new svg.Rect(self.width*0.12,self.height*0.1).position(self.width*0.1,self.height*0.08).color(svg.WHITE,2,svg.BLACK);
+                    self.component.add(self.numberArea);
+
+                }
+                self.waitingNumber = new svg.Text(number);
+                self.waitingNumber.position(self.width*0.1,self.height*0.1).font("Calibri",self.width*0.075,1);
+                self.component.add(self.waitingNumber);
+            }
+
+            function getNumber(number,e,element){
+                if((number=="click")||(mousePos.x==e.pageX && mousePos.y==e.pageY)) {
+                    element.addAnimation("1");
+                    market.basket.addProducts(self,"1");
                 }
                 else if(number!="?") {
                     for(var c of number.split('')){
-                        if(c=="?") return;
+
+                        if(c=="?")return;
                     }
-                    self.addAnimation(number);
-                    basket.addProducts(self, number);
-                    glassCanvas.remove(self.drawNumber);
+                    element.addAnimation(number);
+                    market.basket.addProducts(element, parseInt(number));
                 }
             }
 
-            this.drawNumber = null;
             let mousePos ={};
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
-
-                self.drawNumber = new svg.Drawing(0,0);
-                init_draw(self.drawNumber,0,0,self.name, getNumber,e);
+                self.drawNumber = new svg.Drawing(0,0).mark("drawing "+self.name);
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
@@ -976,10 +1389,8 @@ exports.main = function(svg,gui,param) {
             let n =number.split('');
             let self =this;
             function removeNumber(){
-                if(self.toAdd!=[]){
-                    for(var c=0;c<self.toAdd.length;c++){
-                        self.component.remove(self.toAdd[c]);
-                    }
+                for(var c=0;c<self.toAdd.length;c++){
+                    self.component.remove(self.toAdd[c]);
                 }
             }
             for(let i=0; i<number.length;i++){
@@ -990,8 +1401,8 @@ exports.main = function(svg,gui,param) {
                 removeNumber();
             },1000);
         }
-	}
-    
+    }
+
     class ThumbnailBasket extends ThumbnailRayon{
         constructor(image,title,price,complement,cat){
             super(image,title,price,complement,cat);
@@ -1000,7 +1411,7 @@ exports.main = function(svg,gui,param) {
             this.line = new svg.Line(0,0,0,0);
             this.component.add(this.line);
 
-            this.cross = new svg.Image("img/icone-supprimer.png");
+            this.cross = new svg.Image("img/icone-supprimer.png");
             this.component.add(this.cross);
 
             this.component.mark(this.name);
@@ -1058,7 +1469,12 @@ exports.main = function(svg,gui,param) {
 
     ///Functions///
     function changeRay(name){
-        let tab =  param.data.makeVignettesForRay(name,ThumbnailRayon);
+        let tab=[];
+        if(name=="Recherche")
+        {
+            tab = categories.currentSearch;
+        }
+        else tab = param.data.makeVignettesForRay(name,ThumbnailRayon);
         if(categories.rayTranslation!=null)
         {
             market.remove(categories.rayTranslation);
@@ -1066,7 +1482,6 @@ exports.main = function(svg,gui,param) {
         categories.ray = new Ray(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         market.add(categories.rayTranslation);
-
         for(let v=0;v<categories.tabCategories.length;v++)
         {
             categories.tabCategories[v].image.opacity(1);
@@ -1079,17 +1494,155 @@ exports.main = function(svg,gui,param) {
         }
     }
 
+    function search(sentence){
+        let jsonFile = param.data.getJson();
+        let words = sentence.split(" ");
+        var tabProduct = [];
+        var tabTotalCat = [];
+        for (var i=0; i<words.length;i++){
+            for (var cat in jsonFile){
+                if(words[i].toLowerCase().includes(cat.toLowerCase())||(words[i]+words[i+1]).toLowerCase().includes(cat.toLowerCase)){
+                    var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
+                    tabTotalCat = tabTotalCat.concat(tabCat);
+                }
+                var products = jsonFile[cat];
+                for (var prodName in products){
+                    if (words[i].toLowerCase().includes(prodName.toLowerCase())
+                        ||prodName.toLowerCase().includes((words[i]+" "+words[i+1]).toLowerCase())){
+                        var prod = products[prodName];
+                        var thumbnailProduct = new ThumbnailRayon(prod.image,prod.nom, prod.prix,prod.complement, cat);
+                        tabProduct.push(thumbnailProduct);
+                    }
+                }
+            }
+        }
+        var tabThumbnailProd = tabTotalCat.concat(tabProduct);
+        return tabThumbnailProd;
+    }
 
+
+    function doSearch(search) {
+        market.remove(categories.rayTranslation);
+        zoneCategories.remove(categories.component);
+        let tab = search;
+        let tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
+        tabCategories.push(new ThumbnailCategorie("img/search.png","img/search2.png","Recherche"));
+        categories=new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
+        categories.currentSearch=tab;
+        zoneCategories.add(categories.component);
+        market.add(zoneCategories);
+
+        changeRay("Recherche");
+    }
+
+    market.vocalRecognition = function(message){
+        message = message.toLowerCase();
+        if(message!="") {
+            let tabMessage=message.split(" ");
+            let splitMessage=[];
+            for(var i = tabMessage.length-1;i>0;i--){
+                if(tabMessage[i].includes("ajoute")||tabMessage[i].includes("supprime")||tabMessage[i].includes("vide")
+                    ||tabMessage[i].includes("paiement")||tabMessage[i].includes("paye")){
+                    splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]),message.length));
+                    message = message.substring(0,message.lastIndexOf(tabMessage[i]));
+                }
+            }
+            splitMessage.push(message);
+
+            let oneOrderChecked =false;
+            for(var j = splitMessage.length-1;j>=0;j--) {
+                let order = splitMessage[j];
+                let tab = search(order);
+                if (tab[0]) {
+                    if (order.includes("ajoute")) {
+                        for (var i = 0; i < tab.length; i++) {
+                            let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                            if (quantity >= "0" && quantity <= "9") {
+                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                if (isNaN(bef)) {
+                                    bef = "";
+                                }
+                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                if (isNaN(bef2)) {
+                                    bef2 = "";
+                                }
+                                market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
+                            }
+                            else market.basket.addProducts(tab[i], 1);
+                        }
+                    }
+                    else if (order.includes("supprime")) {
+                        for (var i = 0; i < tab.length; i++) {
+                            var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                            var unUne = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            if (number >= "0" && number <= "9") {
+                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                if (isNaN(bef)) {
+                                    bef = "";
+                                }
+                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                if (isNaN(bef2)) {
+                                    bef2 = "";
+                                }
+                                market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                            }
+                            else if (unUne == " un" || unUne == "une") {
+                                market.basket.deleteFromName(tab[i].name, 1);
+                            }
+                            else market.basket.deleteFromName(tab[i].name, null);
+                        }
+                    }
+                    else {
+                        doSearch(tab);
+                    }
+                    oneOrderChecked =true;
+                }
+                else {
+                    if (order.includes("vide") && order.includes("panier")) {
+                        market.basket.emptyBasket();
+                        oneOrderChecked =true;
+                    }
+                    else if (order.includes("paye") || order.includes("paie")) {
+                        market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
+                        market.payment.cardIn = true;
+                        market.payment.showCode();
+                        oneOrderChecked =true;
+                    }
+                }
+            }
+
+            if(!oneOrderChecked) {
+                console.log("No Correct Order Given");
+                textToSpeech("Désolé je n'ai pas compris votre demande","FR");
+
+            }
+        }
+        else {
+            console.log("S'il te plait puisses-tu discuter?");
+        }
+    };
+    function textToSpeech(msg,language){
+        msg=msg.replace(/ /g, "+");
+        msg=msg.replace(/'/g, "%27");
+        // msg=msg.replace(/é/g, "%C3%A9");
+        var audio = document.createElement('audio');
+        audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=tw-ob&q='+msg+'&tl='+language;
+        console.log(audio.play());
+//            document.removeChild(audio);
+    }
+    // textToSpeech("Digi-market peut parler","fr");
     //////
 
     /////Déclaration Interface////
     let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
-    let categories = new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05);
+    let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
+    let categories = new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    let basket = new Basket(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
-    let zoneBasket = new svg.Translation().add(basket.component).mark("basket");
+    market.basket = new Basket(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
+    let zoneBasket = new svg.Translation().add(market.basket.component).mark("basket");
     market.payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
@@ -1098,11 +1651,11 @@ exports.main = function(svg,gui,param) {
     {
         market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
         market.add(glassDnD);
-        if(categories.ray!=null) market.add(categories.rayTranslation);
         market.add(glassCanvas);
     }
+
     addAllParts();
     changeRay("HighTech");
     return market;
-	//////////////////////////////
+    //////////////////////////////
 };

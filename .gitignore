@@ -3,3 +3,6 @@
 
 #Code coverage
 coverage/
+
+#Autorisation Google
+./credentialsVM.json
