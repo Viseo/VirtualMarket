@@ -841,7 +841,7 @@ describe("Test",function (){
     //     assert(raySearch);
     // });
 
-    it("ensures that the calendar is shown when the right code is entered",function(done){
+    it("ensures that the calendar is shown when the right code is entered",function(){
 
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
@@ -933,8 +933,22 @@ describe("Test",function (){
         assert.ok(calendar);
         let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
         let chevronWest=retrieve(market.component,"[calendar].[monthChoice].[chevronWCalendar]");
+        let chevronUp = retrieve(market.component,"[calendar].[chevronUpCalendar]");
+        let chevronDown = retrieve(market.component,"[calendar].[chevronDownCalendar]");
         assert.ok(chevronEast);
         assert.ok(chevronWest);
+        assert(chevronUp);
+        assert(chevronDown);
+        runtime.event(chevronUp,"click",{});
+        runtime.advanceAll();
+        for(let j=0;j<7;j++){
+            runtime.event(chevronDown,"click",{});
+            runtime.advanceAll();
+        }
+        for(let k=0;k<7;k++){
+            runtime.event(chevronUp,"click",{});
+            runtime.advanceAll();
+        }
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
         runtime.event(chevronWest,"click", {});
@@ -948,24 +962,51 @@ describe("Test",function (){
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
 
-        setTimeout(function(){
+        runtime.event(chevronUp,"click",{});
+        runtime.advanceAll();
+        for(let m=0;m<7;m++){
+            runtime.event(chevronDown,"click",{});
+            runtime.advanceAll();
+        }
+        for(let n=0;n<7;n++){
+            runtime.event(chevronUp,"click",{});
+            runtime.advanceAll();
+        }
 
-            done();
+        let picto = retrieve(market.component,"[calendar].[iconUser]");
+        runtime.event(picto,"mousedown",{pageX:0,pageY:0});
+        runtime.advanceAll();
+        runtime.event(picto,"mousemove",{pageX:350,pageY:500});
+        runtime.advanceAll();
+        runtime.event(picto,"mouseup",{pageX:350,pageY:500});
+        runtime.advanceAll();
+        runtime.event(picto,"mouseup",{pageX:500,pageY:500});
+        runtime.advanceAll();
+        runtime.event(picto,"mousemove",{pageX:10,pageY:10});
+        runtime.advanceAll();
 
-        },15000);
+        let cross = retrieve(market.component,"[calendar].[cross]");
+        assert(cross);
+        runtime.event(cross,"click",{});
+        runtime.advanceAll();
+
+
+
+
+
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(){
         market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
         market.vocalRecognition("je veux ajouter un concombre et 44 carottes et 365 clementines");
         market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer 2 Souris");
-        market.vocalRecognition("");
+        //market.vocalRecognition("");
         market.vocalRecognition("il faudrait supprimer 2 tables");
         market.vocalRecognition("en fait je voudrais vider le panier");
         market.vocalRecognition("Recherche les voyages !");
         market.vocalRecognition("Ajoute moi un voyage à Tokyo");
-        market.vocalRecognition("DigiMarket tu es bo");
-        market.vocalRecognition("");
+        //market.vocalRecognition("DigiMarket tu es bo");
+        //market.vocalRecognition("");
         market.vocalRecognition("Maintenant je veux payer");
     });
 });
