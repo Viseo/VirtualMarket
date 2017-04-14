@@ -429,7 +429,7 @@ exports.main = function(svg,gui,param,neural) {
                             }
                             else{
                                 console.log("je n'ai pas bien saisi votre demande : "+voice['transcript']);
-                                textToSpeech("Je n'ai pas bien compris votre demande","FR");
+                                textToSpeech("Je n'ai pas bien compris votre demande","fr");
 
                             }
                         }
@@ -1633,8 +1633,7 @@ exports.main = function(svg,gui,param,neural) {
 
             if(!oneOrderChecked) {
                 console.log("No Correct Order Given");
-                textToSpeech("Désolé je n'ai pas compris votre demande","fr");
-
+                textToSpeech("Je n'ai pas bien compris votre demande","fr");
             }
         }
         else {
@@ -1642,14 +1641,19 @@ exports.main = function(svg,gui,param,neural) {
         }
     };
     function textToSpeech(msg,language){
-        msg=msg.replace(/ /g, "+");
-        msg=msg.replace(/'/g, "%27");
+        // msg=msg.replace(/ /g, "+");
+        // msg=msg.replace(/'/g, "%27");
         // msg=msg.replace(/é/g, "%C3%A9");
-        var audio = document.createElement('audio');
-        audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=tw-ob&q='+msg+'&tl='+language;
-        console.log(audio.play());
+        // var audio = document.createElement('audio');
+        // audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=t-ob&q='+msg+'&tl='+language;
+        // console.log(audio.play());
+
+        var speak = new SpeechSynthesisUtterance(msg);
+        window.speechSynthesis.speak(speak);
 //            document.removeChild(audio);
     }
+
+
     function replaceChar(msg){
         return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
     }
