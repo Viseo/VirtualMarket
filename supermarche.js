@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param) {
+exports.main = function(svg,gui,param,neural) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -421,8 +421,9 @@ exports.main = function(svg,gui,param) {
                         voice = getMessage();
                         if((voice['transcript'].length!=0 &&  voice['transcript']!="Je n'ai pas compris") || i==25) {
                             clearInterval(timer);
-                            if(i==25)textToSpeech("Je n'ai rien entendu","fr");
-                            else if(voice['confidence']>0.6){
+                            console.log(voice['transcript']);
+                            if(i==25)textToSpeech("Je n'ai rien entendu","FR");
+                            else if(voice['confidence']>0.5){
                                 // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
                                 market.vocalRecognition(voice['transcript']);
                             }
@@ -1495,6 +1496,7 @@ exports.main = function(svg,gui,param) {
     }
 
     function search(sentence){
+        sentence=replaceChar(sentence);
         let jsonFile = param.data.getJson();
         let words = sentence.split(" ");
         var tabProduct = [];
@@ -1507,8 +1509,9 @@ exports.main = function(svg,gui,param) {
                 }
                 var products = jsonFile[cat];
                 for (var prodName in products){
-                    if (words[i].toLowerCase().includes(prodName.toLowerCase())
-                        ||prodName.toLowerCase().includes((words[i]+" "+words[i+1]).toLowerCase())){
+                    console.log(words[i].toLowerCase(),replaceChar(prodName))
+                    if (words[i].toLowerCase().includes(replaceChar(prodName))
+                        ||replaceChar(prodName).includes((words[i]+" "+words[i+1]).toLowerCase())){
                         var prod = products[prodName];
                         var thumbnailProduct = new ThumbnailRayon(prod.image,prod.nom, prod.prix,prod.complement, cat);
                         tabProduct.push(thumbnailProduct);
@@ -1614,7 +1617,7 @@ exports.main = function(svg,gui,param) {
 
             if(!oneOrderChecked) {
                 console.log("No Correct Order Given");
-                textToSpeech("Désolé je n'ai pas compris votre demande","FR");
+                textToSpeech("Désolé je n'ai pas compris votre demande","fr");
 
             }
         }
@@ -1630,6 +1633,9 @@ exports.main = function(svg,gui,param) {
         audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=tw-ob&q='+msg+'&tl='+language;
         console.log(audio.play());
 //            document.removeChild(audio);
+    }
+    function replaceChar(msg){
+        return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
     }
     // textToSpeech("Digi-market peut parler","fr");
     //////

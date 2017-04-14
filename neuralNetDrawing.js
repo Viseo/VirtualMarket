@@ -1,160 +1,414 @@
 /**
  * Created by TNA3624 on -17/-13/2017.
  */
+exports.neural = function(runtime) {
 
-var DOWNSAMPLE_WIDTH = 5;
-var DOWNSAMPLE_HEIGHT = 8;
+    var ENCOG = ENCOG || {
+            VERSION: '0.1',
+            PLATFORM: 'javascript',
+            precision: 1e-10,
+            NEWLINE: '\n',
+            ENCOG_TYPE_ACTIVATION: 'ActivationFunction',
+            ENCOG_TYPE_RBF: 'RBF'
+        };
 
-var lstLetters, downsampleArea;
-var charData = {};
-var downSampleData = [];
-var numToSend={
-    element: "",
-    num:""
-};
-var ondraw=false;
-var newclick=false
+    ENCOG.fillArray = function (arr, start, stop, v) {
+        'use strict';
+        var i;
 
-function init_draw(element,x,y,name,callback,e) {
-    // clearTimeout();
-    let drawingArea;
-    let bestchar;
-    ondraw=true;
-    if(numToSend.element==""){
-        numToSend.element=name;
-        element.component.addEventListener("mouseup", function(){
-            bestchar=ev_recognize();
-            numToSend.num=bestchar;
-            console.log(numToSend.element+" "+numToSend.num);
-            if(numToSend.num=="click") {
+        for (i = start; i < stop; i += 1) {
+            arr[i] = v;
+        }
+    };
+
+    ENCOG.allocate1D = function (x) {
+        'use strict';
+        var i, result;
+
+        result = [];
+        for (i = 0; i < x; i += 1) {
+            result[i] = 0;
+        }
+
+        return result;
+    };
+
+    ENCOG.Drawing = function(){};
+    ENCOG.drawingCreate = function (element, x, y, name,glass) {
+        'use strict';
+        let result = new ENCOG.Drawing();
+        result.y = y;
+        result.x = x;
+        result.element = element;
+        result.canvasDiv = element.component;
+        result.canvasWidth = element.width;
+        result.canvasHeight = element.height;
+        result.width = 1600;
+        result.height = 1000;
+        result.glass = glass;
+
+        result.foreign = runtime.create("foreignObject");
+        runtime.attrNS(result.foreign,"width",result.canvasWidth);
+        runtime.attrNS(result.foreign,"height",result.canvasHeight);
+        runtime.attrNS(result.foreign,"x",0);
+        runtime.attrNS(result.foreign,"y",0);
+        runtime.add(result.canvasDiv,result.foreign);
+        result.canvas = runtime.createDOM("canvas");
+        runtime.attr(result.canvas,"width",result.width);
+        runtime.attr(result.canvas,"height",result.height);
+        runtime.mark(result.canvas,"draw "+name);
+        runtime.add(result.foreign,result.canvas);
+
+        result.drawing = [];
+        for(var i = 0;i<result.width;i++)
+        {
+            let line = [];
+            for(var j = 0;j<result.height;j++)
+            {
+                line.push(0);
+            }
+            result.drawing.push(line);
+        }
+
+        result.started=true;
+        return result;
+    };
+
+    ENCOG.drawingDelete = function (glass,element) {
+        'use strict';
+        glass.remove(element);
+    };
+
+    ENCOG.Drawing.prototype =
+        {
+            canvas: null,
+            drawingContext: null,
+            canvasDiv: null,
+            NAME: "Drawing",
+            canvasWidth: null,
+            canvasHeight: null,
+            started: false,
+            downsampleHeight: 8,
+            downsampleWidth: 5,
+            drawing:null,
+            currentX:0,
+            currentY:0,
+            width:0,
+            height:0,
+            glass:null,
+
+            // Handle events to the canvas.  This allows drawing to occur.
+            ev_canvas: function (ev,control) {
+                ev._x = Math.round(ev.pageX * 1.25);
+                ev._y = Math.round(ev.pageY * 1.25);
+                if (ev.type === 'mousemove'||control=="mousemove") {
+                    if(this.currentX!=0&&this.currentY!=0) {
+                        let dx = ev._x - this.currentX;
+                        let dy = ev._y - this.currentY;
+                        if (dx < 0) {
+                            for (var i = ev._x; i < this.currentX; i++) {
+                                let y = Math.round(ev._y + dy * (i - ev._x) / dx);
+                                this.drawing[i][y] = 1;
+                            }
+                        }
+                        else {
+                            for (var i = ev._x; i > this.currentX; i--) {
+                                let y = Math.round(ev._y + dy * (i - ev._x) / dx);
+                                this.drawing[i][y] = 1;
+                            }
+                        }
+                    }
+                    this.currentX=ev._x;
+                    this.currentY=ev._y;
+                }
+                // This is called when you release the mouse button.
+                else //if(ev.type === 'mouseup'||control=="mouseup"){
+                {
+                    if (this.started) {
+                        this.started = false;
+                        ENCOG.drawingDelete(this.glass,this.element);
+                    }
+                }
+                /*else if (ev.type === 'mouseout'||control=="mouseout") {
+                 if (this.started) {
+                 this.started = false;
+                 ENCOG.Drawing.delete(this.glass,this.element);
+                 }
+                 }
+                 /*else if (ev.type === 'touchstart') {
+                 this.drawingContext.beginPath();
+                 this.drawingContext.moveTo(ev._x, ev._y);
+                 this.started = true;
+                 }
+                 else if (ev.type === 'touchend') {
+                 if (this.started) {
+                 this.started = false;
+                 }
+                 }
+                 else if (ev.type === 'touchmove') {
+                 if (this.started) {
+                 this.drawingContext.lineTo(ev._x, ev._y);
+                 this.drawingContext.stroke();
+                 ev.preventDefault();
+                 }
+                 }*/
+            },
+
+            isHLineClear: function (row) {
+                for(var i=0;i<this.width-1;i++)
+                {
+                    if(this.drawing[i][row]==1)return false;
+                }
+                return true;
+            },
+
+            isVLineClear: function (col) {
+                for(var i=0;i<this.height;i++)
+                {
+                    if(this.drawing[col][i]==1)return false;
+                }
+                return true;
+            },
+
+            // Downsample the drawing area.
+            performDownSample: function () {
+                'use strict';
+                var top, bottom, left, right, cellWidth, cellHeight, result, resultIndex, row, col, x, y, d;
+
+                // first find a bounding rectangle so that we can crop out unused space
+                top = 0;
+                while (this.isHLineClear(top) && top < this.height - 1) {
+                    top++;
+                }
+
+                bottom = this.height - 1;
+                while (this.isHLineClear(bottom) && bottom > 0) {
+                    bottom--;
+                }
+
+                left = 0;
+                while (this.isVLineClear(left) && left < this.width - 1) {
+                    left++;
+                }
+
+                right = this.width - 1;
+                while (this.isVLineClear(right) && right > 0) {
+                    right--;
+                }
+
+
+                if (bottom < top) {
+                    result = ENCOG.allocate1D(this.downsampleHeight * this.downsampleWidth);
+                    ENCOG.fillArray(result, 0, result.length, -1);
+                    return result;
+                }
+
+                cellWidth = Math.round((right - left) / this.downsampleWidth);
+                cellHeight = Math.round((bottom - top) / this.downsampleHeight);
+                result = new Array();
+                resultIndex = 0;
+
+                for (row = 0; row < this.downsampleHeight; row++) {
+                    for (col = 0; col < this.downsampleWidth; col++) {
+                        x = (cellWidth * col) + left;
+                        y = (cellHeight * row) + top;
+                        // obtain pixel data for the grid square
+                        let tab = [];
+                        for (var i = x; i < x + cellWidth; i++) {
+                            let col = [];
+                            for (var j = y; j < y + cellHeight; j++) {
+                                col.push(this.drawing[i][j]);
+                            }
+                            tab.push(col);
+                        }
+
+                        d = false;
+                        // see if at least one pixel is "black"
+                        for (let i = 0; i < tab.length; i++) {
+                            for (let j = 0; j < tab[i].length; j++) {
+                                if (tab[i][j] == 1) {
+                                    d = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (d) {
+                            result[resultIndex++] = 1.0;
+                        } else {
+                            result[resultIndex++] = -1.0;
+                        }
+                    }
+                }
+
+                return result;
+            },
+            clear:function(){
+                this.canvas.width=this.canvas.width;
+            }
+        };
+
+    var DOWNSAMPLE_WIDTH = 5;
+    var DOWNSAMPLE_HEIGHT = 8;
+
+    var charData = {};
+    var downSampleData = [];
+    var numToSend={
+        element: "",
+        num:""
+    };
+    var set = false;
+    var ondraw=false;
+
+    function init_draw(element,x,y,name,callback,printNumber,e,prod,glass) {
+        let drawingArea;
+        let bestchar;
+        ondraw=true;
+        drawingArea = ENCOG.drawingCreate(element,x,y,name,glass);
+        preload();
+
+        runtime.addEvent(drawingArea.canvas,'mouseup', function (e) {
+            if(numToSend.element=="") numToSend.element=name;
+            bestchar = ev_recognize();
+            drawingArea.ev_canvas(e, "mouseup");
+            if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
+            else numToSend.num += bestchar;
+            if(numToSend.num.length<3) {
+                printNumber(numToSend.num+"_");
+            }
+            else {
+                printNumber(numToSend.num);
+            }
+            if (numToSend.num == "click") {
                 clearTimeout();
-                callback(numToSend.num, e);
+                printNumber("");
+                callback(numToSend.num, e, prod);
+                numToSend.num = "";
+                numToSend.element = "";
+            }
+            else {
+                if (!set) {
+                    set=true;
+                    setTimeout((function () {
+                        drawingArea.ev_canvas(e, "mouseup");
+                        if (isNaN(parseInt(numToSend.num))){
+                            numToSend.num = "";
+                            printNumber("");
+                        }
+                        if (numToSend.num != "") {
+                            printNumber("");
+                            callback(numToSend.num, e, prod);
+                        }
+                        numToSend.num = "";
+                        numToSend.element = "";
+                        ondraw = false;
+                        set = false;
+                    }), 2500);
+                }
             }
         });
-    }
-    else{
-        if(numToSend.element==name){
-            element.component.addEventListener("mouseup", function(){
-                bestchar=ev_recognize();
-                numToSend.num+=bestchar;
-                console.log(numToSend.element+" "+numToSend.num);
-                if(numToSend.num=="click") {
-                    clearTimeout();
-                    callback(numToSend.num, e);
+
+        runtime.addEvent(drawingArea.canvas,'mousemove', function (e) {
+            drawingArea.ev_canvas(e,"mousemove");
+        }, true);
+        /*runtime.addEvent(drawingArea.canvas,'touchstart', function (e) {
+         drawingArea.ev_canvas(e);
+         }, true);
+         runtime.addEvent(drawingArea.canvas,'touchend', function (e) {
+         drawingArea.ev_canvas(e);
+         }, true);
+         runtime.addEvent(drawingArea.canvas,'touchmove', function (e) {
+         drawingArea.ev_canvas(e);
+         }, true);
+         runtime.addEvent(drawingArea.canvas,'mouseout', function (e) {
+         drawingArea.ev_canvas(e,"mouseout");
+         }, true);*/
+
+        function ev_recognize() {
+            downSampleData = drawingArea.performDownSample();
+            var dessinpropre = "";
+            var charchosen = "";
+            for (var p in downSampleData) {
+                if (p % 5 == 0) {
+                    if (downSampleData[p] == "-1") {
+                        dessinpropre += "\n0,";
+                    } else {
+                        dessinpropre += "\n" + downSampleData[p] + ",";
+                    }
+                } else {
+                    if (downSampleData[p] == "-1") {
+                        dessinpropre += "0,";
+                    } else {
+                        dessinpropre += downSampleData[p] + ",";
+                    }
                 }
-            });
-        }else{
-            element.component.addEventListener("mouseup", function(){
-                bestchar=ev_recognize();
-                numToSend.num=bestchar;
-                console.log(numToSend.element+" "+numToSend.num);
-                if(numToSend.num=="click") {
-                    clearTimeout();
-                    callback(numToSend.num, e);
+            }
+
+            var bestChar = '?';
+            var bestScore = 0;
+
+            for (var c in charData) {
+                var data = charData[c];
+                var sum = 0;
+                for (var i = 0; i < data.length; i++) {
+                    var delta = data[i] - downSampleData[i];
+                    sum = sum + (delta * delta);
                 }
-            });
+
+                sum = Math.sqrt(sum);
+                if (sum < bestScore || bestChar == '?') {
+                    bestScore = sum;
+                    bestChar = c;
+                }
+            }
+
+            for (var q in charData[bestChar]) {
+                if (q % 5 == 0) {
+
+                    if (charData[bestChar][q] == "-1") {
+                        charchosen += "\n0,";
+                    } else {
+                        charchosen += "\n" + charData[bestChar][q] + ",";
+                    }
+                } else {
+                    if (charData[bestChar][q] == "-1") {
+                        charchosen += "0,";
+                    } else {
+                        charchosen += charData[bestChar][q] + ",";
+                    }
+                }
+            }
+
+            if(bestScore>6.5) bestChar="?";
+            drawingArea.clear();
+            clearDownSample();
+            return bestChar;
+        }
+
+        function clearDownSample() {
+            downSampleData = ENCOG.allocate1D(DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT);
+            ENCOG.fillArray(downSampleData, 0, downSampleData.length, -1);
         }
     }
 
-    // Find the canvas element.
-    drawingArea = ENCOG.GUI.Drawing.create(element,x,y,name);
-    preload();
-
-    setTimeout((function(){
-        // console.log("parse "+parseInt(numToSend.num))
-        if(isNaN(parseInt(numToSend.num)))numToSend.num="";
-        console.log(numToSend.num)
-        if(ondraw==false || numToSend.num.length ==1 || numToSend.num=="click") {
-            if(numToSend.num!="")callback(numToSend.num, e);
-            numToSend.num="";
-            numToSend.element=""
-        }
-        ondraw=false;
-    }),2500);
-
-
-
-    /////////////////////////////////////////////////////////////////////////////
-// Event functions
-/////////////////////////////////////////////////////////////////////////////
-
-    // Called when we want to recognize what's been drawn
-    function ev_recognize (ev)
+    function preload()
     {
-        downSampleData = drawingArea.performDownSample();
-        var dessinpropre="";
-        var charchosen="";
-        for (var p in downSampleData){
-            if(p%5==0){
-                if(downSampleData[p]=="-1"){
-                    dessinpropre+="\n0,";
-                }else{
-                    dessinpropre+="\n"+downSampleData[p]+",";
-                }
-            }else{
-                if(downSampleData[p]=="-1"){
-                    dessinpropre+="0,";
-                }else{
-                    dessinpropre+=downSampleData[p]+",";
-                }
-            }
-        }
-
-        var bestChar = '?';
-        var bestScore = 0;
-
-        for(var c in charData )
-        {
-            var data = charData[c];
-            var sum = 0;
-            for(var i = 0; i<data.length; i++ )
-            {
-                var delta = data[i] - downSampleData[i];
-                sum = sum + (delta*delta);
-            }
-
-            sum = Math.sqrt(sum);
-
-            if( sum<bestScore || bestChar=='?' )
-            {
-                bestScore = sum;
-                bestChar = c;
-            }
-
-        }
-        if(bestScore>=6.5) bestChar = "?";
-        drawingArea.clear();
-        clearDownSample();
-        return bestChar;
+        defineChar("click", new Array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1) );
+        defineChar("0", new Array( -1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1 ) );
+        defineChar("1", new Array( -1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,1,1) );
+        defineChar("2", new Array(1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,1,1,-1,1,-1,1,1,-1,1,1,1,1,1) );
+        defineChar("3", new Array(1,1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
+        defineChar("4", new Array(1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,1) );
+        defineChar("5", new Array(1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
+        defineChar("6", new Array(-1,1,1,1,-1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,-1,1,1,1,1,1,1,1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,1) );
+        defineChar("7", new Array(1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1) );
+        defineChar("8", new Array(1,1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1) );
+        defineChar("9", new Array(1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1) );
     }
 
-    function clearDownSample() {
-        downSampleData = ENCOG.ArrayUtil.allocate1D(DOWNSAMPLE_WIDTH*DOWNSAMPLE_HEIGHT);
-        ENCOG.ArrayUtil.fillArray(downSampleData,0,downSampleData.length,-1);
+    function defineChar(charEntered, data) {
+        charData[charEntered] = data;
     }
-}
-
-
-// Preload the digits, so that the user can quickly do some OCR if desired.
-function preload()
-{
-    defineChar("click", new Array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1) );
-    defineChar("0", new Array( -1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1 ) );
-    defineChar("1", new Array( -1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,1,1) );
-    defineChar("2", new Array(1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,1,1,-1,1,-1,1,1,-1,1,1,1,1,1) );
-    defineChar("3", new Array(1,1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
-    defineChar("4", new Array(1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,1) );
-    defineChar("5", new Array(1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
-    defineChar("6", new Array(-1,1,1,1,-1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,-1,1,1,1,1,1,1,1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,1) );
-    defineChar("7", new Array(1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1) );
-    defineChar("8", new Array(1,1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1) );
-    defineChar("9", new Array(1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1) );
-}
-
-// Define a character, add it to the list and to the map.
-function defineChar(charEntered,data)
-{
-    charData[charEntered] = data;
-}
-
-
+    return {
+        init_draw : init_draw,
+    }
+};
