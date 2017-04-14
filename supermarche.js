@@ -822,10 +822,10 @@ exports.main = function(svg,gui,param,neural) {
                          return function(){
                              market.payment.zoneCode.hideCircle();
                              market.payment.zoneCode.changeText("Code correct",svg.GREEN);
-                             if (i===seconds){
-                                 market.remove(glassTimer);
-                                 market.remove(market.payment.zoneCode.component);
-                             }
+                             // if (i===seconds){
+                             //     market.remove(glassTimer);
+                             //     market.remove(market.payment.zoneCode.component);
+                             // }
                          }
                      }(i),i*1000);
                  }
@@ -860,8 +860,8 @@ exports.main = function(svg,gui,param,neural) {
             this.calendarPositionY = 0;
             this.calendarCases = [];
             this.monthChoice = new svg.Translation().mark("monthChoice");
-            this.chevronDown = new svg.Chevron(50,20,10,"S").color(svg.WHITE,3,svg.BLACK);
-            this.chevronUp = new svg.Chevron(50,20,10,"N").color(svg.WHITE,3,svg.BLACK);
+            this.chevronDown = new svg.Chevron(50,20,10,"S").color(svg.WHITE,3,svg.BLACK).mark("chevronDownCalendar");
+            this.chevronUp = new svg.Chevron(50,20,10,"N").color(svg.WHITE,3,svg.BLACK).mark("chevronUpCalendar");
             this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
             this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
             this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
@@ -1091,15 +1091,7 @@ exports.main = function(svg,gui,param,neural) {
             this.currentDate=0;
             let tabDays = [];
             this.numberDaysThisMonth=this.daysInMonth(month,year);
-            if(this.numberDaysThisMonth==31) {
-                this.startDay=new Date(year,month,1).getDay();
-                if(this.startDay==-1){
-                    this.startDay=6;
-                }
-            }
-            else {
-                this.startDay=new Date(year,month,1).getDay();
-            }
+            this.startDay=new Date(year,month,1).getDay();
 
             for(let j=0;j+this.startDay<=this.numberDaysThisMonth+this.startDay;j++){
                 let dayCase = new svg.Translation();
