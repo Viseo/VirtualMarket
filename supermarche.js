@@ -1495,12 +1495,9 @@ exports.main = function(svg,gui,param,neural) {
         }
     }
 
-<<<<<<< HEAD
-    function search(sentence){
-        sentence=replaceChar(sentence);
-=======
+
     function search(sentence,config){
->>>>>>> 325d916814044b83762040e027761492f26a8ddd
+        sentence=replaceChar(sentence);
         let jsonFile = param.data.getJson();
         let words = sentence.split(" ");
         var tabProduct = [];
@@ -1510,10 +1507,10 @@ exports.main = function(svg,gui,param,neural) {
         for (var i=0; i<words.length;i++){
             for (var cat in jsonFile){
                 if(config=="all") {
-                    if (words[i].replace("-", " ").toLowerCase().includes(cat.toLowerCase())
-                        || (words[i] + " " + words[i + 1]).replace("-", " ").toLowerCase().includes(cat.toLowerCase())
-                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(cat.toLowerCase())
-                        || (words[i] + "s").toLowerCase().includes(cat.toLowerCase())) {
+                    if (words[i].toLowerCase().includes(replaceChar(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1]).toLowerCase().includes(replaceChar(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(replaceChar(cat).toLowerCase())
+                        || (words[i] + "s").toLowerCase().includes(replaceChar(cat).toLowerCase())) {
                         if(catDone.indexOf(cat)==-1){
                             catDone.push(cat);
                             var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
@@ -1523,25 +1520,17 @@ exports.main = function(svg,gui,param,neural) {
                 }
                 var products = jsonFile[cat];
                 for (var prodName in products){
-<<<<<<< HEAD
-                    console.log(words[i].toLowerCase(),replaceChar(prodName))
-                    if (words[i].toLowerCase().includes(replaceChar(prodName))
-                        ||replaceChar(prodName).includes((words[i]+" "+words[i+1]).toLowerCase())){
-                        var prod = products[prodName];
-                        var thumbnailProduct = new ThumbnailRayon(prod.image,prod.nom, prod.prix,prod.complement, cat);
-                        tabProduct.push(thumbnailProduct);
-=======
-                    if (words[i].toLowerCase().includes(prodName.toLowerCase())
-                        ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(prodName.toLowerCase())
-                        ||(words[i]+" "+words[i+1]+words[i+2]).toLowerCase().includes(prodName.toLowerCase())
-                        ||(words[i] + "s").toLowerCase().includes(prodName.toLowerCase())){
-                        if(prodDone.indexOf(prodName)==-1) {
+                   if (words[i].toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                                ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                                ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                                ||(words[i] + "s").toLowerCase().includes(replaceChar(prodName).toLowerCase())){
+                            if(prodDone.indexOf(prodName)==-1) {
+                            prodDone.push(prodName);
                             var prod = products[prodName];
                             var thumbnailProduct = new ThumbnailRayon(prod.image, prod.nom, prod.prix, prod.complement, cat);
                             tabProduct.push(thumbnailProduct);
                         }
->>>>>>> 325d916814044b83762040e027761492f26a8ddd
-                    }
+                   }
                 }
             }
         }
@@ -1564,7 +1553,7 @@ exports.main = function(svg,gui,param,neural) {
     }
 
     market.vocalRecognition = function(message){
-        message = message.toLowerCase();
+        message=replaceChar(message);
         if(message!="") {
             let tabMessage=message.split(" ");
             let splitMessage=[];

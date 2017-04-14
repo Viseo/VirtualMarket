@@ -270,13 +270,13 @@ exports.data = function() {
                     nom: "Blender",
                     complement: "",
                 },
-                "GrillePain": {
+                "Grille Pain": {
                     image: "img/produits/Electromenager/grillePain.jpg",
                     prix: 40,
                     nom: "Grille-Pain",
                     complement: "",
                 },
-                "LaveLinge": {
+                "Lave Linge": {
                     image: "img/produits/Electromenager/laveLinge.jpg",
                     prix: 200,
                     nom: "Lave-linge",
@@ -300,13 +300,13 @@ exports.data = function() {
                     nom: "Gaufrier",
                     complement: "",
                 },
-                "FeraRepasser": {
+                "Fer a Repasser": {
                     image: "img/produits/Electromenager/feraRepasser.jpg",
                     prix: 70,
                     nom: "Fer à repasser",
                     complement: "",
                 },
-                "SecheCheveux": {
+                "Seche Cheveux": {
                     image: "img/produits/Electromenager/secheCheveux.jpg",
                     prix: 100,
                     nom: "Seche-Cheveux",
