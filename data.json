@@ -44,7 +44,7 @@
 
   },
 
-  "HighTech" : {
+  "High-Tech" : {
       "Casque" : "img/produits/HighTech/Casque.jpg",
       "Ipad" : "img/produits/HighTech/ipad.jpg"
   },
@@ -87,4 +87,4 @@
     "Iron Man" : "img/produits/SuperPouvoirs/iron man.png",
     "Shazam" : "img/produits/SuperPouvoirs/shazam.png",
     "Spiderman" : "img/produits/SuperPouvoirs/spiderman.png"
-}
+}}

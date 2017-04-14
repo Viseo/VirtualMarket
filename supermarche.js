@@ -1495,26 +1495,52 @@ exports.main = function(svg,gui,param,neural) {
         }
     }
 
+<<<<<<< HEAD
     function search(sentence){
         sentence=replaceChar(sentence);
+=======
+    function search(sentence,config){
+>>>>>>> 325d916814044b83762040e027761492f26a8ddd
         let jsonFile = param.data.getJson();
         let words = sentence.split(" ");
         var tabProduct = [];
         var tabTotalCat = [];
+        let catDone= [];
+        let prodDone = [];
         for (var i=0; i<words.length;i++){
             for (var cat in jsonFile){
-                if(words[i].toLowerCase().includes(cat.toLowerCase())||(words[i]+words[i+1]).toLowerCase().includes(cat.toLowerCase)){
-                    var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
-                    tabTotalCat = tabTotalCat.concat(tabCat);
+                if(config=="all") {
+                    if (words[i].replace("-", " ").toLowerCase().includes(cat.toLowerCase())
+                        || (words[i] + " " + words[i + 1]).replace("-", " ").toLowerCase().includes(cat.toLowerCase())
+                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(cat.toLowerCase())
+                        || (words[i] + "s").toLowerCase().includes(cat.toLowerCase())) {
+                        if(catDone.indexOf(cat)==-1){
+                            catDone.push(cat);
+                            var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
+                            tabTotalCat = tabTotalCat.concat(tabCat);
+                        }
+                    }
                 }
                 var products = jsonFile[cat];
                 for (var prodName in products){
+<<<<<<< HEAD
                     console.log(words[i].toLowerCase(),replaceChar(prodName))
                     if (words[i].toLowerCase().includes(replaceChar(prodName))
                         ||replaceChar(prodName).includes((words[i]+" "+words[i+1]).toLowerCase())){
                         var prod = products[prodName];
                         var thumbnailProduct = new ThumbnailRayon(prod.image,prod.nom, prod.prix,prod.complement, cat);
                         tabProduct.push(thumbnailProduct);
+=======
+                    if (words[i].toLowerCase().includes(prodName.toLowerCase())
+                        ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(prodName.toLowerCase())
+                        ||(words[i]+" "+words[i+1]+words[i+2]).toLowerCase().includes(prodName.toLowerCase())
+                        ||(words[i] + "s").toLowerCase().includes(prodName.toLowerCase())){
+                        if(prodDone.indexOf(prodName)==-1) {
+                            var prod = products[prodName];
+                            var thumbnailProduct = new ThumbnailRayon(prod.image, prod.nom, prod.prix, prod.complement, cat);
+                            tabProduct.push(thumbnailProduct);
+                        }
+>>>>>>> 325d916814044b83762040e027761492f26a8ddd
                     }
                 }
             }
@@ -1522,7 +1548,6 @@ exports.main = function(svg,gui,param,neural) {
         var tabThumbnailProd = tabTotalCat.concat(tabProduct);
         return tabThumbnailProd;
     }
-
 
     function doSearch(search) {
         market.remove(categories.rayTranslation);
@@ -1555,8 +1580,9 @@ exports.main = function(svg,gui,param,neural) {
             let oneOrderChecked =false;
             for(var j = splitMessage.length-1;j>=0;j--) {
                 let order = splitMessage[j];
-                let tab = search(order);
+                let tab = search(order,"all");
                 if (tab[0]) {
+                    tab = search(order,"prod");
                     if (order.includes("ajoute")) {
                         for (var i = 0; i < tab.length; i++) {
                             let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
@@ -1597,6 +1623,7 @@ exports.main = function(svg,gui,param,neural) {
                         }
                     }
                     else {
+                        tab = search(order,"all");
                         doSearch(tab);
                     }
                     oneOrderChecked =true;
