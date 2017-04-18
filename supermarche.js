@@ -1309,8 +1309,6 @@ exports.main = function(svg,gui,param,neural) {
             this.height = market.height*0.75/2;
             this.toAdd=[];
             this.waitingNumber = new svg.Text("");
-            this.numberArea = new svg.Rect(0,0);
-            this.component.add(this.numberArea);
             this.component.add(this.waitingNumber);
             let self = this;
             this.image.onMouseEnter(function()
@@ -1330,18 +1328,8 @@ exports.main = function(svg,gui,param,neural) {
 
             function printNumber(number){
                 self.component.remove(self.waitingNumber);
-                self.component.remove(self.numberArea);
-                if(number==="") {
-                    self.numberArea = new svg.Rect(0,0);
-                    self.component.add(self.numberArea);
-                }
-                else {
-                    self.numberArea = new svg.Rect(self.width*0.12,self.height*0.1).position(self.width*0.1,self.height*0.08).color(svg.WHITE,2,svg.BLACK);
-                    self.component.add(self.numberArea);
-
-                }
                 self.waitingNumber = new svg.Text(number);
-                self.waitingNumber.position(self.width*0.1,self.height*0.1).font("Calibri",self.width*0.075,1);
+                self.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
                 self.component.add(self.waitingNumber);
             }
 
