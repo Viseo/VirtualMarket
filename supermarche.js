@@ -1567,24 +1567,37 @@ exports.main = function(svg,gui,param,neural) {
                     if (order.includes("ajoute")) {
                         for (var i = 0; i < tab.length; i++) {
                             let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
                             if (quantity >= "0" && quantity <= "9") {
                                 let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
                                 if (isNaN(bef)) {
-                                    bef = "";
+                                        bef = "";
                                 }
                                 let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
                                 if (isNaN(bef2)) {
-                                    bef2 = "";
+                                        bef2 = "";
                                 }
                                 market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
                             }
-                            else market.basket.addProducts(tab[i], 1);
+                            else if (determining.trim() == "de"){
+                                market.basket.addProducts(tab[i],2);
+                            }
+                            else if (determining2.trim() == "cette" || determining.trim() =="cet") {
+                                market.basket.addProducts(tab[i], 7);
+                            } else {
+                                market.basket.addProducts(tab[i], 1);
+                            }
                         }
                     }
                     else if (order.includes("supprime")) {
                         for (var i = 0; i < tab.length; i++) {
                             var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                            var unUne = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
                                 order.indexOf(tab[i].name.toLowerCase()) - 1);
                             if (number >= "0" && number <= "9") {
                                 let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
@@ -1597,9 +1610,12 @@ exports.main = function(svg,gui,param,neural) {
                                 }
                                 market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                             }
-                            else if (unUne == " un" || unUne == "une") {
+                            else if (determining == " un" || determining == "une")
                                 market.basket.deleteFromName(tab[i].name, 1);
-                            }
+                            else if (determining.trim() =="de")
+                                market.basket.deleteFromName(tab[i].name,2);
+                            else if(determining2.trim() == "cette" || determining.trim() == "cet")
+                                market.basket.deleteFromName(tab[i].name,7);
                             else market.basket.deleteFromName(tab[i].name, null);
                         }
                     }

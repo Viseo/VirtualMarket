@@ -1005,6 +1005,9 @@ describe("Test",function (){
         market.vocalRecognition("en fait je voudrais vider le panier");
         market.vocalRecognition("Recherche les voyages !");
         market.vocalRecognition("Ajoute moi un voyage à Tokyo");
+        market.vocalRecognition("Ajoute cette banane et ajoute de cerise");
+        market.vocalRecognition("supprime de banane et ajoute cette concombre");
+        market.vocalRecognition("supprime cette concombre");
         //market.vocalRecognition("DigiMarket tu es bo");
         //market.vocalRecognition("");
         market.vocalRecognition("Maintenant je veux payer");
