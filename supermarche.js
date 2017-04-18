@@ -403,45 +403,49 @@ exports.main = function(svg,gui,param,neural) {
             this.micro = new svg.Image("img/microphone-deactivated.png");
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
-            this.recording=false;
+            let recording=false;
             let micro=this.micro;
             var voice=[];
             let timer;
 
-            this.micro.onClick(function () {
-                let i=0;
-                voice=[];
-                if(this.recording==true){
-                    this.recording=stopRecording();
-                    console.log("je record plus" );
-                    micro.url("img/microphone-deactivated.png");
-                    timer=setInterval(function() {
-                        i++;
-                        console.log(i)
-                        voice = getMessage();
-                        if((voice['transcript'].length!=0 &&  voice['transcript']!="Je n'ai pas compris") || i==25) {
-                            clearInterval(timer);
-                            console.log(voice['transcript']);
-                            if(i==25)textToSpeech("Je n'ai rien entendu","FR");
-                            else if(voice['confidence']>0.5){
-                                // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
-                                market.vocalRecognition(voice['transcript']);
-                            }
-                            else{
-                                console.log("je n'ai pas bien saisi votre demande : "+voice['transcript']);
-                                textToSpeech("Je n'ai pas bien compris votre demande","fr");
-
-                            }
-                        }
-                    },200);
-
-                }
-                else{
-                    this.recording=startRecording();
+            this.micro.onClick(function(){
+                if(!recording) {
+                    let i = 0;
+                    voice = [];
+                    startRecording();
+                    recording=true;
                     console.log("je record");
                     micro.url("img/microphone.gif");
+                    setTimeout(function () {
+                        stopRecording();
+                        console.log("je record plus");
+                        micro.url("img/microphone-deactivated.png");
+                        let i = 0;
+                        timer = setInterval(function () {
+                            i++;
+                            console.log(i);
+                            voice = getMessage();
+                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 25) {
+                                clearInterval(timer);
+                                console.log(voice['transcript']);
+                                if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
+                                else if (voice['confidence'] > 0.5) {
+                                    // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
+                                    market.vocalRecognition(voice['transcript']);
+                                }
+                                else {
+                                    console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
+                                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+
+                                }
+                                i = 0;
+                                voice = [];
+                                recording = false;
+                            }
+                        }, 200);
+                    }, 4000);
                 }
-            })
+            });
         }
     }
     
@@ -822,10 +826,6 @@ exports.main = function(svg,gui,param,neural) {
                          return function(){
                              market.payment.zoneCode.hideCircle();
                              market.payment.zoneCode.changeText("Code correct",svg.GREEN);
-                             // if (i===seconds){
-                             //     market.remove(glassTimer);
-                             //     market.remove(market.payment.zoneCode.component);
-                             // }
                          }
                      }(i),i*1000);
                  }
@@ -1309,8 +1309,6 @@ exports.main = function(svg,gui,param,neural) {
             this.height = market.height*0.75/2;
             this.toAdd=[];
             this.waitingNumber = new svg.Text("");
-            this.numberArea = new svg.Rect(0,0);
-            this.component.add(this.numberArea);
             this.component.add(this.waitingNumber);
             let self = this;
             this.image.onMouseEnter(function()
@@ -1330,18 +1328,8 @@ exports.main = function(svg,gui,param,neural) {
 
             function printNumber(number){
                 self.component.remove(self.waitingNumber);
-                self.component.remove(self.numberArea);
-                if(number==="") {
-                    self.numberArea = new svg.Rect(0,0);
-                    self.component.add(self.numberArea);
-                }
-                else {
-                    self.numberArea = new svg.Rect(self.width*0.12,self.height*0.1).position(self.width*0.1,self.height*0.08).color(svg.WHITE,2,svg.BLACK);
-                    self.component.add(self.numberArea);
-
-                }
                 self.waitingNumber = new svg.Text(number);
-                self.waitingNumber.position(self.width*0.1,self.height*0.1).font("Calibri",self.width*0.075,1);
+                self.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
                 self.component.add(self.waitingNumber);
             }
 
