@@ -1624,6 +1624,9 @@ exports.main = function(svg,gui,param,neural) {
             }
 
             if(!oneOrderChecked) {
+                message+=", "+Date();
+                writeLog(message);
+
                 console.log("No Correct Order Given");
                 textToSpeech("Je n'ai pas bien compris votre demande","fr");
             }
