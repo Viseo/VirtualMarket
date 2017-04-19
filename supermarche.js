@@ -1283,8 +1283,6 @@ exports.main = function(svg,gui,param,neural) {
             this.height = market.height*0.75/2;
             this.toAdd=[];
             this.waitingNumber = new svg.Text("");
-            this.numberArea = new svg.Rect(0,0);
-            this.component.add(this.numberArea);
             this.component.add(this.waitingNumber);
             let self = this;
             this.image.onMouseEnter(function()
@@ -1304,18 +1302,8 @@ exports.main = function(svg,gui,param,neural) {
 
             function printNumber(number){
                 self.component.remove(self.waitingNumber);
-                self.component.remove(self.numberArea);
-                if(number==="") {
-                    self.numberArea = new svg.Rect(0,0);
-                    self.component.add(self.numberArea);
-                }
-                else {
-                    self.numberArea = new svg.Rect(self.width*0.12,self.height*0.1).position(self.width*0.1,self.height*0.08).color(svg.WHITE,2,svg.BLACK);
-                    self.component.add(self.numberArea);
-
-                }
                 self.waitingNumber = new svg.Text(number);
-                self.waitingNumber.position(self.width*0.1,self.height*0.1).font("Calibri",self.width*0.075,1);
+                self.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
                 self.component.add(self.waitingNumber);
             }
 
@@ -1542,24 +1530,37 @@ exports.main = function(svg,gui,param,neural) {
                     if (order.includes("ajoute")) {
                         for (var i = 0; i < tab.length; i++) {
                             let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
                             if (quantity >= "0" && quantity <= "9") {
                                 let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
                                 if (isNaN(bef)) {
-                                    bef = "";
+                                        bef = "";
                                 }
                                 let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
                                 if (isNaN(bef2)) {
-                                    bef2 = "";
+                                        bef2 = "";
                                 }
                                 market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
                             }
-                            else market.basket.addProducts(tab[i], 1);
+                            else if (determining.trim() == "de"){
+                                market.basket.addProducts(tab[i],2);
+                            }
+                            else if (determining2.trim() == "cette" || determining.trim() =="cet") {
+                                market.basket.addProducts(tab[i], 7);
+                            } else {
+                                market.basket.addProducts(tab[i], 1);
+                            }
                         }
                     }
                     else if (order.includes("supprime")) {
                         for (var i = 0; i < tab.length; i++) {
                             var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                            var unUne = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
                                 order.indexOf(tab[i].name.toLowerCase()) - 1);
                             if (number >= "0" && number <= "9") {
                                 let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
@@ -1572,9 +1573,12 @@ exports.main = function(svg,gui,param,neural) {
                                 }
                                 market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                             }
-                            else if (unUne == " un" || unUne == "une") {
+                            else if (determining == " un" || determining == "une")
                                 market.basket.deleteFromName(tab[i].name, 1);
-                            }
+                            else if (determining.trim() =="de")
+                                market.basket.deleteFromName(tab[i].name,2);
+                            else if(determining2.trim() == "cette" || determining.trim() == "cet")
+                                market.basket.deleteFromName(tab[i].name,7);
                             else market.basket.deleteFromName(tab[i].name, null);
                         }
                     }
@@ -1599,6 +1603,9 @@ exports.main = function(svg,gui,param,neural) {
             }
 
             if(!oneOrderChecked) {
+                message+=", "+Date();
+                writeLog(message);
+
                 console.log("No Correct Order Given");
                 textToSpeech("Je n'ai pas bien compris votre demande","fr");
             }

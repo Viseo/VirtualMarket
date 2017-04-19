@@ -4,6 +4,8 @@
 var express = require('express');
 var BinaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
+var fs = require('fs');
+
 var recognize=require("./lib/recognize").recognize;
 
 var port = 5000;
@@ -24,22 +26,43 @@ binaryServer = BinaryServer({port: 3030});
 
 binaryServer.on('connection', function(client) {
     console.log('new connection');
-
-
     client.on('stream', function(stream, meta) {
-        console.log('on a un stream serveur ');
-        var fileWriter = new wav.FileWriter(outFile, {
-            channels: 1,
-            sampleRate: 44100,
-        });
-        console.log('new stream');
-        stream.pipe(fileWriter);
-        stream.on('end', function() {
-            // stream.write('hola');
-            fileWriter.end();
-            console.log('wrote to file ' + outFile);
-            recognize(outFile, console.log,client);
+        console.log(meta.event);
+        switch (meta.event){
+            case 'log':
+                stream.on('data', function (log) {
+                    fs.open('vocal_recognition_log.txt', 'a', 666, function( e, id ) {
+                        fs.write( id, log+"\r\n", null, 'utf8', function(){
+                            fs.close(id, function(){
+                                console.log('file closed');
+                            });
+                        });
+                    });
+                    // fs.writeFile('./vocal_recognition_log.txt', log, (err) => {
+                    //     if (err) throw err;
+                    //     console.log('The file has been saved!');
+                    // });
+                });
+                break;
 
-        });
+            case 'request':
+                var fileWriter = new wav.FileWriter(outFile, {
+                    channels: 1,
+                    sampleRate: 44100,
+                });
+                console.log('new stream');
+
+                stream.pipe(fileWriter);
+                stream.on('end', function() {
+                    // stream.write('hola');
+                    fileWriter.end();
+                    console.log('wrote to file ' + outFile);
+                    recognize(outFile, console.log,client);
+
+                });
+                break;
+        }
+        // console.log('on a un stream serveur ');
+
     });
 });
