@@ -32,7 +32,7 @@ describe("Test",function (){
     it("ensure that page structure is ok at start",function(){
         assert.ok(market);
         inspect(market.component,{tag:"svg",width:1500,height:1000,children:[
-            {tag:"g",transform:"translate(0 0)",id:"categories"}
+            {tag:"g",transform:"translate(0 0)"}
         ]});
 
         let defaultRay = retrieve(market.component,"[ray HighTech]");
@@ -74,7 +74,7 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(chevronE,"click",{});
         runtime.advanceAll();
-        inspect(categories,{tag:"g",transform:"translate(-925 0)"});
+        inspect(categories,{tag:"g",transform:"translate(-976 0)"});
     });
 
     it("ensure that chevronWCategorie is working",function(){
@@ -110,7 +110,7 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(chevronE,"click",{});
         runtime.advanceAll();
-        inspect(ray,{tag:"g",transform:"translate(-2475 0)"});
+        inspect(ray,{tag:"g",transform:"translate(-2526 0)"});
 
     });
 
@@ -151,6 +151,9 @@ describe("Test",function (){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
 
+        let canv = retrieve(market.component,"[glassCanvas]");
+        assert(canv);
+
         let product = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Banane]");
         let product2 = retrieve(market.component,"[ray Fruits].[listRayDown].[Product Citron vert]");
         let product3= retrieve(market.component,"[ray Fruits].[listRayUp].[Product Framboise]");
@@ -163,9 +166,11 @@ describe("Test",function (){
         assert.ok(listBasket);
         runtime.event(product,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let canv = retrieve(market.component,"[draw Banane]");
-        runtime.event(canv,"mouseup",{ pageX:5, pageY:5});
-        assert.ok(retrieve(market.component,"[basket].[listBasket].[Banane]"));
+        let drawing = retrieve(market.component,"[glassCanvas].[draw Banane]");
+        assert(drawing);
+        runtime.event(drawing,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert(retrieve(market.component,"[mainPage].[basket].[listBasket].[Banane]"));
         runtime.advanceAll();
 
         runtime.event(product2,"mousedown",{ pageX:5, pageY:5});
@@ -333,14 +338,14 @@ describe("Test",function (){
         let basketproduct1 = retrieve(market.component,"[basket].[listBasket].[Product basket Banane]");
         runtime.event(basketproduct1,"mousedown",{ pageX:10, pageY:10});
         runtime.advanceAll();
-        let draggedBasket = retrieve(market.component,"[basket].[listBasket].[dragged]");
+        let draggedBasket = retrieve(market.component,"[dragged]");
         runtime.event(draggedBasket,"mouseup",{ pageX:10, pageY:10});
         runtime.advanceAll();
 
         runtime.event(categories,"click",{});
         runtime.event(basketproduct1,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let tmpBasket2 = retrieve(market.component,"[basket].[listBasket].[dragged]");
+        let tmpBasket2 = retrieve(market.component,"[dragged]");
         runtime.event(tmpBasket2,"mousedown",{ pageX:10, pageY:10});
         runtime.event(tmpBasket2,"mousemove",{ pageX:-500, pageY:market.height*0.5});
         runtime.advanceAll();
@@ -349,7 +354,7 @@ describe("Test",function (){
 
         runtime.event(basketproduct1,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        let draggedBasket4 = retrieve(market.component,"[basket].[listBasket].[dragged]");
+        let draggedBasket4 = retrieve(market.component,"[dragged]");
         runtime.event(draggedBasket4,"mousedown",{ pageX:10, pageY:10});
         runtime.event(draggedBasket4,"mousemove",{ pageX:100, pageY:100});
         runtime.advanceAll();
@@ -422,7 +427,7 @@ describe("Test",function (){
 
         runtime.event(compbasket,"mousedown",{ pageX:10, pageY:10});
         runtime.advanceAll();
-        let crossDragged = retrieve(market.component,"[basket].[listBasket].[dragged].[cross]");
+        let crossDragged = retrieve(market.component,"[dragged].[cross]");
         runtime.event(crossDragged,"mouseup",{ pageX:10, pageY:10});
 
         let prod2 = retrieve(market.component,"[basket].[listBasket].[Product basket Clementine]");
@@ -431,17 +436,17 @@ describe("Test",function (){
 
         runtime.event(prod3,"mousedown",{ pageX:10, pageY:10});
         runtime.advanceAll();
-        let crossDragged3 = retrieve(market.component,"[basket].[listBasket].[dragged].[cross]");
+        let crossDragged3 = retrieve(market.component,"[dragged].[cross]");
         runtime.event(crossDragged3,"mouseup",{ pageX:10, pageY:10});
 
         runtime.event(prod4,"mousedown",{ pageX:10, pageY:10});
         runtime.advanceAll();
-        let crossDragged2 = retrieve(market.component,"[basket].[listBasket].[dragged].[cross]");
+        let crossDragged2 = retrieve(market.component,"[dragged].[cross]");
         runtime.event(crossDragged2,"mouseup",{ pageX:10, pageY:10});
 
         runtime.event(prod2,"mousedown",{ pageX:10, pageY:10});
         runtime.advanceAll();
-        let crossDragged4 = retrieve(market.component,"[basket].[listBasket].[dragged].[cross]");
+        let crossDragged4 = retrieve(market.component,"[dragged].[cross]");
         runtime.event(crossDragged4,"mouseup",{ pageX:10, pageY:10});
 
     });
@@ -479,92 +484,93 @@ describe("Test",function (){
         let product2 = retrieve(market.component,"[ray Mode].[listRayUp].[Product Costume]");
         runtime.advanceAll();
 
-        runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
+        let decalHeader = market.height/19;
+        runtime.event(product2,"mousedown",{ pageX:5, pageY:380+decalHeader});
         runtime.advanceAll();
         let drawing3 = retrieve(market.component,"[draw Costume]");
         assert(drawing3);
-        runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
+        runtime.event(drawing3,"mousedown",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
+        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
+        runtime.event(drawing3,"mousemove",{ pageX:100, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
+        runtime.event(drawing3,"mouseup",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
 
-        runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
+        runtime.event(product2,"mousedown",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
+        runtime.event(drawing3,"mousedown",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
+        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
+        runtime.event(drawing3,"mousemove",{ pageX:100, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500});
+        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
+        runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500+decalHeader});
         runtime.advanceAll();
 
         setTimeout(function(){
-            runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
+            runtime.event(product2,"mousedown",{ pageX:5, pageY:300+decalHeader});
             runtime.advanceAll();
-            runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
+            runtime.event(drawing3,"mousedown",{ pageX:5, pageY:300+decalHeader});
             runtime.advanceAll();
-            runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
+            runtime.event(drawing3,"mousemove",{ pageX:5, pageY:300+decalHeader});
             runtime.advanceAll();
-            runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
+            runtime.event(drawing3,"mousemove",{ pageX:100, pageY:300+decalHeader});
             runtime.advanceAll();
-            runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500});
+            runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500+decalHeader});
             runtime.advanceAll();
-            runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
+            runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500+decalHeader});
             runtime.advanceAll();
             setTimeout(function() {
-                runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
+                runtime.event(product2,"mousedown",{ pageX:5, pageY:300+decalHeader});
                 runtime.advanceAll();
-                runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
+                runtime.event(drawing3,"mousedown",{ pageX:5, pageY:300+decalHeader});
                 runtime.advanceAll();
-                runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
+                runtime.event(drawing3,"mousemove",{ pageX:5, pageY:300+decalHeader});
                 runtime.advanceAll();
-                runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
+                runtime.event(drawing3,"mousemove",{ pageX:100, pageY:300+decalHeader});
                 runtime.advanceAll();
-                runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500});
+                runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500+decalHeader});
                 runtime.advanceAll();
-                runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
+                runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500+decalHeader});
                 runtime.advanceAll();
             },1500);
         },1500);
 
-        runtime.event(product2,"mousedown",{ pageX:5, pageY:380});
+        runtime.event(product2,"mousedown",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousedown",{ pageX:5, pageY:380});
+        runtime.event(drawing3,"mousedown",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:380});
+        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:100, pageY:380});
+        runtime.event(drawing3,"mousemove",{ pageX:100, pageY:300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500});
+        runtime.event(drawing3,"mousemove",{ pageX:5, pageY:500+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500});
+        runtime.event(drawing3,"mouseup",{ pageX:5, pageY:500+decalHeader});
         runtime.advanceAll();
         setTimeout(function() {
-            runtime.event(product2, "mousedown", {pageX: 400, pageY: 380});
+            runtime.event(product2, "mousedown", {pageX: 400, pageY: 300+decalHeader});
             runtime.advanceAll();
             let drawing7 = retrieve(market.component, "[draw Costume]");
             assert(drawing7);
-            runtime.event(drawing7, "mousedown", {pageX: 400, pageY: 380});
+            runtime.event(drawing7, "mousedown", {pageX: 400, pageY: 300+decalHeader});
             runtime.advanceAll();
-            runtime.event(drawing7, "mouseup", {pageX: 400, pageY: 380});
+            runtime.event(drawing7, "mouseup", {pageX: 400, pageY: 300+decalHeader});
             runtime.advanceAll();
             done();
         },1500);
 
-        runtime.event(product2, "mousedown", {pageX: 400, pageY: 380});
+        runtime.event(product2, "mousedown", {pageX: 400, pageY: 300+decalHeader});
         runtime.advanceAll();
         let drawing8 = retrieve(market.component, "[draw Costume]");
         assert(drawing8);
-        runtime.event(drawing8, "mousedown", {pageX: 400, pageY: 380});
+        runtime.event(drawing8, "mousedown", {pageX: 400, pageY: 300+decalHeader});
         runtime.advanceAll();
-        runtime.event(drawing8, "mouseup", {pageX: 400, pageY: 380});
+        runtime.event(drawing8, "mouseup", {pageX: 400, pageY: 300+decalHeader});
         runtime.advanceAll();
     });
 
@@ -772,20 +778,20 @@ describe("Test",function (){
             runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
             runtime.advanceAll();
             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[1].gapX,
-                clientY:market.payment.zoneCode.tabButtons[1].gapY}}});
+                clientY:market.payment.zoneCode.tabButtons[1].gapY+market.height/19}}});
             runtime.advanceAll();
             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
-                clientY:market.payment.zoneCode.tabButtons[2].gapY}}});
+                clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
             runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100+market.height/19}}});
             runtime.advanceAll();
             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
-                clientY:market.payment.zoneCode.tabButtons[2].gapY}}});
+                clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
             runtime.advanceAll();
             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[0].gapX,
-                clientY:market.payment.zoneCode.tabButtons[0].gapY}}});
+                clientY:market.payment.zoneCode.tabButtons[0].gapY+market.height/19}}});
             runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100+market.height/19}}});
             runtime.advanceAll();
             runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
             runtime.advanceAll();
@@ -793,53 +799,43 @@ describe("Test",function (){
 
         setTimeout(function(){
             done();
-        },15);
+        },15000);
 
         runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
         runtime.advanceAll();
         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[2].gapX,
-            clientY:market.payment.zoneCode.tabButtons[2].gapY}}});
+            clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[1].gapX,
-            clientY:market.payment.zoneCode.tabButtons[1].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[1].gapX*0.96,
+            clientY:market.payment.zoneCode.tabButtons[1].gapY+market.height/19}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[0].gapX,
-            clientY:market.payment.zoneCode.tabButtons[0].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[0].gapX*0.96,
+            clientY:market.payment.zoneCode.tabButtons[0].gapY+market.height/19}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[3].gapX,
-            clientY:market.payment.zoneCode.tabButtons[3].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[3].gapX*0.96,
+            clientY:market.payment.zoneCode.tabButtons[3].gapY+market.height/19}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[4].gapX,
-            clientY:market.payment.zoneCode.tabButtons[4].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[4].gapX*0.96,
+            clientY:market.payment.zoneCode.tabButtons[4].gapY+market.height/19}}});
         runtime.advanceAll();
         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[5].gapX,
-            clientY:market.payment.zoneCode.tabButtons[5].gapY}}});
+            clientY:market.payment.zoneCode.tabButtons[5].gapY+market.height/19}}});
         runtime.advanceAll();
         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[8].gapX,
-            clientY:market.payment.zoneCode.tabButtons[8].gapY}}});
+            clientY:market.payment.zoneCode.tabButtons[8].gapY+market.height/19}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[7].gapX,
-            clientY:market.payment.zoneCode.tabButtons[7].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[7].gapX*0.96,
+            clientY:market.payment.zoneCode.tabButtons[7].gapY+market.height/19}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX,
-            clientY:market.payment.zoneCode.tabButtons[6].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX*0.96,
+            clientY:market.payment.zoneCode.tabButtons[6].gapY+market.height/19}}});
         runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX,
-            clientY:market.payment.zoneCode.tabButtons[6].gapY}}});
+        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX*0.96,
+            clientY:market.payment.zoneCode.tabButtons[6].gapY+market.height/19}}});
         runtime.advanceAll();
         runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
         runtime.advanceAll();
     });
-
-    // it("ensures that we can click on the micro", function(){
-    //     let header = retrieve(market.component,"[header]");
-    //     let micro = retrieve(market.component, "[header].[micro]");
-    //     assert(header);
-    //     assert(micro);
-    //     runtime.event(micro,"click",{});
-    //     let raySearch = retrieve(market.component, "[ray Recherche]");
-    //     assert(raySearch);
-    // });
 
     it("ensures that the calendar is shown when the right code is entered",function(){
 
@@ -989,24 +985,106 @@ describe("Test",function (){
         assert(cross);
         runtime.event(cross,"click",{});
         runtime.advanceAll();
-
-
-
-
-
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(){
         market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
         market.vocalRecognition("je veux ajouter un concombre et 44 carottes et 365 clementines");
         market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer 2 Souris");
-        //market.vocalRecognition("");
         market.vocalRecognition("il faudrait supprimer 2 tables");
         market.vocalRecognition("en fait je voudrais vider le panier");
         market.vocalRecognition("Recherche les voyages !");
         market.vocalRecognition("Ajoute moi un voyage à Tokyo");
         //market.vocalRecognition("DigiMarket tu es bo");
-        //market.vocalRecognition("");
+        market.vocalRecognition("");
         market.vocalRecognition("Maintenant je veux payer");
+    });
+
+    it("ensures that you can change the page",function(){
+        let mainPage = retrieve(market.component,"[mainPage]");
+        let map = retrieve(market.component,"[map]");
+        let calendar = retrieve(market.component,"[calendar]");
+        assert(mainPage&&map&&calendar);
+        runtime.event(calendar,"click",{});
+
+        let payment_zone = retrieve(market.component,"[payment]");
+        assert.ok(payment_zone);
+        let card = retrieve(market.component,"[payment].[card]");
+        assert.ok(card);
+        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        runtime.advanceAll();
+        let dragged2 = retrieve(market.component,"[payment].[dragged]");
+        assert.ok(dragged2);
+        runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+
+        let product = retrieve(market.component,"[ray HighTech].[listRayUp].[Product Casque]");
+        runtime.advanceAll();
+        runtime.event(product,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawing = retrieve(market.component,"[draw Casque]");
+        assert(drawing);
+        runtime.event(drawing,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+
+        let code = retrieve(market.component,"[code]");
+        assert.ok(code);
+        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+        assert.ok(buttonGroup);
+        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+        assert.ok(button1);
+        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+        assert.ok(button2);
+        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+        assert.ok(button3);
+        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+        assert.ok(button4);
+        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+        assert.ok(button5);
+        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+        assert.ok(button6);
+        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+        assert.ok(button7);
+        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+        assert.ok(button8);
+        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+        assert.ok(button9);
+
+        //Password ok
+        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+        runtime.event(button3, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button2, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseout", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button4, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button5, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button6, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button9, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button8, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button7, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+
+        let vignette = retrieve(market.component,"[basket].[listBasket].[Casque]");
+        runtime.event(vignette,"mousedown",{ pageX:5, pageY:5});
+
+        runtime.event(mainPage,"click",{});
+        runtime.event(calendar,"click",{});
+        runtime.event(mainPage,"click",{});
     });
 });

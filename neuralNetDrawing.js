@@ -122,8 +122,7 @@ exports.neural = function(runtime) {
                     this.currentY=ev._y;
                 }
                 // This is called when you release the mouse button.
-                else //if(ev.type === 'mouseup'||control=="mouseup"){
-                {
+                else if(ev.type === 'mouseup'||control=="mouseup"){
                     if (this.started) {
                         this.started = false;
                         ENCOG.drawingDelete(this.glass,this.element);
@@ -266,7 +265,7 @@ exports.neural = function(runtime) {
         drawingArea = ENCOG.drawingCreate(element,x,y,name,glass);
         preload();
 
-        runtime.addEvent(drawingArea.canvas,'mouseup', function (e) {
+        runtime.addEvent(drawingArea.canvasDiv,'mouseup', function (e) {
             if(numToSend.element=="") numToSend.element=name;
             bestchar = ev_recognize();
             drawingArea.ev_canvas(e, "mouseup");

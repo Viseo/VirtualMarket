@@ -2,7 +2,6 @@ exports.main = function(svg,gui,param,neural) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
-    let glassDnD = new svg.Translation().mark("Glass");
 
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
@@ -260,7 +259,6 @@ exports.main = function(svg,gui,param,neural) {
         }
 
         addProducts(thumbnail,quantity) {
-
             let newProd = new ThumbnailBasket(thumbnail.image.src, thumbnail.name, thumbnail.price, thumbnail.complement, thumbnail.categorie);
             let occur=0;
             let self =this;
@@ -280,8 +278,8 @@ exports.main = function(svg,gui,param,neural) {
                 newProd.changeText(newText);
             }
 
-            newProd.component.onMouseDown(function(e){
-                self.dragBasket(e,newProd);
+            newProd.component.onMouseDown(function(){
+                if(market.pages[2].obj==currentPage) self.dragBasket(newProd);
             });
 
             this.calculatePrice(newProd.price*quantity);
@@ -313,7 +311,8 @@ exports.main = function(svg,gui,param,neural) {
             vignette.changeText(newText);
 
             if(vignette.quantity ==0){
-                if ((this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-1 || this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-2) && this.thumbnailsProducts.length-1>2){
+                if ((this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-1 ||
+                    this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-2) && this.thumbnailsProducts.length-1>2){
                     let heightZone=this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
                     this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x,(height*0.9-heightZone+this.thumbnailsProducts[0].height ));
                 }else if(this.thumbnailsProducts.length-1<=2){
@@ -350,39 +349,29 @@ exports.main = function(svg,gui,param,neural) {
             }
         }
 
-        dragBasket(e,current) {
+        dragBasket(current) {
             let dragged = new Thumbnail(current.image.src,current.name);
             dragged.placeElementsDnD(current);
             dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
             dragged.cross.smoothy(1,1).rotateTo(-45);
             dragged.cross.position(dragged.width*0.55,dragged.height*0.71);
             dragged.component.add(dragged.cross);
-            dragged.cross.onMouseUp(function(){
-                market.basket.deleteProducts(current,current.quantity);
-            });
-
-            dragged.move(current.x,current.y);
+            dragged.move(current.x+pageWidth*0.85,current.y+header.height);
             dragged.component.opacity(0.9).mark("dragged");
-            market.basket.listProducts.add(dragged.component);
 
-            gui.installDnD(dragged,glassDnD,{
-                moved:
-                    function(dragged){
-                        if((dragged.x+dragged.width/2<0)&&(dragged.y+dragged.height/2>market.height*0.20)){
-                            market.basket.deleteProducts(current, 1);
-                            changeRay(current.categorie);
-                        }
-                    },
-                revert:
-                    function(dragged){
-                        market.basket.listProducts.remove(dragged.component);
-                    },
-                clicked :
-                    function(){
-                        changeRay(current.categorie);
-                    }
+            dragged.component.onMouseMove(function(e){
+                dragged.move(e.pageX-current.width/2,e.pageY-current.height/2);
             });
-            svg.event(dragged.component, 'mousedown', e);
+
+            dragged.component.onMouseUp(function(){
+                if((dragged.x+dragged.width/2<pageWidth*0.85)&&(dragged.y+dragged.height/2>market.height*0.20)){
+                    market.basket.deleteProducts(current, 1);
+                    changeRay(current.categorie);
+                }
+                glassDnD.remove(dragged.component);
+            });
+
+            glassDnD.add(dragged.component);
             market.add(glassDnD);
         }
 
@@ -403,6 +392,8 @@ exports.main = function(svg,gui,param,neural) {
             this.micro = new svg.Image("img/microphone-deactivated.png");
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
+            this.height = height;
+            this.width=width;
             let recording=false;
             let micro=this.micro;
             var voice=[];
@@ -410,7 +401,6 @@ exports.main = function(svg,gui,param,neural) {
 
             this.micro.onClick(function(){
                 if(!recording) {
-                    let i = 0;
                     voice = [];
                     startRecording();
                     recording=true;
@@ -490,8 +480,7 @@ exports.main = function(svg,gui,param,neural) {
             });
         }
 
-        dragCard(e)
-        {
+        dragCard(e) {
             let dragged = new Object();
             let self = this;
 
@@ -550,9 +539,8 @@ exports.main = function(svg,gui,param,neural) {
             svg.event(dragged.component, 'mousedown', e);
         }
 
-        showCode()
-        {
-            this.zoneCode = new SecurityCode(market.width,market.height,0,0);
+        showCode() {
+            this.zoneCode = new SecurityCode(pageWidth,market.height-market.height/19,0,market.height/19);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -636,10 +624,7 @@ exports.main = function(svg,gui,param,neural) {
                             }
                         }
                     }else{
-                        market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
-                        market.payment.cardIn=false;
-                        market.payment.iteration=1;
-                        self.printCalendar();
+                        self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -662,10 +647,7 @@ exports.main = function(svg,gui,param,neural) {
                         }
                     }
                     else{
-                        self.launchTimer(4,true);
-                        market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
-                        market.payment.cardIn=false;
-                        market.payment.iteration=0;
+                        self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -690,7 +672,7 @@ exports.main = function(svg,gui,param,neural) {
                 if(self.onDrawing && self.code.length>0) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
-                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX,e.pageY).color(svg.BLACK,5,svg.BLACK);
+                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX,e.pageY-header.height).color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
             });
@@ -762,6 +744,18 @@ exports.main = function(svg,gui,param,neural) {
             this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK).opacity(0);
             this.cross.position(this.width/2,this.height*0.80).dimension(this.width*0.1,this.width*0.05).color(svg.BLACK).opacity(1);
 
+        }
+
+        moveMainpage(){
+            market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
+            market.payment.cardIn=false;
+            market.payment.iteration=0;
+            market.remove(market.payment.zoneCode.component);
+            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
+            market.pages[1].active = true;
+            market.pages[0].active = true;
+            currentPage=map;
+            currentIndex=1;
         }
 
         changeTimer(newTimer,color){
@@ -837,14 +831,6 @@ exports.main = function(svg,gui,param,neural) {
                   return true;
               }
               return false;
-        }
-
-        printCalendar(){
-            market.remove(market.payment.zoneCode.component);
-            market.calendar = new Calendar(market.width,market.height,0,0);
-            market.calendar.placeElements();
-            market.add(market.calendar.component);
-            market.add(zoneHeader);
         }
     }
 
@@ -1218,19 +1204,7 @@ exports.main = function(svg,gui,param,neural) {
             this.height = 0;
         }
 
-        addEvent(eventName, handler) {
-            svg.addEvent(this.component, eventName, handler);
-            this.events[eventName] = handler;
-            return this;
-        }
-
-        removeEvent(eventName) {
-            svg.removeEvent(this.component, eventName);
-            delete this.events[eventName];
-            return this;
-        }
-
-        move(x,y) {
+        move(x,y){
             this.x = x;
             this.y = y;
             this.component.move(x,y);
@@ -1346,7 +1320,7 @@ exports.main = function(svg,gui,param,neural) {
             }
 
             function getNumber(number,e,element){
-                if((number=="click")||(mousePos.x==e.pageX && mousePos.y==e.pageY)) {
+                if(number=="click") {
                     element.addAnimation("1");
                     market.basket.addProducts(self,"1");
                 }
@@ -1361,9 +1335,10 @@ exports.main = function(svg,gui,param,neural) {
             }
 
             let mousePos ={};
+            this.drawNumber = null;
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
-                self.drawNumber = new svg.Drawing(0,0).mark("drawing "+self.name);
+                self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
                 neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
@@ -1408,8 +1383,8 @@ exports.main = function(svg,gui,param,neural) {
             this.component.add(this.cross);
 
             this.component.mark(this.name);
-            this.width = market.width*0.15;
-            this.height = market.width*0.15;
+            this.width = pageWidth*0.15;
+            this.height = pageWidth*0.15;
 
             let self = this;
             this.image.onMouseEnter(function(){
@@ -1470,11 +1445,11 @@ exports.main = function(svg,gui,param,neural) {
         else tab = param.data.makeVignettesForRay(name,ThumbnailRayon);
         if(categories.rayTranslation!=null)
         {
-            market.remove(categories.rayTranslation);
+            mainPage.remove(categories.rayTranslation);
         }
-        categories.ray = new Ray(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
+        categories.ray = new Ray(pageWidth * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
-        market.add(categories.rayTranslation);
+        mainPage.add(categories.rayTranslation);
         for(let v=0;v<categories.tabCategories.length;v++)
         {
             categories.tabCategories[v].image.opacity(1);
@@ -1498,7 +1473,7 @@ exports.main = function(svg,gui,param,neural) {
         let prodDone = [];
         for (var i=0; i<words.length;i++){
             for (var cat in jsonFile){
-                if(config=="all") {
+                if(config=="all"){
                     if (words[i].toLowerCase().includes(replaceChar(cat).toLowerCase())
                         || (words[i] + " " + words[i + 1]).toLowerCase().includes(replaceChar(cat).toLowerCase())
                         || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(replaceChar(cat).toLowerCase())
@@ -1536,7 +1511,7 @@ exports.main = function(svg,gui,param,neural) {
         let tab = search;
         let tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
         tabCategories.push(new ThumbnailCategorie("img/search.png","img/search2.png","Recherche"));
-        categories=new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
+        categories=new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
         categories.currentSearch=tab;
         zoneCategories.add(categories.component);
         market.add(zoneCategories);
@@ -1653,26 +1628,63 @@ exports.main = function(svg,gui,param,neural) {
     //////
 
     /////Déclaration Interface////
+    let mainPage=new svg.Translation().mark("mainPage");
+    let pageWidth=market.width*0.96;
+
     let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
     let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-    let categories = new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
+    let categories = new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    market.basket = new Basket(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
+    market.basket = new Basket(pageWidth*0.15,market.height*0.75,pageWidth*0.85,market.height*0.05);
     let zoneBasket = new svg.Translation().add(market.basket.component).mark("basket");
-    market.payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
+    market.payment = new Payment(pageWidth*0.15,market.height*0.20,pageWidth*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
+    let glassDnD = new svg.Translation().mark("Glass");
 
-    function addAllParts()
-    {
-        market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
-        market.add(glassDnD);
-        market.add(glassCanvas);
+    //Gestion des pages
+    market.calendar = new Calendar(market.width,market.height,0,0);
+    market.calendar.placeElements();
+    let calendarPage = new svg.Translation().add(market.calendar.component);
+
+    let rectRed=new svg.Rect(market.width-market.width*0.04,market.height).color(svg.RED)
+        .position(market.width/2,market.height/2+market.height/19);
+    let map = new svg.Translation().add(rectRed).mark("map");
+
+    let currentPage=mainPage;
+    let currentIndex=2;
+    market.pages=[];
+    market.pages.push({obj:calendarPage,active:false},{obj:map,active:false},{obj:mainPage,active:true});
+
+    for(var i =0;i<market.pages.length;i++){
+        let index = i;
+        market.pages[i].obj.onClick(function(){
+            if(market.pages[index].active) {
+                if (currentIndex > index) {
+                    for (let j = currentIndex; j > index; j--) {
+                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                    }
+                }
+                else {
+                    for (let j = currentIndex; j <= index; j++) {
+                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                    }
+                }
+                currentPage = market.pages[index].obj;
+                currentIndex = index;
+            }
+        });
+        market.add(market.pages[i].obj);
     }
 
-    addAllParts();
+    market.add(mainPage);
+    mainPage.add(zoneCategories).add(zoneBasket).add(zonePayment);
+    market.add(glassDnD);
+    mainPage.add(glassCanvas);
+    market.add(zoneHeader);
+
     changeRay("HighTech");
     return market;
     //////////////////////////////
