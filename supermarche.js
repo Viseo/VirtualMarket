@@ -1,8 +1,9 @@
-exports.main = function(svg,gui,param,neural) {
+exports.main = function(svg,gui,param,neural,targetruntime) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let glassDnD = new svg.Translation().mark("Glass");
+    let runtime=targetruntime;
 
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
@@ -425,7 +426,7 @@ exports.main = function(svg,gui,param,neural) {
                             i++;
                             console.log(i);
                             voice = getMessage();
-                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 25) {
+                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
                                 if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
@@ -555,7 +556,9 @@ exports.main = function(svg,gui,param,neural) {
             this.zoneCode = new SecurityCode(market.width,market.height,0,0);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
-            market.add(this.zoneCode.component);
+            // market.add(this.zoneCode.component);
+            initMap(param.data.getMarker());
+
         }
     }
 
@@ -1446,9 +1449,79 @@ exports.main = function(svg,gui,param,neural) {
             this.cross.position(this.width*0.90,this.height*0.1).mark("cross "+this.name).dimension(this.width*0.1,this.height*0.1).opacity(0);
         }
     }
+
+    class Map extends DrawingZone{
+        constructor(width,heigth,x,y){
+            super(width,heigth,x,y);
+            this.foreign = runtime.create("foreignObject");
+            this.divMap = runtime.createDOM('div');
+            runtime.attr(this.divMap,"id","divMap");
+            runtime.add(this.foreign,this.divMap);
+            runtime.add(this.component.component,this.foreign);
+            runtime.attr(this.divMap,"style","height: 800px; width: 1200px; z-index: 2; position :absolute; left:0px; top: 0px;");
+            // height: 100%;
+            // width: 100%;
+            // z-index: 1000;
+            // position :absolute;
+            // left:0px;
+            // top: 0px;
+            // this.component.add(this.foreign);
+            // let map = new google.maps.Map(divMap, {
+            //     center: {lat: 48.8956, lng: 2.644},
+            //     zoom: 17
+            // });
+        }
+    }
     //////////////////////////////////////
 
+
+	// console.log(theMap);
     ///Functions///
+    let map;
+//     function initMap() {
+//            map = new google.maps.Map(theMap.divMap, {
+//                center: {lat: 48.8956, lng: 2.644},
+//                zoom: 17
+//            });
+//            // var geocoder = new google.maps.Geocoder();
+//            // var infoWindow = new google.maps.InfoWindow({map: map});
+//            // geocodeAddress(geocoder,map);
+//
+// //            if (navigator.geolocation) {
+// //                navigator.geolocation.getCurrentPosition(function (position) {
+// //                    var pos = {
+// //                        lat: position.coords.latitude,
+// //                        lng: position.coords.longitude
+// //                    };
+// //
+// //                    infoWindow.setPosition(pos);
+// //                    infoWindow.setContent('Location found.');
+// //                    map.setCenter(pos);
+// //                }, function () {
+// //                    handleLocationError(true, infoWindow, map.getCenter());
+// //                });
+// //            } else {
+// //                // Browser doesn't support Geolocation
+// //                handleLocationError(false, infoWindow, map.getCenter());
+// //
+// //            }
+//     }
+
+
+    // var GOOGLE_MAP_KEY = "AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk";
+    // <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&callback=initMap"
+    // async defer></script>
+    function loadScript() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        // script.src = 'https://maps.googleapis.com/maps/api/js?' +
+        //     'key=' + GOOGLE_MAP_KEY +'&callback=initMap'; //& needed
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk'; //&callback=initMap'; //& needed
+        document.body.appendChild(script);
+    }
+
+    loadScript();
+
     function changeRay(name){
         let tab=[];
         if(name=="Recherche")
@@ -1528,7 +1601,6 @@ exports.main = function(svg,gui,param,neural) {
         categories.currentSearch=tab;
         zoneCategories.add(categories.component);
         market.add(zoneCategories);
-
         changeRay("Recherche");
     }
 
@@ -1672,13 +1744,17 @@ exports.main = function(svg,gui,param,neural) {
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
 
+    let theMap=new Map(0,0,0,0);
+    let zoneMap= new svg.Translation().add(theMap.component);
+    // runtime.attr(zoneMap,"id","map");
+
     function addAllParts()
     {
         market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
         market.add(glassDnD);
-        market.add(glassCanvas);
+        market.add(glassCanvas).add(zoneMap);
     }
-
+    // initMap();
     addAllParts();
     changeRay("HighTech");
     return market;

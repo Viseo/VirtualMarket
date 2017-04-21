@@ -833,6 +833,8 @@ exports.data = function() {
         return tabVignettes;
     }
 
+
+
     function makeVignettesForCategories(typeVig){
         let jsonData = getJson();
         var tabVignettes = [];
@@ -848,7 +850,24 @@ exports.data = function() {
         return tabVignettes;
     }
 
+    function getMarker() {
+        return {
+            "1": {
+                coord: {lat : 48.841436, lng : 2.253049},
+                address: "Parc des Princes"
+            },
+            "2": {
+                coord: {lat : 48.831481, lng : 2.276131},
+                address: "Aquaboulevard de Paris 4-6 Rue Louis Armand, 75015 Paris, France"
+            },
+            "3": {
+                coord: {lat : 48.847189, lng : 2.248906},
+                address: "Court Philippe Chatrier Stade Roland Garros"
+            },
+        }
+    }
     return {    getJson : getJson,
+                getMarker: getMarker,
                 makeVignettesForRay:makeVignettesForRay,
                 makeVignettesForCategories:makeVignettesForCategories};
 };

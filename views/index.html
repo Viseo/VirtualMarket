@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 	<meta charset="UTF-8">
-	<title>Supermarche</title>
+	<title>DigiMarket</title>
     <script src="https://cdn.jsdelivr.net/binaryjs/0.2.1/binary.min.js"></script>
     <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&callback=initMap"-->
             <!--async defer></script>-->
@@ -9,7 +9,7 @@
     </head>
 <body style="margin:0">
     <div id="content"></div>
-    <div id="map"></div>
+    <!--<div id="map"></div>-->
     <script src="lib/module.js"></script>
     <script src="lib/runtimemock.js"></script>
     <script src="lib/targetruntime.js"></script>
@@ -20,6 +20,7 @@
     <script src="data.js"></script>
     <script src="neuralNetDrawing.js"></script>
     <script src="lib/recorder.js"></script>
+    <script src="lib/map.js"></script>
 
     <script>
         document.documentElement.style.overflow = 'hidden';
@@ -33,7 +34,7 @@
         let svg = SVG(targetRuntime());
         let NEURAL=require("neuralNetDrawing").neural;
         let neural=NEURAL(targetRuntime());
-        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural);
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime());
 
 //        var map;
 //        function initMap() {
@@ -41,28 +42,43 @@
 //                center: {lat: 48.8956, lng: 2.644},
 //                zoom: 17
 //            });
-//
+//            var geocoder = new google.maps.Geocoder();
 //            var infoWindow = new google.maps.InfoWindow({map: map});
+//            geocodeAddress(geocoder,map);
 //
+////            if (navigator.geolocation) {
+////                navigator.geolocation.getCurrentPosition(function (position) {
+////                    var pos = {
+////                        lat: position.coords.latitude,
+////                        lng: position.coords.longitude
+////                    };
+////
+////                    infoWindow.setPosition(pos);
+////                    infoWindow.setContent('Location found.');
+////                    map.setCenter(pos);
+////                }, function () {
+////                    handleLocationError(true, infoWindow, map.getCenter());
+////                });
+////            } else {
+////                // Browser doesn't support Geolocation
+////                handleLocationError(false, infoWindow, map.getCenter());
+////
+////            }
+//        }
 //
-//            if (navigator.geolocation) {
-//                navigator.geolocation.getCurrentPosition(function (position) {
-//                    var pos = {
-//                        lat: position.coords.latitude,
-//                        lng: position.coords.longitude
-//                    };
-//
-//                    infoWindow.setPosition(pos);
-//                    infoWindow.setContent('Location found.');
-//                    map.setCenter(pos);
-//                }, function () {
-//                    handleLocationError(true, infoWindow, map.getCenter());
-//                });
-//            } else {
-//                // Browser doesn't support Geolocation
-//                handleLocationError(false, infoWindow, map.getCenter());
-//
-//            }
+//        function geocodeAddress(geocoder, resultsMap) {
+//            var address = "96 rue de Paris, Boulogne Billancourt"
+//            geocoder.geocode({'address': address}, function(results, status) {
+//                if (status === 'OK') {
+//                    resultsMap.setCenter(results[0].geometry.location);
+//                    var marker = new google.maps.Marker({
+//                        map: resultsMap,
+//                        position: results[0].geometry.location
+//                    });
+//                } else {
+//                    alert('Geocode was not successful for the following reason: ' + status);
+//                }
+//            });
 //        }
 //
 //        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -71,7 +87,7 @@
 //                'Error: The Geolocation service failed.' :
 //                'Error: Your browser doesn\'t support geolocation.');
 //        }
-////
+//////
     </script>
 
     <!--<iframe-->
