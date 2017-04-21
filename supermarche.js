@@ -859,25 +859,25 @@ exports.main = function(svg,gui,param) {
             this.calendarPositionY = 0;
             this.calendarCases = [];
             this.monthChoice = new svg.Translation().mark("monthChoice");
-            this.chevronDown = new svg.Chevron(50,20,10,"S").color(svg.WHITE,3,svg.BLACK);
-            this.chevronUp = new svg.Chevron(50,20,10,"N").color(svg.WHITE,3,svg.BLACK);
+            this.chevronDown = new svg.Chevron(70,40,10,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7);
+            this.chevronUp = new svg.Chevron(70,40,10,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7);
             this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
             this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
             this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
             this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
-            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
+            // this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
 
             this.component.add(this.background);
             this.component.add(this.title);
             this.component.add(this.titleText);
-            this.component.add(this.cross);
             this.component.add(this.calendarFirstColumn);
             this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.chevronDown).add(this.chevronUp);
+            // this.component.add(this.cross);
 
             this.x = x;
             this.y = y;
@@ -887,12 +887,14 @@ exports.main = function(svg,gui,param) {
 
             let self = this;
 
-            this.cross.onClick(function(){
-                market.remove(market.calendar.component);
-            });
+            // this.cross.onClick(function(){
+            //     market.remove(market.calendar.component);
+            // });
 
             this.movement=0;
-            this.picto = new svg.Image("img/user.png").mark("iconUser");
+            this.picto = new svg.Image("img/panier.png").mark("iconUser");
+            this.pictoPosX = this.width*0.15;
+            this.pictoPosY = this.height*0.09;
             let onMove=false;
             this.picto.onMouseDown(function(e){
                 onMove=true;
@@ -911,7 +913,7 @@ exports.main = function(svg,gui,param) {
             this.chevronDown.onClick(function(){
                 let moveY=null;
                 let place = 0;
-                self.picto.position(self.width*0.07,self.height*0.25);
+                self.picto.position(self.pictoPosX,self.pictoPosY);
                 if(self.currentDate!=0) place = self.currentDate.getDate()-1;
                 if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
                     self.movement = self.movement + 4;
@@ -932,7 +934,7 @@ exports.main = function(svg,gui,param) {
             this.chevronUp.onClick(function(){
                 let moveY=null;
                 let place = 0;
-                self.picto.position(self.width*0.07,self.height*0.25);
+                self.picto.position(self.pictoPosX,self.pictoPosY);
                 if(self.currentDate!=0) place = self.currentDate.getDate();
                 if ((place + self.movement - 4 >= place)) {
                     self.movement = self.movement - 4;
@@ -950,7 +952,7 @@ exports.main = function(svg,gui,param) {
                     self.calendarCases[i].y = self.calendarCases[i].y + moveY;
                 }
             });
-            this.calendarWidth = width*0.8;
+            this.calendarWidth = width*0.95;
             this.calendarHeight = height*0.8;
 
             this.date = new Date();
@@ -998,20 +1000,21 @@ exports.main = function(svg,gui,param) {
         placeElements(){
             this.caseWidth = this.calendarWidth/12;
             this.caseHeight = this.calendarHeight/10;
-            this.picto.position(this.width*0.07,this.height*0.25).dimension(this.caseWidth,this.caseHeight);
-            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.WHITE).opacity(0.8);
-            this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(1);
+            this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth,this.caseHeight);
+            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.ALMOST_WHITE).opacity(0.8);
+            this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(1).corners(15,15);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
-            this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
+            // this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
 
+            this.chevronDown.position(this.width*0.02,this.height*0.97);
+            this.chevronUp.position(this.width*0.02,this.title.height*1.5+this.caseHeight);
             this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
             this.chevronEast.position(this.calendarWidth/2.1,0).mark("chevronEast");
             this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
             this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
-            this.chevronDown.position(this.width*0.96,this.height*0.97);
-            this.chevronUp.position(this.width*0.96,this.height*0.05+this.title.height*1.5+this.caseHeight);
+
 
             this.printCurrentMonthContent();
         }
@@ -1052,8 +1055,8 @@ exports.main = function(svg,gui,param) {
                 let hourCase = new svg.Translation();
                 hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
                 if(i!=0) {
-                    hourCase.add(new svg.Text((i + 8) + "h-" + (i + 9) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
-                    tabHours.push((i + 8) + "h-" + (i + 9) + "h");
+                    hourCase.add(new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                    tabHours.push((i + 8) + "h");
                 }
                 else hourCase.add(new svg.Text("Dates").font("calibri", this.width / 55, 1).color(svg.BLACK));
                 hourCase.move(i*this.caseWidth,0);
@@ -1078,7 +1081,8 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
-            this.component.add(this.picto.position(this.width*0.07,this.height*0.25));
+            this.component.add(this.picto);
+            this.component.add(this.chevronUp).add(this.chevronDown);
         }
 
         printMonthContent(month,year){
@@ -1143,7 +1147,7 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
-            this.component.add(this.picto.position(this.width*0.07,this.height*0.25));
+            this.component.add(this.picto);
         }
 
         checkPlace(x,y){
@@ -1159,7 +1163,7 @@ exports.main = function(svg,gui,param) {
                 console.log(choice.day+" "+choice.hour);
             }
             else{
-                this.picto.position(this.width*0.05,this.height*0.25);
+                this.picto.position(this.pictoPosX,this.pictoPosY);
             }
         }
 
