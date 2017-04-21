@@ -980,11 +980,6 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(picto,"mousemove",{pageX:10,pageY:10});
         runtime.advanceAll();
-
-        let cross = retrieve(market.component,"[calendar].[cross]");
-        assert(cross);
-        runtime.event(cross,"click",{});
-        runtime.advanceAll();
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(){
