@@ -18,14 +18,11 @@
     <script src="supermarche.js"></script>
     <script src="lib/svggui.js"></script>
     <script src="data.js"></script>
-    <script src="encog.js"></script>
-    <script src="encog-widget.js"></script>
     <script src="neuralNetDrawing.js"></script>
     <script src="lib/recorder.js"></script>
 
     <script>
         document.documentElement.style.overflow = 'hidden';
-//        require("lib/enhancer").Enhance();
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;
         let main = require("supermarche").main;
@@ -34,7 +31,9 @@
         let data = DATA();
         let GUI = require("lib/svggui").Gui;
         let svg = SVG(targetRuntime());
-        main(SVG(targetRuntime()),GUI((svg),""),{data:data});
+        let NEURAL=require("neuralNetDrawing").neural;
+        let neural=NEURAL(targetRuntime());
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural);
 
 //        var map;
 //        function initMap() {

@@ -1,8 +1,7 @@
-exports.main = function(svg,gui,param) {
+exports.main = function(svg,gui,param,neural) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
-    let glassDnD = new svg.Translation().mark("Glass");
 
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
@@ -260,7 +259,6 @@ exports.main = function(svg,gui,param) {
         }
 
         addProducts(thumbnail,quantity) {
-
             let newProd = new ThumbnailBasket(thumbnail.image.src, thumbnail.name, thumbnail.price, thumbnail.complement, thumbnail.categorie);
             let occur=0;
             let self =this;
@@ -280,8 +278,8 @@ exports.main = function(svg,gui,param) {
                 newProd.changeText(newText);
             }
 
-            newProd.component.onMouseDown(function(e){
-                self.dragBasket(e,newProd);
+            newProd.component.onMouseDown(function(){
+                if(market.pages[2].obj==currentPage) self.dragBasket(newProd);
             });
 
             this.calculatePrice(newProd.price*quantity);
@@ -313,7 +311,8 @@ exports.main = function(svg,gui,param) {
             vignette.changeText(newText);
 
             if(vignette.quantity ==0){
-                if ((this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-1 || this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-2) && this.thumbnailsProducts.length-1>2){
+                if ((this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-1 ||
+                    this.thumbnailsProducts.indexOf(vignette)==this.thumbnailsProducts.length-2) && this.thumbnailsProducts.length-1>2){
                     let heightZone=this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
                     this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x,(height*0.9-heightZone+this.thumbnailsProducts[0].height ));
                 }else if(this.thumbnailsProducts.length-1<=2){
@@ -350,39 +349,29 @@ exports.main = function(svg,gui,param) {
             }
         }
 
-        dragBasket(e,current) {
+        dragBasket(current) {
             let dragged = new Thumbnail(current.image.src,current.name);
             dragged.placeElementsDnD(current);
             dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
             dragged.cross.smoothy(1,1).rotateTo(-45);
             dragged.cross.position(dragged.width*0.55,dragged.height*0.71);
             dragged.component.add(dragged.cross);
-            dragged.cross.onMouseUp(function(){
-                market.basket.deleteProducts(current,current.quantity);
-            });
-
-            dragged.move(current.x,current.y);
+            dragged.move(current.x+pageWidth*0.85,current.y+header.height);
             dragged.component.opacity(0.9).mark("dragged");
-            market.basket.listProducts.add(dragged.component);
 
-            gui.installDnD(dragged,glassDnD,{
-                moved:
-                    function(dragged){
-                        if((dragged.x+dragged.width/2<0)&&(dragged.y+dragged.height/2>market.height*0.20)){
-                            market.basket.deleteProducts(current, 1);
-                            changeRay(current.categorie);
-                        }
-                    },
-                revert:
-                    function(dragged){
-                        market.basket.listProducts.remove(dragged.component);
-                    },
-                clicked :
-                    function(){
-                        changeRay(current.categorie);
-                    }
+            dragged.component.onMouseMove(function(e){
+                dragged.move(e.pageX-current.width/2,e.pageY-current.height/2);
             });
-            svg.event(dragged.component, 'mousedown', e);
+
+            dragged.component.onMouseUp(function(){
+                if((dragged.x+dragged.width/2<pageWidth*0.85)&&(dragged.y+dragged.height/2>market.height*0.20)){
+                    market.basket.deleteProducts(current, 1);
+                    changeRay(current.categorie);
+                }
+                glassDnD.remove(dragged.component);
+            });
+
+            glassDnD.add(dragged.component);
             market.add(glassDnD);
         }
 
@@ -403,44 +392,50 @@ exports.main = function(svg,gui,param) {
             this.micro = new svg.Image("img/microphone-deactivated.png");
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
-            this.recording=false;
+            this.height = height;
+            this.width=width;
+            let recording=false;
             let micro=this.micro;
             var voice=[];
             let timer;
 
-            this.micro.onClick(function () {
-                let i=0;
-                voice=[];
-                if(this.recording==true){
-                    this.recording=stopRecording();
-                    console.log("je record plus" );
-                    micro.url("img/microphone-deactivated.png");
-                    timer=setInterval(function() {
-                        i++;
-                        console.log(i)
-                        voice = getMessage();
-                        if((voice['transcript'].length!=0 &&  voice['transcript']!="Je n'ai pas compris") || i==25) {
-                            clearInterval(timer);
-                            if(i==25)textToSpeech("Je n'ai rien entendu","fr");
-                            else if(voice['confidence']>0.6){
-                                // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
-                                market.vocalRecognition(voice['transcript']);
-                            }
-                            else{
-                                console.log("je n'ai pas bien saisi votre demande : "+voice['transcript']);
-                                textToSpeech("Je n'ai pas bien compris votre demande","FR");
-
-                            }
-                        }
-                    },200);
-
-                }
-                else{
-                    this.recording=startRecording();
+            this.micro.onClick(function(){
+                if(!recording) {
+                    voice = [];
+                    startRecording();
+                    recording=true;
                     console.log("je record");
                     micro.url("img/microphone.gif");
+                    setTimeout(function () {
+                        stopRecording();
+                        console.log("je record plus");
+                        micro.url("img/microphone-deactivated.png");
+                        let i = 0;
+                        timer = setInterval(function () {
+                            i++;
+                            console.log(i);
+                            voice = getMessage();
+                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 25) {
+                                clearInterval(timer);
+                                console.log(voice['transcript']);
+                                if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
+                                else if (voice['confidence'] > 0.5) {
+                                    // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
+                                    market.vocalRecognition(voice['transcript']);
+                                }
+                                else {
+                                    console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
+                                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+
+                                }
+                                i = 0;
+                                voice = [];
+                                recording = false;
+                            }
+                        }, 200);
+                    }, 4000);
                 }
-            })
+            });
         }
     }
     
@@ -485,8 +480,7 @@ exports.main = function(svg,gui,param) {
             });
         }
 
-        dragCard(e)
-        {
+        dragCard(e) {
             let dragged = new Object();
             let self = this;
 
@@ -545,9 +539,8 @@ exports.main = function(svg,gui,param) {
             svg.event(dragged.component, 'mousedown', e);
         }
 
-        showCode()
-        {
-            this.zoneCode = new SecurityCode(market.width,market.height,0,0);
+        showCode() {
+            this.zoneCode = new SecurityCode(pageWidth,market.height-market.height/19,0,market.height/19);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -631,10 +624,7 @@ exports.main = function(svg,gui,param) {
                             }
                         }
                     }else{
-                        market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
-                        market.payment.cardIn=false;
-                        market.payment.iteration=1;
-                        self.printCalendar();
+                        self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -657,10 +647,7 @@ exports.main = function(svg,gui,param) {
                         }
                     }
                     else{
-                        self.launchTimer(4,true);
-                        market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
-                        market.payment.cardIn=false;
-                        market.payment.iteration=0;
+                        self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -685,7 +672,7 @@ exports.main = function(svg,gui,param) {
                 if(self.onDrawing && self.code.length>0) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
-                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX,e.pageY).color(svg.BLACK,5,svg.BLACK);
+                    self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX,e.pageY-header.height).color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
             });
@@ -759,6 +746,18 @@ exports.main = function(svg,gui,param) {
 
         }
 
+        moveMainpage(){
+            market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
+            market.payment.cardIn=false;
+            market.payment.iteration=0;
+            market.remove(market.payment.zoneCode.component);
+            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
+            market.pages[1].active = true;
+            market.pages[0].active = true;
+            currentPage=map;
+            currentIndex=1;
+        }
+
         changeTimer(newTimer,color){
             var x=this.width/2 + 30*Math.cos( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
             var y=this.height*0.93 + 30*Math.sin( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
@@ -821,10 +820,6 @@ exports.main = function(svg,gui,param) {
                          return function(){
                              market.payment.zoneCode.hideCircle();
                              market.payment.zoneCode.changeText("Code correct",svg.GREEN);
-                             if (i===seconds){
-                                 market.remove(glassTimer);
-                                 market.remove(market.payment.zoneCode.component);
-                             }
                          }
                      }(i),i*1000);
                  }
@@ -836,14 +831,6 @@ exports.main = function(svg,gui,param) {
                   return true;
               }
               return false;
-        }
-
-        printCalendar(){
-            market.remove(market.payment.zoneCode.component);
-            market.calendar = new Calendar(market.width,market.height,0,0);
-            market.calendar.placeElements();
-            market.add(market.calendar.component);
-            market.add(zoneHeader);
         }
     }
 
@@ -859,8 +846,8 @@ exports.main = function(svg,gui,param) {
             this.calendarPositionY = 0;
             this.calendarCases = [];
             this.monthChoice = new svg.Translation().mark("monthChoice");
-            this.chevronDown = new svg.Chevron(70,40,10,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7);
-            this.chevronUp = new svg.Chevron(70,40,10,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7);
+            this.chevronDown = new svg.Chevron(35,20,8,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronDownCalendar");
+            this.chevronUp = new svg.Chevron(35,20,8,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronUpCalendar");
             this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
             this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
             this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
@@ -952,7 +939,7 @@ exports.main = function(svg,gui,param) {
                     self.calendarCases[i].y = self.calendarCases[i].y + moveY;
                 }
             });
-            this.calendarWidth = width*0.95;
+            this.calendarWidth = width*0.925;
             this.calendarHeight = height*0.8;
 
             this.date = new Date();
@@ -964,6 +951,7 @@ exports.main = function(svg,gui,param) {
             self=this;
 
             this.zoneChevronEast.onClick(function(){
+                self.picto.position(self.pictoPosX,self.pictoPosY);
                 self.monthNumber++;
                 if (self.monthNumber===12){
                     self.monthNumber=0;
@@ -976,6 +964,7 @@ exports.main = function(svg,gui,param) {
             });
 
             this.zoneChevronWest.onClick(function(){
+                self.picto.position(self.pictoPosX,self.pictoPosY);
                 self.monthNumber--;
                 if((self.presentMonth>self.monthNumber)&&(self.presentYear===self.year)){
                     self.monthNumber++;
@@ -1006,8 +995,8 @@ exports.main = function(svg,gui,param) {
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             // this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
 
-            this.chevronDown.position(this.width*0.02,this.height*0.97);
-            this.chevronUp.position(this.width*0.02,this.title.height*1.5+this.caseHeight);
+            this.chevronDown.position(this.width*0.02+this.caseWidth/2.5,this.height*0.97);
+            this.chevronUp.position(this.width*0.02+this.caseWidth/2.5,this.title.height*1.5+this.caseHeight);
             this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
             this.chevronEast.position(this.calendarWidth/2.1,0).mark("chevronEast");
             this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
@@ -1094,15 +1083,7 @@ exports.main = function(svg,gui,param) {
             this.currentDate=0;
             let tabDays = [];
             this.numberDaysThisMonth=this.daysInMonth(month,year);
-            if(this.numberDaysThisMonth==31) {
-                this.startDay=new Date(year,month,1).getDay();
-                if(this.startDay==-1){
-                    this.startDay=6;
-                }
-            }
-            else {
-                this.startDay=new Date(year,month,1).getDay();
-            }
+            this.startDay=new Date(year,month,1).getDay();
 
             for(let j=0;j+this.startDay<=this.numberDaysThisMonth+this.startDay;j++){
                 let dayCase = new svg.Translation();
@@ -1121,8 +1102,8 @@ exports.main = function(svg,gui,param) {
                 let hourCase = new svg.Translation();
                 hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREEN,1,svg.BLACK));
                 if(i!=0){
-                    hourCase.add(new svg.Text((i + 8) + "h-" + (i + 9) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
-                    tabHours.push((i + 8) + "h-" + (i + 9) + "h");
+                    hourCase.add(new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK));
+                    tabHours.push((i + 8) + "h");
                 }
                 else hourCase.add(new svg.Text("Dates").font("calibri", this.width / 55, 1).color(svg.BLACK));
                 hourCase.move(i*this.caseWidth,0);
@@ -1229,19 +1210,7 @@ exports.main = function(svg,gui,param) {
             this.height = 0;
         }
 
-        addEvent(eventName, handler) {
-            svg.addEvent(this.component, eventName, handler);
-            this.events[eventName] = handler;
-            return this;
-        }
-
-        removeEvent(eventName) {
-            svg.removeEvent(this.component, eventName);
-            delete this.events[eventName];
-            return this;
-        }
-
-        move(x,y) {
+        move(x,y){
             this.x = x;
             this.y = y;
             this.component.move(x,y);
@@ -1320,8 +1289,6 @@ exports.main = function(svg,gui,param) {
             this.height = market.height*0.75/2;
             this.toAdd=[];
             this.waitingNumber = new svg.Text("");
-            this.numberArea = new svg.Rect(0,0);
-            this.component.add(this.numberArea);
             this.component.add(this.waitingNumber);
             let self = this;
             this.image.onMouseEnter(function()
@@ -1341,23 +1308,13 @@ exports.main = function(svg,gui,param) {
 
             function printNumber(number){
                 self.component.remove(self.waitingNumber);
-                self.component.remove(self.numberArea);
-                if(number==="") {
-                    self.numberArea = new svg.Rect(0,0);
-                    self.component.add(self.numberArea);
-                }
-                else {
-                    self.numberArea = new svg.Rect(self.width*0.12,self.height*0.1).position(self.width*0.1,self.height*0.08).color(svg.WHITE,2,svg.BLACK);
-                    self.component.add(self.numberArea);
-
-                }
                 self.waitingNumber = new svg.Text(number);
-                self.waitingNumber.position(self.width*0.1,self.height*0.1).font("Calibri",self.width*0.075,1);
+                self.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
                 self.component.add(self.waitingNumber);
             }
 
             function getNumber(number,e,element){
-                if((number=="click")||(mousePos.x==e.pageX && mousePos.y==e.pageY)) {
+                if(number=="click") {
                     element.addAnimation("1");
                     market.basket.addProducts(self,"1");
                 }
@@ -1372,9 +1329,10 @@ exports.main = function(svg,gui,param) {
             }
 
             let mousePos ={};
+            this.drawNumber = null;
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
-                self.drawNumber = new svg.Drawing(0,0).mark("drawing "+self.name);
+                self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
                 neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
@@ -1419,8 +1377,8 @@ exports.main = function(svg,gui,param) {
             this.component.add(this.cross);
 
             this.component.mark(this.name);
-            this.width = market.width*0.15;
-            this.height = market.width*0.15;
+            this.width = pageWidth*0.15;
+            this.height = pageWidth*0.15;
 
             let self = this;
             this.image.onMouseEnter(function(){
@@ -1481,11 +1439,11 @@ exports.main = function(svg,gui,param) {
         else tab = param.data.makeVignettesForRay(name,ThumbnailRayon);
         if(categories.rayTranslation!=null)
         {
-            market.remove(categories.rayTranslation);
+            mainPage.remove(categories.rayTranslation);
         }
-        categories.ray = new Ray(market.width * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
+        categories.ray = new Ray(pageWidth * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
-        market.add(categories.rayTranslation);
+        mainPage.add(categories.rayTranslation);
         for(let v=0;v<categories.tabCategories.length;v++)
         {
             categories.tabCategories[v].image.opacity(1);
@@ -1498,25 +1456,42 @@ exports.main = function(svg,gui,param) {
         }
     }
 
-    function search(sentence){
+
+    function search(sentence,config){
+        sentence=replaceChar(sentence);
         let jsonFile = param.data.getJson();
         let words = sentence.split(" ");
         var tabProduct = [];
         var tabTotalCat = [];
+        let catDone= [];
+        let prodDone = [];
         for (var i=0; i<words.length;i++){
             for (var cat in jsonFile){
-                if(words[i].toLowerCase().includes(cat.toLowerCase())||(words[i]+words[i+1]).toLowerCase().includes(cat.toLowerCase)){
-                    var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
-                    tabTotalCat = tabTotalCat.concat(tabCat);
+                if(config=="all"){
+                    if (words[i].toLowerCase().includes(replaceChar(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1]).toLowerCase().includes(replaceChar(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(replaceChar(cat).toLowerCase())
+                        || (words[i] + "s").toLowerCase().includes(replaceChar(cat).toLowerCase())) {
+                        if(catDone.indexOf(cat)==-1){
+                            catDone.push(cat);
+                            var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
+                            tabTotalCat = tabTotalCat.concat(tabCat);
+                        }
+                    }
                 }
                 var products = jsonFile[cat];
                 for (var prodName in products){
-                    if (words[i].toLowerCase().includes(prodName.toLowerCase())
-                        ||prodName.toLowerCase().includes((words[i]+" "+words[i+1]).toLowerCase())){
-                        var prod = products[prodName];
-                        var thumbnailProduct = new ThumbnailRayon(prod.image,prod.nom, prod.prix,prod.complement, cat);
-                        tabProduct.push(thumbnailProduct);
-                    }
+                   if (words[i].toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                                ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                                ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                                ||(words[i] + "s").toLowerCase().includes(replaceChar(prodName).toLowerCase())){
+                            if(prodDone.indexOf(prodName)==-1) {
+                            prodDone.push(prodName);
+                            var prod = products[prodName];
+                            var thumbnailProduct = new ThumbnailRayon(prod.image, prod.nom, prod.prix, prod.complement, cat);
+                            tabProduct.push(thumbnailProduct);
+                        }
+                   }
                 }
             }
         }
@@ -1524,14 +1499,13 @@ exports.main = function(svg,gui,param) {
         return tabThumbnailProd;
     }
 
-
     function doSearch(search) {
         market.remove(categories.rayTranslation);
         zoneCategories.remove(categories.component);
         let tab = search;
         let tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
         tabCategories.push(new ThumbnailCategorie("img/search.png","img/search2.png","Recherche"));
-        categories=new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
+        categories=new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
         categories.currentSearch=tab;
         zoneCategories.add(categories.component);
         market.add(zoneCategories);
@@ -1540,7 +1514,7 @@ exports.main = function(svg,gui,param) {
     }
 
     market.vocalRecognition = function(message){
-        message = message.toLowerCase();
+        message=replaceChar(message);
         if(message!="") {
             let tabMessage=message.split(" ");
             let splitMessage=[];
@@ -1556,29 +1530,43 @@ exports.main = function(svg,gui,param) {
             let oneOrderChecked =false;
             for(var j = splitMessage.length-1;j>=0;j--) {
                 let order = splitMessage[j];
-                let tab = search(order);
+                let tab = search(order,"all");
                 if (tab[0]) {
+                    tab = search(order,"prod");
                     if (order.includes("ajoute")) {
                         for (var i = 0; i < tab.length; i++) {
                             let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
                             if (quantity >= "0" && quantity <= "9") {
                                 let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
                                 if (isNaN(bef)) {
-                                    bef = "";
+                                        bef = "";
                                 }
                                 let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
                                 if (isNaN(bef2)) {
-                                    bef2 = "";
+                                        bef2 = "";
                                 }
                                 market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
                             }
-                            else market.basket.addProducts(tab[i], 1);
+                            else if (determining.trim() == "de"){
+                                market.basket.addProducts(tab[i],2);
+                            }
+                            else if (determining2.trim() == "cette" || determining.trim() =="cet") {
+                                market.basket.addProducts(tab[i], 7);
+                            } else {
+                                market.basket.addProducts(tab[i], 1);
+                            }
                         }
                     }
                     else if (order.includes("supprime")) {
                         for (var i = 0; i < tab.length; i++) {
                             var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                            var unUne = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
                                 order.indexOf(tab[i].name.toLowerCase()) - 1);
                             if (number >= "0" && number <= "9") {
                                 let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
@@ -1591,13 +1579,17 @@ exports.main = function(svg,gui,param) {
                                 }
                                 market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                             }
-                            else if (unUne == " un" || unUne == "une") {
+                            else if (determining == " un" || determining == "une")
                                 market.basket.deleteFromName(tab[i].name, 1);
-                            }
+                            else if (determining.trim() =="de")
+                                market.basket.deleteFromName(tab[i].name,2);
+                            else if(determining2.trim() == "cette" || determining.trim() == "cet")
+                                market.basket.deleteFromName(tab[i].name,7);
                             else market.basket.deleteFromName(tab[i].name, null);
                         }
                     }
                     else {
+                        tab = search(order,"all");
                         doSearch(tab);
                     }
                     oneOrderChecked =true;
@@ -1617,9 +1609,11 @@ exports.main = function(svg,gui,param) {
             }
 
             if(!oneOrderChecked) {
-                console.log("No Correct Order Given");
-                textToSpeech("Désolé je n'ai pas compris votre demande","FR");
+                message+=", "+Date();
+                writeLog(message);
 
+                console.log("No Correct Order Given");
+                textToSpeech("Je n'ai pas bien compris votre demande","fr");
             }
         }
         else {
@@ -1627,38 +1621,83 @@ exports.main = function(svg,gui,param) {
         }
     };
     function textToSpeech(msg,language){
-        msg=msg.replace(/ /g, "+");
-        msg=msg.replace(/'/g, "%27");
+        // msg=msg.replace(/ /g, "+");
+        // msg=msg.replace(/'/g, "%27");
         // msg=msg.replace(/é/g, "%C3%A9");
-        var audio = document.createElement('audio');
-        audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=tw-ob&q='+msg+'&tl='+language;
-        console.log(audio.play());
+        // var audio = document.createElement('audio');
+        // audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=t-ob&q='+msg+'&tl='+language;
+        // console.log(audio.play());
+
+        var speak = new SpeechSynthesisUtterance(msg);
+        window.speechSynthesis.speak(speak);
 //            document.removeChild(audio);
+    }
+
+
+    function replaceChar(msg){
+        return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
     }
     // textToSpeech("Digi-market peut parler","fr");
     //////
 
     /////Déclaration Interface////
+    let mainPage=new svg.Translation().mark("mainPage");
+    let pageWidth=market.width*0.96;
+
     let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
     let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-    let categories = new ListCategorie(market.width*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
+    let categories = new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    market.basket = new Basket(market.width*0.15,market.height*0.75,market.width*0.85,market.height*0.05);
+    market.basket = new Basket(pageWidth*0.15,market.height*0.75,pageWidth*0.85,market.height*0.05);
     let zoneBasket = new svg.Translation().add(market.basket.component).mark("basket");
-    market.payment = new Payment(market.width*0.15,market.height*0.20,market.width*0.85,market.height*0.80);
+    market.payment = new Payment(pageWidth*0.15,market.height*0.20,pageWidth*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
+    let glassDnD = new svg.Translation().mark("Glass");
 
-    function addAllParts()
-    {
-        market.add(zoneCategories).add(zoneBasket).add(zonePayment).add(zoneHeader);
-        market.add(glassDnD);
-        market.add(glassCanvas);
+    //Gestion des pages
+    market.calendar = new Calendar(market.width,market.height,0,0);
+    market.calendar.placeElements();
+    let calendarPage = new svg.Translation().add(market.calendar.component);
+
+    let rectRed=new svg.Rect(market.width-market.width*0.04,market.height).color(svg.RED)
+        .position(market.width/2,market.height/2+market.height/19);
+    let map = new svg.Translation().add(rectRed).mark("map");
+
+    let currentPage=mainPage;
+    let currentIndex=2;
+    market.pages=[];
+    market.pages.push({obj:calendarPage,active:false},{obj:map,active:false},{obj:mainPage,active:true});
+
+    for(var i =0;i<market.pages.length;i++){
+        let index = i;
+        market.pages[i].obj.onClick(function(){
+            if(market.pages[index].active) {
+                if (currentIndex > index) {
+                    for (let j = currentIndex; j > index; j--) {
+                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                    }
+                }
+                else {
+                    for (let j = currentIndex; j <= index; j++) {
+                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                    }
+                }
+                currentPage = market.pages[index].obj;
+                currentIndex = index;
+            }
+        });
+        market.add(market.pages[i].obj);
     }
 
-    addAllParts();
+    market.add(mainPage);
+    mainPage.add(zoneCategories).add(zoneBasket).add(zonePayment);
+    market.add(glassDnD);
+    mainPage.add(glassCanvas);
+    market.add(zoneHeader);
+
     changeRay("HighTech");
     return market;
     //////////////////////////////
