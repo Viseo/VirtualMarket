@@ -756,6 +756,7 @@ exports.main = function(svg,gui,param,neural) {
             market.pages[0].active = true;
             currentPage=map;
             currentIndex=1;
+            market.map.mapOn=true;
         }
 
         changeTimer(newTimer,color){
@@ -855,6 +856,7 @@ exports.main = function(svg,gui,param,neural) {
             this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
+            this.calendarOn=false;
 
             this.component.add(this.background);
             this.component.add(this.title);
@@ -1494,7 +1496,7 @@ exports.main = function(svg,gui,param,neural) {
     }
 
     function doSearch(search) {
-        market.remove(categories.rayTranslation);
+        mainPage.remove(categories.rayTranslation);
         zoneCategories.remove(categories.component);
         let tab = search;
         let tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
@@ -1502,112 +1504,134 @@ exports.main = function(svg,gui,param,neural) {
         categories=new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
         categories.currentSearch=tab;
         zoneCategories.add(categories.component);
-        market.add(zoneCategories);
-
+        mainPage.add(zoneCategories);
         changeRay("Recherche");
     }
 
     market.vocalRecognition = function(message){
         message=replaceChar(message);
         if(message!="") {
-            let tabMessage=message.split(" ");
-            let splitMessage=[];
-            for(var i = tabMessage.length-1;i>0;i--){
-                if(tabMessage[i].includes("ajoute")||tabMessage[i].includes("supprime")||tabMessage[i].includes("vide")
-                    ||tabMessage[i].includes("paiement")||tabMessage[i].includes("paye")){
-                    splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]),message.length));
-                    message = message.substring(0,message.lastIndexOf(tabMessage[i]));
-                }
-            }
-            splitMessage.push(message);
-
-            let oneOrderChecked =false;
-            for(var j = splitMessage.length-1;j>=0;j--) {
-                let order = splitMessage[j];
-                let tab = search(order,"all");
-                if (tab[0]) {
-                    tab = search(order,"prod");
-                    if (order.includes("ajoute")) {
-                        for (var i = 0; i < tab.length; i++) {
-                            let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            if (quantity >= "0" && quantity <= "9") {
-                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                if (isNaN(bef)) {
-                                        bef = "";
-                                }
-                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                if (isNaN(bef2)) {
-                                        bef2 = "";
-                                }
-                                market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
-                            }
-                            else if (determining.trim() == "de"){
-                                market.basket.addProducts(tab[i],2);
-                            }
-                            else if (determining2.trim() == "cette" || determining.trim() =="cet") {
-                                market.basket.addProducts(tab[i], 7);
-                            } else {
-                                market.basket.addProducts(tab[i], 1);
-                            }
+            if((market.map&&market.map.mapOn)||(market.calendar&&market.calendar.calendarOn)) {
+                if(market.map.mapOn) {
+                    let words = message.split(" ");
+                    for (var i = 0; i < words.length; i++) {
+                        if (parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) {
+                            message = message.substring(message.indexOf(words[i]));
+                            i=words.length;
+                        }
+                        else if((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
+                        ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))
+                        {
+                            message = message.substring(message.indexOf(words[i]));
+                            i=words.length;
                         }
                     }
-                    else if (order.includes("supprime")) {
-                        for (var i = 0; i < tab.length; i++) {
-                            var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            if (number >= "0" && number <= "9") {
-                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                if (isNaN(bef)) {
-                                    bef = "";
+                    console.log(message);
+                }
+                else if(market.calendar.calendarOn){
+
+                }
+            }
+            else{
+                let tabMessage = message.split(" ");
+                let splitMessage = [];
+                for (var i = tabMessage.length - 1; i > 0; i--) {
+                    if (tabMessage[i].includes("ajoute") || tabMessage[i].includes("supprime") || tabMessage[i].includes("vide")
+                        || tabMessage[i].includes("paiement") || tabMessage[i].includes("paye")) {
+                        splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]), message.length));
+                        message = message.substring(0, message.lastIndexOf(tabMessage[i]));
+                    }
+                }
+                splitMessage.push(message);
+
+                let oneOrderChecked = false;
+                for (var j = splitMessage.length - 1; j >= 0; j--) {
+                    let order = splitMessage[j];
+                    let tab = search(order, "all");
+                    if (tab[0]) {
+                        tab = search(order, "prod");
+                        if (order.includes("ajoute")) {
+                            for (var i = 0; i < tab.length; i++) {
+                                let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                if (quantity >= "0" && quantity <= "9") {
+                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                    if (isNaN(bef)) {
+                                        bef = "";
+                                    }
+                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                    if (isNaN(bef2)) {
+                                        bef2 = "";
+                                    }
+                                    market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
                                 }
-                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                if (isNaN(bef2)) {
-                                    bef2 = "";
+                                else if (determining.trim() == "de") {
+                                    market.basket.addProducts(tab[i], 2);
                                 }
-                                market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                                else if (determining2.trim() == "cette" || determining.trim() == "cet") {
+                                    market.basket.addProducts(tab[i], 7);
+                                } else {
+                                    market.basket.addProducts(tab[i], 1);
+                                }
                             }
-                            else if (determining == " un" || determining == "une")
-                                market.basket.deleteFromName(tab[i].name, 1);
-                            else if (determining.trim() =="de")
-                                market.basket.deleteFromName(tab[i].name,2);
-                            else if(determining2.trim() == "cette" || determining.trim() == "cet")
-                                market.basket.deleteFromName(tab[i].name,7);
-                            else market.basket.deleteFromName(tab[i].name, null);
                         }
+                        else if (order.includes("supprime")) {
+                            for (var i = 0; i < tab.length; i++) {
+                                var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                if (number >= "0" && number <= "9") {
+                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                    if (isNaN(bef)) {
+                                        bef = "";
+                                    }
+                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                    if (isNaN(bef2)) {
+                                        bef2 = "";
+                                    }
+                                    market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                                }
+                                else if (determining == " un" || determining == "une")
+                                    market.basket.deleteFromName(tab[i].name, 1);
+                                else if (determining.trim() == "de")
+                                    market.basket.deleteFromName(tab[i].name, 2);
+                                else if (determining2.trim() == "cette" || determining.trim() == "cet")
+                                    market.basket.deleteFromName(tab[i].name, 7);
+                                else market.basket.deleteFromName(tab[i].name, null);
+                            }
+                        }
+                        else {
+                            tab = search(order, "all");
+                            doSearch(tab);
+                        }
+                        oneOrderChecked = true;
                     }
                     else {
-                        tab = search(order,"all");
-                        doSearch(tab);
-                    }
-                    oneOrderChecked =true;
-                }
-                else {
-                    if (order.includes("vide") && order.includes("panier")) {
-                        market.basket.emptyBasket();
-                        oneOrderChecked =true;
-                    }
-                    else if (order.includes("paye") || order.includes("paie")) {
-                        market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
-                        market.payment.cardIn = true;
-                        market.payment.showCode();
-                        oneOrderChecked =true;
+                        if (order.includes("vide") && order.includes("panier")) {
+                            market.basket.emptyBasket();
+                            oneOrderChecked = true;
+                        }
+                        else if (order.includes("paye") || order.includes("paie")) {
+                            market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
+                            market.payment.cardIn = true;
+                            market.payment.showCode();
+                            oneOrderChecked = true;
+                        }
                     }
                 }
-            }
 
-            if(!oneOrderChecked) {
-                message+=", "+Date();
-                writeLog(message);
+                if (!oneOrderChecked) {
+                    message += ", " + Date();
+                    writeLog(message);
 
-                console.log("No Correct Order Given");
-                textToSpeech("Je n'ai pas bien compris votre demande","fr");
+                    console.log("No Correct Order Given");
+                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+                }
             }
         }
         else {
@@ -1658,12 +1682,12 @@ exports.main = function(svg,gui,param,neural) {
 
     let rectRed=new svg.Rect(market.width-market.width*0.04,market.height).color(svg.RED)
         .position(market.width/2,market.height/2+market.height/19);
-    let map = new svg.Translation().add(rectRed).mark("map");
+    market.map = {component : new svg.Translation().add(rectRed).mark("map"),mapOn:false};
 
     let currentPage=mainPage;
     let currentIndex=2;
     market.pages=[];
-    market.pages.push({obj:calendarPage,active:false},{obj:map,active:false},{obj:mainPage,active:true});
+    market.pages.push({obj:calendarPage,active:false},{obj:market.map.component,active:false},{obj:mainPage,active:true});
 
     for(var i =0;i<market.pages.length;i++){
         let index = i;
@@ -1681,6 +1705,10 @@ exports.main = function(svg,gui,param,neural) {
                 }
                 currentPage = market.pages[index].obj;
                 currentIndex = index;
+                if(currentPage==map.component) map.mapOn=true;
+                else map.mapOn=false;
+                if(currentPage==calendar.component) calendar.calendarOn=true;
+                else calendar.calendarOn=false;
             }
         });
         market.add(market.pages[i].obj);
