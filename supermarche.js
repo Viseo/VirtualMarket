@@ -598,7 +598,9 @@ exports.main = function(svg,gui,param,neural) {
             this.buttons = new svg.Translation().mark("buttonGroup");
             this.timer = new svg.Text("30");
             this.message = new svg.Text("");
-            this.circleTimer = new svg.Circle(30);
+            this.width = width;
+            this.height = height;
+            this.circleTimer = new svg.Circle(this.height/25);
             this.arcTimer = new svg.Path(0,0);
             this.onDrawing = false;
             this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
@@ -731,18 +733,17 @@ exports.main = function(svg,gui,param,neural) {
             this.x = x;
             this.y = y;
             this.component.move(x,y);
-            this.width = width;
-            this.height = height;
         }
 
         placeElements()
         {
-            this.arcTimer.move(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0).arc(30,30,0,1,0,this.width/2,this.height*0.93);
+            this.arcTimer.move(this.width/2,this.height*0.79).color(svg.LIGHT_GREY,5,svg.RED).opacity(0)
+                .arc(this.height/25,this.height/25,0,1,0,this.width/2,this.height*0.79);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.GREY,1,svg.BLACK).opacity(0.8);
-            this.title.position(this.width/2,this.height*0.1).font("calibri",this.width/20,1).color(svg.BLACK);
-            this.circleTimer.position(this.width/2,this.height*0.93).color(svg.LIGHT_GREY,5,svg.RED).opacity(0);
-            this.timer.position(this.width/2,this.height*0.90).font("calibri",20,1).color(svg.BLACK).opacity(0);
-            this.cross.position(this.width/2,this.height*0.80).dimension(this.width*0.1,this.width*0.05).color(svg.BLACK).opacity(1);
+            this.title.position(this.width/2,this.height*0.1).font("calibri",this.height/15,1).color(svg.BLACK);
+            this.circleTimer.position(this.width/2,this.height*0.79).color(svg.LIGHT_GREY,5,svg.RED).opacity(0);
+            this.timer.position(this.width/2,this.height*0.79).font("calibri",20,1).color(svg.BLACK).opacity(0);
+            this.cross.position(this.width/2,this.height*0.90).dimension(this.width*0.10,this.height*0.10).color(svg.BLACK).opacity(1);
 
         }
 
@@ -754,14 +755,14 @@ exports.main = function(svg,gui,param,neural) {
             market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
             market.pages[1].active = true;
             market.pages[0].active = true;
-            currentPage=map;
+            currentPage=market.map;
             currentIndex=1;
             market.map.mapOn=true;
         }
 
         changeTimer(newTimer,color){
-            var x=this.width/2 + 30*Math.cos( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
-            var y=this.height*0.93 + 30*Math.sin( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
+            var x=this.width/2 + this.height/25*Math.cos( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
+            var y=this.height*0.79 + this.height/25*Math.sin( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
             var lf=1;
             if(10-newTimer>10/2)lf=0;
             if(newTimer==10){this.circleTimer.opacity(1).color(svg.LIGHT_GREY,5,svg.RED);}
@@ -769,9 +770,9 @@ exports.main = function(svg,gui,param,neural) {
             this.component.remove(this.arcTimer);
             this.component.remove(this.timer);
             this.timer = new svg.Text(newTimer);
-            this.timer.position(this.width/2,this.height*0.935).font("Calibri",20,1).color(svg.BLACK);
-            this.arcTimer = new svg.Path(this.width/2,this.height*0.93-30);
-            this.arcTimer.arc(30,30,0,lf,0,x,y).color(svg.LIGHT_GREY,5,color);
+            this.timer.position(this.width/2,this.height*0.79).font("Calibri",20,1).color(svg.BLACK);
+            this.arcTimer = new svg.Path(this.width/2,this.height*0.79-this.height/25);
+            this.arcTimer.arc(this.height/25,this.height/25,0,lf,0,x,y).color(svg.LIGHT_GREY,5,color);
             this.component.add(this.arcTimer);
             this.component.add(this.timer);
         }
@@ -779,7 +780,7 @@ exports.main = function(svg,gui,param,neural) {
         changeText(message,color){
             this.component.remove(this.message);
             this.message = new svg.Text(message).mark("result");
-            this.message.position(this.width/2,this.height*0.87).font("calibri",20,1).color(color).opacity(1);
+            this.message.position(this.width/2,this.height*0.74).font("calibri",20,1).color(color).opacity(1);
             this.component.add(this.message);
         }
 
@@ -811,16 +812,6 @@ exports.main = function(svg,gui,param,neural) {
                                  market.payment.zoneCode.changeText("");
                                  market.payment.zoneCode.hideCircle();
                              }
-                         }
-                     }(i),i*1000);
-                 }
-             }
-             else{
-                 for(let i =0;i<seconds+1;i++){
-                     setTimeout(function(i){
-                         return function(){
-                             market.payment.zoneCode.hideCircle();
-                             market.payment.zoneCode.changeText("Code correct",svg.GREEN);
                          }
                      }(i),i*1000);
                  }
@@ -1711,10 +1702,10 @@ exports.main = function(svg,gui,param,neural) {
                 }
                 currentPage = market.pages[index].obj;
                 currentIndex = index;
-                if(currentPage==map.component) map.mapOn=true;
-                else map.mapOn=false;
-                if(currentPage==calendar.component) calendar.calendarOn=true;
-                else calendar.calendarOn=false;
+                if(currentPage==market.map.component) market.map.mapOn=true;
+                else market.map.mapOn=false;
+                if(currentPage==market.calendar.component) market.calendar.calendarOn=true;
+                else market.calendar.calendarOn=false;
             }
         });
         market.add(market.pages[i].obj);

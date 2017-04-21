@@ -838,7 +838,6 @@ describe("Test",function (){
     });
 
     it("ensures that the calendar is shown when the right code is entered",function(){
-
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
         let card = retrieve(market.component,"[payment].[card]");
@@ -972,11 +971,11 @@ describe("Test",function (){
         let picto = retrieve(market.component,"[calendar].[iconUser]");
         runtime.event(picto,"mousedown",{pageX:0,pageY:0});
         runtime.advanceAll();
-        runtime.event(picto,"mousemove",{pageX:350,pageY:500});
+        runtime.event(picto,"mousemove",{pageX:400,pageY:500});
         runtime.advanceAll();
-        runtime.event(picto,"mouseup",{pageX:350,pageY:500});
+        runtime.event(picto,"mouseup",{pageX:400,pageY:500});
         runtime.advanceAll();
-        runtime.event(picto,"mouseup",{pageX:500,pageY:500});
+        runtime.event(picto,"mouseup",{pageX:0,pageY:0});
         runtime.advanceAll();
         runtime.event(picto,"mousemove",{pageX:10,pageY:10});
         runtime.advanceAll();
