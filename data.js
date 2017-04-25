@@ -854,15 +854,38 @@ exports.data = function() {
         return {
             "1": {
                 coord: {lat : 48.841436, lng : 2.253049},
-                address: "Parc des Princes"
+                address: "Parc des Princes",
+                dist:0
             },
             "2": {
                 coord: {lat : 48.831481, lng : 2.276131},
-                address: "Aquaboulevard de Paris 4-6 Rue Louis Armand, 75015 Paris, France"
+                address: "Aquaboulevard de Paris 4-6 Rue Louis Armand, 75015 Paris, France",
+                dist:0
             },
             "3": {
-                coord: {lat : 48.847189, lng : 2.248906},
-                address: "Court Philippe Chatrier Stade Roland Garros"
+                coord: {lat : 48.848189, lng : 2.246906},
+                address: "Court Philippe Chatrier Stade Roland Garros",
+                dist:0
+            },
+            "4": {
+                coord: {lat : 48.842469, lng : 2.236247},
+                address: "50 Rue d'Aguesseau, 92100 Boulogne-Billancourt, France",
+                dist:0
+            },
+            "5": {
+                coord: {lat : 48.834027, lng : 2.255921},
+                address: "12 Rue du Point du Jour, 92100 Boulogne-Billancourt, France",
+                dist:0
+            },
+            "6": {
+                coord: {lat : 48.843412, lng : 2.236067},
+                address: "33 Rue Escudier, 92100 Boulogne-Billancourt, France",
+                dist:0
+            },
+            "7": {
+                coord: {lat : 48.83247, lng : 2.237452},
+                address: "188 Rue de Billancourt, 92100 Boulogne-Billancourt, France",
+                dist:0
             },
         }
     }

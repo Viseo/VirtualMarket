@@ -30,11 +30,12 @@
 
         let DATA = require("data").data;
         let data = DATA();
+        let Map = require("lib/map");
         let GUI = require("lib/svggui").Gui;
         let svg = SVG(targetRuntime());
         let NEURAL=require("neuralNetDrawing").neural;
         let neural=NEURAL(targetRuntime());
-        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime());
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),Map);
 
 //        var map;
 //        function initMap() {
@@ -114,6 +115,7 @@
             <!--margin: 0;-->
             <!--padding: 0;-->
         <!--}-->
+
     <!--</style>-->
 </body>
 </html>	

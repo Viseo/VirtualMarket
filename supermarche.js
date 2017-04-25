@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param,neural,targetruntime) {
+exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -557,7 +557,10 @@ exports.main = function(svg,gui,param,neural,targetruntime) {
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             // market.add(this.zoneCode.component);
-            initMap(param.data.getMarker());
+            Maps.initMap(param.data.getMarker());
+            // Maps.research("2 rue darcel, boulogne");
+
+            zoneMap.smoothy(10,20).moveTo(0,0)
 
         }
     }
@@ -1454,69 +1457,34 @@ exports.main = function(svg,gui,param,neural,targetruntime) {
         constructor(width,heigth,x,y){
             super(width,heigth,x,y);
             this.foreign = runtime.create("foreignObject");
+            runtime.attrNS(this.foreign,"style","position: absolute; left:0;top:0; border:1px solid black");
             this.divMap = runtime.createDOM('div');
             runtime.attr(this.divMap,"id","divMap");
             runtime.add(this.foreign,this.divMap);
             runtime.add(this.component.component,this.foreign);
-            runtime.attr(this.divMap,"style","height: 800px; width: 1200px; z-index: 2; position :absolute; left:0px; top: 0px;");
-            // height: 100%;
-            // width: 100%;
-            // z-index: 1000;
-            // position :absolute;
-            // left:0px;
-            // top: 0px;
-            // this.component.add(this.foreign);
-            // let map = new google.maps.Map(divMap, {
-            //     center: {lat: 48.8956, lng: 2.644},
-            //     zoom: 17
-            // });
+            this.mapHeight=market.height*1.19;
+            this.mapWidth=market.width*1.21;
+            // console.log(mapHeight,mapWidth)
+            runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+this.mapWidth+"px; z-index: -2;position: absolute; left:"+(x)+"px;top:0");
+
+            this.input = runtime.createDOM('input');
+            runtime.attr(this.input,"id","pac-input");
+            runtime.attr(this.input,"class","controls");
+            runtime.attr(this.input,"placeholder","Enter a location");
+            runtime.attr(this.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
+            runtime.add(this.foreign,this.input);
+        }
+
+        placeElements() {
+            // this.component.mark("Product basket " + this.name);
+            // this.component.position(this.mapWidth*0.05 ,this.mapHeight*0.05);
+
         }
     }
-    //////////////////////////////////////
-
-
-	// console.log(theMap);
-    ///Functions///
-    let map;
-//     function initMap() {
-//            map = new google.maps.Map(theMap.divMap, {
-//                center: {lat: 48.8956, lng: 2.644},
-//                zoom: 17
-//            });
-//            // var geocoder = new google.maps.Geocoder();
-//            // var infoWindow = new google.maps.InfoWindow({map: map});
-//            // geocodeAddress(geocoder,map);
-//
-// //            if (navigator.geolocation) {
-// //                navigator.geolocation.getCurrentPosition(function (position) {
-// //                    var pos = {
-// //                        lat: position.coords.latitude,
-// //                        lng: position.coords.longitude
-// //                    };
-// //
-// //                    infoWindow.setPosition(pos);
-// //                    infoWindow.setContent('Location found.');
-// //                    map.setCenter(pos);
-// //                }, function () {
-// //                    handleLocationError(true, infoWindow, map.getCenter());
-// //                });
-// //            } else {
-// //                // Browser doesn't support Geolocation
-// //                handleLocationError(false, infoWindow, map.getCenter());
-// //
-// //            }
-//     }
-
-
-    // var GOOGLE_MAP_KEY = "AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk";
-    // <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&callback=initMap"
-    // async defer></script>
     function loadScript() {
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        // script.src = 'https://maps.googleapis.com/maps/api/js?' +
-        //     'key=' + GOOGLE_MAP_KEY +'&callback=initMap'; //& needed
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk'; //&callback=initMap'; //& needed
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&libraries=places'; //&callback=initMap'; //& needed
         document.body.appendChild(script);
     }
 
@@ -1712,16 +1680,8 @@ exports.main = function(svg,gui,param,neural,targetruntime) {
         }
     };
     function textToSpeech(msg,language){
-        // msg=msg.replace(/ /g, "+");
-        // msg=msg.replace(/'/g, "%27");
-        // msg=msg.replace(/é/g, "%C3%A9");
-        // var audio = document.createElement('audio');
-        // audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=t-ob&q='+msg+'&tl='+language;
-        // console.log(audio.play());
-
         var speak = new SpeechSynthesisUtterance(msg);
         window.speechSynthesis.speak(speak);
-//            document.removeChild(audio);
     }
 
 
@@ -1744,8 +1704,9 @@ exports.main = function(svg,gui,param,neural,targetruntime) {
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
 
-    let theMap=new Map(0,0,0,0);
-    let zoneMap= new svg.Translation().add(theMap.component);
+    let theMap=new Map(market.width,market.height,0,0);
+    let zoneMap= new svg.Translation().add(theMap.component).move(-market.width*1.25,market.height*0.05);
+
     // runtime.attr(zoneMap,"id","map");
 
     function addAllParts()
