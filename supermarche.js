@@ -12,75 +12,98 @@ exports.main = function(svg,gui,param,neural) {
 	}
 
     class ListCategorie extends DrawingZone {
-        constructor(width,height,x,y,tabCat)
-        {
-            super(width,height,x,y);
+        constructor(width, height, x, y, tabCat) {
+            super(width, height, x, y);
 
             //Rebords
-            let rectangleBackground = new svg.Rect(width,height).position(width/2,height/2).color(svg.BLACK);
+            let rectangleBackground = new svg.Rect(width, height).position(width / 2, height / 2).color(svg.BLACK);
             this.component.add(rectangleBackground);
 
             //Rayon Actuellement Selectionné
             this.ray = null;
             this.rayTranslation = null;
             var self = this;
-            this.currentSearch=[];
+            this.currentSearch = [];
 
             this.tabCategories = tabCat;
             let listThumbnail = new svg.Translation().mark("listeCategories");
-            for(let i=0;i<this.tabCategories.length;i++) {
+            for (let i = 0; i < this.tabCategories.length; i++) {
                 let current = this.tabCategories[i];
                 current.placeElements();
-                current.move(height*i,0);
+                current.move(height * i, 0);
                 listThumbnail.add(current.component);
             }
             this.component.add(listThumbnail);
 
-            let chevronWest = new svg.Chevron(20,50,3,"W").position(30,this.component.height/2).color(svg.WHITE);
-            let chevronEast = new svg.Chevron(20,50,3,"E").position(width-30,this.component.height/2).color(svg.WHITE);
-            let ellipseChevronWest = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(30,this.component.height/2);
-            let ellipseChevronEast = new svg.Ellipse(30,40).color(svg.BLACK).opacity(0.70).position(this.component.width-30,this.component.height/2);
-            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0.2).mark("chevronWCategorie");
-            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).mark("chevronECategorie");
-
-            zoneChevronWest.onClick(function(){
-                if(listThumbnail.x+3*height<=0)
-                {
-                    if(listThumbnail.x+3*height==0)
-                    {
-                        zoneChevronWest.opacity(0.2);
+            this.previousMouseX=0;
+            this.navigation=false;
+            let mouvement = false;
+            // naviguer dans les catégories avec la souris
+            svg.addEvent(this.component, "mousedown", function (e) {
+                mouvement = true;
+                self.previousMouseX = e.pageX;
+                svg.addEvent(self.component, "mousemove", function (e) {
+                    if (mouvement) {
+                        if(self.previousMouseX!=e.pageX) self.navigation=true;
+                        listThumbnail.steppy(1, 1).moveTo(listThumbnail.x + (e.pageX - self.previousMouseX), listThumbnail.y);
+                        self.previousMouseX = e.pageX;
                     }
-                    listThumbnail.smoothy(10,20).moveTo(listThumbnail.x+height*3,listThumbnail.y);
-                    zoneChevronEast.opacity(1);
-                }
+                });
 
-                else{
-                    listThumbnail.smoothy(10, 20).moveTo(0, listThumbnail.y);
-                    zoneChevronWest.opacity(0.2);
-                    zoneChevronEast.opacity(1);
-                }
-            });
-
-            zoneChevronEast.onClick(function(){
-                let widthTotal = height*self.tabCategories.length;
-                let widthView = width;
-                let positionRight = listThumbnail.x+widthTotal;
-                if(positionRight-3*height>=widthView){
-                    if (positionRight - 3 * height == widthView) {
-                        zoneChevronEast.opacity(0.2);
+                svg.addEvent(self.component, "mouseup", function (e) {
+                    let widthTotal = height * self.tabCategories.length;
+                    let widthView = width;
+                    let positionRight = listThumbnail.x + widthTotal;
+                    mouvement = false;
+                    if (listThumbnail.x > 0) {
+                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
                     }
-                    listThumbnail.smoothy(10, 20).moveTo(listThumbnail.x - height * 3, listThumbnail.y);
-                    zoneChevronWest.opacity(1);
-                }
-                else
-                {
-                    listThumbnail.smoothy(10,20).moveTo(widthView-widthTotal,listThumbnail.y);
-                    zoneChevronEast.opacity(0.2);
-                    zoneChevronWest.opacity(1);
-                }
-            });
+                    else if (positionRight <= widthView) {
+                        listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
+                    }
+                });
 
-            this.component.add(zoneChevronEast).add(zoneChevronWest);
+                svg.addEvent(self.component, "mouseout", function (e) {
+                    if(mouvement) {
+                        let widthTotal = height * self.tabCategories.length;
+                        let widthView = width;
+                        let positionRight = listThumbnail.x + widthTotal;
+                        mouvement = false;
+                        if (listThumbnail.x > 0) {
+                            listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                        }
+                        else if (positionRight <= widthView) {
+                            listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, listThumbnail.y);
+                        }
+                        mouvement = false;
+                    }
+                });
+            });
+            // Gestion tactile pour les catégories:
+
+            svg.addEvent(this.component, "touchstart", function (e) {
+                mouvement = true;
+                self.previousMouseX = e.touches[0].clientX;
+                svg.addEvent(self.component, "touchmove", function (e) {
+                    if (mouvement) {
+                        listThumbnail.steppy(1, 1).moveTo(listThumbnail.x + (e.touches[0].clientX - self.previousMouseX), listThumbnail.y);
+                        self.previousMouseX = e.touches[0].clientX;
+                    }
+                });
+                svg.addEvent(self.component, "touchend", function (e) {
+                    let widthTotal = height * self.tabCategories.length;
+                    let widthView = width;
+                    let positionRight = listThumbnail.x + widthTotal;
+                    mouvement = false;
+                    if (listThumbnail.x > 0) {
+                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                    }
+                    else if (positionRight <= widthView) {
+                        listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
+                    }
+
+                });
+            });
         }
     }
     
@@ -207,6 +230,7 @@ exports.main = function(svg,gui,param,neural) {
             let tab = this.thumbnailsProducts;
 
             this.zoneChevronUp.onClick(function() {
+                // s'il y a de la place, je monte vers le haut
                 if ((zone.y + height / 2) < 0) {
                     chevDown.opacity(0.5);
                     zone.smoothy(10,20).moveTo(zone.x,zone.y+height/2);
@@ -236,6 +260,7 @@ exports.main = function(svg,gui,param,neural) {
             this.component.add(this.zoneChevronUp).add(this.zoneChevronDown);
 
             this.calculatePrice(0);
+
         }
 
         calculatePrice(price) {
@@ -1237,12 +1262,12 @@ exports.main = function(svg,gui,param,neural) {
 
             //GESTION SELECTION//
             let current = this;
-            this.component.onClick(function(){
-                changeRay(current.name);
+            this.component.onClick(function(e){
+                if(!categories.navigation) changeRay(current.name);
+                else categories.navigation=false;
             });
 
             this.component.onMouseEnter(function(){
-
                 current.image.opacity(0);
                 current.highlightedImage.opacity(1);
             });
