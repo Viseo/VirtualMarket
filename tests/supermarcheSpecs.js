@@ -60,37 +60,6 @@ describe("Test",function (){
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
     });
 
-    it("ensure that chevronECategorie is working",function(){
-        let categories = retrieve(market.component,"[listeCategories]");
-        let chevronW = retrieve(market.component,"[categories].[chevronWCategorie]");
-        let chevronE= retrieve(market.component,"[categories].[chevronECategorie]");
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        inspect(categories,{tag:"g",transform:"translate(-976 0)"});
-    });
-
-    it("ensure that chevronWCategorie is working",function(){
-        let categories = retrieve(market.component,"[listeCategories]");
-        let chevronW = retrieve(market.component,"[categories].[chevronWCategorie]");
-        let chevronE= retrieve(market.component,"[categories].[chevronECategorie]");
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW,"click",{});
-        runtime.advanceAll();
-        inspect(categories,{tag:"g",transform:"translate(0 0)"});
-
-    });
-
     it("ensure that chevronEray is working",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
@@ -1083,5 +1052,86 @@ describe("Test",function (){
         runtime.event(mainPage,"click",{});
         runtime.event(calendar,"click",{});
         runtime.event(mainPage,"click",{});
+    });
+
+    it("ensures that the touch-sensitive works for categories while using a mouse",function(){
+        let touchCategories = retrieve(market.component,"[listeCategories]");
+
+        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseup",{pageX:200,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseout",{pageX:200,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseout",{pageX:200,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
+        runtime.advanceAll();
+
+        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mousemove",{pageX:-1000,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseup",{pageX:-1000,pageY:50});
+        runtime.advanceAll();
+
+        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mousemove",{pageX:1000,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseup",{pageX:1000,pageY:50});
+        runtime.advanceAll();
+
+        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mousemove",{pageX:-1000,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseout",{pageX:-1000,pageY:50});
+        runtime.advanceAll();
+
+        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mousemove",{pageX:2000,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseout",{pageX:2000,pageY:50});
+        runtime.advanceAll();
+
+    });
+
+    it("ensures that the touch-sensitive works for categories (tablet)",function(){
+        let touchCategories = retrieve(market.component,"[listeCategories]");
+
+        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: 200, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchend",{touches:{0:{clientX: 200, clientY: 50}}});
+        runtime.advanceAll();
+
+        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchend",{touches:{0:{clientX: 200, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: 200, clientY: 50}}});
+        runtime.advanceAll();
+
+        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: -1000, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchend",{touches:{0:{clientX:-1000, clientY: 50}}});
+        runtime.advanceAll();
+
+        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX:100, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX:1000, clientY: 50}}});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"touchend",{touches:{0:{clientX:1000, clientY: 50}}});
+        runtime.advanceAll();
+
     });
 });
