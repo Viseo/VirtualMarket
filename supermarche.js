@@ -1,8 +1,8 @@
-exports.main = function(svg,gui,param,neural) {
+exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
-
+    let runtime=targetruntime;
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
 		constructor(width,height,x,y)
@@ -440,7 +440,7 @@ exports.main = function(svg,gui,param,neural) {
                             i++;
                             console.log(i);
                             voice = getMessage();
-                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 25) {
+                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
                                 if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
@@ -569,6 +569,11 @@ exports.main = function(svg,gui,param,neural) {
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
+            // Maps.initMap(param.data.getMarker());
+            // Maps.research("2 rue darcel, boulogne");
+
+            zoneMap.smoothy(10,20).moveTo(0,0)
+
         }
     }
 
@@ -651,6 +656,8 @@ exports.main = function(svg,gui,param,neural) {
                             }
                         }
                     }else{
+                        Maps.initMap(param.data.getMarker());
+
                         self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
@@ -1448,9 +1455,44 @@ exports.main = function(svg,gui,param,neural) {
             this.cross.position(this.width*0.90,this.height*0.1).mark("cross "+this.name).dimension(this.width*0.1,this.height*0.1).opacity(0);
         }
     }
-    //////////////////////////////////////
 
-    ///Functions///
+    class Map extends DrawingZone{
+        constructor(width,heigth,x,y){
+            super(width,heigth,x,y);
+            this.foreign = runtime.create("foreignObject");
+            runtime.attrNS(this.foreign,"style","position: absolute; left:0;top:0; border:1px solid black");
+            this.divMap = runtime.createDOM('div');
+            runtime.attr(this.divMap,"id","divMap");
+            runtime.add(this.foreign,this.divMap);
+            runtime.add(this.component.component,this.foreign);
+            this.mapHeight=market.height*1.19;
+            this.mapWidth=market.width*1.21;
+            // console.log(mapHeight,mapWidth)
+            runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+this.mapWidth+"px; z-index: -2;position: absolute; left:"+(x)+"px;top:0");
+
+            this.input = runtime.createDOM('input');
+            runtime.attr(this.input,"id","pac-input");
+            runtime.attr(this.input,"class","controls");
+            runtime.attr(this.input,"placeholder","Enter a location");
+            runtime.attr(this.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
+            runtime.add(this.foreign,this.input);
+        }
+
+        placeElements() {
+            // this.component.mark("Product basket " + this.name);
+            // this.component.position(this.mapWidth*0.05 ,this.mapHeight*0.05);
+
+        }
+    }
+    function loadScript() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&libraries=places'; //&callback=initMap'; //& needed
+        document.body.appendChild(script);
+    }
+
+    loadScript();
+
     function changeRay(name){
         let tab=[];
         if(name=="Recherche")
@@ -1529,7 +1571,9 @@ exports.main = function(svg,gui,param,neural) {
         categories=new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
         categories.currentSearch=tab;
         zoneCategories.add(categories.component);
+
         mainPage.add(zoneCategories);
+
         changeRay("Recherche");
     }
 
@@ -1681,16 +1725,8 @@ exports.main = function(svg,gui,param,neural) {
         }
     };
     function textToSpeech(msg,language){
-        // msg=msg.replace(/ /g, "+");
-        // msg=msg.replace(/'/g, "%27");
-        // msg=msg.replace(/é/g, "%C3%A9");
-        // var audio = document.createElement('audio');
-        // audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=t-ob&q='+msg+'&tl='+language;
-        // console.log(audio.play());
-
         var speak = new SpeechSynthesisUtterance(msg);
         window.speechSynthesis.speak(speak);
-//            document.removeChild(audio);
     }
 
 
@@ -1716,6 +1752,8 @@ exports.main = function(svg,gui,param,neural) {
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
     let glassDnD = new svg.Translation().mark("Glass");
+    let theMap=new Map(market.width,market.height,0,0);
+    let zoneMap= new svg.Translation().add(theMap.component).move(-market.width*1.25,market.height*0.05);
 
     //Gestion des pages
     market.calendar = new Calendar(market.width,market.height,0,0);
@@ -1724,7 +1762,7 @@ exports.main = function(svg,gui,param,neural) {
 
     let rectRed=new svg.Rect(market.width-market.width*0.04,market.height).color(svg.RED)
         .position(market.width/2,market.height/2+market.height/19);
-    market.map = {component : new svg.Translation().add(rectRed).mark("map"),mapOn:false};
+    market.map = {component : zoneMap,mapOn:false};
 
     let currentPage=mainPage;
     let currentIndex=2;
@@ -1761,6 +1799,7 @@ exports.main = function(svg,gui,param,neural) {
     market.add(glassDnD);
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
+    market.add(zoneMap);
 
     changeRay("HighTech");
     return market;
