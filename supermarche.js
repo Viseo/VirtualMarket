@@ -139,6 +139,8 @@ exports.main = function(svg,gui,param,neural) {
             }
             this.component.add(this.listThumbnailsDown).add(this.listThumbnailsUp);
 
+            this.currentDrawn=null;
+
             let chevronWest = new svg.Chevron(20, 70, 3, "W").position(30, this.component.height / 2).color(svg.WHITE);
             let chevronEast = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
             let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
@@ -377,12 +379,16 @@ exports.main = function(svg,gui,param,neural) {
         dragBasket(current) {
             let dragged = new Thumbnail(current.image.src,current.name);
             dragged.placeElementsDnD(current);
-            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
+            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
             dragged.cross.smoothy(1,1).rotateTo(-45);
             dragged.cross.position(dragged.width*0.55,dragged.height*0.71);
             dragged.component.add(dragged.cross);
             dragged.move(current.x+pageWidth*0.85,current.y+header.height);
             dragged.component.opacity(0.9).mark("dragged");
+
+            dragged.cross.onMouseUp(function(){
+                market.basket.deleteProducts(current, current.quantity);
+            });
 
             dragged.component.onMouseMove(function(e){
                 dragged.move(e.pageX-current.width/2,e.pageY-current.height/2);
@@ -1328,13 +1334,13 @@ exports.main = function(svg,gui,param,neural) {
             });
 
             function printNumber(number){
-                self.component.remove(self.waitingNumber);
-                self.waitingNumber = new svg.Text(number);
-                self.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
-                self.component.add(self.waitingNumber);
+                categories.ray.currentDrawn.component.remove(categories.ray.currentDrawn.waitingNumber);
+                categories.ray.currentDrawn.waitingNumber = new svg.Text(number);
+                categories.ray.currentDrawn.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
+                categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
-            function getNumber(number,e,element){
+            function getNumber(number,element){
                 if(number=="click") {
                     element.addAnimation("1");
                     market.basket.addProducts(self,"1");
@@ -1354,7 +1360,8 @@ exports.main = function(svg,gui,param,neural) {
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
                 self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
-                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
+                if(!categories.ray.currentDrawn) categories.ray.currentDrawn=self;
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
@@ -1476,7 +1483,6 @@ exports.main = function(svg,gui,param,neural) {
             }
         }
     }
-
 
     function search(sentence,config){
         sentence=replaceChar(sentence);
@@ -1692,7 +1698,6 @@ exports.main = function(svg,gui,param,neural) {
         window.speechSynthesis.speak(speak);
 //            document.removeChild(audio);
     }
-
 
     function replaceChar(msg){
         return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
