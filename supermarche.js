@@ -895,19 +895,22 @@ exports.main = function(svg,gui,param,neural) {
                 let place = 0;
                 self.picto.position(self.pictoPosX,self.pictoPosY);
                 if(self.currentDate!=0) place = self.currentDate.getDate()-1;
-                if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
-                    self.movement = self.movement + 4;
-                    moveY = self.caseHeight * 4;
-                }
-                else {
-                    moveY = ((self.numberDaysThisMonth-10)-(self.movement+place)) * self.caseHeight;
-                    self.movement = self.numberDaysThisMonth-10-place;
-                }
-                self.calendarPositionY = self.calendarPositionY - moveY;
-                self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
-                self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
-                for (let i = 0; i < self.calendarCases.length; i++) {
-                    self.calendarCases[i].y = self.calendarCases[i].y - moveY;
+
+                if(self.numberDaysThisMonth-place>10) {
+                    if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
+                        self.movement = self.movement + 4;
+                        moveY = self.caseHeight * 4;
+                    }
+                    else {
+                        moveY = ((self.numberDaysThisMonth - 10) - (self.movement + place)) * self.caseHeight;
+                        self.movement = self.numberDaysThisMonth - 10 - place;
+                    }
+                    self.calendarPositionY = self.calendarPositionY - moveY;
+                    self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
+                    self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
+                    for (let i = 0; i < self.calendarCases.length; i++) {
+                        self.calendarCases[i].y = self.calendarCases[i].y - moveY;
+                    }
                 }
             });
 
@@ -1508,19 +1511,36 @@ exports.main = function(svg,gui,param,neural) {
     market.vocalRecognition = function(message){
         message=replaceChar(message);
         if(message!="") {
-            if((market.map&&market.map.mapOn)||(market.calendar&&market.calendar.calendarOn)) {
-                if(market.map.mapOn) {
+            if((market.map&&market.map.mapOn)||(market.calendar&&market.calendar.calendarOn)){
+                if(market.map.mapOn){
                     let words = message.split(" ");
                     for (var i = 0; i < words.length; i++) {
-                        if (parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) {
+                        if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000)||
+                        ((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
+                        ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))) {
                             message = message.substring(message.indexOf(words[i]));
                             i=words.length;
+                            textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
+                                " voici les points relais les plus proches", "fr");
                         }
-                        else if((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
-                        ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))
-                        {
-                            message = message.substring(message.indexOf(words[i]));
+                        else if((words[i].includes("poin"))&&(words[i+1].includes("relai"))){
+                            message = message.substring(message.indexOf(words[i])).split(" ");
                             i=words.length;
+                            for(var i=0;i<message.length;i++){
+                                if((message[i]>= "0" && message[i] <= "9")||(message[i-1]=="numero")){
+                                    let selec = message[i];
+                                    if(selec=="un")selec=1;
+                                    //checkRelayPoint(selec);
+                                    console.log("POINT RELAI "+selec+" SELECTIONNE");
+                                }
+                            }
+                        }
+                        else if(words[i].includes("valide")){
+                            market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
+                            currentPage=market.calendar;
+                            currentIndex=0;
+                            market.map.mapOn=false;
+                            market.calendar.calendarOn=true;
                         }
                     }
                     console.log(message);
