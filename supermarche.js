@@ -1457,7 +1457,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         constructor(width,height,x,y){
             this.component = new svg.Translation();
             this.foreign = runtime.create("foreignObject");
-            runtime.attrNS(this.foreign,"style","position: absolute; left:0;top:0; border:1px solid black");
+            runtime.attrNS(this.foreign,"style","position: absolute; left:100;top:100; border:1px solid black");
             this.divMap = runtime.createDOM('div');
             runtime.attr(this.divMap,"id","divMap");
             runtime.add(this.foreign,this.divMap);
@@ -1467,7 +1467,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.x=x;
             this.y=y;
             runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+
-                this.mapWidth+"px;position: absolute; left:"+(x)+"px;top:"+(y)+"px;display:inline-block;");
+                this.mapWidth+"px; left:"+(this.x)+"px;top:"+(this.y)+"px;");
 
             this.input = runtime.createDOM('input');
             runtime.attr(this.input,"id","pac-input");
@@ -1475,7 +1475,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(this.input,"placeholder","Enter a location");
             runtime.attr(this.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
             runtime.add(this.foreign,this.input);
-
         }
 
         placeElements() {
@@ -1582,25 +1581,32 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 if(market.map.mapOn){
                     let words = message.split(" ");
                     for (var i = 0; i < words.length; i++) {
-                        if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000)||
+                        if((words[i].includes("poin"))&&(words[i+1].includes("relai"))) {
+                            message = message.substring(message.indexOf(words[i])).split(" ");
+                            i = words.length;
+                            let end=false;
+                            for (var i = 0; i < message.length; i++) {
+                                if ((message[i] >= "0" && message[i] <= "9") || (message[i - 1] == "numero")) {
+                                    let selec = message[i];
+                                    if (selec == "un") selec = 1;
+                                    //checkRelayPoint(selec);
+                                    console.log("POINT RELAI " + selec + " SELECTIONNE");
+                                    end = true;
+                                    break;
+                                }
+                            }
+                            if(end) break;
+                        }
+                        else if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000)||
                         ((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
                         ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))) {
                             message = message.substring(message.indexOf(words[i]));
                             i=words.length;
                             textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
                                 " voici les points relais les plus proches", "fr");
-                        }
-                        else if((words[i].includes("poin"))&&(words[i+1].includes("relai"))){
-                            message = message.substring(message.indexOf(words[i])).split(" ");
-                            i=words.length;
-                            for(var i=0;i<message.length;i++){
-                                if((message[i]>= "0" && message[i] <= "9")||(message[i-1]=="numero")){
-                                    let selec = message[i];
-                                    if(selec=="un")selec=1;
-                                    //checkRelayPoint(selec);
-                                    console.log("POINT RELAI "+selec+" SELECTIONNE");
-                                }
-                            }
+                            currentMapSearch=message;
+                            market.vocalSearch(currentMapSearch);
+                            break;
                         }
                         else if(words[i].includes("valide")){
                             market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
@@ -1608,9 +1614,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             currentIndex=0;
                             market.map.mapOn=false;
                             market.calendar.calendarOn=true;
+                            currentMapSearch= myMap.input.value;
+                            mapPage.remove(myMap.component);
+                            myMap=null;
                         }
                     }
-                    console.log(message);
                 }
                 else if(market.calendar.calendarOn){
 
@@ -1722,6 +1730,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             console.log("S'il te plait puisses-tu discuter?");
         }
     };
+
     function textToSpeech(msg,language){
         var speak = new SpeechSynthesisUtterance(msg);
         window.speechSynthesis.speak(speak);
@@ -1764,12 +1773,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.map = {component : mapPage,mapOn:false};
     let myMap = null;
     function loadMap(){
-        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.035,header.height*2);
+        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.03,header.height*2);
         mapPage.add(myMap.component);
         setTimeout(function(){
             market.vocalSearch = Maps.initMap(param.data.getMarker());
-        },200);
+            if(currentMapSearch!=""){
+                market.vocalSearch(currentMapSearch);
+            }
+        },500);
     }
+    let currentMapSearch = "";
 
     let currentPage=mainPage;
     let currentIndex=2;
@@ -1780,38 +1793,37 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         let index = i;
         market.pages[i].obj.onClick(function(){
             if(market.pages[index].active) {
-                if(index!=1){
-                    runtime.attr(myMap.divMap,"style","visibility:hidden;");
-                }
-                else{
-                    runtime.attr(myMap.divMap,"style","visibility:visible;");
-                    runtime.attr(myMap.divMap,"style","height: "+myMap.mapHeight+"px; width: "+
-                        myMap.mapWidth+"px;position: absolute; left:"+(myMap.x)+"px;top:"+(myMap.y)+"px;display:inline-block;");
-                    myMap.input = runtime.createDOM('input');
-                    runtime.attr(myMap.input,"id","pac-input");
-                    runtime.attr(myMap.input,"class","controls");
-                    runtime.attr(myMap.input,"placeholder","Enter a location");
-                    runtime.attr(myMap.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
-                }
+                if (index != currentIndex) {
+                    if (index != 1) {
+                        if(myMap!=null){
+                            currentMapSearch= myMap.input.value;
+                            mapPage.remove(myMap.component);
+                            myMap=null;
+                        }
+                    }
+                    else {
+                        loadMap();
+                    }
 
-                if (currentIndex > index) {
-                    for (let j = currentIndex; j > index; j--) {
-                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                    if (currentIndex > index) {
+                        for (let j = currentIndex; j > index; j--) {
+                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                        }
                     }
-                }
-                else {
-                    for (let j = currentIndex; j <= index; j++) {
-                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                    else {
+                        for (let j = currentIndex; j <= index; j++) {
+                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                        }
                     }
+                    currentPage = market.pages[index].obj;
+                    currentIndex = index;
+                    if (currentPage == market.map.component) market.map.mapOn = true;
+                    else market.map.mapOn = false;
+                    if (currentPage == market.calendar.component) {
+                        market.calendar.calendarOn = true;
+                    }
+                    else market.calendar.calendarOn = false;
                 }
-                currentPage = market.pages[index].obj;
-                currentIndex = index;
-                if(currentPage==market.map.component) market.map.mapOn=true;
-                else market.map.mapOn=false;
-                if(currentPage==market.calendar.component) {
-                    market.calendar.calendarOn=true;
-                }
-                else market.calendar.calendarOn=false;
             }
 
         });
