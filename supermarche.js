@@ -681,6 +681,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         }
                     }
                     else{
+                        Maps.initMap(param.data.getMarker());
                         self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
@@ -1474,7 +1475,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(this.input,"id","pac-input");
             runtime.attr(this.input,"class","controls");
             runtime.attr(this.input,"placeholder","Enter a location");
-            runtime.attr(this.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
+            runtime.attr(this.input,"style","height: 25px; width: 300px; ");
             runtime.add(this.foreign,this.input);
         }
 
