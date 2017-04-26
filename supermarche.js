@@ -575,11 +575,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
-            // Maps.initMap(param.data.getMarker());
-            // Maps.research("2 rue darcel, boulogne");
-
-            zoneMap.smoothy(10,20).moveTo(0,0)
-
         }
     }
 
@@ -662,8 +657,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             }
                         }
                     }else{
-                        Maps.initMap(param.data.getMarker());
-
+                        currentIndex=1;
+                        currentPage=market.map;
                         self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
@@ -688,6 +683,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     }
                     else{
                         self.moveMainpage();
+                        currentIndex=1;
+                        currentPage=market.map;
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -796,6 +793,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             currentPage=market.map;
             currentIndex=1;
             market.map.mapOn=true;
+            loadMap();
         }
 
         changeTimer(newTimer,color){
@@ -867,7 +865,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     class Calendar{
         constructor(width,height,x,y){
             this.component = new svg.Translation().mark("calendar");
-            this.background = new svg.Rect();
             this.title = new svg.Rect();
             this.titleText = new svg.Text("Avril");
             this.calendarFirstRow = new svg.Translation();
@@ -882,12 +879,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
             this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
             this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
-            // this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
+            this.icon = new svg.Image("img/calendarIcon.png");
 
-            this.component.add(this.background);
             this.component.add(this.title);
             this.component.add(this.titleText);
             this.component.add(this.calendarFirstColumn);
@@ -895,7 +891,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.chevronDown).add(this.chevronUp);
-            // this.component.add(this.cross);
+            this.component.add(this.icon);
 
             this.x = x;
             this.y = y;
@@ -904,10 +900,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.height = height;
 
             let self = this;
-
-            // this.cross.onClick(function(){
-            //     market.remove(market.calendar.component);
-            // });
 
             this.movement=0;
             this.picto = new svg.Image("img/panier.png").mark("iconUser");
@@ -920,7 +912,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 self.picto.onMouseMove(function(e){
                     if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
                 });
-
                 self.picto.onMouseUp(function(e){
                     onMove=false;
                     self.checkPlace(e.pageX,e.pageY);
@@ -1024,7 +1015,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.caseWidth = this.calendarWidth/12;
             this.caseHeight = this.calendarHeight/10;
             this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth,this.caseHeight);
-            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.ALMOST_WHITE).opacity(0.8);
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(1).corners(15,15);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             // this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
@@ -1037,7 +1027,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
-
+            this.icon.dimension(market.width*0.02,market.width*0.02).position(market.width*0.99,100);
 
             this.printCurrentMonthContent();
         }
@@ -1463,19 +1453,21 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     }
 
-    class Map extends DrawingZone{
-        constructor(width,heigth,x,y){
-            super(width,heigth,x,y);
+    class Map{
+        constructor(width,height,x,y){
+            this.component = new svg.Translation();
             this.foreign = runtime.create("foreignObject");
             runtime.attrNS(this.foreign,"style","position: absolute; left:0;top:0; border:1px solid black");
             this.divMap = runtime.createDOM('div');
             runtime.attr(this.divMap,"id","divMap");
             runtime.add(this.foreign,this.divMap);
             runtime.add(this.component.component,this.foreign);
-            this.mapHeight=market.height*1.19;
-            this.mapWidth=market.width*1.21;
-            // console.log(mapHeight,mapWidth)
-            runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+this.mapWidth+"px; z-index: -2;position: absolute; left:"+(x)+"px;top:0");
+            this.mapHeight=height*1.19;
+            this.mapWidth=width*1.21;
+            this.x=x;
+            this.y=y;
+            runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+
+                this.mapWidth+"px;position: absolute; left:"+(x)+"px;top:"+(y)+"px;display:inline-block;");
 
             this.input = runtime.createDOM('input');
             runtime.attr(this.input,"id","pac-input");
@@ -1483,14 +1475,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(this.input,"placeholder","Enter a location");
             runtime.attr(this.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
             runtime.add(this.foreign,this.input);
+
         }
 
         placeElements() {
-            // this.component.mark("Product basket " + this.name);
-            // this.component.position(this.mapWidth*0.05 ,this.mapHeight*0.05);
 
         }
     }
+
     function loadScript() {
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -1757,17 +1749,27 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
     let glassDnD = new svg.Translation().mark("Glass");
-    let theMap=new Map(market.width,market.height,0,0);
-    let zoneMap= new svg.Translation().add(theMap.component).move(-market.width*1.25,market.height*0.05);
 
     //Gestion des pages
-    market.calendar = new Calendar(market.width,market.height,0,0);
+    market.calendar = new Calendar(market.width*0.99,market.height,0,0);
     market.calendar.placeElements();
     let calendarPage = new svg.Translation().add(market.calendar.component);
 
-    let rectRed=new svg.Rect(market.width-market.width*0.04,market.height).color(svg.RED)
-        .position(market.width/2,market.height/2+market.height/19);
-    market.map = {component : zoneMap,mapOn:false};
+    let mapPage = new svg.Translation();
+    let icon = new svg.Image("img/mapIcon.png").dimension(market.width*0.02,market.width*0.02).position(market.width*0.97,100);
+    let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
+        .position(market.width/2,market.height/2+header.height/2).color(svg.WHITE,2,svg.BLACK);
+    mapPage.add(background);
+    mapPage.add(icon);
+    market.map = {component : mapPage,mapOn:false};
+    let myMap = null;
+    function loadMap(){
+        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.035,header.height*2);
+        mapPage.add(myMap.component);
+        setTimeout(function(){
+            market.vocalSearch = Maps.initMap(param.data.getMarker());
+        },200);
+    }
 
     let currentPage=mainPage;
     let currentIndex=2;
@@ -1778,6 +1780,20 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         let index = i;
         market.pages[i].obj.onClick(function(){
             if(market.pages[index].active) {
+                if(index!=1){
+                    runtime.attr(myMap.divMap,"style","visibility:hidden;");
+                }
+                else{
+                    runtime.attr(myMap.divMap,"style","visibility:visible;");
+                    runtime.attr(myMap.divMap,"style","height: "+myMap.mapHeight+"px; width: "+
+                        myMap.mapWidth+"px;position: absolute; left:"+(myMap.x)+"px;top:"+(myMap.y)+"px;display:inline-block;");
+                    myMap.input = runtime.createDOM('input');
+                    runtime.attr(myMap.input,"id","pac-input");
+                    runtime.attr(myMap.input,"class","controls");
+                    runtime.attr(myMap.input,"placeholder","Enter a location");
+                    runtime.attr(myMap.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
+                }
+
                 if (currentIndex > index) {
                     for (let j = currentIndex; j > index; j--) {
                         market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
@@ -1792,9 +1808,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 currentIndex = index;
                 if(currentPage==market.map.component) market.map.mapOn=true;
                 else market.map.mapOn=false;
-                if(currentPage==market.calendar.component) market.calendar.calendarOn=true;
+                if(currentPage==market.calendar.component) {
+                    market.calendar.calendarOn=true;
+                }
                 else market.calendar.calendarOn=false;
             }
+
         });
         market.add(market.pages[i].obj);
     }
@@ -1804,7 +1823,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.add(glassDnD);
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
-    market.add(zoneMap);
 
     changeRay("HighTech");
     return market;
