@@ -1468,7 +1468,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.x=x;
             this.y=y;
             runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+
-                this.mapWidth+"px;position: absolute; left:"+(x)+"px;top:"+(y)+"px;display:inline-block;");
+                this.mapWidth+"px;position: absolute; left:"+(x)+"px;top:"+(y)+"px;");
 
             this.input = runtime.createDOM('input');
             runtime.attr(this.input,"id","pac-input");
@@ -1770,6 +1770,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         setTimeout(function(){
             market.vocalSearch = Maps.initMap(param.data.getMarker());
         },200);
+
     }
 
     let currentPage=mainPage;
@@ -1782,17 +1783,20 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         market.pages[i].obj.onClick(function(){
             if(market.pages[index].active) {
                 if(index!=1){
-                    runtime.attr(myMap.divMap,"style","visibility:hidden;");
+                    console.log(runtime.attr(myMap.divMap,"style"))
+
+                    runtime.attr(myMap.divMap,"style","opacity:0;");
                 }
                 else{
-                    runtime.attr(myMap.divMap,"style","visibility:visible;");
-                    runtime.attr(myMap.divMap,"style","height: "+myMap.mapHeight+"px; width: "+
-                        myMap.mapWidth+"px;position: absolute; left:"+(myMap.x)+"px;top:"+(myMap.y)+"px;display:inline-block;");
-                    myMap.input = runtime.createDOM('input');
-                    runtime.attr(myMap.input,"id","pac-input");
-                    runtime.attr(myMap.input,"class","controls");
-                    runtime.attr(myMap.input,"placeholder","Enter a location");
-                    runtime.attr(myMap.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
+                    console.log(runtime.attr(myMap.divMap,"style"))
+                    runtime.attr(myMap.divMap,"style","border:1px solid black;");
+                    // runtime.attr(myMap.divMap,"style","height: "+myMap.mapHeight+"px; width: "+
+                    //     myMap.mapWidth+"px;position: absolute; left:"+(myMap.x)+"px;top:"+(myMap.y)+"px;display:inline-block;");
+                    // myMap.input = runtime.createDOM('input');
+                    // runtime.attr(myMap.input,"id","pac-input");
+                    // runtime.attr(myMap.input,"class","controls");
+                    // runtime.attr(myMap.input,"placeholder","Enter a location");
+                    // runtime.attr(myMap.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
                 }
 
                 if (currentIndex > index) {
