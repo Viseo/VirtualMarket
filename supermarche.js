@@ -682,6 +682,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         }
                     }
                     else{
+                        Maps.initMap(param.data.getMarker());
                         self.moveMainpage();
                         currentIndex=1;
                         currentPage=market.map;
@@ -1467,13 +1468,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.x=x;
             this.y=y;
             runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+
-                this.mapWidth+"px; left:"+(this.x)+"px;top:"+(this.y)+"px;");
+            this.mapWidth+"px; left:"+(this.x)+"px;top:"+(this.y)+"px;");
 
             this.input = runtime.createDOM('input');
             runtime.attr(this.input,"id","pac-input");
             runtime.attr(this.input,"class","controls");
             runtime.attr(this.input,"placeholder","Enter a location");
-            runtime.attr(this.input,"style","height: 25px; width: 300px;  border-color: #4d90fe ; position:absolute; top:10px");
+            runtime.attr(this.input,"style","height: 25px; width: 300px; ");
             runtime.add(this.foreign,this.input);
         }
 
@@ -1804,7 +1805,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     else {
                         loadMap();
                     }
-
                     if (currentIndex > index) {
                         for (let j = currentIndex; j > index; j--) {
                             market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
