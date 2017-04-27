@@ -1342,6 +1342,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
 
             function getNumber(number,element){
+                categories.ray.currentDrawn = null;
                 if(number=="click") {
                     element.addAnimation("1");
                     market.basket.addProducts(self,"1");

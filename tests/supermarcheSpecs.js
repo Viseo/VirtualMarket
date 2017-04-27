@@ -1066,6 +1066,8 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
         runtime.advanceAll();
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        runtime.event(categories,"click",{});
         runtime.event(touchCategories,"mouseup",{pageX:200,pageY:50});
         runtime.advanceAll();
         runtime.event(touchCategories,"mouseout",{pageX:200,pageY:50});
