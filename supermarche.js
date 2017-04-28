@@ -1595,13 +1595,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         ((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
                         ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))) {
                             message = message.substring(message.indexOf(words[i]));
+                            currentMapSearch=message;
                             i=words.length;
                             if(Maps){
                                 textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
                                     " voici les points relais les plus proches", "fr");
                                 market.mapsfunction.research(currentMapSearch);
+                                console.log(currentMapSearch);
                             }
-                            currentMapSearch=message;
                             break;
                         }
                         else if(words[i].includes("valide")){
