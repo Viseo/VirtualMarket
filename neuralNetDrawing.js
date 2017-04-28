@@ -292,6 +292,7 @@ exports.neural = function(runtime) {
                         if (isNaN(parseInt(numToSend.num))){
                             numToSend.num = "";
                             printNumber("");
+                            callback("?",prod);
                         }
                         if (numToSend.num != "") {
                             printNumber("");

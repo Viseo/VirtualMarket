@@ -198,7 +198,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         constructor(width, height, x, y) {
             super(width, height, x, y);
 
-
             let stroke = new svg.Rect(width, height).position(width / 2, height / 2);
             stroke.color(svg.WHITE,4,svg.BLACK);
             this.component.add(stroke);
@@ -305,8 +304,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 newProd.changeText(newText);
             }
 
-            newProd.component.onMouseDown(function(){
-                if(market.pages[2].obj==currentPage) self.dragBasket(newProd);
+            newProd.component.onMouseDown(function(e){
+                if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
             });
 
             this.calculatePrice(newProd.price*quantity);
@@ -376,22 +375,25 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
         }
 
-        dragBasket(current) {
+        dragBasket(current,e) {
             let dragged = new Thumbnail(current.image.src,current.name);
             dragged.placeElementsDnD(current);
-            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(1).mark("cross");
-            dragged.cross.smoothy(1,1).rotateTo(-45);
-            dragged.cross.position(dragged.width*0.55,dragged.height*0.71);
+            dragged.cross = new svg.Rect(20, 20, 2).position(dragged.width*0.90,dragged.height*0.1)
+                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
             dragged.component.add(dragged.cross);
             dragged.move(current.x+pageWidth*0.85,current.y+header.height);
             dragged.component.opacity(0.9).mark("dragged");
 
-            dragged.cross.onMouseUp(function(){
-                market.basket.deleteProducts(current, current.quantity);
+            let anchorPoint = {x:e.pageX-dragged.x,y:e.pageY-dragged.y};
+
+            let mouseInitial = {x:e.pageX,y:e.pageY};
+            dragged.cross.onMouseUp(function(e){
+                if((e.pageX==mouseInitial.x)&&(e.pageY==mouseInitial.y))
+                    market.basket.deleteProducts(current, current.quantity);
             });
 
             dragged.component.onMouseMove(function(e){
-                dragged.move(e.pageX-current.width/2,e.pageY-current.height/2);
+                dragged.move(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
             });
 
             dragged.component.onMouseUp(function(){
@@ -682,7 +684,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         }
                     }
                     else{
-                        Maps.initMap(param.data.getMarker());
                         self.moveMainpage();
                         currentIndex=1;
                         currentPage=market.map;
@@ -876,10 +877,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.monthChoice = new svg.Translation().mark("monthChoice");
             this.chevronDown = new svg.Chevron(35,20,8,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronDownCalendar");
             this.chevronUp = new svg.Chevron(35,20,8,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronUpCalendar");
-            this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
-            this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
-            this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
-            this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
+            this.chevronWest = new svg.Chevron(10, height*0.05, 2, "W").color(svg.WHITE).opacity(0.5);
+            this.chevronEast = new svg.Chevron(10, height*0.05, 2, "E").color(svg.WHITE);
+            this.ellipseChevronWest = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronEast = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
@@ -1038,6 +1039,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
             this.movement=0;
+            this.calendarFirstColumn = new svg.Translation();
+            this.calendarContent = new svg.Translation();
             this.currentDate = new Date();
             this.changeTitleText(this.month+" "+this.year);
             let tabDays = [];
@@ -1339,6 +1342,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
 
             function getNumber(number,element){
+                categories.ray.currentDrawn = null;
                 if(number=="click") {
                     element.addAnimation("1");
                     market.basket.addProducts(self,"1");
@@ -1477,20 +1481,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(this.input,"style","height: 25px; width: 300px; ");
             runtime.add(this.foreign,this.input);
         }
-
-        placeElements() {
-
-        }
     }
 
-    function loadScript() {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&libraries=places'; //&callback=initMap'; //& needed
-        document.body.appendChild(script);
-    }
-
-    loadScript();
 
     function changeRay(name){
         let tab=[];
@@ -1604,10 +1596,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))) {
                             message = message.substring(message.indexOf(words[i]));
                             i=words.length;
-                            textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
-                                " voici les points relais les plus proches", "fr");
+                            if(Maps){
+                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
+                                    " voici les points relais les plus proches", "fr");
+                                market.vocalSearch(currentMapSearch);
+                            }
                             currentMapSearch=message;
-                            market.vocalSearch(currentMapSearch);
                             break;
                         }
                         else if(words[i].includes("valide")){
@@ -1766,7 +1760,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.calendar.placeElements();
     let calendarPage = new svg.Translation().add(market.calendar.component);
 
-    let mapPage = new svg.Translation();
+    let mapPage = new svg.Translation().mark("map");
     let icon = new svg.Image("img/mapIcon.png").dimension(market.width*0.02,market.width*0.02).position(market.width*0.97,100);
     let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
         .position(market.width/2,market.height/2+header.height/2).color(svg.WHITE,2,svg.BLACK);
@@ -1778,17 +1772,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.03,header.height*2);
         mapPage.add(myMap.component);
         setTimeout(function(){
+
             market.mapsfunction = Maps.initMap(param.data.getMarker(),toCalendar);
-            // market.chooseRelai = Maps.chooseRelai;
             if(currentMapSearch!=""){
                 market.mapsfunction.research(currentMapSearch);
             }
-            // setTimeout(function(){
-            //     market.mapsfunction.chooseRelai(2);
-            //     console.log(market.mapsfunction.chooseRelai(4),'salut')
-            // },5000);
         },500);
-        // console.log(market.mapsfunction.chooseRelai(2));
     }
     function toCalendar(mess){
         currentMapSearch= myMap.input.value;
