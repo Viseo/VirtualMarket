@@ -441,19 +441,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     micro.url("img/microphone.gif");
                     setTimeout(function () {
                         stopRecording();
+                        micro.url("img/microphoneload.gif");
                         console.log("je record plus");
-                        micro.url("img/microphone-deactivated.png");
                         let i = 0;
                         timer = setInterval(function () {
                             i++;
-                            console.log(i);
                             voice = getMessage();
                             if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
                                 if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
                                 else if (voice['confidence'] > 0.5) {
-                                    // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
                                     market.vocalRecognition(voice['transcript']);
                                 }
                                 else {
@@ -465,8 +463,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                 voice = [];
                                 recording = false;
                             }
+                            micro.url("img/microphone-deactivated.png");
                         }, 200);
                     }, 4000);
+
                 }
             });
         }
@@ -1584,7 +1584,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if (selec == "un") selec = 1;
                                     //checkRelayPoint(selec);
                                     console.log("POINT RELAI " + selec + " SELECTIONNE");
-                                    toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
+                                    if(Maps)toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
                                     end = true;
                                     break;
                                 }
@@ -1599,7 +1599,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             if(Maps){
                                 textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
                                     " voici les points relais les plus proches", "fr");
-                                market.vocalSearch(currentMapSearch);
+                                market.mapsfunction.research(currentMapSearch);
                             }
                             currentMapSearch=message;
                             break;
@@ -1772,10 +1772,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.03,header.height*2);
         mapPage.add(myMap.component);
         setTimeout(function(){
-
-            market.mapsfunction = Maps.initMap(param.data.getMarker(),toCalendar);
-            if(currentMapSearch!=""){
-                market.mapsfunction.research(currentMapSearch);
+            if(Maps) {
+                market.mapsfunction = Maps.initMap(param.data.getMarker(), toCalendar);
+                if (currentMapSearch != "") {
+                    market.mapsfunction.research(currentMapSearch);
+                }
             }
         },500);
     }
@@ -1784,7 +1785,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mapPage.remove(myMap.component);
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-        console.log('l\'adresse est : '+mess)
+        console.log('l\'adresse est : '+mess);
 
         setTimeout(function () {
             currentPage = market.pages[0].obj;
@@ -1817,7 +1818,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if (currentIndex > index) {
                         for (let j = currentIndex; j > index; j--) {
                             market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-                            console.log('cest la',j)
                         }
                     }
                     else {
