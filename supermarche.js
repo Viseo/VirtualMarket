@@ -1592,6 +1592,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if (selec == "un") selec = 1;
                                     //checkRelayPoint(selec);
                                     console.log("POINT RELAI " + selec + " SELECTIONNE");
+                                    toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
                                     end = true;
                                     break;
                                 }
@@ -1777,11 +1778,30 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.03,header.height*2);
         mapPage.add(myMap.component);
         setTimeout(function(){
-            market.vocalSearch = Maps.initMap(param.data.getMarker());
+            market.mapsfunction = Maps.initMap(param.data.getMarker(),toCalendar);
+            // market.chooseRelai = Maps.chooseRelai;
             if(currentMapSearch!=""){
-                market.vocalSearch(currentMapSearch);
+                market.mapsfunction.research(currentMapSearch);
             }
+            // setTimeout(function(){
+            //     market.mapsfunction.chooseRelai(2);
+            //     console.log(market.mapsfunction.chooseRelai(4),'salut')
+            // },5000);
         },500);
+        // console.log(market.mapsfunction.chooseRelai(2));
+    }
+    function toCalendar(mess){
+        currentMapSearch= myMap.input.value;
+        mapPage.remove(myMap.component);
+        myMap=null;
+        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+        console.log('l\'adresse est : '+mess)
+
+        setTimeout(function () {
+            currentPage = market.pages[0].obj;
+            currentIndex = 0;
+        },200)
+
     }
     let currentMapSearch = "";
 
@@ -1808,6 +1828,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if (currentIndex > index) {
                         for (let j = currentIndex; j > index; j--) {
                             market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                            console.log('cest la',j)
                         }
                     }
                     else {
