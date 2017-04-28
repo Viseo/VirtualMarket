@@ -96,7 +96,7 @@ exports.main = function(svg,gui,param,neural) {
                     let positionRight = listThumbnail.x + widthTotal;
                     mouvement = false;
                     if (listThumbnail.x > 0) {
-                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                        listThumbnail.smoothy(10, 10).moveTo(0,0);
                     }
                     else if (positionRight <= widthView) {
                         listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
@@ -195,7 +195,6 @@ exports.main = function(svg,gui,param,neural) {
     class Basket extends DrawingZone {
         constructor(width, height, x, y) {
             super(width, height, x, y);
-
 
             let stroke = new svg.Rect(width, height).position(width / 2, height / 2);
             stroke.color(svg.WHITE,4,svg.BLACK);
@@ -303,7 +302,12 @@ exports.main = function(svg,gui,param,neural) {
                 newProd.changeText(newText);
             }
 
+             // le mousedown pour le drag and drop du panier vers le rayon
             newProd.component.onMouseDown(function(){
+                if(market.pages[2].obj==currentPage) self.dragBasket(newProd);
+            });
+
+            svg.addEvent(newProd.component, "touchstart", function (e) {
                 if(market.pages[2].obj==currentPage) self.dragBasket(newProd);
             });
 
@@ -375,37 +379,49 @@ exports.main = function(svg,gui,param,neural) {
         }
 
         dragBasket(current) {
-            let dragged = new Thumbnail(current.image.src,current.name);
+            let dragged = new Thumbnail(current.image.src, current.name);
             dragged.placeElementsDnD(current);
             dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
-            dragged.cross.smoothy(1,1).rotateTo(-45);
-            dragged.cross.position(dragged.width*0.55,dragged.height*0.71);
+            dragged.cross.smoothy(1, 1).rotateTo(-45);
+            dragged.cross.position(dragged.width * 0.55, dragged.height * 0.71);
             dragged.component.add(dragged.cross);
-            dragged.move(current.x+pageWidth*0.85,current.y+header.height);
+            dragged.move(current.x + pageWidth * 0.85, current.y+this.listProducts.y + header.height);
             dragged.component.opacity(0.9).mark("dragged");
 
-            dragged.component.onMouseMove(function(e){
-                dragged.move(e.pageX-current.width/2,e.pageY-current.height/2);
+            dragged.component.onMouseMove(function (e) {
+                dragged.move(e.pageX - current.width / 2, e.pageY - current.height / 2);
             });
 
-            dragged.component.onMouseUp(function(){
-                if((dragged.x+dragged.width/2<pageWidth*0.85)&&(dragged.y+dragged.height/2>market.height*0.20)){
+            dragged.component.onMouseUp(function () {
+                if ((dragged.x + dragged.width / 2 < pageWidth * 0.85) && (dragged.y + dragged.height / 2 > market.height * 0.20)) {
                     market.basket.deleteProducts(current, 1);
                     changeRay(current.categorie);
                 }
                 glassDnD.remove(dragged.component);
             });
 
+            //// gestion tactile du panier vers le rayon:
+            svg.addEvent(current.component, "touchmove", function (e) {
+                dragged.move(e.touches[0].clientX - current.width / 2, e.touches[0].clientY - current.height / 2);
+            });
+            svg.addEvent(current.component, "touchend", function () {
+                if ((dragged.x + dragged.width / 2 < pageWidth * 0.85) && (dragged.y + dragged.height / 2 > market.height * 0.20)) {
+                    market.basket.deleteProducts(current, 1);
+                    changeRay(current.categorie);
+                }
+                glassDnD.remove(dragged.component);
+            });
             glassDnD.add(dragged.component);
             market.add(glassDnD);
         }
 
-        emptyBasket() {
-            for (var i=this.thumbnailsProducts.length-1; i>=0; i--){
-                market.basket.deleteProducts(this.thumbnailsProducts[i],this.thumbnailsProducts[i].quantity);
+        emptyBasket(){
+            for (var i = this.thumbnailsProducts.length - 1; i >= 0; i--) {
+                market.basket.deleteProducts(this.thumbnailsProducts[i], this.thumbnailsProducts[i].quantity);
             }
-            this.thumbnailsProducts.splice(0,this.thumbnailsProducts.length);
+            this.thumbnailsProducts.splice(0, this.thumbnailsProducts.length);
         }
+
     }
     
     class Header extends DrawingZone{
@@ -1352,9 +1368,21 @@ exports.main = function(svg,gui,param,neural) {
                 mousePos = {x:e.pageX,y:e.pageY};
                 self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
                 neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
+                runtime.event(self.drawNumber,"touchstart",{touches:{0:{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}}});
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
+            // gestion tactile pour le dessin:
+            let touchPos ={};
+            this.drawNumber = null;
+            svg.addEvent(this.component, "touchstart", function (e) {
+                touchPos = {x:e.touches[0].clientX,y:e.touches[0].clientY};
+                self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
+                glassCanvas.add(self.drawNumber);
+                self.drawNumber.opacity(0);
+            });
+
         }
 
         placeElements(place) {
