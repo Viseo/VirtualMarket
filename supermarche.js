@@ -1584,7 +1584,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if (selec == "un") selec = 1;
                                     //checkRelayPoint(selec);
                                     console.log("POINT RELAI " + selec + " SELECTIONNE");
-                                    toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
+                                    if(Maps)toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
                                     end = true;
                                     break;
                                 }
@@ -1773,9 +1773,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mapPage.add(myMap.component);
         setTimeout(function(){
 
-            market.mapsfunction = Maps.initMap(param.data.getMarker(),toCalendar);
-            if(currentMapSearch!=""){
-                market.mapsfunction.research(currentMapSearch);
+            if(Maps) {
+                market.mapsfunction = Maps.initMap(param.data.getMarker(), toCalendar);
+                if (currentMapSearch != "") {
+                    market.mapsfunction.research(currentMapSearch);
+                }
             }
         },500);
     }
@@ -1784,7 +1786,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mapPage.remove(myMap.component);
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-        console.log('l\'adresse est : '+mess)
 
         setTimeout(function () {
             currentPage = market.pages[0].obj;
