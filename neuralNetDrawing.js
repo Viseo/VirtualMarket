@@ -307,7 +307,7 @@ exports.neural = function(runtime) {
             }
         });
 
-        runtime.addEvent(drawingArea.canvas,'mousemove', function (e) {
+        runtime.addEvent(drawingArea.canvasDiv,'mousemove', function (e) {
             drawingArea.ev_canvas(e,"mousemove");
         }, true);
         /*runtime.addEvent(drawingArea.canvas,'touchstart', function (e) {
