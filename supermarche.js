@@ -1598,11 +1598,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             currentMapSearch=message;
                             i=words.length;
                             if(Maps){
-                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
-                                    " voici les points relais les plus proches", "fr");
+                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à "+ message +
+                                    ". Voici les points relais les plus proches", "fr");
                                 market.mapsfunction.research(currentMapSearch);
                                 console.log(currentMapSearch);
                             }
+
                             break;
                         }
                         else if(words[i].includes("valide")){
