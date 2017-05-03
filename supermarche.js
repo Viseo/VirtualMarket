@@ -1720,13 +1720,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         ((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
                         ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))) {
                             message = message.substring(message.indexOf(words[i]));
+                            currentMapSearch=message;
                             i=words.length;
                             if(Maps){
-                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
-                                    " voici les points relais les plus proches", "fr");
+                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à "+ message +
+                                    ". Voici les points relais les plus proches", "fr");
                                 market.mapsfunction.research(currentMapSearch);
+                                console.log(currentMapSearch);
                             }
-                            currentMapSearch=message;
+
                             break;
                         }
                         else if(words[i].includes("valide")){
@@ -1910,7 +1912,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mapPage.remove(myMap.component);
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-        console.log('l\'adresse est : '+mess);
 
         setTimeout(function () {
             currentPage = market.pages[0].obj;
