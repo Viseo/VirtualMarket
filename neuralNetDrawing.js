@@ -101,6 +101,7 @@ exports.neural = function(runtime) {
             ev_canvas: function (ev,control) {
                 ev._x = Math.round(ev.pageX * 1.25);
                 ev._y = Math.round(ev.pageY * 1.25);
+
                 if (ev.type === 'mousemove'||control=="mousemove") {
                     if(this.currentX!=0&&this.currentY!=0) {
                         let dx = ev._x - this.currentX;
@@ -121,6 +122,30 @@ exports.neural = function(runtime) {
                     this.currentX=ev._x;
                     this.currentY=ev._y;
                 }
+
+                else if (ev.type === 'touchmove'||control=="touchmove") {
+                    ev.touchX=Math.round(ev.touches[0].clientX*1.25);
+                    ev.touchY=Math.round(ev.touches[0].clientY*1.25);
+                    if(this.currentX!=0&&this.currentY!=0) {
+                        let dx = ev.touchX - this.currentX;
+                        let dy = ev.touchY- this.currentY;
+                        if (dx < 0) {
+                            for (var i = ev.touchX; i < this.currentX; i++) {
+                                let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
+                                this.drawing[i][y] = 1;
+                            }
+                        }
+                        else {
+                            for (var i = ev.touchX; i > this.currentX; i--) {
+                                let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
+                                this.drawing[i][y] = 1;
+                            }
+                        }
+                    }
+                    this.currentX=ev.touchX;
+                    this.currentY=ev.touchY;
+                }
+
                 // This is called when you release the mouse button.
                 else if(ev.type === 'mouseup'||control=="mouseup"){
                     if (this.started) {
@@ -128,29 +153,13 @@ exports.neural = function(runtime) {
                         ENCOG.drawingDelete(this.glass,this.element);
                     }
                 }
-                /*else if (ev.type === 'mouseout'||control=="mouseout") {
-                 if (this.started) {
-                 this.started = false;
-                 ENCOG.Drawing.delete(this.glass,this.element);
-                 }
-                 }
-                 /*else if (ev.type === 'touchstart') {
-                 this.drawingContext.beginPath();
-                 this.drawingContext.moveTo(ev._x, ev._y);
-                 this.started = true;
-                 }
-                 else if (ev.type === 'touchend') {
-                 if (this.started) {
-                 this.started = false;
-                 }
-                 }
-                 else if (ev.type === 'touchmove') {
-                 if (this.started) {
-                 this.drawingContext.lineTo(ev._x, ev._y);
-                 this.drawingContext.stroke();
-                 ev.preventDefault();
-                 }
-                 }*/
+
+                else if(ev.type === 'touchend'||control=="touchend"){
+                    if (this.started) {
+                        this.started = false;
+                        ENCOG.drawingDelete(this.glass,this.element);
+                    }
+                }
             },
 
             isHLineClear: function (row) {
@@ -184,7 +193,6 @@ exports.neural = function(runtime) {
                 while (this.isHLineClear(bottom) && bottom > 0) {
                     bottom--;
                 }
-
                 left = 0;
                 while (this.isVLineClear(left) && left < this.width - 1) {
                     left++;
@@ -194,7 +202,6 @@ exports.neural = function(runtime) {
                 while (this.isVLineClear(right) && right > 0) {
                     right--;
                 }
-
 
                 if (bottom < top) {
                     result = ENCOG.allocate1D(this.downsampleHeight * this.downsampleWidth);
@@ -310,18 +317,54 @@ exports.neural = function(runtime) {
         runtime.addEvent(drawingArea.canvasDiv,'mousemove', function (e) {
             drawingArea.ev_canvas(e,"mousemove");
         }, true);
-        /*runtime.addEvent(drawingArea.canvas,'touchstart', function (e) {
-         drawingArea.ev_canvas(e);
-         }, true);
-         runtime.addEvent(drawingArea.canvas,'touchend', function (e) {
-         drawingArea.ev_canvas(e);
-         }, true);
-         runtime.addEvent(drawingArea.canvas,'touchmove', function (e) {
-         drawingArea.ev_canvas(e);
-         }, true);
-         runtime.addEvent(drawingArea.canvas,'mouseout', function (e) {
-         drawingArea.ev_canvas(e,"mouseout");
-         }, true);*/
+        runtime.addEvent(drawingArea.canvas,'touchend', function (e) {
+            if(numToSend.element=="") numToSend.element=name;
+            bestchar = ev_recognize();
+            drawingArea.ev_canvas(e, "touchend");
+            if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
+            else numToSend.num += bestchar;
+            if(numToSend.num.length<3) {
+                printNumber(numToSend.num+"_");
+            }
+            else {
+                printNumber(numToSend.num);
+            }
+            if (numToSend.num == "click") {
+                clearTimeout();
+                printNumber("");
+                callback(numToSend.num, e, prod);
+                numToSend.num = "";
+                numToSend.element = "";
+            }
+            else {
+                if (!set) {
+                    set=true;
+                    setTimeout((function () {
+                        drawingArea.ev_canvas(e, "touchend");
+                        if (isNaN(parseInt(numToSend.num))){
+                            numToSend.num = "";
+                            printNumber("");
+                            callback("?",prod);
+                        }
+                        if (numToSend.num != "") {
+                            printNumber("");
+                            callback(numToSend.num, prod);
+                        }
+                        numToSend.num = "";
+                        numToSend.element = "";
+                        ondraw = false;
+                        set = false;
+                    }), 2500);
+                }
+            }
+        }, true);
+
+        runtime.addEvent(drawingArea.canvas,'touchmove', function (e) {
+            drawingArea.ev_canvas(e);
+        }, true);
+        runtime.addEvent(drawingArea.canvas,'mouseout', function (e) {
+            drawingArea.ev_canvas(e,"mouseout");
+        }, true);
 
         function ev_recognize() {
             downSampleData = drawingArea.performDownSample();
@@ -361,23 +404,6 @@ exports.neural = function(runtime) {
                 }
             }
 
-            for (var q in charData[bestChar]) {
-                if (q % 5 == 0) {
-
-                    if (charData[bestChar][q] == "-1") {
-                        charchosen += "\n0,";
-                    } else {
-                        charchosen += "\n" + charData[bestChar][q] + ",";
-                    }
-                } else {
-                    if (charData[bestChar][q] == "-1") {
-                        charchosen += "0,";
-                    } else {
-                        charchosen += charData[bestChar][q] + ",";
-                    }
-                }
-            }
-
             if(bestScore>6.5) bestChar="?";
             drawingArea.clear();
             clearDownSample();
@@ -412,3 +438,4 @@ exports.neural = function(runtime) {
         init_draw : init_draw,
     }
 };
+
