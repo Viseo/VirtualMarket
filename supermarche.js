@@ -96,7 +96,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let positionRight = listThumbnail.x + widthTotal;
                     mouvement = false;
                     if (listThumbnail.x > 0) {
-                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                        listThumbnail.smoothy(10, 10).moveTo(0,0);
                     }
                     else if (positionRight <= widthView) {
                         listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
@@ -216,21 +216,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.printPrice = new svg.Text(this.totalPrice);
             this.component.add(this.printPrice);
 
-            let chevronUp = new svg.Chevron(70, 20, 3, "N").position(this.component.width / 2, 50).color(svg.WHITE);
-            let chevronDown = new svg.Chevron(70, 20, 3, "S").position(this.component.width / 2, this.component.height - 100)
-                .color(svg.WHITE);
-            let ellipseChevronUp = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40).position(this.component.width / 2, 50);
-            let ellipseChevronDown = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40)
-                .position(this.component.width / 2, this.component.height - 100);
-            this.zoneChevronUp = new svg.Translation().add(ellipseChevronUp).add(chevronUp).opacity(0).mark("chevronUpBasket");
-            this.zoneChevronDown = new svg.Translation().add(ellipseChevronDown).add(chevronDown).opacity(0).mark("chevronDownBasket");
-
-            let chevDown = this.zoneChevronDown;
-            let chevUp = this.zoneChevronUp;
-            let zone = this.listProducts;
-            let tab = this.thumbnailsProducts;
-
-            this.zoneChevronUp.onClick(function() {
+            /*this.zoneChevronUp.onClick(function() {
                 // s'il y a de la place, je monte vers le haut
                 if ((zone.y + height / 2) < 0) {
                     chevDown.opacity(0.5);
@@ -257,8 +243,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         chevDown.opacity(0);
                     }
                 }
-            });
-            this.component.add(this.zoneChevronUp).add(this.zoneChevronDown);
+            });*/
 
             this.calculatePrice(0);
 
@@ -305,6 +290,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
 
             newProd.component.onMouseDown(function(e){
+                if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
+            });
+
+            svg.addEvent(newProd.component, "touchstart", function (e) {
                 if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
             });
 
@@ -375,45 +364,168 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
         }
 
+
         dragBasket(current,e) {
-            let dragged = new Thumbnail(current.image.src,current.name);
-            dragged.placeElementsDnD(current);
-            dragged.cross = new svg.Rect(20, 20, 2).position(dragged.width*0.90,dragged.height*0.1)
-                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
-            dragged.component.add(dragged.cross);
-            dragged.move(current.x+pageWidth*0.85,current.y+header.height);
-            dragged.component.opacity(0.9).mark("dragged");
+            var self =this;
+            if(e.type=="mousedown"){
+                let mouseInitial = {x:e.pageX,y:e.pageY};
+                let lookingForDir=true;
+                current.component.onMouseMove(function(e){
+                    if((!self.direction)&&lookingForDir){
+                        if(Math.abs(e.pageX-mouseInitial.x)>Math.abs(e.pageY-mouseInitial.y)*1.5){
+                            if(e.pageX<mouseInitial.x){
+                                self.dragged = new Thumbnail(current.image.src, current.name);
+                                self.dragged.placeElementsDnD(current);
+                                self.dragged.cross = new svg.Rect(20, 20, 2).position(self.dragged.width * 0.90, self.dragged.height * 0.1)
+                                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
+                                self.dragged.component.add(self.dragged.cross);
+                                self.dragged.move(current.x + pageWidth * 0.85, current.y + self.listProducts.y + header.height);
+                                self.dragged.component.opacity(0.9).mark("dragged");
+                                glassDnD.add(self.dragged.component);
+                                market.add(glassDnD);
 
-            let anchorPoint = {x:e.pageX-dragged.x,y:e.pageY-dragged.y};
+                                let anchorPoint = {x:e.pageX-self.dragged.x,y:e.pageY-self.dragged.y};
+                                self.dragged.cross.onMouseUp(function(e){
+                                    if((e.pageX==mouseInitial.x)&&(e.pageY==mouseInitial.y))
+                                        market.basket.deleteProducts(current, current.quantity);
+                                });
 
-            let mouseInitial = {x:e.pageX,y:e.pageY};
-            dragged.cross.onMouseUp(function(e){
-                if((e.pageX==mouseInitial.x)&&(e.pageY==mouseInitial.y))
-                    market.basket.deleteProducts(current, current.quantity);
-            });
+                                self.dragged.component.onMouseMove(function(e){
+                                    self.dragged.move(e.pageX - anchorPoint.x, e.pageY - anchorPoint.y);
+                                });
 
-            dragged.component.onMouseMove(function(e){
-                dragged.move(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
-            });
+                                self.dragged.component.onMouseUp(function () {
+                                    if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85)
+                                            && (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
+                                        market.basket.deleteProducts(current, 1);
+                                        changeRay(current.categorie);
+                                    }
+                                    glassDnD.remove(self.dragged.component);
+                                    self.direction=null;
+                                });
 
-            dragged.component.onMouseUp(function(){
-                if((dragged.x+dragged.width/2<pageWidth*0.85)&&(dragged.y+dragged.height/2>market.height*0.20)){
-                    market.basket.deleteProducts(current, 1);
-                    changeRay(current.categorie);
-                }
-                glassDnD.remove(dragged.component);
-            });
+                                self.direction = "LEFT";
+                            }
+                            else{
+                                self.direction = "RIGHT";
+                            }
+                        }
+                        else{
+                            self.direction = "VERTICAL";
+                            // naviguer dans le panier avec la souris
+                            self.previousMouseY = e.pageY;
+                            svg.addEvent(self.component, "mousemove", function (e) {
+                                if(self.direction=="VERTICAL") {
+                                    self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
+                                        self.listProducts.y+(e.pageY - self.previousMouseY));
+                                    self.previousMouseY = e.pageY;
+                                }
+                            });
 
-            glassDnD.add(dragged.component);
-            market.add(glassDnD);
-        }
+                            svg.addEvent(self.component, "mouseup", function (e) {
+                                /*let widthTotal = height * self.tabCategories.length;
+                                let widthView = width;
+                                let positionRight = listThumbnail.x + widthTotal;
+                                mouvement = false;
+                                if (listThumbnail.x > 0) {
+                                    listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                                }
+                                else if (positionRight <= widthView) {
+                                    listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
+                                }*/
+                                self.direction=null;
+                            });
 
-        emptyBasket() {
-            for (var i=this.thumbnailsProducts.length-1; i>=0; i--){
-                market.basket.deleteProducts(this.thumbnailsProducts[i],this.thumbnailsProducts[i].quantity);
+                            svg.addEvent(self.component, "mouseout", function (e) {
+                                /*if(mouvement) {
+                                    let widthTotal = height * self.tabCategories.length;
+                                    let widthView = width;
+                                    let positionRight = listThumbnail.x + widthTotal;
+                                    mouvement = false;
+                                    if (listThumbnail.x > 0) {
+                                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                                    }
+                                    else if (positionRight <= widthView) {
+                                        listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, listThumbnail.y);
+                                    }
+                                    mouvement = false;
+                                }*/
+                                self.direction=null;
+                            });
+                        }
+                        console.log(self.direction);
+                    }
+                    lookingForDir=false;
+                });
             }
-            this.thumbnailsProducts.splice(0,this.thumbnailsProducts.length);
+            else {
+                let touchInitial = {x:e.touches[0].clientX,y:e.touches[0].clientY};
+                //// gestion tactile du panier vers le rayon:
+                self.previousTouchY = e.touches[0].clientY;
+                svg.addEvent(current.component, "touchmove", function (e) {
+                    if(!self.direction){
+                        if(Math.abs(e.touches[0].clientX-touchInitial.x)>Math.abs(e.touches[0].clientY-touchInitial.y)){
+                            if(e.touches[0].clientX<touchInitial.x) {
+                                self.dragged = new Thumbnail(current.image.src, current.name);
+                                self.dragged.placeElementsDnD(current);
+                                self.dragged.cross = new svg.Rect(20, 20, 2).position(self.dragged.width * 0.90, self.dragged.height * 0.1)
+                                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
+                                self.dragged.component.add(self.dragged.cross);
+                                self.dragged.move(current.x + pageWidth * 0.85, current.y + self.listProducts.y + header.height);
+                                self.dragged.component.opacity(0.9).mark("dragged");
+                                glassDnD.add(self.dragged.component);
+                                market.add(glassDnD);
+                                console.log("L");
+                                self.direction="LEFT";
+                            }
+                            else{
+                                self.direction = "RIGHT";
+                            }
+                        }
+                        else{
+                            self.direction = "VERTICAL";
+                        }
+
+                    }
+
+                    switch(self.direction){
+                        case "LEFT":
+                            self.dragged.move(e.touches[0].clientX - current.width / 2, e.touches[0].clientY - current.height / 2);
+                            break;
+                        case "VERTICAL":
+                            if(self.direction=="VERTICAL"){
+                                self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
+                                    self.listProducts.y+(e.touches[0].clientY - self.previousTouchY));
+                                self.previousTouchY = e.touches[0].clientY;
+                            }
+                            break;
+
+                    }
+                });
+                svg.addEvent(current.component, "touchend", function () {
+                    if(self.direction=="LEFT") {
+                        if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85) &&
+                                    (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
+                            market.basket.deleteProducts(current, 1);
+                            changeRay(current.categorie);
+                        }
+                        glassDnD.remove(self.dragged.component);
+
+                    }
+
+                    self.direction=null;
+                });
+            }
+
         }
+
+        emptyBasket(){
+            for (var i = this.thumbnailsProducts.length - 1; i >= 0; i--) {
+                market.basket.deleteProducts(this.thumbnailsProducts[i], this.thumbnailsProducts[i].quantity);
+            }
+            this.thumbnailsProducts.splice(0, this.thumbnailsProducts.length);
+        }
+
     }
     
     class Header extends DrawingZone{
@@ -1371,6 +1483,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
+            // gestion tactile pour le dessin:
+            let touchPos ={};
+            this.drawNumber = null;
+            svg.addEvent(this.component, "touchstart", function (e) {
+                touchPos = {x:e.touches[0].clientX,y:e.touches[0].clientY};
+                self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,self,glassCanvas);
+                if(!categories.ray.currentDrawn) categories.ray.currentDrawn=self;
+                runtime.event(self.drawNumber,"touchstart",{touches:{0:{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}}});
+                glassCanvas.add(self.drawNumber);
+                self.drawNumber.opacity(0);
+            });
+
         }
 
         placeElements(place) {
@@ -1601,11 +1726,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             currentMapSearch=message;
                             i=words.length;
                             if(Maps){
-                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
-                                    " voici les points relais les plus proches", "fr");
+                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à "+ message +
+                                    ". Voici les points relais les plus proches", "fr");
                                 market.mapsfunction.research(currentMapSearch);
                                 console.log(currentMapSearch);
                             }
+
                             break;
                         }
                         else if(words[i].includes("valide")){
@@ -1789,7 +1915,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mapPage.remove(myMap.component);
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-        console.log('l\'adresse est : '+mess);
 
         setTimeout(function () {
             currentPage = market.pages[0].obj;
