@@ -450,20 +450,24 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
-                                if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
+                                if (i == 25) {
+                                    textToSpeech("Je n'ai rien entendu", "FR");
+                                    micro.url("img/microphone-deactivated.png");
+                                }
                                 else if (voice['confidence'] > 0.5) {
                                     market.vocalRecognition(voice['transcript']);
+                                    micro.url("img/microphone-deactivated.png");
                                 }
                                 else {
                                     console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
                                     textToSpeech("Je n'ai pas bien compris votre demande", "fr");
-
+                                    micro.url("img/microphone-deactivated.png");
                                 }
                                 i = 0;
                                 voice = [];
                                 recording = false;
                             }
-                            micro.url("img/microphone-deactivated.png");
+
                         }, 200);
                     }, 4000);
 
@@ -1582,9 +1586,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                 if ((message[i] >= "0" && message[i] <= "9") || (message[i - 1] == "numero")) {
                                     let selec = message[i];
                                     if (selec == "un") selec = 1;
-                                    //checkRelayPoint(selec);
                                     console.log("POINT RELAI " + selec + " SELECTIONNE");
-                                    if(Maps)toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
+                                    if(Maps)toCalendar(market.mapsfunction.chooseRelai(selec));
                                     end = true;
                                     break;
                                 }
