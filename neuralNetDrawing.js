@@ -265,7 +265,7 @@ exports.neural = function(runtime) {
     var set = false;
     var ondraw=false;
 
-    function init_draw(element,x,y,name,callback,printNumber,e,prod,glass) {
+    function init_draw(element,x,y,name,callback,printNumber,prod,glass) {
         let drawingArea;
         let bestchar;
         ondraw=true;
@@ -287,7 +287,7 @@ exports.neural = function(runtime) {
             if (numToSend.num == "click") {
                 clearTimeout();
                 printNumber("");
-                callback(numToSend.num, e, prod);
+                callback(numToSend.num, prod);
                 numToSend.num = "";
                 numToSend.element = "";
             }
@@ -299,10 +299,11 @@ exports.neural = function(runtime) {
                         if (isNaN(parseInt(numToSend.num))){
                             numToSend.num = "";
                             printNumber("");
+                            callback("?",prod);
                         }
                         if (numToSend.num != "") {
                             printNumber("");
-                            callback(numToSend.num, e, prod);
+                            callback(numToSend.num, prod);
                         }
                         numToSend.num = "";
                         numToSend.element = "";
@@ -343,10 +344,11 @@ exports.neural = function(runtime) {
                         if (isNaN(parseInt(numToSend.num))){
                             numToSend.num = "";
                             printNumber("");
+                            callback("?",prod);
                         }
                         if (numToSend.num != "") {
                             printNumber("");
-                            callback(numToSend.num, e, prod);
+                            callback(numToSend.num, prod);
                         }
                         numToSend.num = "";
                         numToSend.element = "";

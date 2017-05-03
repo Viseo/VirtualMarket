@@ -1,8 +1,8 @@
-exports.main = function(svg,gui,param,neural) {
+exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
-
+    let runtime=targetruntime;
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
 		constructor(width,height,x,y)
@@ -139,6 +139,8 @@ exports.main = function(svg,gui,param,neural) {
             }
             this.component.add(this.listThumbnailsDown).add(this.listThumbnailsUp);
 
+            this.currentDrawn=null;
+
             let chevronWest = new svg.Chevron(20, 70, 3, "W").position(30, this.component.height / 2).color(svg.WHITE);
             let chevronEast = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
             let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
@@ -214,21 +216,7 @@ exports.main = function(svg,gui,param,neural) {
             this.printPrice = new svg.Text(this.totalPrice);
             this.component.add(this.printPrice);
 
-            let chevronUp = new svg.Chevron(70, 20, 3, "N").position(this.component.width / 2, 50).color(svg.WHITE);
-            let chevronDown = new svg.Chevron(70, 20, 3, "S").position(this.component.width / 2, this.component.height - 100)
-                .color(svg.WHITE);
-            let ellipseChevronUp = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40).position(this.component.width / 2, 50);
-            let ellipseChevronDown = new svg.Ellipse(40, 30).color(svg.BLACK).opacity(0.40)
-                .position(this.component.width / 2, this.component.height - 100);
-            this.zoneChevronUp = new svg.Translation().add(ellipseChevronUp).add(chevronUp).opacity(0).mark("chevronUpBasket");
-            this.zoneChevronDown = new svg.Translation().add(ellipseChevronDown).add(chevronDown).opacity(0).mark("chevronDownBasket");
-
-            let chevDown = this.zoneChevronDown;
-            let chevUp = this.zoneChevronUp;
-            let zone = this.listProducts;
-            let tab = this.thumbnailsProducts;
-
-            this.zoneChevronUp.onClick(function() {
+            /*this.zoneChevronUp.onClick(function() {
                 // s'il y a de la place, je monte vers le haut
                 if ((zone.y + height / 2) < 0) {
                     chevDown.opacity(0.5);
@@ -255,8 +243,7 @@ exports.main = function(svg,gui,param,neural) {
                         chevDown.opacity(0);
                     }
                 }
-            });
-            this.component.add(this.zoneChevronUp).add(this.zoneChevronDown);
+            });*/
 
             this.calculatePrice(0);
 
@@ -302,13 +289,12 @@ exports.main = function(svg,gui,param,neural) {
                 newProd.changeText(newText);
             }
 
-             // le mousedown pour le drag and drop du panier vers le rayon
-            newProd.component.onMouseDown(function(){
-                if(market.pages[2].obj==currentPage) self.dragBasket(newProd);
+            newProd.component.onMouseDown(function(e){
+                if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
             });
 
             svg.addEvent(newProd.component, "touchstart", function (e) {
-                if(market.pages[2].obj==currentPage) self.dragBasket(newProd);
+                if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
             });
 
             this.calculatePrice(newProd.price*quantity);
@@ -378,41 +364,159 @@ exports.main = function(svg,gui,param,neural) {
             }
         }
 
-        dragBasket(current) {
-            let dragged = new Thumbnail(current.image.src, current.name);
-            dragged.placeElementsDnD(current);
-            dragged.cross = new svg.Cross(10, 10, 2).color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
-            dragged.cross.smoothy(1, 1).rotateTo(-45);
-            dragged.cross.position(dragged.width * 0.55, dragged.height * 0.71);
-            dragged.component.add(dragged.cross);
-            dragged.move(current.x + pageWidth * 0.85, current.y+this.listProducts.y + header.height);
-            dragged.component.opacity(0.9).mark("dragged");
 
-            dragged.component.onMouseMove(function (e) {
-                dragged.move(e.pageX - current.width / 2, e.pageY - current.height / 2);
-            });
+        dragBasket(current,e) {
+            var self =this;
+            if(e.type=="mousedown"){
+                let mouseInitial = {x:e.pageX,y:e.pageY};
+                let lookingForDir=true;
+                current.component.onMouseMove(function(e){
+                    if((!self.direction)&&lookingForDir){
+                        if(Math.abs(e.pageX-mouseInitial.x)>Math.abs(e.pageY-mouseInitial.y)*1.5){
+                            if(e.pageX<mouseInitial.x){
+                                self.dragged = new Thumbnail(current.image.src, current.name);
+                                self.dragged.placeElementsDnD(current);
+                                self.dragged.cross = new svg.Rect(20, 20, 2).position(self.dragged.width * 0.90, self.dragged.height * 0.1)
+                                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
+                                self.dragged.component.add(self.dragged.cross);
+                                self.dragged.move(current.x + pageWidth * 0.85, current.y + self.listProducts.y + header.height);
+                                self.dragged.component.opacity(0.9).mark("dragged");
+                                glassDnD.add(self.dragged.component);
+                                market.add(glassDnD);
 
-            dragged.component.onMouseUp(function () {
-                if ((dragged.x + dragged.width / 2 < pageWidth * 0.85) && (dragged.y + dragged.height / 2 > market.height * 0.20)) {
-                    market.basket.deleteProducts(current, 1);
-                    changeRay(current.categorie);
-                }
-                glassDnD.remove(dragged.component);
-            });
+                                let anchorPoint = {x:e.pageX-self.dragged.x,y:e.pageY-self.dragged.y};
+                                self.dragged.cross.onMouseUp(function(e){
+                                    if((e.pageX==mouseInitial.x)&&(e.pageY==mouseInitial.y))
+                                        market.basket.deleteProducts(current, current.quantity);
+                                });
 
-            //// gestion tactile du panier vers le rayon:
-            svg.addEvent(current.component, "touchmove", function (e) {
-                dragged.move(e.touches[0].clientX - current.width / 2, e.touches[0].clientY - current.height / 2);
-            });
-            svg.addEvent(current.component, "touchend", function () {
-                if ((dragged.x + dragged.width / 2 < pageWidth * 0.85) && (dragged.y + dragged.height / 2 > market.height * 0.20)) {
-                    market.basket.deleteProducts(current, 1);
-                    changeRay(current.categorie);
-                }
-                glassDnD.remove(dragged.component);
-            });
-            glassDnD.add(dragged.component);
-            market.add(glassDnD);
+                                self.dragged.component.onMouseMove(function(e){
+                                    self.dragged.move(e.pageX - anchorPoint.x, e.pageY - anchorPoint.y);
+                                });
+
+                                self.dragged.component.onMouseUp(function () {
+                                    if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85)
+                                            && (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
+                                        market.basket.deleteProducts(current, 1);
+                                        changeRay(current.categorie);
+                                    }
+                                    glassDnD.remove(self.dragged.component);
+                                    self.direction=null;
+                                });
+
+                                self.direction = "LEFT";
+                            }
+                            else{
+                                self.direction = "RIGHT";
+                            }
+                        }
+                        else{
+                            self.direction = "VERTICAL";
+                            // naviguer dans le panier avec la souris
+                            self.previousMouseY = e.pageY;
+                            svg.addEvent(self.component, "mousemove", function (e) {
+                                if(self.direction=="VERTICAL") {
+                                    self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
+                                        self.listProducts.y+(e.pageY - self.previousMouseY));
+                                    self.previousMouseY = e.pageY;
+                                }
+                            });
+
+                            svg.addEvent(self.component, "mouseup", function (e) {
+                                /*let widthTotal = height * self.tabCategories.length;
+                                let widthView = width;
+                                let positionRight = listThumbnail.x + widthTotal;
+                                mouvement = false;
+                                if (listThumbnail.x > 0) {
+                                    listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                                }
+                                else if (positionRight <= widthView) {
+                                    listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
+                                }*/
+                                self.direction=null;
+                            });
+
+                            svg.addEvent(self.component, "mouseout", function (e) {
+                                /*if(mouvement) {
+                                    let widthTotal = height * self.tabCategories.length;
+                                    let widthView = width;
+                                    let positionRight = listThumbnail.x + widthTotal;
+                                    mouvement = false;
+                                    if (listThumbnail.x > 0) {
+                                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                                    }
+                                    else if (positionRight <= widthView) {
+                                        listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, listThumbnail.y);
+                                    }
+                                    mouvement = false;
+                                }*/
+                                self.direction=null;
+                            });
+                        }
+                        console.log(self.direction);
+                    }
+                    lookingForDir=false;
+                });
+            }
+            else {
+                let touchInitial = {x:e.touches[0].clientX,y:e.touches[0].clientY};
+                //// gestion tactile du panier vers le rayon:
+                self.previousTouchY = e.touches[0].clientY;
+                svg.addEvent(current.component, "touchmove", function (e) {
+                    if(!self.direction){
+                        if(Math.abs(e.touches[0].clientX-touchInitial.x)>Math.abs(e.touches[0].clientY-touchInitial.y)){
+                            if(e.touches[0].clientX<touchInitial.x) {
+                                self.dragged = new Thumbnail(current.image.src, current.name);
+                                self.dragged.placeElementsDnD(current);
+                                self.dragged.cross = new svg.Rect(20, 20, 2).position(self.dragged.width * 0.90, self.dragged.height * 0.1)
+                                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
+                                self.dragged.component.add(self.dragged.cross);
+                                self.dragged.move(current.x + pageWidth * 0.85, current.y + self.listProducts.y + header.height);
+                                self.dragged.component.opacity(0.9).mark("dragged");
+                                glassDnD.add(self.dragged.component);
+                                market.add(glassDnD);
+                                console.log("L");
+                                self.direction="LEFT";
+                            }
+                            else{
+                                self.direction = "RIGHT";
+                            }
+                        }
+                        else{
+                            self.direction = "VERTICAL";
+                        }
+
+                    }
+
+                    switch(self.direction){
+                        case "LEFT":
+                            self.dragged.move(e.touches[0].clientX - current.width / 2, e.touches[0].clientY - current.height / 2);
+                            break;
+                        case "VERTICAL":
+                            if(self.direction=="VERTICAL"){
+                                self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
+                                    self.listProducts.y+(e.touches[0].clientY - self.previousTouchY));
+                                self.previousTouchY = e.touches[0].clientY;
+                            }
+                            break;
+
+                    }
+                });
+                svg.addEvent(current.component, "touchend", function () {
+                    if(self.direction=="LEFT") {
+                        if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85) &&
+                                    (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
+                            market.basket.deleteProducts(current, 1);
+                            changeRay(current.categorie);
+                        }
+                        glassDnD.remove(self.dragged.component);
+
+                    }
+
+                    self.direction=null;
+                });
+            }
+
         }
 
         emptyBasket(){
@@ -449,19 +553,17 @@ exports.main = function(svg,gui,param,neural) {
                     micro.url("img/microphone.gif");
                     setTimeout(function () {
                         stopRecording();
+                        micro.url("img/microphoneload.gif");
                         console.log("je record plus");
-                        micro.url("img/microphone-deactivated.png");
                         let i = 0;
                         timer = setInterval(function () {
                             i++;
-                            console.log(i);
                             voice = getMessage();
-                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 25) {
+                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
                                 if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
                                 else if (voice['confidence'] > 0.5) {
-                                    // console.log(voice['transcript']+" taux de confiance : "+voice['confidence']);
                                     market.vocalRecognition(voice['transcript']);
                                 }
                                 else {
@@ -473,8 +575,10 @@ exports.main = function(svg,gui,param,neural) {
                                 voice = [];
                                 recording = false;
                             }
+                            micro.url("img/microphone-deactivated.png");
                         }, 200);
                     }, 4000);
+
                 }
             });
         }
@@ -667,6 +771,8 @@ exports.main = function(svg,gui,param,neural) {
                             }
                         }
                     }else{
+                        currentIndex=1;
+                        currentPage=market.map;
                         self.moveMainpage();
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
@@ -691,6 +797,8 @@ exports.main = function(svg,gui,param,neural) {
                     }
                     else{
                         self.moveMainpage();
+                        currentIndex=1;
+                        currentPage=market.map;
                     }
                     for(let i=0;i<self.lines.length;i++) self.buttons.remove(self.lines[i]);
                     self.lines = [];
@@ -799,6 +907,7 @@ exports.main = function(svg,gui,param,neural) {
             currentPage=market.map;
             currentIndex=1;
             market.map.mapOn=true;
+            loadMap();
         }
 
         changeTimer(newTimer,color){
@@ -870,7 +979,6 @@ exports.main = function(svg,gui,param,neural) {
     class Calendar{
         constructor(width,height,x,y){
             this.component = new svg.Translation().mark("calendar");
-            this.background = new svg.Rect();
             this.title = new svg.Rect();
             this.titleText = new svg.Text("Avril");
             this.calendarFirstRow = new svg.Translation();
@@ -881,16 +989,15 @@ exports.main = function(svg,gui,param,neural) {
             this.monthChoice = new svg.Translation().mark("monthChoice");
             this.chevronDown = new svg.Chevron(35,20,8,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronDownCalendar");
             this.chevronUp = new svg.Chevron(35,20,8,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronUpCalendar");
-            this.chevronWest = new svg.Chevron(10, 40, 2, "W").color(svg.WHITE).opacity(0.5);
-            this.chevronEast = new svg.Chevron(10, 40, 2, "E").color(svg.WHITE);
-            this.ellipseChevronWest = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
-            this.ellipseChevronEast = new svg.Ellipse(20, 30).color(svg.BLACK).opacity(0.40);
-            // this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
+            this.chevronWest = new svg.Chevron(10, height*0.05, 2, "W").color(svg.WHITE).opacity(0.5);
+            this.chevronEast = new svg.Chevron(10, height*0.05, 2, "E").color(svg.WHITE);
+            this.ellipseChevronWest = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronEast = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
+            this.icon = new svg.Image("img/calendarIcon.png");
 
-            this.component.add(this.background);
             this.component.add(this.title);
             this.component.add(this.titleText);
             this.component.add(this.calendarFirstColumn);
@@ -898,7 +1005,7 @@ exports.main = function(svg,gui,param,neural) {
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.chevronDown).add(this.chevronUp);
-            // this.component.add(this.cross);
+            this.component.add(this.icon);
 
             this.x = x;
             this.y = y;
@@ -907,10 +1014,6 @@ exports.main = function(svg,gui,param,neural) {
             this.height = height;
 
             let self = this;
-
-            // this.cross.onClick(function(){
-            //     market.remove(market.calendar.component);
-            // });
 
             this.movement=0;
             this.picto = new svg.Image("img/panier.png").mark("iconUser");
@@ -923,7 +1026,6 @@ exports.main = function(svg,gui,param,neural) {
                 self.picto.onMouseMove(function(e){
                     if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
                 });
-
                 self.picto.onMouseUp(function(e){
                     onMove=false;
                     self.checkPlace(e.pageX,e.pageY);
@@ -936,19 +1038,22 @@ exports.main = function(svg,gui,param,neural) {
                 let place = 0;
                 self.picto.position(self.pictoPosX,self.pictoPosY);
                 if(self.currentDate!=0) place = self.currentDate.getDate()-1;
-                if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
-                    self.movement = self.movement + 4;
-                    moveY = self.caseHeight * 4;
-                }
-                else {
-                    moveY = ((self.numberDaysThisMonth-10)-(self.movement+place)) * self.caseHeight;
-                    self.movement = self.numberDaysThisMonth-10-place;
-                }
-                self.calendarPositionY = self.calendarPositionY - moveY;
-                self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
-                self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
-                for (let i = 0; i < self.calendarCases.length; i++) {
-                    self.calendarCases[i].y = self.calendarCases[i].y - moveY;
+
+                if(self.numberDaysThisMonth-place>10) {
+                    if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
+                        self.movement = self.movement + 4;
+                        moveY = self.caseHeight * 4;
+                    }
+                    else {
+                        moveY = ((self.numberDaysThisMonth - 10) - (self.movement + place)) * self.caseHeight;
+                        self.movement = self.numberDaysThisMonth - 10 - place;
+                    }
+                    self.calendarPositionY = self.calendarPositionY - moveY;
+                    self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
+                    self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
+                    for (let i = 0; i < self.calendarCases.length; i++) {
+                        self.calendarCases[i].y = self.calendarCases[i].y - moveY;
+                    }
                 }
             });
 
@@ -1024,7 +1129,6 @@ exports.main = function(svg,gui,param,neural) {
             this.caseWidth = this.calendarWidth/12;
             this.caseHeight = this.calendarHeight/10;
             this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth,this.caseHeight);
-            this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.ALMOST_WHITE).opacity(0.8);
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(1).corners(15,15);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             // this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
@@ -1037,7 +1141,7 @@ exports.main = function(svg,gui,param,neural) {
             this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
-
+            this.icon.dimension(market.width*0.02,market.width*0.02).position(market.width*0.99,100);
 
             this.printCurrentMonthContent();
         }
@@ -1047,6 +1151,8 @@ exports.main = function(svg,gui,param,neural) {
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
             this.movement=0;
+            this.calendarFirstColumn = new svg.Translation();
+            this.calendarContent = new svg.Translation();
             this.currentDate = new Date();
             this.changeTitleText(this.month+" "+this.year);
             let tabDays = [];
@@ -1341,13 +1447,14 @@ exports.main = function(svg,gui,param,neural) {
             });
 
             function printNumber(number){
-                self.component.remove(self.waitingNumber);
-                self.waitingNumber = new svg.Text(number);
-                self.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
-                self.component.add(self.waitingNumber);
+                categories.ray.currentDrawn.component.remove(categories.ray.currentDrawn.waitingNumber);
+                categories.ray.currentDrawn.waitingNumber = new svg.Text(number);
+                categories.ray.currentDrawn.waitingNumber.position(self.width/2,self.height*0.65).font("Calibri",self.width/1.5,1).opacity(0.7);
+                categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
-            function getNumber(number,e,element){
+            function getNumber(number,element){
+                categories.ray.currentDrawn = null;
                 if(number=="click") {
                     element.addAnimation("1");
                     market.basket.addProducts(self,"1");
@@ -1367,8 +1474,8 @@ exports.main = function(svg,gui,param,neural) {
             this.component.onMouseDown(function(e){
                 mousePos = {x:e.pageX,y:e.pageY};
                 self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
-                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
-                runtime.event(self.drawNumber,"touchstart",{touches:{0:{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}}});
+                if(!categories.ray.currentDrawn) categories.ray.currentDrawn=self;
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,self,glassCanvas);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
@@ -1378,7 +1485,9 @@ exports.main = function(svg,gui,param,neural) {
             svg.addEvent(this.component, "touchstart", function (e) {
                 touchPos = {x:e.touches[0].clientX,y:e.touches[0].clientY};
                 self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
-                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,e,self,glassCanvas);
+                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,self,glassCanvas);
+                if(!categories.ray.currentDrawn) categories.ray.currentDrawn=self;
+                runtime.event(self.drawNumber,"touchstart",{touches:{0:{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}}});
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
@@ -1473,9 +1582,33 @@ exports.main = function(svg,gui,param,neural) {
             this.cross.position(this.width*0.90,this.height*0.1).mark("cross "+this.name).dimension(this.width*0.1,this.height*0.1).opacity(0);
         }
     }
-    //////////////////////////////////////
 
-    ///Functions///
+    class Map{
+        constructor(width,height,x,y){
+            this.component = new svg.Translation();
+            this.foreign = runtime.create("foreignObject");
+            runtime.attrNS(this.foreign,"style","position: absolute; left:100;top:100; border:1px solid black");
+            this.divMap = runtime.createDOM('div');
+            runtime.attr(this.divMap,"id","divMap");
+            runtime.add(this.foreign,this.divMap);
+            runtime.add(this.component.component,this.foreign);
+            this.mapHeight=height*1.19;
+            this.mapWidth=width*1.21;
+            this.x=x;
+            this.y=y;
+            runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+
+            this.mapWidth+"px; left:"+(this.x)+"px;top:"+(this.y)+"px;");
+
+            this.input = runtime.createDOM('input');
+            runtime.attr(this.input,"id","pac-input");
+            runtime.attr(this.input,"class","controls");
+            runtime.attr(this.input,"placeholder","Enter a location");
+            runtime.attr(this.input,"style","height: 25px; width: 300px; ");
+            runtime.add(this.foreign,this.input);
+        }
+    }
+
+
     function changeRay(name){
         let tab=[];
         if(name=="Recherche")
@@ -1501,7 +1634,6 @@ exports.main = function(svg,gui,param,neural) {
             }
         }
     }
-
 
     function search(sentence,config){
         sentence=replaceChar(sentence);
@@ -1554,29 +1686,60 @@ exports.main = function(svg,gui,param,neural) {
         categories=new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabCategories);
         categories.currentSearch=tab;
         zoneCategories.add(categories.component);
+
         mainPage.add(zoneCategories);
+
         changeRay("Recherche");
     }
 
     market.vocalRecognition = function(message){
         message=replaceChar(message);
         if(message!="") {
-            if((market.map&&market.map.mapOn)||(market.calendar&&market.calendar.calendarOn)) {
-                if(market.map.mapOn) {
+            if((market.map&&market.map.mapOn)||(market.calendar&&market.calendar.calendarOn)){
+                if(market.map.mapOn){
                     let words = message.split(" ");
                     for (var i = 0; i < words.length; i++) {
-                        if (parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) {
-                            message = message.substring(message.indexOf(words[i]));
-                            i=words.length;
+                        if((words[i].includes("poin"))&&(words[i+1].includes("relai"))) {
+                            message = message.substring(message.indexOf(words[i])).split(" ");
+                            i = words.length;
+                            let end=false;
+                            for (var i = 0; i < message.length; i++) {
+                                if ((message[i] >= "0" && message[i] <= "9") || (message[i - 1] == "numero")) {
+                                    let selec = message[i];
+                                    if (selec == "un") selec = 1;
+                                    //checkRelayPoint(selec);
+                                    console.log("POINT RELAI " + selec + " SELECTIONNE");
+                                    if(Maps)toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
+                                    end = true;
+                                    break;
+                                }
+                            }
+                            if(end) break;
                         }
-                        else if((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
-                        ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))
-                        {
+                        else if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000)||
+                        ((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
+                        ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))) {
                             message = message.substring(message.indexOf(words[i]));
                             i=words.length;
+                            if(Maps){
+                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à cette adresse," +
+                                    " voici les points relais les plus proches", "fr");
+                                market.mapsfunction.research(currentMapSearch);
+                            }
+                            currentMapSearch=message;
+                            break;
+                        }
+                        else if(words[i].includes("valide")){
+                            market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
+                            currentPage=market.calendar;
+                            currentIndex=0;
+                            market.map.mapOn=false;
+                            market.calendar.calendarOn=true;
+                            currentMapSearch= myMap.input.value;
+                            mapPage.remove(myMap.component);
+                            myMap=null;
                         }
                     }
-                    console.log(message);
                 }
                 else if(market.calendar.calendarOn){
 
@@ -1688,19 +1851,11 @@ exports.main = function(svg,gui,param,neural) {
             console.log("S'il te plait puisses-tu discuter?");
         }
     };
-    function textToSpeech(msg,language){
-        // msg=msg.replace(/ /g, "+");
-        // msg=msg.replace(/'/g, "%27");
-        // msg=msg.replace(/é/g, "%C3%A9");
-        // var audio = document.createElement('audio');
-        // audio.src ='http://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen=64&client=t-ob&q='+msg+'&tl='+language;
-        // console.log(audio.play());
 
+    function textToSpeech(msg,language){
         var speak = new SpeechSynthesisUtterance(msg);
         window.speechSynthesis.speak(speak);
-//            document.removeChild(audio);
     }
-
 
     function replaceChar(msg){
         return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
@@ -1726,13 +1881,44 @@ exports.main = function(svg,gui,param,neural) {
     let glassDnD = new svg.Translation().mark("Glass");
 
     //Gestion des pages
-    market.calendar = new Calendar(market.width,market.height,0,0);
+    market.calendar = new Calendar(market.width*0.99,market.height,0,0);
     market.calendar.placeElements();
     let calendarPage = new svg.Translation().add(market.calendar.component);
 
-    let rectRed=new svg.Rect(market.width-market.width*0.04,market.height).color(svg.RED)
-        .position(market.width/2,market.height/2+market.height/19);
-    market.map = {component : new svg.Translation().add(rectRed).mark("map"),mapOn:false};
+    let mapPage = new svg.Translation().mark("map");
+    let icon = new svg.Image("img/mapIcon.png").dimension(market.width*0.02,market.width*0.02).position(market.width*0.97,100);
+    let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
+        .position(market.width/2,market.height/2+header.height/2).color(svg.WHITE,2,svg.BLACK);
+    mapPage.add(background);
+    mapPage.add(icon);
+    market.map = {component : mapPage,mapOn:false};
+    let myMap = null;
+    function loadMap(){
+        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.03,header.height*2);
+        mapPage.add(myMap.component);
+        setTimeout(function(){
+            if(Maps) {
+                market.mapsfunction = Maps.initMap(param.data.getMarker(), toCalendar);
+                if (currentMapSearch != "") {
+                    market.mapsfunction.research(currentMapSearch);
+                }
+            }
+        },500);
+    }
+    function toCalendar(mess){
+        currentMapSearch= myMap.input.value;
+        mapPage.remove(myMap.component);
+        myMap=null;
+        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+        console.log('l\'adresse est : '+mess);
+
+        setTimeout(function () {
+            currentPage = market.pages[0].obj;
+            currentIndex = 0;
+        },200)
+
+    }
+    let currentMapSearch = "";
 
     let currentPage=mainPage;
     let currentIndex=2;
@@ -1743,23 +1929,38 @@ exports.main = function(svg,gui,param,neural) {
         let index = i;
         market.pages[i].obj.onClick(function(){
             if(market.pages[index].active) {
-                if (currentIndex > index) {
-                    for (let j = currentIndex; j > index; j--) {
-                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                if (index != currentIndex) {
+                    if (index != 1) {
+                        if(myMap!=null){
+                            currentMapSearch= myMap.input.value;
+                            mapPage.remove(myMap.component);
+                            myMap=null;
+                        }
                     }
-                }
-                else {
-                    for (let j = currentIndex; j <= index; j++) {
-                        market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                    else {
+                        loadMap();
                     }
+                    if (currentIndex > index) {
+                        for (let j = currentIndex; j > index; j--) {
+                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                        }
+                    }
+                    else {
+                        for (let j = currentIndex; j <= index; j++) {
+                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                        }
+                    }
+                    currentPage = market.pages[index].obj;
+                    currentIndex = index;
+                    if (currentPage == market.map.component) market.map.mapOn = true;
+                    else market.map.mapOn = false;
+                    if (currentPage == market.calendar.component) {
+                        market.calendar.calendarOn = true;
+                    }
+                    else market.calendar.calendarOn = false;
                 }
-                currentPage = market.pages[index].obj;
-                currentIndex = index;
-                if(currentPage==market.map.component) market.map.mapOn=true;
-                else market.map.mapOn=false;
-                if(currentPage==market.calendar.component) market.calendar.calendarOn=true;
-                else market.calendar.calendarOn=false;
             }
+
         });
         market.add(market.pages[i].obj);
     }

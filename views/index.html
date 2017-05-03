@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 	<meta charset="UTF-8">
-	<title>Supermarche</title>
+	<title>DigiMarket</title>
     <script src="https://cdn.jsdelivr.net/binaryjs/0.2.1/binary.min.js"></script>
     <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&callback=initMap"-->
             <!--async defer></script>-->
@@ -9,7 +9,7 @@
     </head>
 <body style="margin:0">
     <div id="content"></div>
-    <div id="map"></div>
+    <!--<div id="map"></div>-->
     <script src="lib/module.js"></script>
     <script src="lib/runtimemock.js"></script>
     <script src="lib/targetruntime.js"></script>
@@ -20,6 +20,8 @@
     <script src="data.js"></script>
     <script src="neuralNetDrawing.js"></script>
     <script src="lib/recorder.js"></script>
+    <script src="lib/map.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&libraries=places"></script>
 
     <script>
         document.documentElement.style.overflow = 'hidden';
@@ -29,75 +31,21 @@
 
         let DATA = require("data").data;
         let data = DATA();
+        let Map = require("lib/map");
         let GUI = require("lib/svggui").Gui;
         let svg = SVG(targetRuntime());
         let NEURAL=require("neuralNetDrawing").neural;
         let neural=NEURAL(targetRuntime());
-        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural);
-
-//        var map;
-//        function initMap() {
-//            map = new google.maps.Map(document.getElementById('map'), {
-//                center: {lat: 48.8956, lng: 2.644},
-//                zoom: 17
-//            });
-//
-//            var infoWindow = new google.maps.InfoWindow({map: map});
-//
-//
-//            if (navigator.geolocation) {
-//                navigator.geolocation.getCurrentPosition(function (position) {
-//                    var pos = {
-//                        lat: position.coords.latitude,
-//                        lng: position.coords.longitude
-//                    };
-//
-//                    infoWindow.setPosition(pos);
-//                    infoWindow.setContent('Location found.');
-//                    map.setCenter(pos);
-//                }, function () {
-//                    handleLocationError(true, infoWindow, map.getCenter());
-//                });
-//            } else {
-//                // Browser doesn't support Geolocation
-//                handleLocationError(false, infoWindow, map.getCenter());
-//
-//            }
-//        }
-//
-//        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-//            infoWindow.setPosition(pos);
-//            infoWindow.setContent(browserHasGeolocation ?
-//                'Error: The Geolocation service failed.' :
-//                'Error: Your browser doesn\'t support geolocation.');
-//        }
-////
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),Map);
     </script>
 
-    <!--<iframe-->
-            <!--width=100%-->
-            <!--height=100%-->
-            <!--frameborder="0" style="border:0"-->
-            <!--src="https://www.google.com/maps/embed/v1/place?key=AIzaSyD8K1IrIiHFDbLr3vJM78ajxb1hYDYUu8I&q=Eiffel+Tower,Paris+France" allowfullscreen>-->
-    <!--</iframe>-->
+    <style>
+        input#pac-input{
+            position: absolute;
+            top: 9px !important;
+            border-color: #0074D9;
+        }
+    </style>
 
-    <!--<style>-->
-        <!--/* Always set the map height explicitly to define the size of the div-->
-         <!--* element that contains the map. */-->
-        <!--#map {-->
-            <!--height: 100%;-->
-            <!--width: 100%;-->
-            <!--z-index: 1000;-->
-            <!--position :absolute;-->
-            <!--left:0px;-->
-            <!--top: 0px;-->
-        <!--}-->
-        <!--/* Optional: Makes the sample page fill the window. */-->
-        <!--html, body {-->
-            <!--height: 100%;-->
-            <!--margin: 0;-->
-            <!--padding: 0;-->
-        <!--}-->
-    <!--</style>-->
 </body>
 </html>	
