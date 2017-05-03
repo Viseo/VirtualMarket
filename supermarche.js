@@ -1781,7 +1781,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
         },500);
     }
-    function toCalendar(mess){
+    function toCalendar(){
         currentMapSearch= myMap.input.value;
         mapPage.remove(myMap.component);
         myMap=null;
