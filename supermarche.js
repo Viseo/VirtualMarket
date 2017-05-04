@@ -1487,11 +1487,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
+            this.anim=false;
             function getNumber(number,element){
                 categories.ray.currentDrawn = null;
                 if(number=="click") {
-                    element.addAnimation("1");
-                    market.basket.addProducts(self,"1");
+                    if(!self.anim) {
+                        element.addAnimation("1");
+                        market.basket.addProducts(self, "1");
+                        self.anim=true;
+                    }
                 }
                 else if(number!="?") {
                     for(var c of number.split('')){
@@ -1513,6 +1517,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
+
             // gestion tactile pour le dessin:
             let touchPos ={};
             this.drawNumber = null;
@@ -1521,7 +1526,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
                 neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,self,glassCanvas);
                 if(!categories.ray.currentDrawn) categories.ray.currentDrawn=self;
-                runtime.event(self.drawNumber,"touchstart",{touches:{0:{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}}});
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
@@ -1539,18 +1543,21 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         addAnimation(number){
             let n =number.split('');
             let self =this;
-            function removeNumber(){
+            function removeNumber(element){
                 for(var c=0;c<self.toAdd.length;c++){
-                    self.component.remove(self.toAdd[c]);
+                    element.component.remove(self.toAdd[c]);
                 }
             }
+
             for(let i=0; i<number.length;i++){
                 this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5)
                     .font("Calibri",this.height/1.5,1).color(svg.BLACK).opacity(0.7);
                 this.component.add(this.toAdd[i]);
             }
+
             setTimeout(function () {
-                removeNumber();
+                removeNumber(self);
+                self.anim=false;
             },1000);
         }
     }

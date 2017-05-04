@@ -317,7 +317,8 @@ exports.neural = function(runtime) {
         runtime.addEvent(drawingArea.canvasDiv,'mousemove', function (e) {
             drawingArea.ev_canvas(e,"mousemove");
         }, true);
-        runtime.addEvent(drawingArea.canvas,'touchend', function (e) {
+
+        runtime.addEvent(prod.component.component,'touchend', function (e) {
             if(numToSend.element=="") numToSend.element=name;
             bestchar = ev_recognize();
             drawingArea.ev_canvas(e, "touchend");
@@ -332,7 +333,7 @@ exports.neural = function(runtime) {
             if (numToSend.num == "click") {
                 clearTimeout();
                 printNumber("");
-                callback(numToSend.num, e, prod);
+                callback(numToSend.num,prod);
                 numToSend.num = "";
                 numToSend.element = "";
             }
@@ -359,10 +360,10 @@ exports.neural = function(runtime) {
             }
         }, true);
 
-        runtime.addEvent(drawingArea.canvas,'touchmove', function (e) {
+        runtime.addEvent(prod.component.component,'touchmove', function (e) {
             drawingArea.ev_canvas(e);
         }, true);
-        runtime.addEvent(drawingArea.canvas,'mouseout', function (e) {
+        runtime.addEvent(drawingArea.canvasDiv,'mouseout', function (e) {
             drawingArea.ev_canvas(e,"mouseout");
         }, true);
 
