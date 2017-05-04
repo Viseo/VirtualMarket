@@ -186,24 +186,91 @@ describe("Test",function (){
         runtime.event(drawing7,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
 
-        let chevronH = retrieve(market.component,"[basket].[chevronUpBasket]");
-        let chevronB = retrieve(market.component,"[basket].[chevronDownBasket]");
-        runtime.event(chevronB,"click",{});
+        //mouseup
+        let basket = retrieve(market.component,'[basket]');
+        assert(basket);
+        runtime.event(basketProd2,"mousedown",{type:"mousedown",pageX:5,pageY:5});
         runtime.advanceAll();
-        inspect(listBasket,{tag:"g",transform:"translate(0 -373)"});
-        runtime.event(chevronB,"click",{});
+        runtime.event(basketProd2,"mousemove",{pageX:5,pageY:100});
         runtime.advanceAll();
-        runtime.event(chevronB,"click",{});
+        runtime.event(basket,"mousemove",{pageX:5,pageY:1500});
         runtime.advanceAll();
-        runtime.event(chevronH,"click",{});
+        runtime.event(basket,"mouseup",{pageX:5,pageY:1500});
         runtime.advanceAll();
-        runtime.event(chevronH,"click",{});
+
+        runtime.event(basketProd2,"mousedown",{type:"mousedown",pageX:5,pageY:5});
         runtime.advanceAll();
-        runtime.event(chevronH,"click",{});
+        runtime.event(basketProd2,"mousemove",{pageX:5,pageY:100});
         runtime.advanceAll();
-        runtime.event(chevronH,"click",{});
+        runtime.event(basket,"mousemove",{pageX:5,pageY:-1500});
         runtime.advanceAll();
-        inspect(listBasket,{tag:"g",transform:"translate(0 2)"});
+        runtime.event(basket,"mouseup",{pageX:5,pageY:-1500});
+        runtime.advanceAll();
+
+        runtime.event(basketProd2,"mousedown",{type:"mousedown",pageX:5,pageY:5});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"mousemove",{pageX:5,pageY:10});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{pageX:5,pageY:10});
+        runtime.advanceAll();
+        runtime.event(basket,"mouseup",{pageX:5,pageY:10});
+        runtime.advanceAll();
+
+        //mouseout
+        runtime.event(basketProd2,"mousedown",{type:"mousedown",pageX:5,pageY:5});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"mousemove",{pageX:5,pageY:100});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{pageX:5,pageY:1500});
+        runtime.advanceAll();
+        runtime.event(basket,"mouseout",{pageX:5,pageY:1500});
+        runtime.advanceAll();
+
+        runtime.event(basketProd2,"mousedown",{type:"mousedown",pageX:5,pageY:5});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"mousemove",{pageX:5,pageY:100});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{pageX:5,pageY:-1500});
+        runtime.advanceAll();
+        runtime.event(basket,"mouseout",{pageX:5,pageY:-1500});
+        runtime.advanceAll();
+
+        runtime.event(basketProd2,"mousedown",{type:"mousedown",pageX:5,pageY:5});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"mousemove",{pageX:5,pageY:10});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{pageX:5,pageY:10});
+        runtime.advanceAll();
+        runtime.event(basket,"mouseout",{pageX:5,pageY:10});
+        runtime.advanceAll();
+
+        //Touch
+        runtime.event(basketProd2,"touchstart",{type:"",touches:{0:{clientX:5,clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchmove",{touches:{0:{clientX:5,clientY:10}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchmove",{touches:{0:{clientX:5,clientY:1500}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchend",{touches:{0:{clientX:5,clientY:1500}}});
+        runtime.advanceAll();
+
+        runtime.event(basketProd2,"touchstart",{touches:{0:{clientX:5,clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchmove",{touches:{0:{clientX:5,clientY:100}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchmove",{touches:{0:{clientX:5,clientY:-1500}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchend",{touches:{0:{clientX:5,clientY:-1500}}});
+        runtime.advanceAll();
+
+        runtime.event(basketProd2,"touchstart",{touches:{0:{clientX:5,clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchmove",{touches:{0:{clientX:5,clientY:10}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchmove",{touches:{0:{clientX:5,clientY:10}}});
+        runtime.advanceAll();
+        runtime.event(basketProd2,"touchend",{touches:{0:{clientX:5,clientY:10}}});
+        runtime.advanceAll();
     });
 
     it("ensure that we can mousehover and mouseout on a categorie",function(){
@@ -301,18 +368,25 @@ describe("Test",function (){
         assert(drawing2);
         runtime.event(drawing2,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
-        assert.ok(retrieve(market.component,"[basket].[listBasket].[Banane]"));
+        assert.ok(retrieve(market.component,"[basket].[listBasket].[Carotte]"));
 
         runtime.event(categories,"click",{});
         let basketproduct1 = retrieve(market.component,"[basket].[listBasket].[Product basket Banane]");
-        runtime.event(basketproduct1,"mousedown",{ pageX:10, pageY:10});
+        assert(basketproduct1);
+        runtime.event(basketproduct1,"mousedown",{ type:"mousedown",pageX:10, pageY:10});
+        runtime.advanceAll();
+        runtime.event(basketproduct1,"mousemove",{pageX:0, pageY:10});
         runtime.advanceAll();
         let draggedBasket = retrieve(market.component,"[dragged]");
         runtime.event(draggedBasket,"mouseup",{ pageX:10, pageY:10});
         runtime.advanceAll();
+        runtime.event(basketproduct1,"mousemove",{pageX:0, pageY:5});
+        runtime.advanceAll();
 
         runtime.event(categories,"click",{});
-        runtime.event(basketproduct1,"mousedown",{ pageX:5, pageY:5});
+        runtime.event(basketproduct1,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(basketproduct1,"mousemove",{pageX:0, pageY:5});
         runtime.advanceAll();
         let tmpBasket2 = retrieve(market.component,"[dragged]");
         runtime.event(tmpBasket2,"mousedown",{ pageX:10, pageY:10});
@@ -320,22 +394,33 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(tmpBasket2,"mouseup",{ pageX:-500, pageY:market.height*0.5});
         runtime.advanceAll();
+        runtime.event(basketproduct1,"mousemove",{pageX:0, pageY:5});
+        runtime.advanceAll();
 
-        runtime.event(basketproduct1,"mousedown",{ pageX:5, pageY:5});
+        let basketproduct2 = retrieve(market.component,"[basket].[listBasket].[Product basket Carotte]");
+        assert(basketproduct2);
+        runtime.event(basketproduct2,"touchstart",{ type:"",touches:{0:{clientX:5,clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(basketproduct2,"touchmove",{touches:{0:{clientX:0,clientY:5}}});
         runtime.advanceAll();
         let draggedBasket4 = retrieve(market.component,"[dragged]");
-        runtime.event(draggedBasket4,"mousedown",{ pageX:10, pageY:10});
-        runtime.event(draggedBasket4,"mousemove",{ pageX:100, pageY:100});
+        assert(draggedBasket4);
+        runtime.event(basketproduct2,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
         runtime.advanceAll();
-        runtime.event(draggedBasket4,"mouseup",{ pageX:100, pageY:100});
+        runtime.event(basketproduct2,"touchend",{touches:{0:{clientX:100,clientY:100}}});
         runtime.advanceAll();
 
-        let chevronB = retrieve(market.component,"[basket].[chevronDownBasket]");
-        runtime.event(chevronB,"click",{});
+        runtime.event(basketproduct2,"touchstart",{ type:"",touches:{0:{clientX:5,clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(basketproduct2,"touchmove",{touches:{0:{clientX:0,clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(basketproduct2,"touchmove",{touches:{0:{clientX:400,clientY:400}}});
+        runtime.advanceAll();
+        runtime.event(basketproduct2,"touchend",{touches:{0:{clientX:400,clientY:400}}});
         runtime.advanceAll();
     });
 
-    it("ensure that hoovering a product in the basket add a red cross, and that clicking on it delete this product from the basket",function(){
+    it("ensure that you can delete a product by swiping it on the right",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
@@ -377,47 +462,90 @@ describe("Test",function (){
         runtime.advanceAll();
         assert.ok(retrieve(market.component,"[basket].[listBasket].[Mangue]"));
 
-        let imagebasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[Banane]");
-        let fondbasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[background Banane]");
-        let titlebasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[title Banane]");
-        let crossbasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[cross Banane]");
         let compbasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane]");
-
-        runtime.event(imagebasket,"mouseenter");
+        runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
-        runtime.event(fondbasket,"mouseenter");
+        runtime.event(compbasket,"mousemove",{ pageX:50, pageY:5});
         runtime.advanceAll();
-        runtime.event(compbasket,"mouseout");
+        runtime.event(compbasket,"mousemove",{ pageX:100, pageY:5});
         runtime.advanceAll();
-        runtime.event(titlebasket,"mouseenter");
-        runtime.advanceAll();
-        runtime.event(crossbasket,"mouseenter");
+        runtime.event(compbasket,"mouseup",{ pageX:100, pageY:5});
         runtime.advanceAll();
 
-        runtime.event(compbasket,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
-        let crossDragged = retrieve(market.component,"[dragged].[cross]");
-        runtime.event(crossDragged,"mouseup",{ pageX:10, pageY:10});
-
-        let prod2 = retrieve(market.component,"[basket].[listBasket].[Product basket Clementine]");
-        let prod3 = retrieve(market.component,"[basket].[listBasket].[Product basket Framboise]");
-        let prod4 = retrieve(market.component,"[basket].[listBasket].[Product basket Mangue]");
-
-        runtime.event(prod3,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(compbasket,"mousemove",{ pageX:5, pageY:50});
         runtime.advanceAll();
-        let crossDragged3 = retrieve(market.component,"[dragged].[cross]");
-        runtime.event(crossDragged3,"mouseup",{ pageX:10, pageY:10});
-
-        runtime.event(prod4,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(compbasket,"mousemove",{ pageX:5, pageY:50});
         runtime.advanceAll();
-        let crossDragged2 = retrieve(market.component,"[dragged].[cross]");
-        runtime.event(crossDragged2,"mouseup",{ pageX:10, pageY:10});
-
-        runtime.event(prod2,"mousedown",{ pageX:10, pageY:10});
+        runtime.event(compbasket,"mouseup",{ pageX:100, pageY:5});
         runtime.advanceAll();
-        let crossDragged4 = retrieve(market.component,"[dragged].[cross]");
-        runtime.event(crossDragged4,"mouseup",{ pageX:10, pageY:10});
 
+        runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:50, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:1000, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mouseup",{ pageX:1000, pageY:5});
+        runtime.advanceAll();
+
+        let compbasket2 = retrieve(market.component,"[basket].[listBasket].[Product basket Mangue]");
+        runtime.event(compbasket2,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket2,"mousemove",{ pageX:50, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket2,"mousemove",{ pageX:100, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket2,"mouseout",{ pageX:100, pageY:5});
+        runtime.advanceAll();
+
+        runtime.event(compbasket2,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket2,"mousemove",{ pageX:50, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket2,"mousemove",{ pageX:1000, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket2,"mouseout",{ pageX:1000, pageY:5});
+        runtime.advanceAll();
+
+        let compbasket3 = retrieve(market.component,"[basket].[listBasket].[Product basket Clementine]");
+        runtime.event(compbasket3,"touchstart",{ touches:{0:{clientX:5, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket3,"touchmove",{ touches:{0:{clientX:50, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket3,"touchmove",{ touches:{0:{clientX:100, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket3,"touchend",{ touches:{0:{clientX:100, clientY:5}}});
+        runtime.advanceAll();
+
+        runtime.event(compbasket3,"touchstart",{ touches:{0:{clientX:5, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket3,"touchmove",{ touches:{0:{clientX:50, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket3,"touchmove",{ touches:{0:{clientX:1000, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket3,"touchend",{ touches:{0:{clientX:1000, clientY:5}}});
+        runtime.advanceAll();
+
+        let compbasket4 = retrieve(market.component,"[basket].[listBasket].[Product basket Framboise]");
+        runtime.event(compbasket4,"touchstart",{ touches:{0:{clientX:5, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket4,"touchmove",{ touches:{0:{clientX:50, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket4,"touchmove",{ touches:{0:{clientX:100, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket4,"touchend",{ touches:{0:{clientX:100, clientY:5}}});
+        runtime.advanceAll();
+
+        runtime.event(compbasket4,"touchstart",{ touches:{0:{clientX:5, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket4,"touchmove",{ touches:{0:{clientX:50, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket4,"touchmove",{ touches:{0:{clientX:100, clientY:5}}});
+        runtime.advanceAll();
+        runtime.event(compbasket4,"touchend",{ touches:{0:{clientX:100, clientY:5}}});
+        runtime.advanceAll();
     });
 
     it("ensure that adding the same product in the basket is working ",function(done){

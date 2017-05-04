@@ -201,6 +201,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             let stroke = new svg.Rect(width, height).position(width / 2, height / 2);
             stroke.color(svg.WHITE,4,svg.BLACK);
             this.component.add(stroke);
+            this.component.mark("basket");
 
             this.listProducts = new svg.Translation().mark("listBasket");
             this.component.add(this.listProducts);
@@ -215,35 +216,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.totalPrice = 0;
             this.printPrice = new svg.Text(this.totalPrice);
             this.component.add(this.printPrice);
-
-            /*this.zoneChevronUp.onClick(function() {
-                // s'il y a de la place, je monte vers le haut
-                if ((zone.y + height / 2) < 0) {
-                    chevDown.opacity(0.5);
-                    zone.smoothy(10,20).moveTo(zone.x,zone.y+height/2);
-                }
-                else {
-                    chevDown.opacity(0.5);
-                    zone.smoothy(10,20).moveTo(zone.x,stroke.y-height/2+2);
-                    chevUp.opacity(0);
-                }
-            });
-
-            this.zoneChevronDown.onClick(function () {
-                let heightZone = tab.length * tab[0].height;
-                let positionDown = zone.y + heightZone;
-                if (chevDown._opacity!=0) {
-                    if (positionDown - height / 2 > stroke.y + height / 2) {
-                        chevUp.opacity(0.5);
-                        zone.smoothy(10, 20).moveTo(zone.x, zone.y - height / 2 + 2);
-                    }
-                    else {
-                        chevUp.opacity(0.5);
-                        zone.smoothy(10, 20).moveTo(zone.x, stroke.y + (stroke.height * 0.4) - heightZone + 2);
-                        chevDown.opacity(0);
-                    }
-                }
-            });*/
 
             this.calculatePrice(0);
 
@@ -305,10 +277,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
             else {
                 if(occur==0){
-                    if(this.thumbnailsProducts.length>2)
-                    {
-                        this.zoneChevronDown.opacity(0.5);
-                    }
                     let ref = this.thumbnailsProducts[this.thumbnailsProducts.length-2];
                     newProd.placeElements();
                     newProd.move(0,ref.y+ref.height);
@@ -318,8 +286,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         deleteProducts(vignette,numberProduct){
             let height = this.component.height;
-            let chevB = this.zoneChevronDown;
-            let chevH = this.zoneChevronUp;
 
             vignette.minusQuantity(numberProduct);
             let newText = vignette.quantity + " x " + vignette.price + " €" + vignette.complement;
@@ -332,8 +298,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x,(height*0.9-heightZone+this.thumbnailsProducts[0].height ));
                 }else if(this.thumbnailsProducts.length-1<=2){
                     this.listProducts.smoothy(10, 20).moveTo(this.listProducts.x, 0);
-                    chevB.opacity(0);
-                    chevH.opacity(0);
                 }
                 this.listProducts.remove(vignette.component);
                 this.thumbnailsProducts.splice(this.thumbnailsProducts.indexOf(vignette), 1);
@@ -376,20 +340,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             if(e.pageX<mouseInitial.x){
                                 self.dragged = new Thumbnail(current.image.src, current.name);
                                 self.dragged.placeElementsDnD(current);
-                                self.dragged.cross = new svg.Rect(20, 20, 2).position(self.dragged.width * 0.90, self.dragged.height * 0.1)
-                                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
-                                self.dragged.component.add(self.dragged.cross);
                                 self.dragged.move(current.x + pageWidth * 0.85, current.y + self.listProducts.y + header.height);
                                 self.dragged.component.opacity(0.9).mark("dragged");
                                 glassDnD.add(self.dragged.component);
                                 market.add(glassDnD);
 
                                 let anchorPoint = {x:e.pageX-self.dragged.x,y:e.pageY-self.dragged.y};
-                                self.dragged.cross.onMouseUp(function(e){
-                                    if((e.pageX==mouseInitial.x)&&(e.pageY==mouseInitial.y))
-                                        market.basket.deleteProducts(current, current.quantity);
-                                });
-
                                 self.dragged.component.onMouseMove(function(e){
                                     self.dragged.move(e.pageX - anchorPoint.x, e.pageY - anchorPoint.y);
                                 });
@@ -408,6 +364,33 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             }
                             else{
                                 self.direction = "RIGHT";
+                                self.previousMouseX = e.pageX;
+                                svg.addEvent(current.component, "mousemove", function (e) {
+                                    if(self.direction=="RIGHT") {
+                                        current.component.steppy(1, 1).moveTo(current.x + (e.pageX - self.previousMouseX),
+                                            current.y);
+                                    }
+                                });
+
+                                svg.addEvent(current.component, "mouseup", function () {
+                                    if (current.component.x + current.width / 2 > self.component.width) {
+                                        market.basket.deleteProducts(current, current.quantity);
+                                    }
+                                    else {
+                                        current.component.steppy(1, 1).moveTo(0, current.y);
+                                    }
+                                    self.direction=null;
+                                });
+
+                                svg.addEvent(current.component, "mouseout", function () {
+                                    if (current.component.x + current.width / 2 >= self.component.width) {
+                                        market.basket.deleteProducts(current, current.quantity);
+                                    }
+                                    else {
+                                        current.component.steppy(1, 1).moveTo(0, current.y);
+                                    }
+                                    self.direction=null;
+                                });
                             }
                         }
                         else{
@@ -422,38 +405,34 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                 }
                             });
 
-                            svg.addEvent(self.component, "mouseup", function (e) {
-                                /*let widthTotal = height * self.tabCategories.length;
-                                let widthView = width;
-                                let positionRight = listThumbnail.x + widthTotal;
-                                mouvement = false;
-                                if (listThumbnail.x > 0) {
-                                    listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                            svg.addEvent(self.component, "mouseup", function () {
+                                let heightTotal = self.component.width * self.thumbnailsProducts.length;
+                                let heightView = self.component.height-self.zoneTotal.height;
+                                let positionDown = self.listProducts.y + heightTotal;
+                                if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=2)) {
+                                    self.listProducts.smoothy(10, 10).moveTo(0, 0);
                                 }
-                                else if (positionRight <= widthView) {
-                                    listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
-                                }*/
+                                else if ((positionDown < heightView)&&(self.thumbnailsProducts.length>2)) {
+                                    self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
+                                }
                                 self.direction=null;
                             });
 
-                            svg.addEvent(self.component, "mouseout", function (e) {
-                                /*if(mouvement) {
-                                    let widthTotal = height * self.tabCategories.length;
-                                    let widthView = width;
-                                    let positionRight = listThumbnail.x + widthTotal;
-                                    mouvement = false;
-                                    if (listThumbnail.x > 0) {
-                                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                            svg.addEvent(self.component, "mouseout", function () {
+                                if(self.direction) {
+                                    let heightTotal = self.component.width * self.thumbnailsProducts.length;
+                                    let heightView = self.component.height-self.zoneTotal.height;
+                                    let positionDown = self.listProducts.y + heightTotal;
+                                    if ((self.listProducts.y > 0) || (self.thumbnailsProducts.length <= 2)) {
+                                        self.listProducts.smoothy(10, 10).moveTo(0, 0);
                                     }
-                                    else if (positionRight <= widthView) {
-                                        listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, listThumbnail.y);
+                                    else if ((positionDown < heightView) && (self.thumbnailsProducts.length > 2)) {
+                                        self.listProducts.smoothy(10, 10).moveTo(self.listProducts.x, heightView - heightTotal);
                                     }
-                                    mouvement = false;
-                                }*/
-                                self.direction=null;
+                                    self.direction = null;
+                                }
                             });
                         }
-                        console.log(self.direction);
                     }
                     lookingForDir=false;
                 });
@@ -462,20 +441,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let touchInitial = {x:e.touches[0].clientX,y:e.touches[0].clientY};
                 //// gestion tactile du panier vers le rayon:
                 self.previousTouchY = e.touches[0].clientY;
+                self.previousTouchX = e.touches[0].clientX;
                 svg.addEvent(current.component, "touchmove", function (e) {
                     if(!self.direction){
                         if(Math.abs(e.touches[0].clientX-touchInitial.x)>Math.abs(e.touches[0].clientY-touchInitial.y)){
                             if(e.touches[0].clientX<touchInitial.x) {
                                 self.dragged = new Thumbnail(current.image.src, current.name);
                                 self.dragged.placeElementsDnD(current);
-                                self.dragged.cross = new svg.Rect(20, 20, 2).position(self.dragged.width * 0.90, self.dragged.height * 0.1)
-                                    .color(svg.RED, 2, svg.RED).opacity(0).mark("cross");
-                                self.dragged.component.add(self.dragged.cross);
                                 self.dragged.move(current.x + pageWidth * 0.85, current.y + self.listProducts.y + header.height);
                                 self.dragged.component.opacity(0.9).mark("dragged");
                                 glassDnD.add(self.dragged.component);
-                                market.add(glassDnD);
-                                console.log("L");
                                 self.direction="LEFT";
                             }
                             else{
@@ -485,7 +460,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         else{
                             self.direction = "VERTICAL";
                         }
-
                     }
 
                     switch(self.direction){
@@ -493,15 +467,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             self.dragged.move(e.touches[0].clientX - current.width / 2, e.touches[0].clientY - current.height / 2);
                             break;
                         case "VERTICAL":
-                            if(self.direction=="VERTICAL"){
-                                self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
-                                    self.listProducts.y+(e.touches[0].clientY - self.previousTouchY));
-                                self.previousTouchY = e.touches[0].clientY;
-                            }
+                            self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
+                                self.listProducts.y+(e.touches[0].clientY - self.previousTouchY));
+                            self.previousTouchY = e.touches[0].clientY;
                             break;
-
+                        case "RIGHT":
+                            current.component.steppy(1, 1).moveTo(current.x+(e.touches[0].clientX - self.previousTouchX),
+                                    current.y);
+                            break;
                     }
                 });
+
                 svg.addEvent(current.component, "touchend", function () {
                     if(self.direction=="LEFT") {
                         if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85) &&
@@ -511,6 +487,25 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         }
                         glassDnD.remove(self.dragged.component);
 
+                    }
+                    else if(self.direction=="VERTICAL"){
+                        let heightTotal = self.component.width * self.thumbnailsProducts.length;
+                        let heightView = self.component.height-self.zoneTotal.height;
+                        let positionDown = self.listProducts.y + heightTotal;
+                        if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=2)) {
+                            self.listProducts.smoothy(10, 10).moveTo(0, 0);
+                        }
+                        else if ((positionDown < heightView)&&(self.thumbnailsProducts.length>2)) {
+                            self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
+                        }
+                    }
+                    else{
+                        if(current.component.x+current.width/2>self.component.width){
+                            market.basket.deleteProducts(current, current.quantity);
+                        }
+                        else{
+                            current.component.steppy(1, 1).moveTo(0, current.y);
+                        }
                     }
 
                     self.direction=null;
@@ -581,6 +576,46 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
                 }
             });
+
+            svg.addEvent(this.micro,"touchstart",function(){
+                if(!recording) {
+                    voice = [];
+                    startRecording();
+                    recording=true;
+                    console.log("je record");
+                    micro.url("img/microphone.gif");
+                    setTimeout(function () {
+                        stopRecording();
+                        micro.url("img/microphoneload.gif");
+                        console.log("je record plus");
+                        let i = 0;
+                        timer = setInterval(function () {
+                            i++;
+                            voice = getMessage();
+                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
+                                clearInterval(timer);
+                                console.log(voice['transcript']);
+                                if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
+                                else if (voice['confidence'] > 0.5) {
+                                    market.vocalRecognition(voice['transcript']);
+                                }
+                                else {
+                                    console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
+                                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+
+                                }
+                                i = 0;
+                                voice = [];
+                                recording = false;
+                            }
+                            micro.url("img/microphone-deactivated.png");
+                        }, 200);
+                    }, 4000);
+
+                }
+            });
+
+
         }
     }
     
@@ -1281,7 +1316,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
             if(choice!=null) {
                 this.picto.position(choice.x, choice.y);
-                console.log(choice.day+" "+choice.hour);
             }
             else{
                 this.picto.position(this.pictoPosX,this.pictoPosY);
@@ -1511,7 +1545,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 }
             }
             for(let i=0; i<number.length;i++){
-                this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5).font("Calibri",this.height/1.5,1).color(svg.BLACK).opacity(0.7);
+                this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5)
+                    .font("Calibri",this.height/1.5,1).color(svg.BLACK).opacity(0.7);
                 this.component.add(this.toAdd[i]);
             }
             setTimeout(function () {
@@ -1528,32 +1563,20 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.line = new svg.Line(0,0,0,0);
             this.component.add(this.line);
 
-            this.cross = new svg.Image("img/icone-supprimer.png");
-            this.component.add(this.cross);
-
             this.component.mark(this.name);
             this.width = pageWidth*0.15;
             this.height = pageWidth*0.15;
 
-            let self = this;
             this.image.onMouseEnter(function(){
-                self.cross.opacity(1);
             });
 
             this.title.onMouseEnter(function(){
-                self.cross.opacity(1);
-            });
-
-            this.cross.onMouseEnter(function(){
-                self.cross.opacity(1);
             });
 
             this.background.onMouseEnter(function(){
-                self.cross.opacity(1);
             });
 
             this.component.onMouseOut(function(){
-                self.cross.opacity(0);
             });
         }
 
@@ -1579,7 +1602,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.title.position(this.width/2,this.height*0.10).mark("title "+this.name);
             this.background.position(this.width/2,this.height/2).dimension(this.width-6,this.height-4).mark("background "+this.name);
             this.line.start(0,this.height).end(this.width,this.height).color(svg.BLACK,2,svg.BLACK);
-            this.cross.position(this.width*0.90,this.height*0.1).mark("cross "+this.name).dimension(this.width*0.1,this.height*0.1).opacity(0);
         }
     }
 
@@ -1607,7 +1629,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.add(this.foreign,this.input);
         }
     }
-
 
     function changeRay(name){
         let tab=[];
@@ -1708,7 +1729,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     let selec = message[i];
                                     if (selec == "un") selec = 1;
                                     //checkRelayPoint(selec);
-                                    console.log("POINT RELAI " + selec + " SELECTIONNE");
                                     if(Maps)toCalendar(market.mapsfunction.chooseRelai(selec),'salut')
                                     end = true;
                                     break;
@@ -1726,7 +1746,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                 textToSpeech("Vous ne pouvez pas vous faire livrer directement à "+ message +
                                     ". Voici les points relais les plus proches", "fr");
                                 market.mapsfunction.research(currentMapSearch);
-                                console.log(currentMapSearch);
                             }
 
                             break;
@@ -1876,7 +1895,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     let categories = new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
     market.basket = new Basket(pageWidth*0.15,market.height*0.75,pageWidth*0.85,market.height*0.05);
-    let zoneBasket = new svg.Translation().add(market.basket.component).mark("basket");
+    let zoneBasket = new svg.Translation().add(market.basket.component);
     market.payment = new Payment(pageWidth*0.15,market.height*0.20,pageWidth*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
