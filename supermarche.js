@@ -572,6 +572,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
                                 }
                                 i = 0;
+
                                 voice = [];
                                 recording = false;
                             }
@@ -996,7 +997,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
+            this.selectedHourday=false;
             this.icon = new svg.Image("img/calendarIcon.png");
+
 
             this.component.add(this.title);
             this.component.add(this.titleText);
@@ -1031,9 +1034,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     self.checkPlace(e.pageX,e.pageY);
                 });
             });
+
             this.component.add(this.picto);
 
-            this.chevronDown.onClick(function(){
+                    this.chevronDown.onClick(function(){
                 let moveY=null;
                 let place = 0;
                 self.picto.position(self.pictoPosX,self.pictoPosY);
@@ -1132,7 +1136,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.BLACK).opacity(1).corners(15,15);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             // this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
-
             this.chevronDown.position(this.width*0.02+this.caseWidth/2.5,this.height*0.97);
             this.chevronUp.position(this.width*0.02+this.caseWidth/2.5,this.title.height*1.5+this.caseHeight);
             this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
@@ -1142,9 +1145,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
             this.icon.dimension(market.width*0.02,market.width*0.02).position(market.width*0.99,100);
-
             this.printCurrentMonthContent();
         }
+
 
         printCurrentMonthContent(){
             this.component.remove(this.calendarContent);
@@ -1269,6 +1272,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.picto);
+
         }
 
         checkPlace(x,y){
@@ -1281,12 +1285,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
             if(choice!=null) {
                 this.picto.position(choice.x, choice.y);
-                console.log(choice.day+" "+choice.hour);
+                console.log(choice.day+""+choice.hour);
+                this.choiceRdv=choice.day+ " à " +choice.hour;
+                textToSpeech("Souhaitez-vous confirmer votre choix?:"+this.choiceRdv, "fr");
             }
             else{
                 this.picto.position(this.pictoPosX,this.pictoPosY);
             }
         }
+
 
         changeTitleText(newText){
             this.monthChoice.remove(this.titleText);
@@ -1294,6 +1301,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             this.monthChoice.add(this.titleText);
         }
+
+
 
         getWeekDay(){
             return {
@@ -1605,6 +1614,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(this.input,"placeholder","Enter a location");
             runtime.attr(this.input,"style","height: 25px; width: 300px; ");
             runtime.add(this.foreign,this.input);
+
         }
     }
 
@@ -1743,8 +1753,18 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         }
                     }
                 }
-                else if(market.calendar.calendarOn){
 
+                else if(market.calendar.calendarOn){
+                    let answer = message.toLowerCase();
+                    this.selectedHourday=true;
+                    if (answer.includes("oui")){
+                        textToSpeech("Ok vous serez livrés à ces horaires choisis", "fr");
+                    }
+                    else if(answer.includes("non")){
+                        textToSpeech("Nous annulons votre livraison", "fr");
+                     market.calendar.picto.position(market.calendar.pictoPosX,market.calendar.pictoPosY);
+
+                    }
                 }
             }
             else{
@@ -1907,12 +1927,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
         },500);
     }
+
     function toCalendar(mess){
         currentMapSearch= myMap.input.value;
         mapPage.remove(myMap.component);
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-
+        market.calendar.calendarOn=true;
         setTimeout(function () {
             currentPage = market.pages[0].obj;
             currentIndex = 0;
@@ -1955,10 +1976,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     currentIndex = index;
                     if (currentPage == market.map.component) market.map.mapOn = true;
                     else market.map.mapOn = false;
-                    if (currentPage == market.calendar.component) {
+
+                    if (currentIndex == 0) {
                         market.calendar.calendarOn = true;
+                        market.map.mapOn = false;
                     }
-                    else market.calendar.calendarOn = false;
+                    else if (currentIndex==1){
+                        market.calendar.calendarOn = true;
+                        market.map.mapOn = true;
+                    }
+                    else{
+                        market.calendar.calendarOn = false;
+                        market.map.mapOn = false;
+                    }
                 }
             }
 
