@@ -282,6 +282,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     newProd.move(0,ref.y+ref.height);
                 }
             }
+            //console.log(self.listProducts);
         }
 
         deleteProducts(vignette,numberProduct){
@@ -354,7 +355,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85)
                                             && (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
                                         market.basket.deleteProducts(current, 1);
-                                        changeRay(current.categorie);
+                                        market.changeRay(current.categorie);
                                     }
                                     glassDnD.remove(self.dragged.component);
                                     self.direction=null;
@@ -483,7 +484,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85) &&
                                     (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
                             market.basket.deleteProducts(current, 1);
-                            changeRay(current.categorie);
+                            market.changeRay(current.categorie);
                         }
                         glassDnD.remove(self.dragged.component);
 
@@ -1420,7 +1421,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             //GESTION SELECTION//
             let current = this;
             this.component.onClick(function(e){
-                if(!categories.navigation) changeRay(current.name);
+                if(!categories.navigation) market.changeRay(current.name);
                 else categories.navigation=false;
             });
 
@@ -1641,7 +1642,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     }
 
-    function changeRay(name){
+    market.changeRay=function(name){
         let tab=[];
         if(name=="Recherche")
         {
@@ -1665,7 +1666,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 categories.tabCategories[v].highlightedImage.opacity(1);
             }
         }
-    }
+        if(getCookie("Ray")){
+            market.deleteCookie("Ray");
+        }
+        createCookie("Ray",categories.ray.name,30);
+    };
 
     function search(sentence,config){
         sentence=replaceChar(sentence);
@@ -1721,7 +1726,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         mainPage.add(zoneCategories);
 
-        changeRay("Recherche");
+        market.changeRay("Recherche");
     }
 
     market.vocalRecognition = function(message){
@@ -1892,6 +1897,49 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     function replaceChar(msg){
         return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
     }
+
+    function createCookie(name, value, expires, path, domain) {
+        var cookie = name + "=" + value + ";";
+
+        if (expires) {
+            // If it's a date
+            if(expires instanceof Date) {
+                // If it isn't a valid date
+                if (isNaN(expires.getTime()))
+                    expires = new Date();
+            }
+            else
+                expires = new Date(new Date().getTime() + parseInt(expires) * 1000 * 60 * 60 * 24);
+
+            cookie += "expires=" + expires.toGMTString() + ";";
+        }
+
+        if (path)
+            cookie += "path=" + path + ";";
+        if (domain)
+            cookie += "domain=" + domain + ";";
+
+        if(Maps)document.cookie = cookie;
+    }
+
+    function getCookie(name) {
+        if(Maps) {
+            var regexp = new RegExp("(?:^" + name + "|;\s*" + name + ")=(.*?)(?:;|$)", "g");
+            var result = regexp.exec(document.cookie);
+            return (result === null) ? null : result[1];
+        }
+    }
+
+    market.deleteCookie=function(name, path, domain) {
+        // If the cookie exists
+        if (getCookie(name))
+            createCookie(name, "", -1, path, domain);
+    };
+
+
+
+
+
     // textToSpeech("Digi-market peut parler","fr");
     //////
 
@@ -2002,7 +2050,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
 
-    changeRay("HighTech");
+
+    if(getCookie("Ray")){
+        market.changeRay(getCookie("Ray"));
+    }
+    else{
+        market.changeRay("HighTech");
+    }
+
+
+
     return market;
     //////////////////////////////
 };
