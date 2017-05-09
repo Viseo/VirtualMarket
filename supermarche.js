@@ -216,6 +216,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.totalPrice = 0;
             this.printPrice = new svg.Text(this.totalPrice);
             this.component.add(this.printPrice);
+            this.stringPanier="";
 
             this.calculatePrice(0);
 
@@ -282,7 +283,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     newProd.move(0,ref.y+ref.height);
                 }
             }
-            //console.log(self.listProducts);
+            if(Maps)this.basketCookie();
         }
 
         deleteProducts(vignette,numberProduct){
@@ -310,7 +311,22 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
             }
+            if(Maps)this.basketCookie();
         }
+
+        basketCookie(){
+            this.stringPanier="";
+            for (let product of this.thumbnailsProducts) {
+                this.stringPanier+=product.name+":"+product.quantity+",";
+            }
+            let cookie = getCookie("Cookie");
+            if(cookie){
+                market.deleteCookie("Cookie");
+            }
+            createCookie("Cookie",cookie.split("/")[0]+"/"+this.stringPanier.substring(0,this.stringPanier.length-1),30);
+            console.log(getCookie("Cookie"));
+
+        };
 
         findInBasket(name)
         {
@@ -1666,10 +1682,18 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 categories.tabCategories[v].highlightedImage.opacity(1);
             }
         }
-        if(getCookie("Ray")){
-            market.deleteCookie("Ray");
+
+        if(Maps) {
+            let cookie = getCookie("Cookie");
+            if (cookie) {
+                market.deleteCookie("Cookie");
+                createCookie("Cookie", categories.ray.name + "/" + cookie.split("/")[1], 30);
+            }
+            else {
+                createCookie("Cookie", categories.ray.name + "/", 30);
+            }
         }
-        createCookie("Ray",categories.ray.name,30);
+
     };
 
     function search(sentence,config){
@@ -1930,10 +1954,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     }
 
-    market.deleteCookie=function(name, path, domain) {
-        // If the cookie exists
-        if (getCookie(name))
-            createCookie(name, "", -1, path, domain);
+    market.deleteCookie = function( name){
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     };
 
 
@@ -2051,12 +2073,25 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.add(zoneHeader);
 
 
-    if(getCookie("Ray")){
-        market.changeRay(getCookie("Ray"));
+    if(Maps&&getCookie("Cookie")){
+        let cookie=getCookie("Cookie").split("/");
+        market.changeRay(cookie[0]);
+
+        if(cookie[1]) {
+            let stringBasket = cookie[1].split(",");
+            console.log(stringBasket);
+            for (let i in stringBasket) {
+                let tabProd = stringBasket[i].split(":");
+                let prod = search(tabProd[0]);
+                market.basket.addProducts(prod[0], tabProd[1]);
+            }
+        }
     }
     else{
         market.changeRay("HighTech");
     }
+
+
 
 
 
