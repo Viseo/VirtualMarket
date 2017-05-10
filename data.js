@@ -810,6 +810,12 @@ exports.data = function() {
                     nom: "Spiderman",
                     complement: ""
                 }
+            },
+            "Livraison" : {
+                "05-05-2017":{
+                    debut: "10h",
+                    fin: "11h"
+                }
             }
         }
     }
@@ -855,37 +861,51 @@ exports.data = function() {
             "1": {
                 coord: {lat : 48.841436, lng : 2.253049},
                 address: "Parc des Princes",
-                dist:0
+                dist:0,
+                livraison : [{"09/05/2017": {debut:"10h", fin:"11h"}},{"10/05/2017": {debut:"13h", fin:"15h"}},{"11/05/2017": {debut:"9h", fin:"12h"}},{"12/05/2017": {debut:"16h", fin:"18h"}}]
+
             },
             "2": {
                 coord: {lat : 48.831481, lng : 2.276131},
                 address: "Aquaboulevard de Paris 4-6 Rue Louis Armand, 75015 Paris, France",
-                dist:0
+                dist:0,
+                livraison: [{"09/05/2017": {debut:"9h", fin:"10h"}},{"10/05/2017": {debut:"13h", fin:"14h"}},{"11/05/2017": {debut:"17h", fin:"18h"}},{"12/05-2017": {debut:"14h", fin:"18h"}}]
+
             },
             "3": {
                 coord: {lat : 48.848189, lng : 2.246906},
                 address: "Court Philippe Chatrier Stade Roland Garros",
-                dist:0
+                dist:0,
+                livraison: [{"09/05/2017": {debut:"10h", fin:"11h"}},{"10/05/2017": {debut:"13h", fin:"15h"}},{"11/05/2017": {debut:"15h", fin:"16h"}},{"13/05/2017": {debut:"9h", fin:"12h"}}]
+
             },
             "4": {
                 coord: {lat : 48.842469, lng : 2.236247},
                 address: "50 Rue d'Aguesseau, 92100 Boulogne-Billancourt, France",
-                dist:0
+                dist:0,
+                livraison: [{"09/05/2017": {debut:"11h", fin:"12h"}},{"10/05/2017": {debut:"15h", fin:"18h"}},{"11/05/2017": {debut:"9h", fin:"12h"}},{"12/05/2017": {debut:"14h", fin:"16h"}}]
+
             },
             "5": {
                 coord: {lat : 48.834027, lng : 2.255921},
                 address: "12 Rue du Point du Jour, 92100 Boulogne-Billancourt, France",
-                dist:0
+                dist:0,
+                livraison: [{"09/05/2017": {debut:"13h", fin:"14h"}},{"10/05/2017": {debut:"10h", fin:"12h"}},{"11/05/2017": {debut:"15h", fin:"18h"}},{"13/05/2017": {debut:"10h", fin:"12h"}}]
+
             },
             "6": {
                 coord: {lat : 48.843412, lng : 2.236067},
                 address: "33 Rue Escudier, 92100 Boulogne-Billancourt, France",
-                dist:0
+                dist:0,
+                livraison: [{"09/05/2017": {debut:"15h", fin:"19h"}},{"10/05/2017": {debut:"14h", fin:"18h"}},{"11/05/2017": {debut:"9h", fin:"12h"}},{"12/05/2017": {debut:"14h", fin:"15h"}},{"13/05/2017": {debut:"15h", fin:"19h"}}]
+
             },
             "7": {
                 coord: {lat : 48.83247, lng : 2.237452},
                 address: "188 Rue de Billancourt, 92100 Boulogne-Billancourt, France",
-                dist:0
+                dist:0,
+                livraison: [{"09/05/2017": {debut:"10h", fin:"11h"}},{"10/05/2017": {debut:"13h", fin:"16h"}},{"11/05/2017": {debut:"17h", fin:"19h"}},{"12/05/2017": {debut:"11h", fin:"12h"}}]
+
             },
         }
     }
