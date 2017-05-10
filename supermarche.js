@@ -1016,12 +1016,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     }
 
     class Round{
-        constructor(x,y,width,height){
+        constructor(x,y,width,height,place,left){
             this.component = new svg.Translation().mark("round");
             this.titleText = new svg.Text();
             this.roundContent = new svg.Translation();
             this.deliveryRect = new svg.Rect();
-            this.tabH=[]
+            this.tabH=[];
+            this.place=place;
+            this.left=left;
 
             this.component.add(this.roundContent);
             this.roundContent.add(this.titleText);
@@ -1032,25 +1034,51 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.move(x,y);
             this.width = width;
             this.height = height;
-            // this.relay = relay;
-            // this.deliver = this.getDelivery(this.relay);
+            console.log(this.place, this.left,this.width,this.height)
+
+            this.jauge=new svg.Rect(0,0,0,0);
+
+        }
+        move(x,y){
+            // console.log("on change x et y")
+            this.x=x;
+            this.y=y;
+            this.roundContent.move(x,y)
         }
 
         placeElements(){
-            this.titleText.position(this.deliveryRect.x, this.deliveryRect.y - 20).message(" places disponibles");
-            this.deliveryRect.dimension(this.width,this.height).corners(10,10);
-            //this.roundContent.move(xR,yR).color(svg.WHITE,1,svg.GREEN).opacity(1);
+            this.titleText.position(this.x, this.y - this.height*0.75).message(this.left+" / "+this.place);
+            this.deliveryRect.dimension(this.width,this.height).corners(15,15);
+            this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
+            this.jauge.position(-this.width/2+this.x+(this.width/(2*this.place)),this.y).color(svg.GREEN,2,svg.GREEN);
+            this.roundContent.add(this.jauge);
 
-            // let deliver = this.getDelivery(this.relay);
-            // for(let i in deliver.nb){
-            //     let nbRound = deliver.nb[i];
-            //     // this.titleText.position(market.calendar.calendarRect.x + i*10,market.calendar.calendarRect.y + i).message(nbRound+"tournées disponibles");
-            //     this.titleText.position(xR,yR).message(nbRound+"tournées disponibles");
-            //     //this.roundBack.position(1100,500-i).dimension(market.calendar.caseWidth/2*i,market.calendar.caseHeight/2).color(svg.WHITE,2,svg.GREEN);
-            //     this.deliveryRect.dimension(market.calendar.caseWidth/2*i,market.calendar.caseHeight/2).corners(10,10);
-            //     this.roundContent.move(xR,yR).color(svg.WHITE,1,svg.GREEN).opacity(1);
-            //     // this.roundContent.position(1100,500).dimension(market.calendar.calendarCases.x/2*nb[i],market.calendar.calendarCases.y/2).color(svg.BLACK,1,svg.GREEN).opacity(1);
-            // }
+        }
+        changeColor(bool){
+            console.log(this.left, this.place)
+            if(bool==1)
+                this.left++;
+            else if (bool==2)
+                this.left--;
+            else {}
+            console.log((this.place-this.left),(this.width/this.place))
+
+            let taille=(this.place-this.left)*(this.width/this.place);
+            this.jauge.dimension(taille, this.height);
+            this.titleText.message(this.left+" / "+this.place);
+            if(this.left<this.place && this.left!=0) {
+                this.deliveryRect.color(svg.WHITE,1,svg.ORANGE);
+                this.jauge.color(svg.OCRE,1,svg.OCRE).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0).corners(15,15);
+            }
+            else if(this.left==0)  {
+                this.deliveryRect.color(svg.WHITE,1,svg.RED);
+                this.jauge.color(svg.RED,1,svg.RED).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0).corners(15,15);
+            }else if(this.place==this.left){
+                this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
+            }
+
+                // this.jauge.color(svg.ORANGE,2,svg.ORANGE);
+                // this.jauge.color(svg.RED,2,svg.RED);
         }
 
 
@@ -1080,6 +1108,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.icon = new svg.Image("img/calendarIcon.png");
             this.calendarRect = new svg.Rect();
             this.rounds=[];
+            this.choice=null;
+            this.address="";
 
             this.component.add(this.title);
             this.component.add(this.titleText);
@@ -1105,17 +1135,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.pictoPosX = this.width*0.15;
             this.pictoPosY = this.height*0.09;
             let onMove=false;
-            this.picto.onMouseDown(function(e){
-                onMove=true;
-                let anchorPoint = {x:e.pageX-self.picto.x,y:e.pageY-self.picto.y};
-                self.picto.onMouseMove(function(e){
-                    if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
-                });
-                self.picto.onMouseUp(function(e){
-                    onMove=false;
-                    self.checkPlace(e.pageX,e.pageY,this.rounds);
-                });
-            });
+            // this.picto.onMouseDown(function(e){
+            //     onMove=true;
+            //     let anchorPoint = {x:e.pageX-self.picto.x,y:e.pageY-self.picto.y};
+            //     self.picto.onMouseMove(function(e){
+            //         if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
+            //     });
+            //     self.picto.onMouseUp(function(e){
+            //         onMove=false;
+            //         self.checkPlace(e.layerX,e.layerY,self.rounds);
+            //     });
+            // });
             this.component.add(this.picto);
 
             this.chevronDown.onClick(function(){
@@ -1213,7 +1243,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         placeElements(){
             this.caseWidth = this.calendarWidth/12;
             this.caseHeight = this.calendarHeight/10;
-            this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth,this.caseHeight);
+            this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.5,this.caseHeight*0.5);
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.LIGHT_GREY  ).opacity(1).corners(15,15);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             // this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
@@ -1296,6 +1326,21 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
 
 
+            this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
+            this.component.add(this.calendarFirstRow);
+            this.component.add(this.monthChoice);
+            this.component.add(this.picto);
+            this.component.add(this.chevronUp).add(this.chevronDown);
+
+        }
+
+        placeRound(){
+
+            for(let i = 0; i<this.rounds.length;i++){
+                this.calendarContent.remove(this.rounds[i].component);
+                console.log(this.rounds[i].component)
+            }
             let dayMonth = [];
             for(let i = 0; i<this.numberDaysThisMonth-this.currentDate.getDate()+1;i++){
                 let str = "";
@@ -1315,37 +1360,28 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 tab = placePerDay(dayMonth[j],tab);
             }
 
+            let self = this;
             for(let i = 0; i<dayMonth.length;i++){
                 for(let j = 0; j < tab.length; j++){
                     if(dayMonth[i]==tab[j].dayP){
-                        this.rounds[j] = new Round(0,0,(tab[j].nbT+1)*this.caseWidth,this.caseHeight/2);
-                        this.rounds[j].tabH=tab
+                        this.rounds[j] = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/2,tab[j].nbT,tab[j].left);
+                        this.rounds[j].tabH=tab;
                         this.rounds[j].placeElements();
-                        this.rounds[j].roundContent.move(this.calendarCases[tab[j].hourDL-9].x+this.rounds[j].width/2-this.caseWidth/2,this.calendarCases[i*11].y +5);
-                        this.rounds[j].deliveryRect.color(svg.WHITE,1,svg.GREEN);
+                        this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2-this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
+
+                        this.rounds[j].roundContent.onClick(function(e){
+                            console.log(self.rounds[j])
+                            self.checkPlace(e.pageX,e.pageY,self.rounds)
+                        });
                         for(let k = 0; k < tab[j].nbT+1;k++){
-                            // console.log(this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k],(i*11+Number(tab[j].hourDL-9)),k)
                             this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].droppable = true;
-                            this.rounds[j].component.add(new svg.Line(this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].x-this.caseWidth/2+5, this.calendarCases[i*11].y+8,
-                                this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].x+this.caseWidth/2-5, this.calendarCases[i*11].y+8).color(svg.BLACK,1,svg.GREEN))
                             this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].available = true;
                         }
-
-
-                        // console.log(this.calendarCases[i*11].day,this.rounds[j]);
-                        this.component.add(this.rounds[j].component);
+                        this.calendarContent.add(this.rounds[j].component);
+                        this.rounds[j].changeColor(3);
                     }
                 }
             }
-
-
-            this.component.add(this.calendarFirstColumn);
-            this.component.add(this.calendarContent);
-            this.component.add(this.calendarFirstRow);
-            this.component.add(this.monthChoice);
-            this.component.add(this.picto);
-            this.component.add(this.chevronUp).add(this.chevronDown);
-
         }
 
         printMonthContent(month,year){
@@ -1388,7 +1424,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             for(var i=0;i+this.startDay<=this.numberDaysThisMonth+this.startDay;i++){
                 let line = new svg.Translation();
                 for (var j=0;j<11;j++){
-                    let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0);
+                    let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0).opacity(0);
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
                         x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
@@ -1405,25 +1441,39 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.picto);
         }
 
-        checkPlace(x,y,rounds){
-            let choice = null;
-            for (let i = 0; i < this.calendarCases.length; i++) {
-                if ((x > this.calendarCases[i].x-this.caseWidth/2) && (x < this.calendarCases[i].x + this.caseWidth/2) &&
-                    (y > this.calendarCases[i].y-this.caseHeight/2) && (y > this.calendarCases[i].y - this.caseHeight/2)){
-                    if(this.calendarCases[i].droppable==true){
-                        // console.log(rounds.tabH);
-                        choice = this.calendarCases[i];
-                        this.calendarCases[i].available=false;
 
+
+        checkPlace(x,y,rounds){
+            console.log('salut')
+            x=x-(this.width*0.6-this.title.width/2+this.caseWidth/2);
+            y=y-this.calendarPositionY;
+            for(let round in rounds){
+                if((x > rounds[round].x-rounds[round].width/2)&& (x < rounds[round].x+rounds[round].width/2)
+                    && (y > rounds[round].y-30) && (y < rounds[round].y+30)){
+                    console.log(this.choice)
+                    if( rounds[round].left>0 && this.choice==null){
+                        this.choice = rounds[round];
+                        rounds[round].changeColor(2);
+                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
+                    }
+                    else if(this.choice!=rounds[round] && this.choice!=null && rounds[round].left>0) {
+                        console.log(this.x)
+                        this.choice.changeColor(1);
+                        this.choice = rounds[round];
+                        rounds[round].changeColor(2);
+                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
                     }
                 }
             }
-            if(choice!=null) {
-                this.picto.position(choice.x, choice.y);
-            }
-            else{
-                this.picto.position(this.pictoPosX,this.pictoPosY);
-            }
+            // if(this.choice!=rounds[round]) {
+            //     this.choice.changeColor(1);
+            //     this.choice = rounds[round];
+            //     rounds[round].changeColor(2);
+            //     this.picto.position(rounds[round].deliveryRect.x, rounds[round].deliveryRect.y);
+            // }
+            // else{
+            //     this.picto.position(this.pictoPosX,this.pictoPosY);
+            // }
         }
 
         changeTitleText(newText){
@@ -1997,13 +2047,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     }
 
     function placePerDay(dayGiven,dayToDraw){
-        let rp= getDelivery("Parc des Princes");
+        let rp= getDelivery(market.calendar.address);
         for (let jour in rp){
-            // console.log(rp[jour].dayL[0], dayGiven)
             if (rp[jour].dayL[0] === dayGiven) {
-                // console.log(rp[jour].dayL[0], "couo", rp[jour].hourDL);
-                dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT });
+                dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT, left : rp[jour].left });
             }
+
+
         }
         return dayToDraw;
     }
@@ -2017,11 +2067,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 for(let day in del) {
                     obj.push({
                         dayL: Object.keys(del[day]),
-                        nbT: Number(del[day][Object.keys(del[day])].fin) - Number(del[day][Object.keys(del[day])].debut),
+                        nbT:del[day][Object.keys(del[day])].place,
+                        left:del[day][Object.keys(del[day])].left,
                         hourDL: del[day][Object.keys(del[day])].debut,
                         hourAL: del[day][Object.keys(del[day])].fin
                     });
-                    // console.log(obj.nbT);
                 }
             }
         }
@@ -2074,16 +2124,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
         },500);
     }
-    function toCalendar(){
+    function toCalendar(message){
         currentMapSearch= myMap.input.value;
         mapPage.remove(myMap.component);
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-
+        console.log(message)
+        market.calendar.address=message;
         setTimeout(function () {
             currentPage = market.pages[0].obj;
             currentIndex = 0;
         },200)
+
+        market.calendar.placeRound();
 
     }
     let currentMapSearch = "";
