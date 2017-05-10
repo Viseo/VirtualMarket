@@ -1026,12 +1026,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.calendarPositionY = 0;
             this.calendarCases = [];
             this.monthChoice = new svg.Translation().mark("monthChoice");
-            this.chevronDown = new svg.Chevron(35,20,8,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronDownCalendar");
-            this.chevronUp = new svg.Chevron(35,20,8,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronUpCalendar");
+            this.chevronDown = new svg.Chevron(width*0.03,20,8,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronDownCalendar");
+            this.chevronUp = new svg.Chevron(width*0.03,20,8,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronUpCalendar");
             this.chevronWest = new svg.Chevron(10, height*0.05, 2, "W").color(svg.WHITE).opacity(0.5);
             this.chevronEast = new svg.Chevron(10, height*0.05, 2, "E").color(svg.WHITE);
-            this.ellipseChevronWest = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
-            this.ellipseChevronEast = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronWest = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronEast = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0.40);
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
@@ -1369,8 +1369,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     ////////////VIGNETTES//////////////////
 	class Thumbnail {
-        constructor(image,title)
-        {
+        constructor(image,title){
             this.component = new svg.Translation();
             this.image = new svg.Image(image);
             this.name = title;
@@ -1394,8 +1393,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.move(x,y);
         }
 
-        placeElementsDnD(current)
-        {
+        placeElementsDnD(current){
             this.width = current.width;
             this.height = current.height;
             this.image.position(this.width/2-2,this.height/2-2).dimension(this.width-30,this.height-30);
@@ -1443,8 +1441,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             });
 		}
 
-		placeElements()
-        {
+		placeElements(){
             this.image.position(this.width/2,this.height/2+2).dimension(this.width,this.height).mark(this.name);
             this.highlightedImage.position(this.width/2,this.height/2+2).dimension(this.width,this.height).mark(this.name+"2");
             this.title.position(this.height/2,this.height*0.93).font("Calibri",15,1).color(svg.WHITE).mark(this.name + " title");
