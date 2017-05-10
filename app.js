@@ -25,6 +25,7 @@ console.log('server open on port ' + port);
 binaryServer = BinaryServer({port: 3030});
 
 binaryServer.on('connection', function(client) {
+
     console.log('new connection');
     client.on('stream', function(stream, meta) {
         console.log(meta.event);
