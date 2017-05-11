@@ -1021,6 +1021,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.titleText = new svg.Text();
             this.roundContent = new svg.Translation();
             this.deliveryRect = new svg.Rect();
+            this.jauge=new svg.Rect();
+
             this.tabH=[];
             this.place=place;
             this.left=left;
@@ -1034,13 +1036,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.move(x,y);
             this.width = width;
             this.height = height;
-            console.log(this.place, this.left,this.width,this.height)
-
-            this.jauge=new svg.Rect(0,0,0,0);
-
         }
         move(x,y){
-            // console.log("on change x et y")
             this.x=x;
             this.y=y;
             this.roundContent.move(x,y)
@@ -1055,13 +1052,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         }
         changeColor(bool){
-            console.log(this.left, this.place)
             if(bool==1)
                 this.left++;
             else if (bool==2)
                 this.left--;
             else {}
-            console.log((this.place-this.left),(this.width/this.place))
 
             let taille=(this.place-this.left)*(this.width/this.place);
             this.jauge.dimension(taille, this.height);
@@ -1076,13 +1071,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }else if(this.place==this.left){
                 this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             }
-
-                // this.jauge.color(svg.ORANGE,2,svg.ORANGE);
-                // this.jauge.color(svg.RED,2,svg.RED);
         }
-
-
-
     }
 
     class Calendar{
@@ -1135,17 +1124,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.pictoPosX = this.width*0.15;
             this.pictoPosY = this.height*0.09;
             let onMove=false;
-            // this.picto.onMouseDown(function(e){
-            //     onMove=true;
-            //     let anchorPoint = {x:e.pageX-self.picto.x,y:e.pageY-self.picto.y};
-            //     self.picto.onMouseMove(function(e){
-            //         if(onMove) self.picto.position(e.pageX-anchorPoint.x,e.pageY-anchorPoint.y);
-            //     });
-            //     self.picto.onMouseUp(function(e){
-            //         onMove=false;
-            //         self.checkPlace(e.layerX,e.layerY,self.rounds);
-            //     });
-            // });
+
             this.component.add(this.picto);
 
             this.chevronDown.onClick(function(){
@@ -1205,37 +1184,45 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             self=this;
 
             this.zoneChevronEast.onClick(function(){
-                self.picto.position(self.pictoPosX,self.pictoPosY);
-                self.monthNumber++;
-                if (self.monthNumber===12){
-                    self.monthNumber=0;
-                    self.year++;
+                if(self.presentMonth===self.monthNumber){
+                    self.picto.position(self.pictoPosX,self.pictoPosY);
+                    self.monthNumber++;
+                    if (self.monthNumber===12){
+                        self.monthNumber=0;
+                        self.year++;
+                    }
+                    self.month = self.getMonth()[self.monthNumber];
+                    self.changeTitleText(self.month+" "+self.year);
+                    self.chevronWest.opacity(1);
+                    self.chevronEast.opacity(0.5);
+                    self.printMonthContent(self.monthNumber,self.year);
                 }
-                self.month = self.getMonth()[self.monthNumber];
-                self.changeTitleText(self.month+" "+self.year);
-                self.chevronWest.opacity(1);
-                self.printMonthContent(self.monthNumber,self.year);
+
             });
 
             this.zoneChevronWest.onClick(function(){
                 self.picto.position(self.pictoPosX,self.pictoPosY);
                 self.monthNumber--;
-                if((self.presentMonth>self.monthNumber)&&(self.presentYear===self.year)){
-                    self.monthNumber++;
-                    self.chevronWest.opacity(0.5);
-                }
-                else {
-                    if (self.monthNumber < 0) {
-                        self.monthNumber = 11;
-                        self.year--;
-                    }
-                    self.month = self.getMonth()[self.monthNumber];
-                    self.changeTitleText(self.month + " " + self.year);
-                    self.printMonthContent(self.monthNumber,self.year);
-                }
                 if((self.presentMonth===self.monthNumber)&&(self.presentYear===self.year)){
                     self.chevronWest.opacity(0.5);
+                    self.chevronEast.opacity(1);
+                    self.month = self.getMonth()[self.monthNumber];
+                    self.changeTitleText(self.month + " " + self.year);
                     self.printCurrentMonthContent();
+                }else{
+                    if((self.presentMonth>self.monthNumber)&&(self.presentYear===self.year)){
+                        self.monthNumber++;
+                        self.chevronWest.opacity(0.5);
+                    }
+                    else {
+                        if (self.monthNumber < 0) {
+                            self.monthNumber = 11;
+                            self.year--;
+                        }
+                        self.month = self.getMonth()[self.monthNumber];
+                        self.changeTitleText(self.month + " " + self.year);
+                        self.printMonthContent(self.monthNumber,self.year);
+                    }
                 }
             });
         }
@@ -1246,7 +1233,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.5,this.caseHeight*0.5);
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.LIGHT_GREY  ).opacity(1).corners(15,15);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
-            // this.cross.position(this.width*0.07,this.height*0.75).dimension(this.caseWidth,this.caseHeight);
 
             this.chevronDown.position(this.width*0.02+this.caseWidth/2.5,this.height*0.97);
             this.chevronUp.position(this.width*0.02+this.caseWidth/2.5,this.title.height*1.5+this.caseHeight);
@@ -1325,7 +1311,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
             }
 
-
+            this.placeRound();
             this.component.add(this.calendarFirstColumn);
             this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
@@ -1336,10 +1322,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         placeRound(){
-
             for(let i = 0; i<this.rounds.length;i++){
-                this.calendarContent.remove(this.rounds[i].component);
-                console.log(this.rounds[i].component)
+                this.calendarContent.component.remove(this.rounds[i].component);
             }
             let dayMonth = [];
             for(let i = 0; i<this.numberDaysThisMonth-this.currentDate.getDate()+1;i++){
@@ -1370,7 +1354,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2-this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
 
                         this.rounds[j].roundContent.onClick(function(e){
-                            console.log(self.rounds[j])
                             self.checkPlace(e.pageX,e.pageY,self.rounds)
                         });
                         for(let k = 0; k < tab[j].nbT+1;k++){
@@ -1378,6 +1361,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].available = true;
                         }
                         this.calendarContent.add(this.rounds[j].component);
+                        this.component.add(this.calendarContent);
                         this.rounds[j].changeColor(3);
                     }
                 }
@@ -1385,6 +1369,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         printMonthContent(month,year){
+            for(let i = 0; i<this.rounds.length;i++){
+                if(this.rounds[i].component)this.calendarContent.remove(this.rounds[i].component);
+            }
             this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
@@ -1434,6 +1421,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
             }
 
+
             this.component.add(this.calendarFirstColumn);
             this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
@@ -1444,20 +1432,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
 
         checkPlace(x,y,rounds){
-            console.log('salut')
             x=x-(this.width*0.6-this.title.width/2+this.caseWidth/2);
             y=y-this.calendarPositionY;
             for(let round in rounds){
                 if((x > rounds[round].x-rounds[round].width/2)&& (x < rounds[round].x+rounds[round].width/2)
                     && (y > rounds[round].y-30) && (y < rounds[round].y+30)){
-                    console.log(this.choice)
                     if( rounds[round].left>0 && this.choice==null){
                         this.choice = rounds[round];
                         rounds[round].changeColor(2);
                         this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
                     }
                     else if(this.choice!=rounds[round] && this.choice!=null && rounds[round].left>0) {
-                        console.log(this.x)
                         this.choice.changeColor(1);
                         this.choice = rounds[round];
                         rounds[round].changeColor(2);
@@ -2047,7 +2032,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     }
 
     function placePerDay(dayGiven,dayToDraw){
-        let rp= getDelivery(market.calendar.address);
+        if(market.calendar.address!==''){
+            var rp= getDelivery(market.calendar.address);
+        } else{
+            var rp= getDelivery(param.data.getMarker()[1].address);
+        }
         for (let jour in rp){
             if (rp[jour].dayL[0] === dayGiven) {
                 dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT, left : rp[jour].left });
@@ -2129,14 +2118,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mapPage.remove(myMap.component);
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-        console.log(message)
         market.calendar.address=message;
         setTimeout(function () {
             currentPage = market.pages[0].obj;
             currentIndex = 0;
         },200)
-
-        market.calendar.placeRound();
+        market.calendar.printCurrentMonthContent();
+        market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
 
     }
     let currentMapSearch = "";

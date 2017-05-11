@@ -1118,6 +1118,7 @@ describe("Test",function (){
         market.vocalRecognition("supprime cette concombre");
         market.vocalRecognition("");
         market.vocalRecognition("Maintenant je veux payer");
+        market.vocalRecognition("Salut");
     });
 
     it("ensures that you can change the page",function(){
