@@ -863,7 +863,7 @@ exports.data = function() {
                 coord: {lat : 48.831481, lng : 2.276131},
                 address: "Aquaboulevard de Paris 4-6 Rue Louis Armand, 75015 Paris, France",
                 dist:0,
-                livraison: [{"09/05/2017": {debut:"9", fin:"10", place:2, left:2}},{"10/05/2017": {debut:"13", fin:"14", place:2, left:2}},{"11/05/2017": {debut:"17", fin:"18", place:2, left:2}},{"12/05/2017": {debut:"14", fin:"18", place:5, left:4}}]
+                livraison: [{"09/05/2017": {debut:"9", fin:"10", place:2, left:2}},{"10/05/2017": {debut:"13", fin:"14", place:2, left:2}},{"11/05/2017": {debut:"17", fin:"18", place:2, left:1}},{"12/05/2017": {debut:"14", fin:"18", place:5, left:4}}]
 
             },
             "3": {
@@ -898,7 +898,7 @@ exports.data = function() {
                 coord: {lat : 48.83247, lng : 2.237452},
                 address: "188 Rue de Billancourt, 92100 Boulogne-Billancourt, France",
                 dist:0,
-                livraison: [{"09/05/2017": {debut:"10", fin:"11", place:2, left:2}},{"10/05/2017": {debut:"13", fin:"16", place:4, left:2}},{"11/05/2017": {debut:"17", fin:"19", place:3, left:2}},{"12/05/2017": {debut:"11", fin:"12", place:2, left:2}}]
+                livraison: [{"09/05/2017": {debut:"10", fin:"11", place:2, left:2}},{"10/05/2017": {debut:"13", fin:"16", place:4, left:2}},{"11/05/2017": {debut:"17", fin:"19", place:3, left:0}},{"12/05/2017": {debut:"11", fin:"12", place:2, left:2}}]
 
             }
         }
