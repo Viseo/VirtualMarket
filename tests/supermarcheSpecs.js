@@ -27,6 +27,8 @@ describe("Test",function (){
         svg = SVG(runtime);
         gui = GUI((svg),"");
         market = main(svg,gui,{data},neural,mockRuntime());
+        market.changeRay("HighTech");
+
     });
 
     it("ensure that page structure is ok at start",function(){

@@ -216,6 +216,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.totalPrice = 0;
             this.printPrice = new svg.Text(this.totalPrice);
             this.component.add(this.printPrice);
+            this.stringPanier="";
 
             this.calculatePrice(0);
 
@@ -282,6 +283,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     newProd.move(0,ref.y+ref.height);
                 }
             }
+            if(Maps)this.basketCookie();
         }
 
         deleteProducts(vignette,numberProduct){
@@ -309,7 +311,22 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
             }
+            if(Maps)this.basketCookie();
         }
+
+        basketCookie(){
+            this.stringPanier="";
+            for (let product of this.thumbnailsProducts) {
+                this.stringPanier+=product.name+":"+product.quantity+",";
+            }
+            let cookie = getCookie("Cookie");
+            if(cookie){
+                market.deleteCookie("Cookie");
+            }
+            createCookie("Cookie",cookie.split("/")[0]+"/"+this.stringPanier.substring(0,this.stringPanier.length-1),30);
+            console.log(getCookie("Cookie"));
+
+        };
 
         findInBasket(name)
         {
@@ -354,7 +371,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85)
                                             && (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
                                         market.basket.deleteProducts(current, 1);
-                                        changeRay(current.categorie);
+                                        market.changeRay(current.categorie);
                                     }
                                     glassDnD.remove(self.dragged.component);
                                     self.direction=null;
@@ -483,7 +500,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85) &&
                                     (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
                             market.basket.deleteProducts(current, 1);
-                            changeRay(current.categorie);
+                            market.changeRay(current.categorie);
                         }
                         glassDnD.remove(self.dragged.component);
 
@@ -1445,13 +1462,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         }
 
-        checkPlace(x,y,rounds){
+        checkPlace(x,y){
             let choice = null;
             for (let i = 0; i < this.calendarCases.length; i++) {
                 if ((x > this.calendarCases[i].x-this.caseWidth/2) && (x < this.calendarCases[i].x + this.caseWidth/2) &&
                     (y > this.calendarCases[i].y-this.caseHeight/2) && (y > this.calendarCases[i].y - this.caseHeight/2)){
                     if(this.calendarCases[i].droppable==true){
-                        // console.log(rounds.tabH);
                         choice = this.calendarCases[i];
                         this.calendarCases[i].available=false;
 
@@ -1462,7 +1478,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.picto.position(choice.x, choice.y);
                 console.log(choice.day+""+choice.hour);
                 this.choiceRdv=choice.day+ " à " +choice.hour;
-                textToSpeech("Souhaitez-vous confirmer votre choix?:"+this.choiceRdv, "fr");
+                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix?:"+this.choiceRdv, "fr");
                 this.selectedHourday=true;
             }
             else{
@@ -1569,7 +1585,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             //GESTION SELECTION//
             let current = this;
             this.component.onClick(function(e){
-                if(!categories.navigation) changeRay(current.name);
+                if(!categories.navigation) market.changeRay(current.name);
                 else categories.navigation=false;
             });
 
@@ -1790,7 +1806,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     }
 
-    function changeRay(name){
+    market.changeRay=function(name){
         let tab=[];
         if(name=="Recherche")
         {
@@ -1814,7 +1830,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 categories.tabCategories[v].highlightedImage.opacity(1);
             }
         }
-    }
+
+        if(Maps) {
+            let cookie = getCookie("Cookie");
+            if (cookie) {
+                market.deleteCookie("Cookie");
+                createCookie("Cookie", categories.ray.name + "/" + cookie.split("/")[1], 30);
+            }
+            else {
+                createCookie("Cookie", categories.ray.name + "/", 30);
+            }
+        }
+
+    };
 
     function search(sentence,config){
         sentence=replaceChar(sentence);
@@ -1870,7 +1898,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         mainPage.add(zoneCategories);
 
-        changeRay("Recherche");
+        market.changeRay("Recherche");
     }
 
     market.vocalRecognition = function(message){
@@ -2043,7 +2071,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     };
 
-    function textToSpeech(msg,language){
+    function textToSpeech(msg){
         var speak = new SpeechSynthesisUtterance(msg);
         window.speechSynthesis.speak(speak);
     }
@@ -2083,6 +2111,42 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
         return obj;
     }
+
+    function createCookie(name, value, expires, path, domain) {
+        var cookie = name + "=" + value + ";";
+
+        if (expires) {
+            // If it's a date
+            if(expires instanceof Date) {
+                // If it isn't a valid date
+                if (isNaN(expires.getTime()))
+                    expires = new Date();
+            }
+            else
+                expires = new Date(new Date().getTime() + parseInt(expires) * 1000 * 60 * 60 * 24);
+
+            cookie += "expires=" + expires.toGMTString() + ";";
+        }
+
+        if (path)
+            cookie += "path=" + path + ";";
+        if (domain)
+            cookie += "domain=" + domain + ";";
+
+        if(Maps)document.cookie = cookie;
+    }
+
+    function getCookie(name) {
+        if(Maps) {
+            var regexp = new RegExp("(?:^" + name + "|;\s*" + name + ")=(.*?)(?:;|$)", "g");
+            var result = regexp.exec(document.cookie);
+            return (result === null) ? null : result[1];
+        }
+    }
+
+    market.deleteCookie = function( name){
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    };
 
 
     // textToSpeech("Digi-market peut parler","fr");
@@ -2205,7 +2269,29 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
 
-    changeRay("HighTech");
+
+    if(Maps&&getCookie("Cookie")){
+        let cookie=getCookie("Cookie").split("/");
+        market.changeRay(cookie[0]);
+
+        if(cookie[1]) {
+            let stringBasket = cookie[1].split(",");
+            console.log(stringBasket);
+            for (let i in stringBasket) {
+                let tabProd = stringBasket[i].split(":");
+                let prod = search(tabProd[0]);
+                market.basket.addProducts(prod[0], tabProd[1]);
+            }
+        }
+    }
+    else{
+        market.changeRay("HighTech");
+    }
+
+
+
+
+
     return market;
     //////////////////////////////
 }
