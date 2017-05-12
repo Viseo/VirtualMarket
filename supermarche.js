@@ -896,7 +896,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     self.buttons.remove(self.currentLine);
                     let buttonBase = self.tabButtons[parseInt(self.code.charAt(self.code.length-1))-1];
                     self.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,
-                        e.touches[0].clientX-self.width*1.15,e.touches[0].clientY-self.height*0.2)
+                        e.touches[0].clientX,e.touches[0].clientY-header.height)
                         .color(svg.BLACK,5,svg.BLACK);
                     self.buttons.add(self.currentLine);
                 }
