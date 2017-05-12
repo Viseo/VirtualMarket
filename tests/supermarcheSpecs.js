@@ -27,6 +27,8 @@ describe("Test",function (){
         svg = SVG(runtime);
         gui = GUI((svg),"");
         market = main(svg,gui,{data},neural,mockRuntime());
+        market.changeRay("HighTech");
+
     });
 
     it("ensure that page structure is ok at start",function(){
@@ -1118,7 +1120,7 @@ describe("Test",function (){
         market.vocalRecognition("supprime cette concombre");
         market.vocalRecognition("");
         market.vocalRecognition("Maintenant je veux payer");
-        market.vocalRecognition("Salut");
+        // market.vocalRecognition("Salut");
     });
 
     it("ensures that you can change the page",function(){

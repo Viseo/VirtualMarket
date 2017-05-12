@@ -216,6 +216,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.totalPrice = 0;
             this.printPrice = new svg.Text(this.totalPrice);
             this.component.add(this.printPrice);
+            this.stringPanier="";
 
             this.calculatePrice(0);
 
@@ -282,6 +283,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     newProd.move(0,ref.y+ref.height);
                 }
             }
+            if(Maps)this.basketCookie();
         }
 
         deleteProducts(vignette,numberProduct){
@@ -309,7 +311,21 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
             }
+            if(Maps)this.basketCookie();
         }
+
+        basketCookie(){
+            this.stringPanier="";
+            for (let product of this.thumbnailsProducts) {
+                this.stringPanier+=product.name+":"+product.quantity+",";
+            }
+            let cookie = getCookie("Cookie");
+            if(cookie){
+                market.deleteCookie("Cookie");
+            }
+            createCookie("Cookie",cookie.split("/")[0]+"/"+this.stringPanier.substring(0,this.stringPanier.length-1),30);
+
+        };
 
         findInBasket(name)
         {
@@ -354,7 +370,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85)
                                             && (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
                                         market.basket.deleteProducts(current, 1);
-                                        changeRay(current.categorie);
+                                        market.changeRay(current.categorie);
                                     }
                                     glassDnD.remove(self.dragged.component);
                                     self.direction=null;
@@ -483,7 +499,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         if ((self.dragged.x + self.dragged.width / 2 < pageWidth * 0.85) &&
                                     (self.dragged.y + self.dragged.height / 2 > market.height * 0.20)) {
                             market.basket.deleteProducts(current, 1);
-                            changeRay(current.categorie);
+                            market.changeRay(current.categorie);
                         }
                         glassDnD.remove(self.dragged.component);
 
@@ -609,6 +625,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
                                 }
                                 i = 0;
+
                                 voice = [];
                                 recording = false;
                             }
@@ -1072,6 +1089,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             }
         }
+
     }
 
     class Calendar{
@@ -1085,15 +1103,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.calendarPositionY = 0;
             this.calendarCases = [];
             this.monthChoice = new svg.Translation().mark("monthChoice");
-            this.chevronDown = new svg.Chevron(35,20,8,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronDownCalendar");
-            this.chevronUp = new svg.Chevron(35,20,8,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronUpCalendar");
+            this.chevronDown = new svg.Chevron(width*0.03,20,8,"S").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronDownCalendar");
+            this.chevronUp = new svg.Chevron(width*0.03,20,8,"N").color(svg.WHITE,3,svg.BLACK).opacity(0.7).mark("chevronUpCalendar");
             this.chevronWest = new svg.Chevron(10, height*0.05, 2, "W").color(svg.WHITE).opacity(0.5);
             this.chevronEast = new svg.Chevron(10, height*0.05, 2, "E").color(svg.WHITE);
-            this.ellipseChevronWest = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
-            this.ellipseChevronEast = new svg.Ellipse(20, height*0.04).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronWest = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0.40);
+            this.ellipseChevronEast = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0.40);
             this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
+            this.selectedHourday=false;
             this.icon = new svg.Image("img/calendarIcon.png");
             this.calendarRect = new svg.Rect();
             this.rounds=[];
@@ -1110,6 +1129,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.monthChoice);
             this.component.add(this.chevronDown).add(this.chevronUp);
             this.component.add(this.icon);
+            this.component.add(this.calendarRect);
 
 
             this.x = x;
@@ -1128,7 +1148,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
             this.component.add(this.picto);
 
-            this.chevronDown.onClick(function(){
+                    this.chevronDown.onClick(function(){
                 let moveY=null;
                 let place = 0;
                 self.picto.position(self.pictoPosX,self.pictoPosY);
@@ -1235,6 +1255,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.title.dimension(this.calendarWidth,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.LIGHT_GREY  ).opacity(1).corners(15,15);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
 
+
             this.chevronDown.position(this.width*0.02+this.caseWidth/2.5,this.height*0.97);
             this.chevronUp.position(this.width*0.02+this.caseWidth/2.5,this.title.height*1.5+this.caseHeight);
             this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
@@ -1244,12 +1265,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
             this.icon.dimension(market.width*0.02,market.width*0.02).position(market.width*0.99,100);
-
             this.printCurrentMonthContent();
             this.calendarRect.position(this.calendarFirstColumn.x+this.caseWidth/2+(this.calendarWidth-this.caseWidth)/2,
                 this.calendarFirstRow.y+this.caseHeight/2+this.caseHeight*this.numberDaysThisMonth/2)
                 .dimension(this.calendarWidth-this.caseWidth,this.numberDaysThisMonth*this.caseHeight).color(svg.WHITE,1,svg.LIGHT_GREY).opacity(1);
         }
+
 
         printCurrentMonthContent(){
             this.component.remove(this.calendarContent);
@@ -1276,6 +1297,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else{
                     text = this.getWeekDay()[(this.currentDate.getDay()+j)%7]+" "+ (this.currentDate.getDate()+j);
                 }
+
                 this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
                 tabDays.push(text);
                 this.calendarFirstColumn.add(this.dayCases[j]);
@@ -1295,7 +1317,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if(i==4){
                         let secondText = new svg.Text("indisponible").font("calibri",this.width / 100, 1).color(svg.BLACK)
                             .position(t.x,t.y+20);
+
                         let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-5).color(svg.RED,1,svg.WHITE);
+
                         hourCase.add(secondText);
                         hourCase.add(redPoint);
                     }
@@ -1336,7 +1360,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         placeRound(){
 
             for(let i = 0; i<this.rounds.length;i++)
-                this.calendarContent.component.remove(this.rounds[i].component);
+                if(Maps){
+                    this.calendarContent.component.remove(this.rounds[i].component);
+                }
 
             let dayMonth = [];
             for(let i = 0; i<this.numberDaysThisMonth-this.currentDate.getDate()+1;i++){
@@ -1368,7 +1394,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if(dayMonth[i]==tab[j].dayP){
                         totLeft += tab[j].left;
                         this.rounds[j] = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/2,tab[j].nbT,tab[j].left);
-                        this.rounds[j].tabH=tab;
+                        this.rounds[j].tabH=tab[j];
                         this.rounds[j].placeElements();
                         this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2-this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
 
@@ -1403,7 +1429,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         printMonthContent(month,year){
             for(let i = 0; i<this.rounds.length;i++){
-                if(this.rounds[i].component)this.calendarContent.component.remove(this.rounds[i].component);
+                if(Maps){
+                    if(this.rounds[i].component)this.calendarContent.component.remove(this.rounds[i].component);
+                }
             }
             // this.component.remove(this.calendarContent.component);
             this.component.remove(this.calendarFirstColumn);
@@ -1479,9 +1507,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.picto);
+
         }
-
-
 
         checkPlace(x,y,rounds){
             x=x-(this.width*0.6-this.title.width/2+this.caseWidth/2);
@@ -1493,16 +1520,23 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         this.choice = rounds[round];
                         rounds[round].changeColor(2);
                         this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
+                        this.choiceRdv=rounds[round].tabH.dayP;
+                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
+                        this.selectedHourday=true;
                     }
                     else if(this.choice!=rounds[round] && this.choice!=null && rounds[round].left>0) {
                         this.choice.changeColor(1);
                         this.choice = rounds[round];
                         rounds[round].changeColor(2);
                         this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
+                        this.choiceRdv=rounds[round].tabH.dayP;
+                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
+                        this.selectedHourday=true;
                     }
                 }
             }
         }
+
 
         changeTitleText(newText){
             this.monthChoice.remove(this.titleText);
@@ -1510,6 +1544,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             this.monthChoice.add(this.titleText);
         }
+
+
 
         getWeekDay(){
             return {
@@ -1550,8 +1586,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     ////////////VIGNETTES//////////////////
 	class Thumbnail {
-        constructor(image,title)
-        {
+        constructor(image,title){
             this.component = new svg.Translation();
             this.image = new svg.Image(image);
             this.name = title;
@@ -1575,8 +1610,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.move(x,y);
         }
 
-        placeElementsDnD(current)
-        {
+        placeElementsDnD(current){
             this.width = current.width;
             this.height = current.height;
             this.image.position(this.width/2-2,this.height/2-2).dimension(this.width-30,this.height-30);
@@ -1601,7 +1635,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             //GESTION SELECTION//
             let current = this;
             this.component.onClick(function(e){
-                if(!categories.navigation) changeRay(current.name);
+                if(!categories.navigation) market.changeRay(current.name);
                 else categories.navigation=false;
             });
 
@@ -1624,8 +1658,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             });
 		}
 
-		placeElements()
-        {
+		placeElements(){
             this.image.position(this.width/2,this.height/2+2).dimension(this.width,this.height).mark(this.name);
             this.highlightedImage.position(this.width/2,this.height/2+2).dimension(this.width,this.height).mark(this.name+"2");
             this.title.position(this.height/2,this.height*0.93).font("Calibri",15,1).color(svg.WHITE).mark(this.name + " title");
@@ -1819,10 +1852,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(this.input,"placeholder","Enter a location");
             runtime.attr(this.input,"style","height: 25px; width: 300px; ");
             runtime.add(this.foreign,this.input);
+
         }
     }
 
-    function changeRay(name){
+    market.changeRay=function(name){
         let tab=[];
         if(name=="Recherche")
         {
@@ -1846,7 +1880,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 categories.tabCategories[v].highlightedImage.opacity(1);
             }
         }
-    }
+
+        if(Maps) {
+            let cookie = getCookie("Cookie");
+            if (cookie) {
+                market.deleteCookie("Cookie");
+                createCookie("Cookie", categories.ray.name + "/" + cookie.split("/")[1], 30);
+            }
+            else {
+                createCookie("Cookie", categories.ray.name + "/", 30);
+            }
+        }
+
+    };
 
     function search(sentence,config){
         sentence=replaceChar(sentence);
@@ -1902,13 +1948,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         mainPage.add(zoneCategories);
 
-        changeRay("Recherche");
+        market.changeRay("Recherche");
     }
 
     market.vocalRecognition = function(message){
         message=replaceChar(message);
         if(message!="") {
             if((market.map&&market.map.mapOn)||(market.calendar&&market.calendar.calendarOn)){
+
                 if(market.map.mapOn){
                     let words = message.split(" ");
                     for (var i = 0; i < words.length; i++) {
@@ -1955,7 +2002,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     }
                 }
                 else if(market.calendar.calendarOn){
+                    let answer = message.toLowerCase();
 
+                    if (answer.includes("oui")&&market.calendar.selectedHourday){
+                        textToSpeech("Ok vous serez livrés à ces horaires choisis", "fr");
+                    }
+                    else if(answer.includes("non")&&market.calendar.selectedHourday){
+                        textToSpeech("Nous annulons votre livraison", "fr");
+                        market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
+                        this.selectedHourday=false;
+                    }
                 }
             }
             else{
@@ -2065,7 +2121,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     };
 
-    function textToSpeech(msg,language){
+    function textToSpeech(msg){
         var speak = new SpeechSynthesisUtterance(msg);
         window.speechSynthesis.speak(speak);
     }
@@ -2109,6 +2165,42 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
         return obj;
     }
+
+    function createCookie(name, value, expires, path, domain) {
+        var cookie = name + "=" + value + ";";
+
+        if (expires) {
+            // If it's a date
+            if(expires instanceof Date) {
+                // If it isn't a valid date
+                if (isNaN(expires.getTime()))
+                    expires = new Date();
+            }
+            else
+                expires = new Date(new Date().getTime() + parseInt(expires) * 1000 * 60 * 60 * 24);
+
+            cookie += "expires=" + expires.toGMTString() + ";";
+        }
+
+        if (path)
+            cookie += "path=" + path + ";";
+        if (domain)
+            cookie += "domain=" + domain + ";";
+
+        if(Maps)document.cookie = cookie;
+    }
+
+    function getCookie(name) {
+        if(Maps) {
+            var regexp = new RegExp("(?:^" + name + "|;\s*" + name + ")=(.*?)(?:;|$)", "g");
+            var result = regexp.exec(document.cookie);
+            return (result === null) ? null : result[1];
+        }
+    }
+
+    market.deleteCookie = function( name){
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    };
 
 
     // textToSpeech("Digi-market peut parler","fr");
@@ -2162,6 +2254,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         myMap=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
         market.calendar.address=message;
+        market.calendar.calendarOn=true;
+        market.map.mapOn=false;
         setTimeout(function () {
             currentPage = market.pages[0].obj;
             currentIndex = 0;
@@ -2206,10 +2300,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     currentIndex = index;
                     if (currentPage == market.map.component) market.map.mapOn = true;
                     else market.map.mapOn = false;
-                    if (currentPage == market.calendar.component) {
+
+                    if (currentIndex == 0) {
                         market.calendar.calendarOn = true;
+                        market.map.mapOn = false;
                     }
-                    else market.calendar.calendarOn = false;
+                    else if (currentIndex==1){
+                        market.calendar.calendarOn = true;
+                        market.map.mapOn = true;
+                    }
+                    else{
+                        market.calendar.calendarOn = false;
+                        market.map.mapOn = false;
+                    }
                 }
             }
 
@@ -2223,7 +2326,28 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
 
-    changeRay("HighTech");
+
+    if(Maps&&getCookie("Cookie")){
+        let cookie=getCookie("Cookie").split("/");
+        market.changeRay(cookie[0]);
+
+        if(cookie[1]) {
+            let stringBasket = cookie[1].split(",");
+            for (let i in stringBasket) {
+                let tabProd = stringBasket[i].split(":");
+                let prod = search(tabProd[0]);
+                market.basket.addProducts(prod[0], tabProd[1]);
+            }
+        }
+    }
+    else{
+        market.changeRay("HighTech");
+    }
+
+
+
+
+
     return market;
     //////////////////////////////
-};
+}
