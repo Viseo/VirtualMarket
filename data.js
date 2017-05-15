@@ -833,8 +833,6 @@ exports.data = function() {
         return tabVignettes;
     }
 
-
-
     function makeVignettesForCategories(typeVig){
         let jsonData = getJson();
         var tabVignettes = [];
@@ -906,6 +904,7 @@ exports.data = function() {
             }
         }
     }
+
     return {    getJson : getJson,
                 getMarker: getMarker,
                 makeVignettesForRay:makeVignettesForRay,

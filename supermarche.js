@@ -1054,6 +1054,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.width = width;
             this.height = height;
         }
+
         move(x,y){
             this.x=x;
             this.y=y;
@@ -1068,6 +1069,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.roundContent.add(this.jauge);
 
         }
+
         changeColor(bool){
             if(bool==1)
                 this.left++;
@@ -1098,8 +1100,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.title = new svg.Rect();
             this.titleText = new svg.Text("Avril");
             this.calendarFirstRow = new svg.Translation();
-            this.calendarFirstColumn = new svg.Translation();
-            this.calendarContent = new svg.Translation();
+            this.calendarFirstColumn = new svg.Translation().mark("column");
+            this.calendarContent = new svg.Translation().mark("content");
             this.calendarPositionY = 0;
             this.calendarCases = [];
             this.monthChoice = new svg.Translation().mark("monthChoice");
@@ -1138,61 +1140,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.width = width;
             this.height = height;
 
-            let self = this;
-
-            this.movement=0;
             this.picto = new svg.Image("img/panier.png").mark("iconUser");
             this.pictoPosX = this.width*0.15;
             this.pictoPosY = this.height*0.09;
-            let onMove=false;
-
+            this.onMove=false;
             this.component.add(this.picto);
 
-                    this.chevronDown.onClick(function(){
-                let moveY=null;
-                let place = 0;
-                self.picto.position(self.pictoPosX,self.pictoPosY);
-                if(self.currentDate!=0) place = self.currentDate.getDate()-1;
-
-                if(self.numberDaysThisMonth-place>10) {
-                    if (place + self.movement + 4 <= self.numberDaysThisMonth - 10) {
-                        self.movement = self.movement + 4;
-                        moveY = self.caseHeight * 4;
-                    }
-                    else {
-                        moveY = ((self.numberDaysThisMonth - 10) - (self.movement + place)) * self.caseHeight;
-                        self.movement = self.numberDaysThisMonth - 10 - place;
-                    }
-                    self.calendarPositionY = self.calendarPositionY - moveY;
-                    self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
-                    self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
-                    for (let i = 0; i < self.calendarCases.length; i++) {
-                        self.calendarCases[i].y = self.calendarCases[i].y - moveY;
-                    }
-                }
-            });
-
-            this.chevronUp.onClick(function(){
-                let moveY=null;
-                let place = 0;
-                self.picto.position(self.pictoPosX,self.pictoPosY);
-                if(self.currentDate!=0) place = self.currentDate.getDate();
-                if ((place + self.movement - 4 >= place)) {
-                    self.movement = self.movement - 4;
-                    moveY = self.caseHeight * 4;
-                }
-                else {
-                    moveY = self.movement * self.caseHeight;
-                    self.movement = 0;
-                }
-
-                self.calendarPositionY = self.calendarPositionY + moveY;
-                self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn").moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarPositionY);
-                self.calendarContent.smoothy(10, 10).onChannel("calendarContent").moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarPositionY);
-                for (let i = 0; i < self.calendarCases.length; i++) {
-                    self.calendarCases[i].y = self.calendarCases[i].y + moveY;
-                }
-            });
             this.calendarWidth = width*0.925;
             this.calendarHeight = height*0.8;
 
@@ -1202,8 +1155,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.presentYear = this.date.getYear()+1900;
             this.month = this.getMonth()[this.monthNumber];
             this.year = this.date.getYear()+1900;
-            self=this;
 
+            let self = this;
             this.zoneChevronEast.onClick(function(){
                 if(self.presentMonth===self.monthNumber){
                     self.picto.position(self.pictoPosX,self.pictoPosY);
@@ -1218,7 +1171,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     self.chevronEast.opacity(0.5);
                     self.printMonthContent(self.monthNumber,self.year);
                 }
-
             });
 
             this.zoneChevronWest.onClick(function(){
@@ -1248,6 +1200,91 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             });
         }
 
+        setEventsMovement(){
+            var self = this;
+
+            this.calendarContent.onMouseDown(function(e){
+                beginMove(e.pageY,"mousemove","mouseup");
+            });
+
+            this.calendarFirstColumn.onMouseDown(function(e){
+                beginMove(e.pageY,"mousemove","mouseup");
+            });
+
+            svg.addEvent(this.calendarContent,"touchstart",function(e){
+                beginMove(e.touches[0].clientY,"touchmove","touchend");
+            });
+
+            svg.addEvent(this.calendarFirstColumn,"touchstart",function(e){
+                beginMove(e.touches[0].clientY,"touchmove","touchend");
+            });
+
+            function beginMove(y,eventTypeMove,eventTypeUp){
+                self.onMove=true;
+                let prevMouse=y;
+
+                svg.addEvent(self.calendarFirstColumn,eventTypeMove,function(e){
+                    if(self.onMove){
+                        if(eventTypeMove.includes("mouse")) {
+                            toMove(e.pageY, prevMouse);
+                            prevMouse = e.pageY;
+                        }
+                        else{
+                            toMove(e.touches[0].clientY, prevMouse);
+                            prevMouse = e.touches[0].clientY;
+                        }
+                    }
+                });
+
+                svg.addEvent(self.calendarFirstColumn,eventTypeUp,function(){
+                    self.onMove=false;
+                    toEndMove();
+                });
+
+                self.calendarContent.mark("contenu");
+                svg.addEvent(self.calendarContent,eventTypeMove,function(e){
+                    if(self.onMove){
+                        if(eventTypeMove.includes("mouse")) {
+                            toMove(e.pageY, prevMouse);
+                            prevMouse = e.pageY;
+                        }
+                        else{
+                            toMove(e.touches[0].clientY, prevMouse);
+                            prevMouse = e.touches[0].clientY;
+                        }
+                    }
+                });
+
+                svg.addEvent(self.calendarContent,eventTypeUp,function(){
+                    self.onMove=false;
+                    toEndMove();
+                });
+            }
+
+            function toMove(y,mouse){
+                self.calendarFirstColumn.steppy(1, 1).onChannel("calendarColumn")
+                    .moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarContent.y-(mouse-y));
+                self.calendarContent.steppy(1, 1).onChannel("calendarContent")
+                    .moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarContent.y-(mouse-y));
+            }
+
+            function toEndMove(){
+                var height = self.caseHeight*(self.numberDaysThisMonth-self.currentDate.getDate());
+                if(self.calendarContent.y+height+self.caseHeight/2<market.height){
+                    self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
+                        .moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, market.height-height-self.caseHeight/2);
+                    self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
+                        .moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, market.height-height-self.caseHeight/2);
+                }
+                else if(self.calendarContent.y>header.height+self.caseHeight*2){
+                    self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
+                        .moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, header.height+self.caseHeight*2.5);
+                    self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
+                        .moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, header.height+self.caseHeight*2.5);
+                }
+            }
+        }
+
         placeElements(){
             this.caseWidth = this.calendarWidth/12;
             this.caseHeight = this.calendarHeight/10;
@@ -1271,12 +1308,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 .dimension(this.calendarWidth-this.caseWidth,this.numberDaysThisMonth*this.caseHeight).color(svg.WHITE,1,svg.LIGHT_GREY).opacity(1);
         }
 
-
         printCurrentMonthContent(){
             this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
-            this.movement=0;
             this.calendarFirstColumn = new svg.Translation();
             this.calendarContent = new svg.Translation();
             this.currentDate = new Date();
@@ -1355,6 +1390,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.picto);
             this.component.add(this.chevronUp).add(this.chevronDown);
 
+            this.calendarContent.mark("content");
+            this.calendarFirstColumn.mark("column");
+            this.setEventsMovement();
         }
 
         placeRound(){
@@ -1437,7 +1475,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
 
-            this.movement=0;
             this.currentDate=0;
             let tabDays = [];
             this.numberDaysThisMonth=this.daysInMonth(month,year);
@@ -1501,13 +1538,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
             }
 
-
             this.component.add(this.calendarFirstColumn);
             this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.picto);
 
+            this.calendarFirstColumn.mark("column");
+            this.calendarContent.mark("content");
+            this.setEventsMovement();
         }
 
         checkPlace(x,y,rounds){
@@ -1519,24 +1558,27 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if(rounds[round].left>0 && this.choice==null){
                         this.choice = rounds[round];
                         rounds[round].changeColor(2);
-                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
+                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2,
+                                    rounds[round].y+this.calendarPositionY);
                         this.choiceRdv=rounds[round].tabH.dayP;
-                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
+                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.replace("/"," ")+
+                            " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
                         this.selectedHourday=true;
                     }
                     else if(this.choice!=rounds[round] && this.choice!=null && rounds[round].left>0) {
                         this.choice.changeColor(1);
                         this.choice = rounds[round];
                         rounds[round].changeColor(2);
-                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
+                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2,
+                            rounds[round].y+this.calendarPositionY);
                         this.choiceRdv=rounds[round].tabH.dayP;
-                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
+                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.replace("/"," ")+
+                            " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
                         this.selectedHourday=true;
                     }
                 }
             }
         }
-
 
         changeTitleText(newText){
             this.monthChoice.remove(this.titleText);
@@ -1544,8 +1586,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
             this.monthChoice.add(this.titleText);
         }
-
-
 
         getWeekDay(){
             return {
@@ -1579,9 +1619,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         daysInMonth(month, year) {
             return new Date(year, month+1, 0).getDate();
         }
-
-
-
     }
 
     ////////////VIGNETTES//////////////////
