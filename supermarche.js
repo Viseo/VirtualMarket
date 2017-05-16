@@ -2051,188 +2051,199 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         market.changeRay("Recherche");
     }
 
-    market.vocalRecognition = function(message){
-        message=replaceChar(message);
-        if(message!="") {
-            if((market.map&&market.map.mapOn)||(market.calendar&&market.calendar.calendarOn)){
+    market.vocalRecognition = function(message) {
+        message = replaceChar(message);
+        if (message != "") {
+            if ((market.map && market.map.mapOn) || (market.calendar && market.calendar.calendarOn)) {
 
-                if(market.map.mapOn){
+                if (market.map.mapOn) {
                     let words = message.split(" ");
                     for (var i = 0; i < words.length; i++) {
-                        if((words[i].includes("poin"))&&(words[i+1].includes("relai"))) {
+                        if ((words[i].includes("poin")) && (words[i + 1].includes("relai"))) {
                             message = message.substring(message.indexOf(words[i])).split(" ");
                             i = words.length;
-                            let end=false;
+                            let end = false;
                             for (var i = 0; i < message.length; i++) {
                                 if ((message[i] >= "0" && message[i] <= "9") || (message[i - 1] == "numero")) {
                                     let selec = message[i];
                                     if (selec == "un") selec = 1;
 
-                                    if(Maps)toCalendar(market.mapsfunction.chooseRelai(selec));
+                                    if (Maps) toCalendar(market.mapsfunction.chooseRelai(selec));
                                     end = true;
                                     break;
                                 }
                             }
-                            if(end) break;
+                            if (end) break;
                         }
-                        else if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000)||
-                        ((words[i]=="avenue")||(words[i]=="rue")||(words[i]=="route")||(words[i]=="boulevard")||(words[i]=="quai")
-                        ||(words[i]=="allée")||(words[i]=="impasse")||(words[i]=="chemin"))) {
+                        else if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) ||
+                            ((words[i] == "avenue") || (words[i] == "rue") || (words[i] == "route") || (words[i] == "boulevard") || (words[i] == "quai")
+                            || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
                             message = message.substring(message.indexOf(words[i]));
-                            currentMapSearch=message;
-                            i=words.length;
-                            if(Maps){
-                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à "+ message +
+                            currentMapSearch = message;
+                            i = words.length;
+                            if (Maps) {
+                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à " + message +
                                     ". Voici les points relais les plus proches", "fr");
                                 market.mapsfunction.research(currentMapSearch);
                             }
 
                             break;
                         }
-                        else if(words[i].includes("valide")){
-                            market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
-                            currentPage=market.calendar;
-                            currentIndex=0;
-                            market.map.mapOn=false;
-                            market.calendar.calendarOn=true;
-                            currentMapSearch= myMap.input.value;
+                        else if (words[i].includes("valide")) {
+                            market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                            currentPage = market.calendar;
+                            currentIndex = 0;
+                            market.map.mapOn = false;
+                            market.calendar.calendarOn = true;
+                            currentMapSearch = myMap.input.value;
                             mapPage.remove(myMap.component);
-                            myMap=null;
+                            myMap = null;
                         }
                     }
                 }
-                else if(market.calendar.calendarOn){
+                else if (market.calendar.calendarOn) {
                     let spMessage = message.split(" ");
                     spMessage.push(message);
-                    if(spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux")){
-                        for(let word in spMessage){
-                            for(let k = 0; k<market.calendar.rounds.length;k++){
-                                if(spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0,2) ){
-                                    console.log("day",spMessage[word]);
+                    if (spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux")) {
+                        for (let word in spMessage) {
+                            for (let k = 0; k < market.calendar.rounds.length; k++) {
+                                if (spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0, 2)) {
+                                    console.log("day", spMessage[word]);
                                     market.calendar.checkPlace(market.calendar.rounds[k]);
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         let answer = message.toLowerCase();
 
                         if (answer.includes("oui")&&market.calendar.selectedHourday){
                             textToSpeech("Ok vous serez livrés à ces horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
                             resetMarket();
                         }
-                        else if(answer.includes("non")&&market.calendar.selectedHourday){
+                        else if (answer.includes("non") && market.calendar.selectedHourday) {
                             textToSpeech("Nous annulons votre livraison", "fr");
                             market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
-                            this.selectedHourday=false;
+                            this.selectedHourday = false;
                         }
 
-                    }
-                }
-            }
-            else{
-                let tabMessage = message.split(" ");
-                let splitMessage = [];
-                for (var i = tabMessage.length - 1; i > 0; i--) {
-                    if (tabMessage[i].includes("ajoute") || tabMessage[i].includes("supprime") || tabMessage[i].includes("vide")
-                        || tabMessage[i].includes("paiement") || tabMessage[i].includes("paye")) {
-                        splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]), message.length));
-                        message = message.substring(0, message.lastIndexOf(tabMessage[i]));
-                    }
-                }
-                splitMessage.push(message);
 
-                let oneOrderChecked = false;
-                for (var j = splitMessage.length - 1; j >= 0; j--) {
-                    let order = splitMessage[j];
-                    let tab = search(order, "all");
-                    if (tab[0]) {
-                        tab = search(order, "prod");
-                        if (order.includes("ajoute")) {
-                            for (var i = 0; i < tab.length; i++) {
-                                let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                if (quantity >= "0" && quantity <= "9") {
-                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                    if (isNaN(bef)) {
-                                        bef = "";
-                                    }
-                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                    if (isNaN(bef2)) {
-                                        bef2 = "";
-                                    }
-                                    market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
-                                }
-                                else if (determining.trim() == "de") {
-                                    market.basket.addProducts(tab[i], 2);
-                                }
-                                else if (determining2.trim() == "cette" || determining.trim() == "cet") {
-                                    market.basket.addProducts(tab[i], 7);
-                                } else {
-                                    market.basket.addProducts(tab[i], 1);
-                                }
-                            }
+                        if (answer.includes("oui") && market.calendar.selectedHourday) {
+                            textToSpeech("Ok vous serez livrés à ces horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
+                            resetMarket();
                         }
-                        else if (order.includes("supprime")) {
-                            for (var i = 0; i < tab.length; i++) {
-                                var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                if (number >= "0" && number <= "9") {
-                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                    if (isNaN(bef)) {
-                                        bef = "";
+                        else if (answer.includes("non") && market.calendar.selectedHourday) {
+                            textToSpeech("Nous annulons votre livraison", "fr");
+                            market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
+                            this.selectedHourday = false;
+
+                        }
+                    }
+                }
+                else {
+                    let tabMessage = message.split(" ");
+                    let splitMessage = [];
+                    for (var i = tabMessage.length - 1; i > 0; i--) {
+                        if (tabMessage[i].includes("ajoute") || tabMessage[i].includes("supprime") || tabMessage[i].includes("vide")
+                            || tabMessage[i].includes("paiement") || tabMessage[i].includes("paye")) {
+                            splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]), message.length));
+                            message = message.substring(0, message.lastIndexOf(tabMessage[i]));
+                        }
+                    }
+                    splitMessage.push(message);
+
+                    let oneOrderChecked = false;
+                    for (var j = splitMessage.length - 1; j >= 0; j--) {
+                        let order = splitMessage[j];
+                        let tab = search(order, "all");
+                        if (tab[0]) {
+                            tab = search(order, "prod");
+                            if (order.includes("ajoute")) {
+                                for (var i = 0; i < tab.length; i++) {
+                                    let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                                    var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                    var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                    if (quantity >= "0" && quantity <= "9") {
+                                        let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                        if (isNaN(bef)) {
+                                            bef = "";
+                                        }
+                                        let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                        if (isNaN(bef2)) {
+                                            bef2 = "";
+                                        }
+                                        market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
                                     }
-                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                    if (isNaN(bef2)) {
-                                        bef2 = "";
+                                    else if (determining.trim() == "de") {
+                                        market.basket.addProducts(tab[i], 2);
                                     }
-                                    market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                                    else if (determining2.trim() == "cette" || determining.trim() == "cet") {
+                                        market.basket.addProducts(tab[i], 7);
+                                    } else {
+                                        market.basket.addProducts(tab[i], 1);
+                                    }
                                 }
-                                else if (determining == " un" || determining == "une")
-                                    market.basket.deleteFromName(tab[i].name, 1);
-                                else if (determining.trim() == "de")
-                                    market.basket.deleteFromName(tab[i].name, 2);
-                                else if (determining2.trim() == "cette" || determining.trim() == "cet")
-                                    market.basket.deleteFromName(tab[i].name, 7);
-                                else market.basket.deleteFromName(tab[i].name, null);
                             }
+                            else if (order.includes("supprime")) {
+                                for (var i = 0; i < tab.length; i++) {
+                                    var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                                    var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                    var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                    if (number >= "0" && number <= "9") {
+                                        let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                        if (isNaN(bef)) {
+                                            bef = "";
+                                        }
+                                        let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                        if (isNaN(bef2)) {
+                                            bef2 = "";
+                                        }
+                                        market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                                    }
+                                    else if (determining == " un" || determining == "une")
+                                        market.basket.deleteFromName(tab[i].name, 1);
+                                    else if (determining.trim() == "de")
+                                        market.basket.deleteFromName(tab[i].name, 2);
+                                    else if (determining2.trim() == "cette" || determining.trim() == "cet")
+                                        market.basket.deleteFromName(tab[i].name, 7);
+                                    else market.basket.deleteFromName(tab[i].name, null);
+                                }
+                            }
+                            else {
+                                tab = search(order, "all");
+                                doSearch(tab);
+                            }
+                            oneOrderChecked = true;
                         }
                         else {
-                            tab = search(order, "all");
-                            doSearch(tab);
-                        }
-                        oneOrderChecked = true;
-                    }
-                    else {
-                        if (order.includes("vide") && order.includes("panier")) {
-                            market.basket.emptyBasket();
-                            oneOrderChecked = true;
-                        }
-                        else if (order.includes("paye") || order.includes("paie")) {
-                            market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
-                            market.payment.cardIn = true;
-                            market.payment.showCode();
-                            oneOrderChecked = true;
+                            if (order.includes("vide") && order.includes("panier")) {
+                                market.basket.emptyBasket();
+                                oneOrderChecked = true;
+                            }
+                            else if (order.includes("paye") || order.includes("paie")) {
+                                market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
+                                market.payment.cardIn = true;
+                                market.payment.showCode();
+                                oneOrderChecked = true;
+                            }
                         }
                     }
-                }
 
-                if (!oneOrderChecked) {
-                    message += ", " + Date();
-                    writeLog(message);
+                    if (!oneOrderChecked) {
+                        message += ", " + Date();
+                        writeLog(message);
 
-                    console.log("No Correct Order Given");
-                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+                        console.log("No Correct Order Given");
+                        textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+                    }
                 }
             }
-        }
-        else {
-            console.log("S'il te plait puisses-tu discuter?");
+            else {
+                console.log("S'il te plait puisses-tu discuter?");
+            }
         }
     };
 
@@ -2316,15 +2327,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     market.deleteCookie = function( name){
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    };
+    }
 
     function resetMarket(){
         market.deleteCookie("Cookie");
         if(Maps){
             window.location.reload();
         }
-    };
-
+    }
     // textToSpeech("Digi-market peut parler","fr");
     //////
 
