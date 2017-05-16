@@ -2029,7 +2029,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let answer = message.toLowerCase();
 
                     if (answer.includes("oui")&&market.calendar.selectedHourday){
-                        textToSpeech("Ok vous serez livrés à ces horaires choisis", "fr");
+                        textToSpeech("Ok vous serez livrés à ces horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
+                        resetMarket();
                     }
                     else if(answer.includes("non")&&market.calendar.selectedHourday){
                         textToSpeech("Nous annulons votre livraison", "fr");
@@ -2224,6 +2225,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     market.deleteCookie = function( name){
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    };
+
+    function resetMarket(){
+        market.deleteCookie("Cookie");
+        if(Maps){
+            window.location.reload();
+        }
     };
 
 
