@@ -1095,16 +1095,27 @@ describe("Test",function (){
         }
 
         let picto = retrieve(market.component,"[calendar].[iconUser]");
-        runtime.event(picto,"mousedown",{pageX:0,pageY:0});
+        let round1 = retrieve(market.component,"[calendar].[round 0]");
+        runtime.event(round1, "click", {})
         runtime.advanceAll();
-        runtime.event(picto,"mousemove",{pageX:400,pageY:500});
+        let round2 = retrieve(market.component,"[calendar].[round 2]");
+        runtime.event(round2, "click", {});
         runtime.advanceAll();
-        runtime.event(picto,"mouseup",{pageX:400,pageY:500});
+        let round3 = retrieve(market.component,"[calendar].[round 3]");
+        runtime.event(round3, "click", {});
         runtime.advanceAll();
-        runtime.event(picto,"mouseup",{pageX:0,pageY:0});
+        runtime.event(round1, "click", {})
         runtime.advanceAll();
-        runtime.event(picto,"mousemove",{pageX:10,pageY:10});
-        runtime.advanceAll();
+        // runtime.event(picto,"mousedown",{pageX:0,pageY:0});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mousemove",{pageX:400,pageY:500});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mouseup",{pageX:400,pageY:500});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mouseup",{pageX:0,pageY:0});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mousemove",{pageX:10,pageY:10});
+        // runtime.advanceAll();
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(){

@@ -1033,15 +1033,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     }
 
     class Round{
-        constructor(x,y,width,height,place,left){
-            this.component = new svg.Translation().mark("round");
+        constructor(x,y,width,height,place,left,TPH){
+            this.component = new svg.Translation();
             this.titleText = new svg.Text();
             this.roundContent = new svg.Translation();
             this.deliveryRect = new svg.Rect();
             this.jauge=new svg.Rect();
 
             this.tabH=[];
-            this.place=place;
+            this.place=Math.round(place*TPH);
             this.left=left;
 
             this.component.add(this.roundContent);
@@ -1348,8 +1348,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
             this.placeRound();
 
-            this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstColumn);
+            this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.picto);
@@ -1393,13 +1393,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 for(let j = 0; j < tab.length; j++){
                     if(dayMonth[i]==tab[j].dayP){
                         totLeft += tab[j].left;
-                        this.rounds[j] = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/2,tab[j].nbT,tab[j].left);
+                        this.rounds[j] = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/2,tab[j].nbT,tab[j].left, tab[j].TPH);
+                        this.rounds[j].roundContent.mark("round "+j);
                         this.rounds[j].tabH=tab[j];
                         this.rounds[j].placeElements();
                         this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2-this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
 
                         this.rounds[j].roundContent.onClick(function(e){
-                            self.checkPlace(e.pageX,e.pageY,self.rounds);
+                            self.checkPlace(self.rounds[j]);
                         });
                         for(let k = 0; k < tab[j].nbT+1;k++){
                             this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].droppable = true;
@@ -1428,12 +1429,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
        }
 
         printMonthContent(month,year){
-            for(let i = 0; i<this.rounds.length;i++){
+            for(let i = 0; i<this.rounds.length-1;i++){
                 if(Maps){
-                    if(this.rounds[i].component)this.calendarContent.component.remove(this.rounds[i].component);
+                    if(this.rounds[i].component)this.calendarContent.remove(this.rounds[i].component);
                 }
             }
-            // this.component.remove(this.calendarContent.component);
+            this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
 
@@ -1510,30 +1511,28 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         }
 
-        checkPlace(x,y,rounds){
-            x=x-(this.width*0.6-this.title.width/2+this.caseWidth/2);
-            y=y-this.calendarPositionY;
-            for(let round in rounds){
-                if((x > rounds[round].x-rounds[round].width/2)&& (x < rounds[round].x+rounds[round].width/2)
-                    && (y > rounds[round].y-30) && (y < rounds[round].y+30)){
-                    if(rounds[round].left>0 && this.choice==null){
-                        this.choice = rounds[round];
-                        rounds[round].changeColor(2);
-                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
-                        this.choiceRdv=rounds[round].tabH.dayP;
-                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
-                        this.selectedHourday=true;
-                    }
-                    else if(this.choice!=rounds[round] && this.choice!=null && rounds[round].left>0) {
-                        this.choice.changeColor(1);
-                        this.choice = rounds[round];
-                        rounds[round].changeColor(2);
-                        this.picto.position(rounds[round].x+this.width*0.6-this.title.width/2+this.caseWidth/2, rounds[round].y+this.calendarPositionY);
-                        this.choiceRdv=rounds[round].tabH.dayP;
-                        if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+rounds[round].tabH.hourDL+" et "+(Number(rounds[round].tabH.hourAL)+1)+" heure", "fr");
-                        this.selectedHourday=true;
-                    }
-                }
+        checkPlace(round){
+            if(round.left>0 && this.choice==null){
+                this.choice = round;
+                round.changeColor(2);
+                this.component.remove(this.picto);
+                this.picto.position(0,0);
+                round.roundContent.add(this.picto);
+                this.choiceRdv=round.tabH.dayP;
+                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL)+1)+" heure", "fr");
+                this.selectedHourday=true;
+            }
+            else if(this.choice!=round && this.choice!=null && round.left>0) {
+                this.choice.changeColor(1);
+                this.choice.roundContent.remove(this.picto);
+                this.component.add(this.picto);
+                this.picto.position(0,0);
+                this.choice = round;
+                round.changeColor(2);
+                round.roundContent.add(this.picto);
+                this.choiceRdv=round.tabH.dayP;
+                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL)+1)+" heure", "fr");
+                this.selectedHourday=true;
             }
         }
 
@@ -2002,15 +2001,29 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     }
                 }
                 else if(market.calendar.calendarOn){
-                    let answer = message.toLowerCase();
+                    let spMessage = message.split(" ");
+                    spMessage.push(message);
+                    if(spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux")){
+                        for(let word in spMessage){
+                            for(let k = 0; k<market.calendar.rounds.length;k++){
+                                if(spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0,2) ){
+                                    console.log("day",spMessage[word]);
+                                    market.calendar.checkPlace(market.calendar.rounds[k]);
+                                }
+                            }
+                        }
+                    }else{
+                        let answer = message.toLowerCase();
 
-                    if (answer.includes("oui")&&market.calendar.selectedHourday){
-                        textToSpeech("Ok vous serez livrés à ces horaires choisis", "fr");
-                    }
-                    else if(answer.includes("non")&&market.calendar.selectedHourday){
-                        textToSpeech("Nous annulons votre livraison", "fr");
-                        market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
-                        this.selectedHourday=false;
+                        if (answer.includes("oui")&&market.calendar.selectedHourday){
+                            textToSpeech("Ok vous serez livrés à ces horaires choisis", "fr");
+                        }
+                        else if(answer.includes("non")&&market.calendar.selectedHourday){
+                            textToSpeech("Nous annulons votre livraison", "fr");
+                            market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
+                            this.selectedHourday=false;
+                        }
+
                     }
                 }
             }
@@ -2138,7 +2151,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
         for (let jour in rp){
             if (rp[jour].dayL[0] === dayGiven) {
-                dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT, left : rp[jour].left });
+                dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT, left : rp[jour].left, TPH : rp[jour].TPH });
             }
 
 
@@ -2158,7 +2171,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         nbT:del[day][Object.keys(del[day])].place,
                         left:del[day][Object.keys(del[day])].left,
                         hourDL: del[day][Object.keys(del[day])].debut,
-                        hourAL: del[day][Object.keys(del[day])].fin
+                        hourAL: del[day][Object.keys(del[day])].fin,
+                        TPH: del[day][Object.keys(del[day])].TPH
                     });
                 }
             }
