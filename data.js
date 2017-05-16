@@ -833,8 +833,6 @@ exports.data = function() {
         return tabVignettes;
     }
 
-
-
     function makeVignettesForCategories(typeVig){
         let jsonData = getJson();
         var tabVignettes = [];
@@ -856,7 +854,7 @@ exports.data = function() {
                 coord: {lat : 48.841436, lng : 2.253049},
                 address: "Parc des Princes",
                 dist:0,
-                livraison : [{"25/05/2017": {debut:"10", fin:"11", place:2, left:2}},{"16/05/2017": {debut:"14", fin:"15", place:2, left:2}},{"15/05/2017": {debut:"9", fin:"11", place:3, left:0}},{"15/05/2017": {debut:"16", fin:"18", place:3, left:1}},{"12/05/2017":{debut:"13",fin:"14", place:2, left:2}}]
+                livraison : [{"25/05/2017": {debut:"10", fin:"11", place:2, left:2, TPH:1.25}},{"16/05/2017": {debut:"14", fin:"15", place:2, left:2, TPH:1.5}},{"25/05/2017": {debut:"9", fin:"11", place:3, left:0, TPH:1.3}},{"24/05/2017": {debut:"16", fin:"18", place:3, left:1, TPH:1.25}},{"28/05/2017":{debut:"13",fin:"14", place:2, left:2}}]
 
 
             },
@@ -864,21 +862,21 @@ exports.data = function() {
                 coord: {lat : 48.831481, lng : 2.276131},
                 address: "Aquaboulevard de Paris 4-6 Rue Louis Armand, 75015 Paris, France",
                 dist:0,
-                livraison: [{"16/05/2017": {debut:"9", fin:"10", place:2, left:2}},{"18/05/2017": {debut:"13", fin:"14", place:2, left:2}},{"17/05/2017": {debut:"17", fin:"18", place:2, left:1}},{"19/05/2017": {debut:"14", fin:"18", place:5, left:4}}]
+                livraison: [{"16/05/2017": {debut:"9", fin:"10", place:2, left:2, TPH:1.25}},{"18/05/2017": {debut:"13", fin:"14", place:2, left:2, TPH:1.3}},{"17/05/2017": {debut:"17", fin:"18", place:2, left:2, TPH:1.25}},{"19/05/2017": {debut:"14", fin:"18", place:5, left:4, TPH:1.3}}]
 
             },
             "3": {
                 coord: {lat : 48.848189, lng : 2.246906},
                 address: "Court Philippe Chatrier Stade Roland Garros",
                 dist:0,
-                livraison: [{"15/05/2017": {debut:"10", fin:"11", place:2, left:2}},{"20/05/2017": {debut:"13", fin:"15", place:3, left:2}},{"18/05/2017": {debut:"15", fin:"16", place:2, left:2}},{"17/05/2017": {debut:"9", fin:"11", place:3, left:1}}]
+                livraison: [{"15/05/2017": {debut:"10", fin:"11", place:2, left:2, TPH:1.5}},{"20/05/2017": {debut:"13", fin:"15", place:3, left:2, TPH:1.25}},{"18/05/2017": {debut:"15", fin:"16", place:2, left:2, TPH:2}},{"17/05/2017": {debut:"9", fin:"11", place:3, left:1, TPH:1.75}}]
 
             },
             "4": {
                 coord: {lat : 48.842469, lng : 2.236247},
                 address: "50 Rue d'Aguesseau, 92100 Boulogne-Billancourt, France",
                 dist:0,
-                livraison: [{"16/05/2017": {debut:"11", fin:"11", place:1, left:1}},{"21/05/2017": {debut:"15", fin:"18", place:4, left:2}},{"20/05/2017": {debut:"9", fin:"11", place:3, left:2}},{"12/05/2017": {debut:"14", fin:"16", place:3, left:2}}]
+                livraison: [{"16/05/2017": {debut:"11", fin:"11", place:1, left:1, TPH:1.8}},{"21/05/2017": {debut:"15", fin:"18", place:4, left:2, TPH:1.5}},{"20/05/2017": {debut:"9", fin:"11", place:3, left:2, TPH:1.25}},{"12/05/2017": {debut:"14", fin:"16", place:3, left:2, TPH:1.3}}]
 
 
             },
@@ -886,14 +884,14 @@ exports.data = function() {
                 coord: {lat : 48.834027, lng : 2.255921},
                 address: "12 Rue du Point du Jour, 92100 Boulogne-Billancourt, France",
                 dist:0,
-                livraison: [{"17/05/2017": {debut:"13", fin:"14", place:2, left:2}},{"20/05/2017": {debut:"9", fin:"11", place:3, left:2}},{"19/05/2017": {debut:"15", fin:"18", place:4, left:2}},{"13/05/2017": {debut:"10", fin:"11", place:2, left:2}}]
+                livraison: [{"17/05/2017": {debut:"13", fin:"14", place:2, left:2, TPH:1.25}},{"20/05/2017": {debut:"9", fin:"11", place:3, left:2, TPH:1.5}},{"19/05/2017": {debut:"15", fin:"18", place:4, left:2, TPH:1.8}},{"13/05/2017": {debut:"10", fin:"11", place:2, left:2, TPH:2}}]
 
             },
             "6": {
                 coord: {lat : 48.843412, lng : 2.236067},
                 address: "33 Rue Escudier, 92100 Boulogne-Billancourt, France",
                 dist:0,
-                livraison: [{"18/05/2017": {debut:"15", fin:"19", place:5, left:2}},{"17/05/2017": {debut:"14", fin:"18", place:5, left:2}},{"16/05/2017": {debut:"9", fin:"11", place:3, left:2}},{"12/05/2017": {debut:"14", fin:"15", place:2, left:2}},{"13/05/2017": {debut:"15", fin:"19", place:5, left:2}}]
+                livraison: [{"18/05/2017": {debut:"15", fin:"19", place:5, left:2, TPH:1.5}},{"17/05/2017": {debut:"14", fin:"18", place:5, left:2, TPH:1.25}},{"16/05/2017": {debut:"9", fin:"11", place:3, left:2, TPH:1.3}},{"12/05/2017": {debut:"14", fin:"15", place:2, left:2, TPH:2.25}},{"13/05/2017": {debut:"15", fin:"19", place:5, left:2, TPH:1.25}}]
 
 
             },
@@ -901,11 +899,12 @@ exports.data = function() {
                 coord: {lat : 48.83247, lng : 2.237452},
                 address: "188 Rue de Billancourt, 92100 Boulogne-Billancourt, France",
                 dist:0,
-                livraison: [{"17/05/2017": {debut:"10", fin:"11", place:2, left:2}},{"15/05/2017": {debut:"13", fin:"16", place:4, left:2}},{"18/05/2017": {debut:"17", fin:"19", place:3, left:0}},{"12/05/2017": {debut:"9", fin:"11", place:3, left:2}}]
+                livraison: [{"17/05/2017": {debut:"10", fin:"11", place:2, left:2, TPH:1.25}},{"15/05/2017": {debut:"13", fin:"16", place:4, left:2, TPH:1.5}},{"18/05/2017": {debut:"17", fin:"19", place:3, left:0, TPH:1.75}},{"12/05/2017": {debut:"9", fin:"11", place:3, left:2, TPH:1.5}}]
 
             }
         }
     }
+
     return {    getJson : getJson,
                 getMarker: getMarker,
                 makeVignettesForRay:makeVignettesForRay,
