@@ -741,7 +741,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         showCode() {
-            this.zoneCode = new SecurityCode(pageWidth,market.height-market.height/19,0,market.height/19);
+            this.zoneCode = new SecurityCode(mainPageWidth,market.height-market.height/19,0,market.height/19);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -957,7 +957,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             market.payment.cardIn=false;
             market.payment.iteration=0;
             market.remove(market.payment.zoneCode.component);
-            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
+            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth - market.width*0.02),0);
             market.pages[1].active = true;
             market.pages[0].active = true;
             currentPage=market.map;
@@ -1113,7 +1113,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
             this.selectedHourday=false;
-            this.icon = new svg.Image("img/calendarIcon.png");
             this.calendarRect = new svg.Rect();
             this.rounds=[];
             this.choice=null;
@@ -1128,7 +1127,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
             this.component.add(this.chevronDown).add(this.chevronUp);
-            this.component.add(this.icon);
             this.component.add(this.calendarRect);
 
 
@@ -1193,7 +1191,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     self.calendarCases[i].y = self.calendarCases[i].y + moveY;
                 }
             });
-            this.calendarWidth = width*0.925;
+            this.calendarWidth = width;
             this.calendarHeight = height*0.8;
 
             this.date = new Date();
@@ -1263,8 +1261,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
             this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
-            this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
-            this.icon.dimension(market.width*0.02,market.width*0.02).position(market.width*0.99,100);
+            this.monthChoice.move(this.width/2-this.caseWidth/2, this.height*0.05+this.title.height/2);
             this.printCurrentMonthContent();
             this.calendarRect.position(this.calendarFirstColumn.x+this.caseWidth/2+(this.calendarWidth-this.caseWidth)/2,
                 this.calendarFirstRow.y+this.caseHeight/2+this.caseHeight*this.numberDaysThisMonth/2)
@@ -1303,7 +1300,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarFirstColumn.add(this.dayCases[j]);
                 this.dayCases[j].move(0,j*this.caseHeight);
                 this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
-                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+                this.calendarFirstColumn.move(0,this.calendarPositionY);
 
             }
 
@@ -1329,7 +1326,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK));
                 hourCase.move(i*this.caseWidth,0);
                 this.calendarFirstRow.add(hourCase);
-                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+                this.calendarFirstRow.move(0,this.height*0.05+this.title.height*1.5);
             }
 
 
@@ -1339,11 +1336,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0).opacity(0);
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i], droppable : false, available:false,
-                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                        x:j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
                 }
                 line.move(0,this.caseHeight*i);
                 this.calendarContent.add(line);
-                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+                this.calendarContent.move(0,this.calendarPositionY)
             }
 
             this.placeRound();
@@ -1396,7 +1393,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         this.rounds[j] = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/2,tab[j].nbT,tab[j].left);
                         this.rounds[j].tabH=tab[j];
                         this.rounds[j].placeElements();
-                        this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2-this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
+                        this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2+this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
 
                         this.rounds[j].roundContent.onClick(function(e){
                             self.checkPlace(e.pageX,e.pageY,self.rounds);
@@ -1452,7 +1449,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarFirstColumn.add(dayCase);
                 dayCase.move(0,j*this.caseHeight);
                 this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
-                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+                this.calendarFirstColumn.move(0,this.calendarPositionY);
 
                 if(this.getWeekDay()[(j+this.startDay)%7] == "Dimanche"){
                     let dayText = new svg.Text("Dimanche "+ (j+1)).font("calibri", this.calendarWidth / 70, 1).color(svg.BLACK);
@@ -1485,7 +1482,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK));
                 hourCase.move(i*this.caseWidth,0);
                 this.calendarFirstRow.add(hourCase);
-                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+                this.calendarFirstRow.move(0,this.height*0.05+this.title.height*1.5);
             }
 
             for(var i=0;i+this.startDay<=this.numberDaysThisMonth+this.startDay;i++){
@@ -1494,11 +1491,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0).opacity(0);
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
-                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                        x:0+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
                 }
                 line.move(0,this.caseHeight*i);
                 this.calendarContent.add(line);
-                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+                this.calendarContent.move(0,this.calendarPositionY)
             }
 
 
@@ -1867,7 +1864,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         {
             mainPage.remove(categories.rayTranslation);
         }
-        categories.ray = new Ray(pageWidth * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
+        categories.ray = new Ray(mainPageWidth * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         mainPage.add(categories.rayTranslation);
         for(let v=0;v<categories.tabCategories.length;v++)
@@ -2209,35 +2206,65 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     /////Déclaration Interface////
     let mainPage=new svg.Translation().mark("mainPage");
     let pageWidth=market.width*0.96;
+    let mainPageWidth=market.width*0.98;
 
     let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
     let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-    let categories = new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
+
+    let categories = new ListCategorie(mainPageWidth*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    market.basket = new Basket(pageWidth*0.15,market.height*0.75,pageWidth*0.85,market.height*0.05);
+    market.basket = new Basket(mainPageWidth*0.15,market.height*0.75,mainPageWidth*0.85,market.height*0.05);
     let zoneBasket = new svg.Translation().add(market.basket.component);
-    market.payment = new Payment(pageWidth*0.15,market.height*0.20,pageWidth*0.85,market.height*0.80);
+    market.payment = new Payment(mainPageWidth*0.15,market.height*0.20,mainPageWidth*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
     let glassDnD = new svg.Translation().mark("Glass");
 
     //Gestion des pages
-    market.calendar = new Calendar(market.width*0.99,market.height,0,0);
+    market.calendar = new Calendar(pageWidth,market.height,0,0);
     market.calendar.placeElements();
-    let calendarPage = new svg.Translation().add(market.calendar.component);
+    market.calendar.component.move(market.width*0.06,0);
+    //Tab:
+    let tabX = market.width*0.98;
+        //CALENDAR
+        let calendarOnglY = (market.height*0.50);
+        let linePathCalendar=new svg.Path(tabX,calendarOnglY);
+        linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+        linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+        linePathCalendar.line(tabX,calendarOnglY+market.height*0.27).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+        let calendarIcon = new svg.Image("img/calendarIcon.png").dimension(market.width*0.02,market.width*0.02)
+            .position(tabX+market.width*0.01,calendarOnglY+market.height*0.1);
+        let calendarPage = new svg.Translation().add(linePathCalendar).add(market.calendar.component).add(calendarIcon);
+
+        //MAP
+        let mapOnglY = Math.round(market.height*0.27);
+        let linePathMap=new svg.Path(tabX,mapOnglY);
+        linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.02).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+        linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.25).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+        linePathMap.line(tabX,mapOnglY+market.height*0.27).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+        let mapIcon = new svg.Image("img/mapIcon.png").dimension(market.width*0.02,market.width*0.02)
+            .position(tabX+market.width*0.01,mapOnglY+market.height*0.1);
+
+        //MainPAGE
+        let mainOnglY = Math.round(market.height*0.06);
+        let linePathMain=new svg.Path(tabX,mainOnglY);
+        linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.02).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+        linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.25).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+        linePathMain.line(tabX,mainOnglY+market.height*0.27).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+        let mainIcon = new svg.Image("img/panier.png").dimension(market.width*0.02,market.width*0.02)
+            .position(tabX+market.width*0.01,mainOnglY+market.height*0.1);
+        mainPage.add(linePathMain).add(mainIcon);
 
     let mapPage = new svg.Translation().mark("map");
-    let icon = new svg.Image("img/mapIcon.png").dimension(market.width*0.02,market.width*0.02).position(market.width*0.97,100);
     let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
         .position(market.width/2,market.height/2+header.height/2).color(svg.WHITE,2,svg.BLACK);
-    mapPage.add(background);
-    mapPage.add(icon);
+    mapPage.add(linePathMap).add(background).add(mapIcon);
     market.map = {component : mapPage,mapOn:false};
     let myMap = null;
     function loadMap(){
-        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.03,header.height*2);
+        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.04,header.height*2);
         mapPage.add(myMap.component);
         setTimeout(function(){
             if(Maps) {
@@ -2248,18 +2275,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
         },500);
     }
+
     function toCalendar(message){
         currentMapSearch= myMap.input.value;
         mapPage.remove(myMap.component);
         myMap=null;
-        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth - market.width * 0.02), 0);
         market.calendar.address=message;
         market.calendar.calendarOn=true;
         market.map.mapOn=false;
         setTimeout(function () {
             currentPage = market.pages[0].obj;
             currentIndex = 0;
-        },200)
+        },200);
 
         market.calendar.printCurrentMonthContent();
         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
@@ -2288,7 +2316,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     }
                     if (currentIndex > index) {
                         for (let j = currentIndex; j > index; j--) {
-                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth)-market.width*0.02, 0);
                         }
                     }
                     else {
