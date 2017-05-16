@@ -1054,57 +1054,72 @@ describe("Test",function (){
         assert.ok(calendar);
         let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
         let chevronWest=retrieve(market.component,"[calendar].[monthChoice].[chevronWCalendar]");
-        let chevronUp = retrieve(market.component,"[calendar].[chevronUpCalendar]");
-        let chevronDown = retrieve(market.component,"[calendar].[chevronDownCalendar]");
         assert.ok(chevronEast);
         assert.ok(chevronWest);
-        assert(chevronUp);
-        assert(chevronDown);
-        runtime.event(chevronUp,"click",{});
+        runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
-        for(let j=0;j<7;j++){
-            runtime.event(chevronDown,"click",{});
-            runtime.advanceAll();
-        }
-        for(let k=0;k<7;k++){
-            runtime.event(chevronUp,"click",{});
-            runtime.advanceAll();
-        }
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
-        for (let i=0; i<9;i++){
-            runtime.event(chevronEast,"click", {});
-            runtime.advanceAll();
-        }
-        runtime.event(chevronWest,"click", {});
+
+        let column = retrieve(market.component,"[calendar].[column]");
+        assert(column);
+
+        runtime.event(column,"mousedown",{pageX:100,pageY:100});
+        runtime.event(column,"mousemove",{pageX:200,pageY:-2000});
+        runtime.advanceAll();
+        runtime.event(column,"mouseup",{pageX:200,pageY:-2000});
         runtime.advanceAll();
 
-        runtime.event(chevronUp,"click",{});
+        runtime.event(column,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.event(column,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
         runtime.advanceAll();
-        for(let m=0;m<7;m++){
-            runtime.event(chevronDown,"click",{});
-            runtime.advanceAll();
-        }
-        for(let n=0;n<7;n++){
-            runtime.event(chevronUp,"click",{});
-            runtime.advanceAll();
-        }
+        runtime.event(column,"touchend",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.advanceAll();
+
+        let content = retrieve(market.component,"[contenu]");
+        runtime.event(content,"mousedown",{pageX:100,pageY:100});
+        runtime.event(content,"mousemove",{pageX:200,pageY:2000});
+        runtime.advanceAll();
+        runtime.event(content,"mouseup",{pageX:200,pageY:2000});
+        runtime.advanceAll();
+
+        runtime.event(content,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.event(content,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
+        runtime.advanceAll();
+        runtime.event(content,"touchend",{touches:{0:{clientX:200,clientY:200}}});
+        runtime.advanceAll();
+
+        runtime.event(content,"mousemove",{pageX:100,pageY:200});
+        runtime.advanceAll();
+        runtime.event(column,"mousemove",{pageX:100,pageY:200});
+        runtime.advanceAll();
 
         let picto = retrieve(market.component,"[calendar].[iconUser]");
-        runtime.event(picto,"mousedown",{pageX:0,pageY:0});
+        let round1 = retrieve(market.component,"[calendar].[round 0]");
+        runtime.event(round1, "click", {})
         runtime.advanceAll();
-        runtime.event(picto,"mousemove",{pageX:400,pageY:500});
+        let round2 = retrieve(market.component,"[calendar].[round 2]");
+        runtime.event(round2, "click", {});
         runtime.advanceAll();
-        runtime.event(picto,"mouseup",{pageX:400,pageY:500});
+        let round3 = retrieve(market.component,"[calendar].[round 3]");
+        runtime.event(round3, "click", {});
         runtime.advanceAll();
-        runtime.event(picto,"mouseup",{pageX:0,pageY:0});
+        runtime.event(round1, "click", {})
         runtime.advanceAll();
-        runtime.event(picto,"mousemove",{pageX:10,pageY:10});
-        runtime.advanceAll();
+        // runtime.event(picto,"mousedown",{pageX:0,pageY:0});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mousemove",{pageX:400,pageY:500});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mouseup",{pageX:400,pageY:500});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mouseup",{pageX:0,pageY:0});
+        // runtime.advanceAll();
+        // runtime.event(picto,"mousemove",{pageX:10,pageY:10});
+        // runtime.advanceAll();
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(){
