@@ -1054,45 +1054,49 @@ describe("Test",function (){
         assert.ok(calendar);
         let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
         let chevronWest=retrieve(market.component,"[calendar].[monthChoice].[chevronWCalendar]");
-        let chevronUp = retrieve(market.component,"[calendar].[chevronUpCalendar]");
-        let chevronDown = retrieve(market.component,"[calendar].[chevronDownCalendar]");
         assert.ok(chevronEast);
         assert.ok(chevronWest);
-        assert(chevronUp);
-        assert(chevronDown);
-        runtime.event(chevronUp,"click",{});
+        runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
-        for(let j=0;j<7;j++){
-            runtime.event(chevronDown,"click",{});
-            runtime.advanceAll();
-        }
-        for(let k=0;k<7;k++){
-            runtime.event(chevronUp,"click",{});
-            runtime.advanceAll();
-        }
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
-        for (let i=0; i<9;i++){
-            runtime.event(chevronEast,"click", {});
-            runtime.advanceAll();
-        }
-        runtime.event(chevronWest,"click", {});
+
+        let column = retrieve(market.component,"[calendar].[column]");
+        assert(column);
+
+        runtime.event(column,"mousedown",{pageX:100,pageY:100});
+        runtime.event(column,"mousemove",{pageX:200,pageY:-2000});
+        runtime.advanceAll();
+        runtime.event(column,"mouseup",{pageX:200,pageY:-2000});
         runtime.advanceAll();
 
-        runtime.event(chevronUp,"click",{});
+        runtime.event(column,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.event(column,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
         runtime.advanceAll();
-        for(let m=0;m<7;m++){
-            runtime.event(chevronDown,"click",{});
-            runtime.advanceAll();
-        }
-        for(let n=0;n<7;n++){
-            runtime.event(chevronUp,"click",{});
-            runtime.advanceAll();
-        }
+        runtime.event(column,"touchend",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.advanceAll();
+
+        let content = retrieve(market.component,"[contenu]");
+        runtime.event(content,"mousedown",{pageX:100,pageY:100});
+        runtime.event(content,"mousemove",{pageX:200,pageY:2000});
+        runtime.advanceAll();
+        runtime.event(content,"mouseup",{pageX:200,pageY:2000});
+        runtime.advanceAll();
+
+        runtime.event(content,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.event(content,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
+        runtime.advanceAll();
+        runtime.event(content,"touchend",{touches:{0:{clientX:200,clientY:200}}});
+        runtime.advanceAll();
+
+        runtime.event(content,"mousemove",{pageX:100,pageY:200});
+        runtime.advanceAll();
+        runtime.event(column,"mousemove",{pageX:100,pageY:200});
+        runtime.advanceAll();
 
         let picto = retrieve(market.component,"[calendar].[iconUser]");
         let round1 = retrieve(market.component,"[calendar].[round 0]");
