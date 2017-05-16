@@ -747,6 +747,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         showCode() {
+            this.zoneCode = new SecurityCode(mainPageWidth,market.height-market.height/19,0,market.height/19);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -976,7 +977,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             market.payment.cardIn=false;
             market.payment.iteration=0;
             market.remove(market.payment.zoneCode.component);
-            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width*0.02),0);
+            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth - market.width*0.02),0);
             market.pages[1].active = true;
             market.pages[0].active = true;
             currentPage=market.map;
@@ -1132,7 +1133,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
             this.selectedHourday=false;
-            this.icon = new svg.Image("img/calendarIcon.png");
             this.calendarRect = new svg.Rect();
             this.rounds=[];
             this.choice=null;
@@ -1147,7 +1147,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.calendarContent);
             this.component.add(this.calendarFirstRow);
             this.component.add(this.monthChoice);
-            this.component.add(this.icon);
             this.component.add(this.calendarRect);
 
 
@@ -1163,7 +1162,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.onMove=false;
             this.component.add(this.picto);
 
-            this.calendarWidth = width*0.925;
+            this.calendarWidth = width;
             this.calendarHeight = height*0.8;
 
             this.date = new Date();
@@ -1311,24 +1310,24 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
             function toMove(y,mouse){
                 self.calendarFirstColumn.steppy(1, 1).onChannel("calendarColumn")
-                    .moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, self.calendarContent.y-(mouse-y));
+                    .moveTo(0, self.calendarContent.y-(mouse-y));
                 self.calendarContent.steppy(1, 1).onChannel("calendarContent")
-                    .moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, self.calendarContent.y-(mouse-y));
+                    .moveTo(0, self.calendarContent.y-(mouse-y));
             }
 
             function toEndMove(){
                 var height = self.caseHeight*(self.numberDaysThisMonth-self.currentDate.getDate());
                 if(self.calendarContent.y+height+self.caseHeight/2<market.height){
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
-                        .moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, market.height-height-self.caseHeight/2);
+                        .moveTo(0, market.height-height-self.caseHeight/2);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
-                        .moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, market.height-height-self.caseHeight/2);
+                        .moveTo(0, market.height-height-self.caseHeight/2);
                 }
                 else if(self.calendarContent.y>header.height+self.caseHeight*2){
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
-                        .moveTo(self.width * 0.6 - self.title.width / 2 + self.caseWidth / 2, header.height+self.caseHeight*2.5);
+                        .moveTo(0, header.height+self.caseHeight*2.5);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
-                        .moveTo(self.width * 0.6 - self.title.width / 2 - self.caseWidth / 2, header.height+self.caseHeight*2.5);
+                        .moveTo(0, header.height+self.caseHeight*2.5);
                 }
             }
         }
@@ -1345,8 +1344,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
             this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
-            this.monthChoice.move(this.width*0.6-this.caseWidth, this.height*0.05+this.title.height/2);
-            this.icon.dimension(market.width*0.02,market.width*0.02).position(market.width*0.99,100);
+            this.monthChoice.move(this.width/2-this.caseWidth/2, this.height*0.05+this.title.height/2);
             this.printCurrentMonthContent();
             this.calendarRect.position(this.calendarFirstColumn.x+this.caseWidth/2+(this.calendarWidth-this.caseWidth)/2,
                 this.calendarFirstRow.y+this.caseHeight/2+this.caseHeight*this.numberDaysThisMonth/2)
@@ -1388,7 +1386,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarFirstColumn.add(this.dayCases[j]);
                 this.dayCases[j].move(0,j*this.caseHeight);
                 this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
-                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+                this.calendarFirstColumn.move(0,this.calendarPositionY);
 
             }
 
@@ -1414,7 +1412,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK));
                 hourCase.move(i*this.caseWidth,0);
                 this.calendarFirstRow.add(hourCase);
-                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+                this.calendarFirstRow.move(0,this.height*0.05+this.title.height*1.5);
             }
 
 
@@ -1424,11 +1422,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0).opacity(0);
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i], droppable : false, available:false,
-                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                        x:j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
                 }
                 line.move(0,this.caseHeight*i);
                 this.calendarContent.add(line);
-                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+                this.calendarContent.move(0,this.calendarPositionY)
             }
 
             this.placeRound();
@@ -1481,6 +1479,26 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             for(let j = 0; j<dayMonth.length;j++){
                 tab = placePerDay(dayMonth[j],tab);
             }
+
+            if(this.currentDate!=0) {
+                var date2 = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+                var date3 = new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000);
+                let modul = "";
+                if (this.currentDate.getMonth() + 1 < 10) modul = "0";
+                tab.push({
+                    dayP: this.currentDate.getDate() + "/" + modul + (this.currentDate.getMonth() + 1) + "/" + this.currentDate.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2
+                });
+                tab.push({
+                    dayP: date2.getDate() + "/" + modul + (date2.getMonth() + 1) + "/" + date2.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2
+                });
+                tab.push({
+                    dayP: date3.getDate() + "/" + modul + (date3.getMonth() + 1) + "/" + date3.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2
+                });
+            }
+
             this.rounds=[];
             let self = this;
             for(let i = 0; i<dayMonth.length;i++){
@@ -1496,7 +1514,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         this.rounds[j].roundContent.mark("round "+j);
                         this.rounds[j].tabH=tab[j];
                         this.rounds[j].placeElements();
-                        this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2-this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
+                        this.rounds[j].move((tab[j].hourDL-9)*this.caseWidth+this.rounds[j].width/2+this.caseWidth/2,i*this.caseHeight+this.caseHeight*0.25);
 
                         this.rounds[j].roundContent.onClick(function(e){
                             self.checkPlace(self.rounds[j]);
@@ -1552,7 +1570,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarFirstColumn.add(this.dayCases[j]);
                 this.dayCases[j].move(0,j*this.caseHeight);
                 this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
-                this.calendarFirstColumn.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.calendarPositionY);
+                this.calendarFirstColumn.move(0,this.calendarPositionY);
 
                 if(this.getWeekDay()[(j+this.startDay)%7] == "Dimanche"){
                     let dayText = new svg.Text("Dimanche "+ (j+1)).font("calibri", this.calendarWidth / 70, 1).color(svg.BLACK);
@@ -1585,7 +1603,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK));
                 hourCase.move(i*this.caseWidth,0);
                 this.calendarFirstRow.add(hourCase);
-                this.calendarFirstRow.move(this.width*0.6-this.title.width/2-this.caseWidth/2,this.height*0.05+this.title.height*1.5);
+                this.calendarFirstRow.move(0,this.height*0.05+this.title.height*1.5);
             }
 
             for(var i=0;i+this.startDay<=this.numberDaysThisMonth+this.startDay;i++){
@@ -1594,11 +1612,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let element = new svg.Rect(this.caseWidth,this.caseHeight).color(svg.WHITE,1,svg.BLACK).position(j*this.caseWidth,0).opacity(0);
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
-                        x:this.width*0.6-this.title.width/2+this.caseWidth/2+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                        x:0+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
                 }
                 line.move(0,this.caseHeight*i);
                 this.calendarContent.add(line);
-                this.calendarContent.move(this.width*0.6-this.title.width/2+this.caseWidth/2,this.calendarPositionY)
+                this.calendarContent.move(0,this.calendarPositionY)
             }
 
             this.placeRound();
@@ -1964,7 +1982,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         {
             mainPage.remove(categories.rayTranslation);
         }
-        categories.ray = new Ray(pageWidth * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
+        categories.ray = new Ray(mainPageWidth * 0.85, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         mainPage.add(categories.rayTranslation);
         for(let v=0;v<categories.tabCategories.length;v++)
@@ -2056,196 +2074,183 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.vocalRecognition = function(message) {
         message = replaceChar(message);
         if (message != "") {
-            if ((market.map && market.map.mapOn) || (market.calendar && market.calendar.calendarOn)) {
+            if (market.map.mapOn) {
+                let words = message.split(" ");
+                for (var i = 0; i < words.length; i++) {
+                    if ((words[i].includes("poin")) && (words[i + 1].includes("relai"))) {
+                        message = message.substring(message.indexOf(words[i])).split(" ");
+                        i = words.length;
+                        let end = false;
+                        for (var i = 0; i < message.length; i++) {
+                            if ((message[i] >= "0" && message[i] <= "9") || (message[i - 1] == "numero")) {
+                                let selec = message[i];
+                                if (selec == "un") selec = 1;
 
-                if (market.map.mapOn) {
-                    let words = message.split(" ");
-                    for (var i = 0; i < words.length; i++) {
-                        if ((words[i].includes("poin")) && (words[i + 1].includes("relai"))) {
-                            message = message.substring(message.indexOf(words[i])).split(" ");
-                            i = words.length;
-                            let end = false;
-                            for (var i = 0; i < message.length; i++) {
-                                if ((message[i] >= "0" && message[i] <= "9") || (message[i - 1] == "numero")) {
-                                    let selec = message[i];
-                                    if (selec == "un") selec = 1;
-
-                                    if (Maps) toCalendar(market.mapsfunction.chooseRelai(selec));
-                                    end = true;
-                                    break;
-                                }
+                                if (Maps) toCalendar(market.mapsfunction.chooseRelai(selec));
+                                end = true;
+                                break;
                             }
-                            if (end) break;
                         }
-                        else if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) ||
-                            ((words[i] == "avenue") || (words[i] == "rue") || (words[i] == "route") || (words[i] == "boulevard") || (words[i] == "quai")
-                            || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
-                            message = message.substring(message.indexOf(words[i]));
-                            currentMapSearch = message;
-                            i = words.length;
-                            if (Maps) {
-                                textToSpeech("Vous ne pouvez pas vous faire livrer directement à " + message +
-                                    ". Voici les points relais les plus proches", "fr");
-                                market.mapsfunction.research(currentMapSearch);
-                            }
+                        if (end) break;
+                    }
+                    else if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) ||
+                        ((words[i] == "avenue") || (words[i] == "rue") || (words[i] == "route") || (words[i] == "boulevard") || (words[i] == "quai")
+                        || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
+                        message = message.substring(message.indexOf(words[i]));
+                        currentMapSearch = message;
+                        i = words.length;
+                        if (Maps) {
+                            textToSpeech("Vous ne pouvez pas vous faire livrer directement à " + message +
+                                ". Voici les points relais les plus proches", "fr");
+                            market.mapsfunction.research(currentMapSearch);
+                        }
 
-                            break;
-                        }
-                        else if (words[i].includes("valide")) {
-                            market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-                            currentPage = market.calendar;
-                            currentIndex = 0;
-                            market.map.mapOn = false;
-                            market.calendar.calendarOn = true;
-                            currentMapSearch = myMap.input.value;
-                            mapPage.remove(myMap.component);
-                            myMap = null;
-                        }
+                        break;
+                    }
+                    else if (words[i].includes("valide")) {
+                        market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                        currentPage = market.calendar;
+                        currentIndex = 0;
+                        market.map.mapOn = false;
+                        market.calendar.calendarOn = true;
+                        currentMapSearch = myMap.input.value;
+                        mapPage.remove(myMap.component);
+                        myMap = null;
                     }
                 }
-                else if (market.calendar.calendarOn) {
-                    let spMessage = message.split(" ");
-                    spMessage.push(message);
-                    if (spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux")) {
-                        for (let word in spMessage) {
-                            for (let k = 0; k < market.calendar.rounds.length; k++) {
-                                if (spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0, 2)) {
-                                    console.log("day", spMessage[word]);
-                                    market.calendar.checkPlace(market.calendar.rounds[k]);
-                                }
+            }
+            else if (market.calendar.calendarOn) {
+                let spMessage = message.split(" ");
+                spMessage.push(message);
+                if (spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux")) {
+                    for (let word in spMessage) {
+                        for (let k = 0; k < market.calendar.rounds.length; k++) {
+                            if (spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0, 2)) {
+                                console.log("day", spMessage[word]);
+                                market.calendar.checkPlace(market.calendar.rounds[k]);
                             }
                         }
-                    } else {
-                        let answer = message.toLowerCase();
+                    }
+                } else {
+                    let answer = message.toLowerCase();
 
-                        if (answer.includes("oui")&&market.calendar.selectedHourday){
-                            textToSpeech("Ok vous serez livrés à ces horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
-                            resetMarket();
-                        }
-                        else if (answer.includes("non") && market.calendar.selectedHourday) {
-                            textToSpeech("Nous annulons votre livraison", "fr");
-                            market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
-                            this.selectedHourday = false;
-                        }
+                    if (answer.includes("oui") && market.calendar.selectedHourday) {
+                        textToSpeech("Ok vous serez livrés à ces horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
+                        resetMarket();
+                    }
+                    else if (answer.includes("non") && market.calendar.selectedHourday) {
+                        textToSpeech("Nous annulons votre livraison", "fr");
+                        market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
+                        this.selectedHourday = false;
+                    }
 
+                }
+            }
 
-                        if (answer.includes("oui") && market.calendar.selectedHourday) {
-                            textToSpeech("Ok vous serez livrés à ces horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
-                            resetMarket();
-                        }
-                        else if (answer.includes("non") && market.calendar.selectedHourday) {
-                            textToSpeech("Nous annulons votre livraison", "fr");
-                            market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
-                            this.selectedHourday = false;
-
-                        }
+            else {
+                let tabMessage = message.split(" ");
+                let splitMessage = [];
+                for (var i = tabMessage.length - 1; i > 0; i--) {
+                    if (tabMessage[i].includes("ajoute") || tabMessage[i].includes("supprime") || tabMessage[i].includes("vide")
+                        || tabMessage[i].includes("paiement") || tabMessage[i].includes("paye")) {
+                        splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]), message.length));
+                        message = message.substring(0, message.lastIndexOf(tabMessage[i]));
                     }
                 }
-                else {
-                    let tabMessage = message.split(" ");
-                    let splitMessage = [];
-                    for (var i = tabMessage.length - 1; i > 0; i--) {
-                        if (tabMessage[i].includes("ajoute") || tabMessage[i].includes("supprime") || tabMessage[i].includes("vide")
-                            || tabMessage[i].includes("paiement") || tabMessage[i].includes("paye")) {
-                            splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]), message.length));
-                            message = message.substring(0, message.lastIndexOf(tabMessage[i]));
-                        }
-                    }
-                    splitMessage.push(message);
+                splitMessage.push(message);
 
-                    let oneOrderChecked = false;
-                    for (var j = splitMessage.length - 1; j >= 0; j--) {
-                        let order = splitMessage[j];
-                        let tab = search(order, "all");
-                        if (tab[0]) {
-                            tab = search(order, "prod");
-                            if (order.includes("ajoute")) {
-                                for (var i = 0; i < tab.length; i++) {
-                                    let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                                    var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                    var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                    if (quantity >= "0" && quantity <= "9") {
-                                        let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                        if (isNaN(bef)) {
-                                            bef = "";
-                                        }
-                                        let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                        if (isNaN(bef2)) {
-                                            bef2 = "";
-                                        }
-                                        market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
+                let oneOrderChecked = false;
+                for (var j = splitMessage.length - 1; j >= 0; j--) {
+                    let order = splitMessage[j];
+                    let tab = search(order, "all");
+                    if (tab[0]) {
+                        tab = search(order, "prod");
+                        if (order.includes("ajoute")) {
+                            for (var i = 0; i < tab.length; i++) {
+                                let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                if (quantity >= "0" && quantity <= "9") {
+                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                    if (isNaN(bef)) {
+                                        bef = "";
                                     }
-                                    else if (determining.trim() == "de") {
-                                        market.basket.addProducts(tab[i], 2);
+                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                    if (isNaN(bef2)) {
+                                        bef2 = "";
                                     }
-                                    else if (determining2.trim() == "cette" || determining.trim() == "cet") {
-                                        market.basket.addProducts(tab[i], 7);
-                                    } else {
-                                        market.basket.addProducts(tab[i], 1);
-                                    }
+                                    market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
+                                }
+                                else if (determining.trim() == "de") {
+                                    market.basket.addProducts(tab[i], 2);
+                                }
+                                else if (determining2.trim() == "cette" || determining.trim() == "cet") {
+                                    market.basket.addProducts(tab[i], 7);
+                                } else {
+                                    market.basket.addProducts(tab[i], 1);
                                 }
                             }
-                            else if (order.includes("supprime")) {
-                                for (var i = 0; i < tab.length; i++) {
-                                    var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                                    var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                    var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                        order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                    if (number >= "0" && number <= "9") {
-                                        let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                        if (isNaN(bef)) {
-                                            bef = "";
-                                        }
-                                        let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                        if (isNaN(bef2)) {
-                                            bef2 = "";
-                                        }
-                                        market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                        }
+                        else if (order.includes("supprime")) {
+                            for (var i = 0; i < tab.length; i++) {
+                                var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                if (number >= "0" && number <= "9") {
+                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                    if (isNaN(bef)) {
+                                        bef = "";
                                     }
-                                    else if (determining == " un" || determining == "une")
-                                        market.basket.deleteFromName(tab[i].name, 1);
-                                    else if (determining.trim() == "de")
-                                        market.basket.deleteFromName(tab[i].name, 2);
-                                    else if (determining2.trim() == "cette" || determining.trim() == "cet")
-                                        market.basket.deleteFromName(tab[i].name, 7);
-                                    else market.basket.deleteFromName(tab[i].name, null);
+                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                    if (isNaN(bef2)) {
+                                        bef2 = "";
+                                    }
+                                    market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                                 }
+                                else if (determining == " un" || determining == "une")
+                                    market.basket.deleteFromName(tab[i].name, 1);
+                                else if (determining.trim() == "de")
+                                    market.basket.deleteFromName(tab[i].name, 2);
+                                else if (determining2.trim() == "cette" || determining.trim() == "cet")
+                                    market.basket.deleteFromName(tab[i].name, 7);
+                                else market.basket.deleteFromName(tab[i].name, null);
                             }
-                            else {
-                                tab = search(order, "all");
-                                doSearch(tab);
-                            }
-                            oneOrderChecked = true;
                         }
                         else {
-                            if (order.includes("vide") && order.includes("panier")) {
-                                market.basket.emptyBasket();
-                                oneOrderChecked = true;
-                            }
-                            else if (order.includes("paye") || order.includes("paie")) {
-                                market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
-                                market.payment.cardIn = true;
-                                market.payment.showCode();
-                                oneOrderChecked = true;
-                            }
+                            tab = search(order, "all");
+                            doSearch(tab);
+                        }
+                        oneOrderChecked = true;
+                    }
+                    else {
+                        if (order.includes("vide") && order.includes("panier")) {
+                            market.basket.emptyBasket();
+                            oneOrderChecked = true;
+                        }
+                        else if (order.includes("paye") || order.includes("paie")) {
+                            market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
+                            market.payment.cardIn = true;
+                            market.payment.showCode();
+                            oneOrderChecked = true;
                         }
                     }
+                }
 
-                    if (!oneOrderChecked) {
-                        message += ", " + Date();
-                        writeLog(message);
+                if (!oneOrderChecked) {
+                    message += ", " + Date();
+                    writeLog(message);
 
-                        console.log("No Correct Order Given");
-                        textToSpeech("Je n'ai pas bien compris votre demande", "fr");
-                    }
+                    console.log("No Correct Order Given");
+                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
                 }
             }
-            else {
+        }
+        else {
                 console.log("S'il te plait puisses-tu discuter?");
-            }
         }
     };
 
@@ -2266,10 +2271,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
         for (let jour in rp){
             if (rp[jour].dayL[0] === dayGiven) {
-                dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT, left : rp[jour].left, TPH : rp[jour].TPH });
+                dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT,
+                    left : rp[jour].left, TPH : rp[jour].TPH });
             }
-
-
         }
         return dayToDraw;
     }
@@ -2329,7 +2333,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     market.deleteCookie = function( name){
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    }
+    };
 
     function resetMarket(){
         market.deleteCookie("Cookie");
@@ -2343,35 +2347,65 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     /////Déclaration Interface////
     let mainPage=new svg.Translation().mark("mainPage");
     let pageWidth=market.width*0.96;
+    let mainPageWidth=market.width*0.98;
 
     let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height/19);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
     let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-    let categories = new ListCategorie(pageWidth*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
+
+    let categories = new ListCategorie(mainPageWidth*0.85,market.height*0.2,0,market.height*0.05,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    market.basket = new Basket(pageWidth*0.15,market.height*0.75,pageWidth*0.85,market.height*0.05);
+    market.basket = new Basket(mainPageWidth*0.15,market.height*0.75,mainPageWidth*0.85,market.height*0.05);
     let zoneBasket = new svg.Translation().add(market.basket.component);
-    market.payment = new Payment(pageWidth*0.15,market.height*0.20,pageWidth*0.85,market.height*0.80);
+    market.payment = new Payment(mainPageWidth*0.15,market.height*0.20,mainPageWidth*0.85,market.height*0.80);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
     let glassDnD = new svg.Translation().mark("Glass");
 
     //Gestion des pages
-    market.calendar = new Calendar(market.width*0.99,market.height,0,0);
+    market.calendar = new Calendar(pageWidth,market.height,0,0);
     market.calendar.placeElements();
-    let calendarPage = new svg.Translation().add(market.calendar.component);
+    market.calendar.component.move(market.width*0.06,0);
+    //Tab:
+    let tabX = market.width*0.98;
+        //CALENDAR
+        let calendarOnglY = (market.height*0.50);
+        let linePathCalendar=new svg.Path(tabX,calendarOnglY);
+        linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+        linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+        linePathCalendar.line(tabX,calendarOnglY+market.height*0.27).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+        let calendarIcon = new svg.Image("img/calendarIcon.png").dimension(market.width*0.02,market.width*0.02)
+            .position(tabX+market.width*0.01,calendarOnglY+market.height*0.1);
+        let calendarPage = new svg.Translation().add(linePathCalendar).add(market.calendar.component).add(calendarIcon);
+
+        //MAP
+        let mapOnglY = Math.round(market.height*0.27);
+        let linePathMap=new svg.Path(tabX,mapOnglY);
+        linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.02).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+        linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.25).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+        linePathMap.line(tabX,mapOnglY+market.height*0.27).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+        let mapIcon = new svg.Image("img/mapIcon.png").dimension(market.width*0.02,market.width*0.02)
+            .position(tabX+market.width*0.01,mapOnglY+market.height*0.1);
+
+        //MainPAGE
+        let mainOnglY = Math.round(market.height*0.06);
+        let linePathMain=new svg.Path(tabX,mainOnglY);
+        linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.02).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+        linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.25).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+        linePathMain.line(tabX,mainOnglY+market.height*0.27).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+        let mainIcon = new svg.Image("img/panier.png").dimension(market.width*0.02,market.width*0.02)
+            .position(tabX+market.width*0.01,mainOnglY+market.height*0.1);
+        mainPage.add(linePathMain).add(mainIcon);
 
     let mapPage = new svg.Translation().mark("map");
-    let icon = new svg.Image("img/mapIcon.png").dimension(market.width*0.02,market.width*0.02).position(market.width*0.97,100);
     let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
         .position(market.width/2,market.height/2+header.height/2).color(svg.WHITE,2,svg.BLACK);
-    mapPage.add(background);
-    mapPage.add(icon);
+    mapPage.add(linePathMap).add(background).add(mapIcon);
     market.map = {component : mapPage,mapOn:false};
     let myMap = null;
     function loadMap(){
-        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.03,header.height*2);
+        myMap = new Map(pageWidth,market.height-header.height*1.5,market.width*0.04,header.height*2);
         mapPage.add(myMap.component);
         setTimeout(function(){
             if(Maps) {
@@ -2382,18 +2416,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
         },500);
     }
+
     function toCalendar(message){
         currentMapSearch= myMap.input.value;
         mapPage.remove(myMap.component);
         myMap=null;
-        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth - market.width * 0.02), 0);
         market.calendar.address=message;
         market.calendar.calendarOn=true;
         market.map.mapOn=false;
         setTimeout(function () {
             currentPage = market.pages[0].obj;
             currentIndex = 0;
-        },200)
+        },200);
 
         market.calendar.printCurrentMonthContent();
         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
@@ -2422,7 +2457,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     }
                     if (currentIndex > index) {
                         for (let j = currentIndex; j > index; j--) {
-                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
+                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth)-market.width*0.02, 0);
                         }
                     }
                     else {
@@ -2440,7 +2475,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         market.map.mapOn = false;
                     }
                     else if (currentIndex==1){
-                        market.calendar.calendarOn = true;
+                        market.calendar.calendarOn = false;
                         market.map.mapOn = true;
                     }
                     else{
