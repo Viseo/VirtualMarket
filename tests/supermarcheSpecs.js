@@ -81,7 +81,7 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(chevronE,"click",{});
         runtime.advanceAll();
-        inspect(ray,{tag:"g",transform:"translate(-2526 0)"});
+        inspect(ray,{tag:"g",transform:"translate(-2500.5 0)"});
 
     });
 
@@ -1122,7 +1122,7 @@ describe("Test",function (){
         // runtime.advanceAll();
     });
 
-    it("ensures that we can control the app by sending it command that represent the voice",function(){
+    it("ensures that we can control the app by sending it command that represent the voice",function(done){
         market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
         market.vocalRecognition("je veux ajouter un concombre et 44 carottes et 365 clementines");
         market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer 2 Souris");
@@ -1135,7 +1135,82 @@ describe("Test",function (){
         market.vocalRecognition("supprime cette concombre");
         market.vocalRecognition("");
         market.vocalRecognition("Maintenant je veux payer");
-        // market.vocalRecognition("Salut");
+
+        let payment_zone = retrieve(market.component,"[payment]");
+        assert.ok(payment_zone);
+        let card = retrieve(market.component,"[payment].[card]");
+        assert.ok(card);
+        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        runtime.advanceAll();
+        let dragged2 = retrieve(market.component,"[payment].[dragged]");
+        assert.ok(dragged2);
+        runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+        runtime.advanceAll();
+
+        let code = retrieve(market.component,"[code]");
+        assert.ok(code);
+        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+        assert.ok(buttonGroup);
+        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+        assert.ok(button1);
+        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+        assert.ok(button2);
+        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+        assert.ok(button3);
+        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+        assert.ok(button4);
+        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+        assert.ok(button5);
+        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+        assert.ok(button6);
+        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+        assert.ok(button7);
+        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+        assert.ok(button8);
+        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+        assert.ok(button9);
+
+        //Password ok
+        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+        runtime.event(button3, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button2, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseout", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button4, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button5, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button6, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button9, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button8, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button7, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+
+        let calendar = retrieve(market.component,"[calendar]");
+        runtime.event(calendar,"click",{});
+        runtime.advanceAll();
+
+        setTimeout(function() {
+            market.vocalRecognition("je veux me faire livrer " + new Date().getDate() + " " + (new Date().getMonth() + 1)
+                + " " + new Date().getFullYear());
+            market.vocalRecognition("je veux me faire livrer " + new Date().getDate() + " " + (new Date().getMonth() + 1)
+                + " " + new Date().getFullYear());
+            done();
+        },2000);
     });
 
     it("ensures that you can change the page",function(){
@@ -1383,7 +1458,7 @@ describe("Test",function (){
         setTimeout(function(){
             market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
             market.vocalRecognition("J'habite 64 Boulevard Garibaldi Paris");
-            market.vocalRecognition("J'habite 2 Chemin des Etelles");
+            market.vocalRecognition("J'habite un Chemin des Etelles");
             market.vocalRecognition("Je selectionne le point relai numero 1");
             setTimeout(function() {
                 market.vocalRecognition("Je valide");
