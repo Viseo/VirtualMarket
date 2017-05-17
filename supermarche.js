@@ -1247,97 +1247,97 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             });
         }
 
-        setEventsMovement(){
+        setEventsMovement() {
             var self = this;
 
-            this.calendarContent.onMouseDown(function(e){
-                beginMove(e.pageY,"mousemove","mouseup");
+            this.calendarContent.onMouseDown(function (e) {
+                beginMove(e.pageY, "mousemove", "mouseup");
             });
 
-            this.calendarFirstColumn.onMouseDown(function(e){
-                beginMove(e.pageY,"mousemove","mouseup");
+            this.calendarFirstColumn.onMouseDown(function (e) {
+                beginMove(e.pageY, "mousemove", "mouseup");
             });
 
-            svg.addEvent(this.calendarContent,"touchstart",function(e){
-                beginMove(e.touches[0].clientY,"touchmove","touchend");
+            svg.addEvent(this.calendarContent, "touchstart", function (e) {
+                beginMove(e.touches[0].clientY, "touchmove", "touchend");
             });
 
-            svg.addEvent(this.calendarFirstColumn,"touchstart",function(e){
-                beginMove(e.touches[0].clientY,"touchmove","touchend");
+            svg.addEvent(this.calendarFirstColumn, "touchstart", function (e) {
+                beginMove(e.touches[0].clientY, "touchmove", "touchend");
             });
 
-            function beginMove(y,eventTypeMove,eventTypeUp){
-                self.onMove=true;
-                let prevMouse=y;
+            function beginMove(y, eventTypeMove, eventTypeUp) {
+                self.onMove = true;
+                let prevMouse = y;
 
-                svg.addEvent(self.calendarFirstColumn,eventTypeMove,function(e){
-                    if(self.onMove){
-                        if(eventTypeMove.includes("mouse")) {
+                svg.addEvent(self.calendarFirstColumn, eventTypeMove, function (e) {
+                    if (self.onMove) {
+                        if (eventTypeMove.includes("mouse")) {
                             toMove(e.pageY, prevMouse);
                             prevMouse = e.pageY;
                         }
-                        else{
+                        else {
                             toMove(e.touches[0].clientY, prevMouse);
                             prevMouse = e.touches[0].clientY;
                         }
                     }
                 });
 
-                svg.addEvent(self.calendarFirstColumn,eventTypeUp,function(){
-                    self.onMove=false;
+                svg.addEvent(self.calendarFirstColumn, eventTypeUp, function () {
+                    self.onMove = false;
                     toEndMove();
                 });
 
                 self.calendarContent.mark("contenu");
-                svg.addEvent(self.calendarContent,eventTypeMove,function(e){
-                    if(self.onMove){
-                        if(eventTypeMove.includes("mouse")) {
+                svg.addEvent(self.calendarContent, eventTypeMove, function (e) {
+                    if (self.onMove) {
+                        if (eventTypeMove.includes("mouse")) {
                             toMove(e.pageY, prevMouse);
                             prevMouse = e.pageY;
                         }
-                        else{
+                        else {
                             toMove(e.touches[0].clientY, prevMouse);
                             prevMouse = e.touches[0].clientY;
                         }
                     }
                 });
 
-                svg.addEvent(self.calendarContent,eventTypeUp,function(){
-                    self.onMove=false;
+                svg.addEvent(self.calendarContent, eventTypeUp, function () {
+                    self.onMove = false;
                     toEndMove();
                 });
-                function toMove(y,mouse){
             }
+
+            function toMove(y, mouse) {
 
                 self.calendarFirstColumn.steppy(1, 1).onChannel("calendarColumn")
-                    .moveTo(0, self.calendarContent.y-(mouse-y));
+                    .moveTo(0, self.calendarContent.y - (mouse - y));
                 self.calendarContent.steppy(1, 1).onChannel("calendarContent")
-                    .moveTo(0, self.calendarContent.y-(mouse-y));
+                    .moveTo(0, self.calendarContent.y - (mouse - y));
             }
 
-            function toEndMove(){
-                let nbdays=0;
-                if(self.current===true){
-                    nbdays=self.numberDaysThisMonth-self.currentDate.getDate();
-                }else{
-                    nbdays=self.numberDaysThisMonth;
+            function toEndMove() {
+                let nbdays = 0;
+                if (self.current === true) {
+                    nbdays = self.numberDaysThisMonth - self.currentDate.getDate();
+                } else {
+                    nbdays = self.numberDaysThisMonth;
                 }
-                var height = self.caseHeight*(nbdays);
-                if(self.calendarContent.y+height+self.caseHeight/2<market.height){
+                var height = self.caseHeight * (nbdays);
+                if (self.calendarContent.y + height + self.caseHeight / 2 < market.height) {
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
-                        .moveTo(0, market.height-height-self.caseHeight/2);
+                        .moveTo(0, market.height - height - self.caseHeight / 2);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
-                        .moveTo(0, market.height-height-self.caseHeight/2);
-            }
-                else if(self.calendarContent.y>header.height+self.caseHeight*2){
+                        .moveTo(0, market.height - height - self.caseHeight / 2);
+                }
+                else if (self.calendarContent.y > header.height + self.caseHeight * 2) {
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
-                        .moveTo(0, header.height+self.caseHeight*2.5);
+                        .moveTo(0, header.height + self.caseHeight * 2.5);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
-                        .moveTo(0, header.height+self.caseHeight*2.5);
+                        .moveTo(0, header.height + self.caseHeight * 2.5);
                 }
             }
-            }
-
+        }
         placeElements(){
             this.caseWidth = this.calendarWidth/12;
             this.caseHeight = this.calendarHeight/10;
@@ -2492,6 +2492,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         });
         market.add(market.pages[i].obj);
+        console.log(market.pages[i].obj.)
     }
 
     market.add(mainPage);
