@@ -324,10 +324,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 market.deleteCookie("Cookie");
             }
             if(cookie.split("|")[1]=="payment") {
-                createCookie("Cookie", cookie.split("|")[0].split("/")[0] + "/" + this.stringPanier.substring(0, this.stringPanier.length - 1) + "|payment", 30);
+                createCookie("Cookie", cookie.split("|")[0].split("/")[0] + "/" + this.stringPanier.substring(0, this.stringPanier.length - 1) + "|payment", 1);
             }
             else{
-                createCookie("Cookie", cookie.split("|")[0].split("/")[0] + "/" + this.stringPanier.substring(0, this.stringPanier.length - 1) + "|", 30);
+                createCookie("Cookie", cookie.split("|")[0].split("/")[0] + "/" + this.stringPanier.substring(0, this.stringPanier.length - 1) + "|", 1);
             }
 
     };
@@ -956,7 +956,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             if(Maps) {
                 let cookie = getCookie("Cookie");
                 market.deleteCookie("Cookie");
-                createCookie("Cookie", cookie.split("|")[0]+ "|" + "payment", 30);
+                createCookie("Cookie", cookie.split("|")[0]+ "|" + "payment", 1);
             }
         }
 
@@ -2001,14 +2001,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             if (cookie) {
                 market.deleteCookie("Cookie");
                 if(cookie.split("|")[1]=="payment") {
-                    createCookie("Cookie", categories.ray.name + "/" + cookie.split("|")[0].split("/")[1] + "|payment", 30);
+                    createCookie("Cookie", categories.ray.name + "/" + cookie.split("|")[0].split("/")[1] + "|payment", 1);
                 }
                 else{
-                    createCookie("Cookie", categories.ray.name + "/" + cookie.split("|")[0].split("/")[1] + "|", 30);
+                    createCookie("Cookie", categories.ray.name + "/" + cookie.split("|")[0].split("/")[1] + "|", 1);
                 }
             }
             else {
-                createCookie("Cookie", categories.ray.name + "/", 30);
+                createCookie("Cookie", categories.ray.name + "/", 1);
             }
         }
 
