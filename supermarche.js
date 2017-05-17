@@ -1078,7 +1078,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         move(x,y){
             this.x=x;
             this.y=y;
-            this.roundContent.move(x,y)
+            this.roundContent.move(x,y);
         }
 
         placeElements(){
@@ -1300,9 +1300,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     self.onMove=false;
                     toEndMove();
                 });
+                function toMove(y,mouse){
             }
 
-            function toMove(y,mouse){
                 self.calendarFirstColumn.steppy(1, 1).onChannel("calendarColumn")
                     .moveTo(0, self.calendarContent.y-(mouse-y));
                 self.calendarContent.steppy(1, 1).onChannel("calendarContent")
@@ -1316,7 +1316,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         .moveTo(0, market.height-height-self.caseHeight/2);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
                         .moveTo(0, market.height-height-self.caseHeight/2);
-                }
+            }
                 else if(self.calendarContent.y>header.height+self.caseHeight*2){
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
                         .moveTo(0, header.height+self.caseHeight*2.5);
@@ -1324,7 +1324,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         .moveTo(0, header.height+self.caseHeight*2.5);
                 }
             }
-        }
+            }
 
         placeElements(){
             this.caseWidth = this.calendarWidth/12;
@@ -1370,7 +1370,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else{
                     text = this.getWeekDay()[(this.currentDate.getDay()+j)%7]+" "+ (this.currentDate.getDate()+j);
                 }
-
                 this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
                 tabDays.push(text);
                 this.calendarFirstColumn.add(this.dayCases[j]);
@@ -1676,20 +1675,20 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         getMonth() {
-            return {
-                0: "Janvier",
-                1: "Février",
-                2: "Mars",
-                3: "Avril",
-                4: "Mai",
-                5: "Juin",
-                6: "Juillet",
-                7: "Août",
-                8: "Septembre",
-                9: "Octobre",
-                10: "Novembre",
-                11: "Décembre"
-            }
+                return {
+                    0: "Janvier",
+                    1: "Février",
+                    2: "Mars",
+                    3: "Avril",
+                    4: "Mai",
+                    5: "Juin",
+                    6: "Juillet",
+                    7: "Août",
+                    8: "Septembre",
+                    9: "Octobre",
+                    10: "Novembre",
+                    11: "Décembre"
+                }
         }
 
         daysInMonth(month, year) {
