@@ -1195,7 +1195,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     else{
                         self.component.remove(self.picto);
                         for (let round in self.rounds) {
-                            if(self.rounds[round].tabH.dayP == self.choice.tabH.dayP) {
+                            if((self.rounds[round].tabH.dayP == self.choice.tabH.dayP) && (self.rounds[round].tabH.hourAL == self.choice.tabH.hourAL)) {
                                 self.checkPlace(self.rounds[round]);
                                 self.rounds[round].changeColor(2);
                             }
@@ -1236,7 +1236,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     else {
                         self.component.remove(self.picto);
                         for (let round in self.rounds) {
-                            if (self.rounds[round].tabH.dayP == self.choice.tabH.dayP) {
+                            if((self.rounds[round].tabH.dayP == self.choice.tabH.dayP) && (self.rounds[round].tabH.hourAL == self.choice.tabH.hourAL)) {
                                 self.checkPlace(self.rounds[round]);
                                 self.rounds[round].changeColor(2);
 
@@ -1644,7 +1644,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
             else if(this.choice!=round && this.choice!=null && round.left>0) {
                 for(let round in this.rounds){
-                    if (this.rounds[round].tabH.dayP==this.choice.tabH.dayP){
+                    if ((this.rounds[round].tabH.dayP==this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)){
                         this.rounds[round].changeColor(1);
                     }
                 }
