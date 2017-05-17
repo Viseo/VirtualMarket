@@ -1316,7 +1316,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
 
             function toEndMove(){
-                var height = self.caseHeight*(self.numberDaysThisMonth-self.currentDate.getDate());
+                let nbdays=0;
+                if(self.current===true){
+                    nbdays=self.numberDaysThisMonth-self.currentDate.getDate();
+                }else{
+                    nbdays=self.numberDaysThisMonth;
+                }
+                var height = self.caseHeight*(nbdays);
                 if(self.calendarContent.y+height+self.caseHeight/2<market.height){
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
                         .moveTo(0, market.height-height-self.caseHeight/2);
