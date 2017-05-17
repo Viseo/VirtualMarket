@@ -2492,7 +2492,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         });
         market.add(market.pages[i].obj);
-        console.log(market.pages[i].obj.)
+        console.log(market.pages[i].obj)
     }
 
     market.add(mainPage);
