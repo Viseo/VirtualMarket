@@ -3,6 +3,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
+    console.log(Maps)
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
 		constructor(width,height,x,y)
