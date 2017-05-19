@@ -3,7 +3,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
-    console.log(Maps)
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
 		constructor(width,height,x,y)
@@ -116,21 +115,23 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 			var self = this; // Gestion Evenements
 
 			this.name = cat;
+			this.listHeight=Math.ceil(tabThumbnail.length/4)*(height/3*0.98);
+            console.log(Math.ceil(tabThumbnail.length/4),(height/3*0.98));
             let fond = new svg.Rect(width, height).position(width/2,height/2);
             fond.color([230,230,230]);
             this.component.add(fond);
 
             this.listThumbnails = new svg.Translation().mark("listRay");
-            let col=0;
-            for(let i=0;i<tabThumbnail.length;i=i+3){
-                for(let j=0;j<3;j++) {
+            let row=0;
+            for(let i=0;i<tabThumbnail.length;i=i+4){
+                for(let j=0;j<4;j++) {
                     if(tabThumbnail[j+i]) {
                         tabThumbnail[j+i].placeElements(1);
-                        tabThumbnail[j+i].move(width*0.01+(width / 4*0.94) * col,width*0.01+(height/3*0.98) * j);
+                        tabThumbnail[j+i].move(width*0.01+(width / 4*0.94)*j ,width*0.01+(height/3*0.98) * row);
                         this.listThumbnails.add(tabThumbnail[j+i].component);
                     }
                 }
-                col++;
+                row++;
             }
             this.component.add(this.listThumbnails);
 
@@ -1004,8 +1005,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         constructor(height){
             this.height=height;
             this.component = new svg.Translation();
-            this.contour= new svg.Rect(54,height*1.1).color(svg.LIGHT_GREY, 1, svg.LIGHT_GREY).corners(7,7);
-            this.scroll = new svg.Rect(46,height).color(svg.GREY, 1, svg.GREY);
+            this.contour= new svg.Rect(35,height*1.1).color(svg.LIGHT_GREY, 1, svg.LIGHT_GREY).corners(7,7);
+            this.scroll = new svg.Rect(28,height).color(svg.GREY, 1, svg.GREY);
             this.scroll.corners(7,7);
             this.component.add(this.contour).add(this.scroll);
             this.traits=[];
@@ -1014,11 +1015,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.lNum=7
             this.space=(height)/this.lNum;
             for(i=0;i<this.lNum;i++){
-                this.traits.push(new svg.Line(-16,(i+0.5)*this.space-height/2+1,16,(i+0.5)*this.space-height/2+1).color(svg.GREY,1,svg.GREY));
-                this.lines.push(new svg.Rect(32, 3).corners(3,3).position(0,(i+0.5)*this.space-height/2).color(svg.BLACK, 1, svg.BLACK));
+                this.traits.push(new svg.Line(-12,(i+0.5)*this.space-height/2+1,12,(i+0.5)*this.space-height/2+1).color(svg.GREY,1,svg.GREY));
+                this.lines.push(new svg.Rect(24, 3).corners(3,3).position(0,(i+0.5)*this.space-height/2).color(svg.BLACK, 1, svg.BLACK));
                 this.component.add(this.lines[i]).add(this.traits[i]);
             }
-            // this.component.add(new svg.Circle(5).position(-7,7*Math.round(height/20)-height/2));
             this.component.move(500,300);
             let self =this;
 
@@ -1033,7 +1033,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             function beginMove(y, eventTypeMove, eventTypeUp) {
                 self.onMove = true;
                 let prevMouse = y;
-                console.log("coucou")
 
                 var pos=[]
                 for(let l in self.lines){
@@ -1047,7 +1046,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             prevMouse = e.pageY;
                         }
                         else {
-                            console.log('hola')
                             toMove(e.touches[0].clientY, prevMouse);
                             prevMouse = e.touches[0].clientY;
                         }
@@ -1055,47 +1053,35 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 });
                 function toMove(y, mouse) {
                     for(let l in self.lines){
-                        // console.log((Number(l)+0.5),(self.height/10))
-                        console.log(mouse, y)
                         if(pos[l]>(self.lNum)*(self.space)-(self.height/2)-2 && (mouse-y)<0 ) {
-                            // pos[l] = (0)*(self.height / 10) - (self.height / 2)
-                            // self.lines[l].color(svg.BLUE,1,svg.BLUE);
-                            // self.lines[(Number(l)+1)%10].color(svg.RED,1,svg.RED);
-
                             pos[l]=pos[(Number(l)+1)%self.lNum]-(self.space)
                         }else if(pos[l]<2-(self.height/2)  && (mouse-y)>0){
-                            console.log(mouse, y)
                             pos[l]=pos[(Number(l)+(self.lNum-1))%(self.lNum)]+((self.space))
                         }
-                        self.traits[l].start(-16,pos[l]-(mouse-y)+1).end(16,pos[l]-(mouse-y)+1);
-                        self.lines[l].position(0,pos[l]-(mouse-y));
-                        pos[l]=pos[l]-(mouse-y);
+                        self.traits[l].start(-12, pos[l] - (mouse - y) + 1).end(12, pos[l] - (mouse - y) + 1);
+                        self.lines[l].position(0, pos[l] - (mouse - y));
+                        pos[l] = pos[l] - (mouse - y);
+
                     }
-                        // .moveTo(0, self.component.y - (mouse - y));
-                    // self.calendarContent.steppy(1, 1).onChannel("calendarContent")
-                    //     .moveTo(0, self.calendarContent.y - (mouse - y));
+
+                    if(categories.ray.listHeight>=Number(market.height*0.75)){
+                        categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(0, categories.ray.listThumbnails.y + (mouse - y));
+                    }
                 }
 
                 svg.addEvent(self.component, eventTypeUp, function () {
+                    console.log(categories.ray.listThumbnails.y,-(categories.ray.listHeight+market.height*0.75));
+                    if (categories.ray.listThumbnails.y>0) {
+                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
+                    }
+                    else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
+                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.75);
+
+                    }
                     self.onMove = false;
-                    // toEndMove();
                 });
-
-                // function toEndMove() {
-                //
-                // }
             }
-            // this.component.onClick(function(e){
-            //     self.y=e.pageY
-            //     self.component.onMouseDown(function(e){
-            //
-            //         for(let l in self.lines){
-            //             console.log(self.y,e.pageY)
-            //             self.lines[l].start(-7,(l+0.5)*(self.height/10)-self.height/2+(self.y-e.pageY)).end(7,(l+0.5)*(self.height/10)-self.height/2+(self.y-e.pageY));
-            //         }
-            //     });
-            // });
-
+            this.component.move(market.width*0.735,market.height*0.625)
         }
 
 
@@ -1198,17 +1184,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.monthChoice);
             this.component.add(this.calendarRect);
 
-
-
-
             this.x = x;
             this.y = y;
             this.component.move(x,y);
             this.width = width;
             this.height = height;
-
-            // this.component.add(new ScrollWheel(this.height/4).component);
-
 
             this.picto = new svg.Image("img/panier.png").mark("iconUser");
             this.pictoPosX = this.width*0.15;
@@ -1506,7 +1486,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.calendarContent.mark("content");
             this.calendarFirstColumn.mark("column");
             this.setEventsMovement();
-            this.component.add(new ScrollWheel(this.height/3).component);
         }
 
         placeRound(){
@@ -1597,20 +1576,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 }
 
                 if(totLeft == 0) {
-                    // secondText.message("indisponible");
-                    // let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-3).color(svg.RED,1,svg.WHITE);
-                    console.log("on est passé")
                     this.dayCases[i].add(new Switch("unavailable",this.caseWidth,this.caseHeight).component)
                     this.dayCases[i].add(dayText);
-                    // this.dayCases[i].add(secondText);
-                    // this.dayCases[i].add(redPoint);
+
                 }else {
-                    // secondText.message("disponible");
                     this.dayCases[i].add(new Switch("available",this.caseWidth,this.caseHeight).component)
-                    // let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-3).color(svg.GREEN,1,svg.WHITE);
                     this.dayCases[i].add(dayText);
-                    // this.dayCases[i].add(secondText);
-                    // this.dayCases[i].add(redPoint);
                 }
             }
        }
@@ -2033,7 +2004,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             mainPage.remove(categories.rayTranslation);
         }
         categories.ray = new Ray(market.width*0.76, market.height * 0.75, 0, market.height / 4, tab, name);
-        categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
+        categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name).add(new ScrollWheel(market.height*0.3).component);
         mainPage.add(categories.rayTranslation);
         for(let v=0;v<categories.tabCategories.length;v++)
         {
@@ -2173,7 +2144,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let spMessage = message.split(" ");
                 if (spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux") || spMessage.includes("livrer")) {
                     for (let word=0; word < spMessage.length; word ++) {
-                        console.log(spMessage[word],word)
                         for (let k = 0; k < market.calendar.rounds.length; k++) {
                             if (spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0, 2) && market.calendar.rounds[k].tabH.left !== 0) {
                                 if(spMessage[word+3]!== undefined){
@@ -2182,8 +2152,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     }
                                 }else
                                     market.calendar.checkPlace(market.calendar.rounds[k]);
-                                console.log("day", spMessage[word], "hour", spMessage[word + 3]);
-
                             }else if(spMessage[word] == "aujourd'hui"){
                                 let day = new Date().getDate();
                                 if(day ==  market.calendar.rounds[k].tabH.dayP.substring(0, 2) && market.calendar.rounds[k].tabH.left !== 0){
@@ -2193,7 +2161,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                         }
                                     }else
                                         market.calendar.checkPlace(market.calendar.rounds[k]);
-                                    console.log("day", spMessage[word], "hour", spMessage[word + 2]);
                                 }
                             }else if(spMessage[word] == "demain"){
                                 let tomorrow = new Date().getDate() + 1;
@@ -2204,7 +2171,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                         }
                                     }else
                                         market.calendar.checkPlace(market.calendar.rounds[k]);
-                                    console.log("day", spMessage[word], "hour", spMessage[word + 2]);
                                 }
                             }
                         }
@@ -2565,7 +2531,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         });
         market.add(market.pages[i].obj);
-        console.log(market.pages[i].obj)
     }
 
     market.add(mainPage);
