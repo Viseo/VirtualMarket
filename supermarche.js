@@ -2321,7 +2321,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         if (path)
-            cookie += "path=" + path + ";";
+        cookie += "path=" + path + ";";
         if (domain)
             cookie += "domain=" + domain + ";";
 
@@ -2504,7 +2504,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     if(Maps&&getCookie("Cookie")){
         let cookiePayment = getCookie("Cookie").split("|");
         let cookie=getCookie("Cookie").split("|")[0].split("/");
-        market.changeRay(cookie[0]);
+        if(cookie[0]!="Recherche"){
+            market.changeRay(cookie[0]);
+        }
+        else {
+            market.changeRay("HighTech");
+        }
 
         if(cookie[1]) {
             let stringBasket = cookie[1].split(",");
