@@ -1533,15 +1533,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 if (this.currentDate.getMonth() + 1 < 10) modul = "0";
                 tab.push({
                     dayP: this.currentDate.getDate() + "/" + modul + (this.currentDate.getMonth() + 1) + "/" + this.currentDate.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address: this.address
                 });
                 tab.push({
                     dayP: date2.getDate() + "/" + modul + (date2.getMonth() + 1) + "/" + date2.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address: this.address
                 });
                 tab.push({
                     dayP: date3.getDate() + "/" + modul + (date3.getMonth() + 1) + "/" + date3.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
                 });
             }
 
@@ -1690,7 +1690,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
             else if(this.choice!=round && this.choice!=null && round.left>0) {
                 for(let round in this.rounds){
-                    if ((this.rounds[round].tabH.dayP==this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)){
+                    if ((this.rounds[round].tabH.dayP==this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL) && (this.rounds[round].tabH.address == this.choice.tabH.address )){
                         this.rounds[round].changeColor(1);
                     }
                 }
@@ -2308,15 +2308,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     }
 
     function placePerDay(dayGiven,dayToDraw){
+        var rp = "";
         if(market.calendar.address!==''){
-            var rp= getDelivery(market.calendar.address);
+            rp= getDelivery(market.calendar.address);
         } else{
-            var rp= getDelivery(param.data.getMarker()[1].address);
+            rp= getDelivery(param.data.getMarker()[1].address);
         }
         for (let jour in rp){
             if (rp[jour].dayL[0] === dayGiven) {
                 dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT,
-                    left : rp[jour].left, TPH : rp[jour].TPH });
+                    left : rp[jour].left, TPH : rp[jour].TPH, address : rp });
             }
         }
         return dayToDraw;
