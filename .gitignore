@@ -3,3 +3,11 @@
 
 #Code coverage
 coverage/
+
+#Node modules
+node_modules/
+
+#Autorisation Google
+credentialsVM.json
+
+demo.wav

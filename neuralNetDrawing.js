@@ -101,6 +101,7 @@ exports.neural = function(runtime) {
             ev_canvas: function (ev,control) {
                 ev._x = Math.round(ev.pageX * 1.25);
                 ev._y = Math.round(ev.pageY * 1.25);
+
                 if (ev.type === 'mousemove'||control=="mousemove") {
                     if(this.currentX!=0&&this.currentY!=0) {
                         let dx = ev._x - this.currentX;
@@ -121,131 +122,136 @@ exports.neural = function(runtime) {
                     this.currentX=ev._x;
                     this.currentY=ev._y;
                 }
+
+                else if (ev.type === 'touchmove'||control=="touchmove") {
+                    ev.touchX=Math.round(ev.touches[0].clientX*1.25);
+                    ev.touchY=Math.round(ev.touches[0].clientY*1.25);
+                    if(this.currentX!=0&&this.currentY!=0) {
+                        let dx = ev.touchX - this.currentX;
+                        let dy = ev.touchY- this.currentY;
+                        if (dx < 0) {
+                            for (var i = ev.touchX; i < this.currentX; i++) {
+                                let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
+                                this.drawing[i][y] = 1;
+                            }
+                        }
+                        else {
+                            for (var i = ev.touchX; i > this.currentX; i--) {
+                                let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
+                                this.drawing[i][y] = 1;
+                            }
+                        }
+                    }
+                    this.currentX=ev.touchX;
+                    this.currentY=ev.touchY;
+                }
+
                 // This is called when you release the mouse button.
-                else //if(ev.type === 'mouseup'||control=="mouseup"){
-                {
+                else if(ev.type === 'mouseup'||control=="mouseup"){
                     if (this.started) {
                         this.started = false;
                         ENCOG.drawingDelete(this.glass,this.element);
                     }
                 }
-                /*else if (ev.type === 'mouseout'||control=="mouseout") {
+
+                else if(ev.type === 'touchend'||control=="touchend"){
                     if (this.started) {
                         this.started = false;
-                        ENCOG.Drawing.delete(this.glass,this.element);
+                        ENCOG.drawingDelete(this.glass,this.element);
                     }
                 }
-                /*else if (ev.type === 'touchstart') {
-                    this.drawingContext.beginPath();
-                    this.drawingContext.moveTo(ev._x, ev._y);
-                    this.started = true;
-                }
-                else if (ev.type === 'touchend') {
-                    if (this.started) {
-                        this.started = false;
-                    }
-                }
-                else if (ev.type === 'touchmove') {
-                    if (this.started) {
-                        this.drawingContext.lineTo(ev._x, ev._y);
-                        this.drawingContext.stroke();
-                        ev.preventDefault();
-                    }
-                }*/
             },
 
-        isHLineClear: function (row) {
-            for(var i=0;i<this.width-1;i++)
-            {
-                if(this.drawing[i][row]==1)return false;
-            }
-            return true;
-        },
+            isHLineClear: function (row) {
+                for(var i=0;i<this.width-1;i++)
+                {
+                    if(this.drawing[i][row]==1)return false;
+                }
+                return true;
+            },
 
-        isVLineClear: function (col) {
-            for(var i=0;i<this.height;i++)
-            {
-                if(this.drawing[col][i]==1)return false;
-            }
-            return true;
-        },
+            isVLineClear: function (col) {
+                for(var i=0;i<this.height;i++)
+                {
+                    if(this.drawing[col][i]==1)return false;
+                }
+                return true;
+            },
 
-        // Downsample the drawing area.
-        performDownSample: function () {
-            'use strict';
-            var top, bottom, left, right, cellWidth, cellHeight, result, resultIndex, row, col, x, y, d;
+            // Downsample the drawing area.
+            performDownSample: function () {
+                'use strict';
+                var top, bottom, left, right, cellWidth, cellHeight, result, resultIndex, row, col, x, y, d;
 
-            // first find a bounding rectangle so that we can crop out unused space
-            top = 0;
-            while (this.isHLineClear(top) && top < this.height - 1) {
-                top++;
-            }
+                // first find a bounding rectangle so that we can crop out unused space
+                top = 0;
+                while (this.isHLineClear(top) && top < this.height - 1) {
+                    top++;
+                }
 
-            bottom = this.height - 1;
-            while (this.isHLineClear(bottom) && bottom > 0) {
-                bottom--;
-            }
+                bottom = this.height - 1;
+                while (this.isHLineClear(bottom) && bottom > 0) {
+                    bottom--;
+                }
+                left = 0;
+                while (this.isVLineClear(left) && left < this.width - 1) {
+                    left++;
+                }
 
-            left = 0;
-            while (this.isVLineClear(left) && left < this.width - 1) {
-                left++;
-            }
+                right = this.width - 1;
+                while (this.isVLineClear(right) && right > 0) {
+                    right--;
+                }
 
-            right = this.width - 1;
-            while (this.isVLineClear(right) && right > 0) {
-                right--;
-            }
+                if (bottom < top) {
+                    result = ENCOG.allocate1D(this.downsampleHeight * this.downsampleWidth);
+                    ENCOG.fillArray(result, 0, result.length, -1);
+                    return result;
+                }
 
+                cellWidth = Math.round((right - left) / this.downsampleWidth);
+                cellHeight = Math.round((bottom - top) / this.downsampleHeight);
+                result = new Array();
+                resultIndex = 0;
 
-            if (bottom < top) {
-                result = ENCOG.allocate1D(this.downsampleHeight * this.downsampleWidth);
-                ENCOG.fillArray(result, 0, result.length, -1);
-                return result;
-            }
-
-            cellWidth = Math.round((right - left) / this.downsampleWidth);
-            cellHeight = Math.round((bottom - top) / this.downsampleHeight);
-            result = new Array();
-            resultIndex = 0;
-
-            for (row = 0; row < this.downsampleHeight; row++) {
-                for (col = 0; col < this.downsampleWidth; col++) {
-                    x = (cellWidth * col) + left;
-                    y = (cellHeight * row) + top;
-                    // obtain pixel data for the grid square
-                    let tab = [];
-                    for (var i = x; i < x + cellWidth; i++) {
-                        let col = [];
-                        for (var j = y; j < y + cellHeight; j++) {
-                            col.push(this.drawing[i][j]);
+                for (row = 0; row < this.downsampleHeight; row++) {
+                    for (col = 0; col < this.downsampleWidth; col++) {
+                        x = (cellWidth * col) + left;
+                        y = (cellHeight * row) + top;
+                        // obtain pixel data for the grid square
+                        let tab = [];
+                        for (var i = x; i < x + cellWidth; i++) {
+                            let col = [];
+                            for (var j = y; j < y + cellHeight; j++) {
+                                col.push(this.drawing[i][j]);
+                            }
+                            tab.push(col);
                         }
-                        tab.push(col);
-                    }
 
-                    d = false;
-                    // see if at least one pixel is "black"
-                    for (let i = 0; i < tab.length; i++) {
-                        for (let j = 0; j < tab[i].length; j++) {
-                            if (tab[i][j] == 1) {
-                                d = true;
-                                break;
+                        d = false;
+                        // see if at least one pixel is "black"
+                        for (let i = 0; i < tab.length; i++) {
+                            for (let j = 0; j < tab[i].length; j++) {
+                                if (tab[i][j] == 1) {
+                                    d = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (d) {
-                        result[resultIndex++] = 1.0;
-                    } else {
-                        result[resultIndex++] = -1.0;
+                        if (d) {
+                            result[resultIndex++] = 1.0;
+                        } else {
+                            result[resultIndex++] = -1.0;
+                        }
                     }
                 }
-            }
 
-            return result;
-        },
-        clear:function(){
-            this.canvas.width=this.canvas.width;
-        }
-    };
+                return result;
+            },
+            clear:function(){
+                this.canvas.width=this.canvas.width;
+            }
+        };
 
     var DOWNSAMPLE_WIDTH = 5;
     var DOWNSAMPLE_HEIGHT = 8;
@@ -259,14 +265,14 @@ exports.neural = function(runtime) {
     var set = false;
     var ondraw=false;
 
-    function init_draw(element,x,y,name,callback,printNumber,e,prod,glass) {
+    function init_draw(element,x,y,name,callback,printNumber,prod,glass) {
         let drawingArea;
         let bestchar;
         ondraw=true;
         drawingArea = ENCOG.drawingCreate(element,x,y,name,glass);
         preload();
 
-        runtime.addEvent(drawingArea.canvas,'mouseup', function (e) {
+        runtime.addEvent(drawingArea.canvasDiv,'mouseup', function (e) {
             if(numToSend.element=="") numToSend.element=name;
             bestchar = ev_recognize();
             drawingArea.ev_canvas(e, "mouseup");
@@ -281,7 +287,7 @@ exports.neural = function(runtime) {
             if (numToSend.num == "click") {
                 clearTimeout();
                 printNumber("");
-                callback(numToSend.num, e, prod);
+                callback(numToSend.num, prod);
                 numToSend.num = "";
                 numToSend.element = "";
             }
@@ -293,10 +299,11 @@ exports.neural = function(runtime) {
                         if (isNaN(parseInt(numToSend.num))){
                             numToSend.num = "";
                             printNumber("");
+                            callback("?",prod);
                         }
                         if (numToSend.num != "") {
                             printNumber("");
-                            callback(numToSend.num, e, prod);
+                            callback(numToSend.num, prod);
                         }
                         numToSend.num = "";
                         numToSend.element = "";
@@ -306,22 +313,58 @@ exports.neural = function(runtime) {
                 }
             }
         });
-
-        runtime.addEvent(drawingArea.canvas,'mousemove', function (e) {
+        runtime.addEvent(drawingArea.canvasDiv,'mousemove', function (e) {
             drawingArea.ev_canvas(e,"mousemove");
         }, true);
-        /*runtime.addEvent(drawingArea.canvas,'touchstart', function (e) {
+
+        runtime.addEvent(prod.component.component,'touchend', function (e) {
+            if(numToSend.element=="") numToSend.element=name;
+            bestchar = ev_recognize();
+            drawingArea.ev_canvas(e, "touchend");
+            if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
+            else numToSend.num += bestchar;
+            if(numToSend.num.length<3) {
+                printNumber(numToSend.num+"_");
+            }
+            else {
+                printNumber(numToSend.num);
+            }
+            if (numToSend.num == "click") {
+                clearTimeout();
+                printNumber("");
+                callback(numToSend.num,prod);
+                numToSend.num = "";
+                numToSend.element = "";
+            }
+            else {
+                if (!set) {
+                    set=true;
+                    setTimeout((function () {
+                        drawingArea.ev_canvas(e, "touchend");
+                        if (isNaN(parseInt(numToSend.num))){
+                            numToSend.num = "";
+                            printNumber("");
+                            callback("?",prod);
+                        }
+                        if (numToSend.num != "") {
+                            printNumber("");
+                            callback(numToSend.num, prod);
+                        }
+                        numToSend.num = "";
+                        numToSend.element = "";
+                        ondraw = false;
+                        set = false;
+                    }), 2500);
+                }
+            }
+        }, true);
+
+        runtime.addEvent(prod.component.component,'touchmove', function (e) {
             drawingArea.ev_canvas(e);
         }, true);
-        runtime.addEvent(drawingArea.canvas,'touchend', function (e) {
-            drawingArea.ev_canvas(e);
-        }, true);
-        runtime.addEvent(drawingArea.canvas,'touchmove', function (e) {
-            drawingArea.ev_canvas(e);
-        }, true);
-        runtime.addEvent(drawingArea.canvas,'mouseout', function (e) {
+        runtime.addEvent(drawingArea.canvasDiv,'mouseout', function (e) {
             drawingArea.ev_canvas(e,"mouseout");
-        }, true);*/
+        }, true);
 
         function ev_recognize() {
             downSampleData = drawingArea.performDownSample();
@@ -361,23 +404,6 @@ exports.neural = function(runtime) {
                 }
             }
 
-            for (var q in charData[bestChar]) {
-                if (q % 5 == 0) {
-
-                    if (charData[bestChar][q] == "-1") {
-                        charchosen += "\n0,";
-                    } else {
-                        charchosen += "\n" + charData[bestChar][q] + ",";
-                    }
-                } else {
-                    if (charData[bestChar][q] == "-1") {
-                        charchosen += "0,";
-                    } else {
-                        charchosen += charData[bestChar][q] + ",";
-                    }
-                }
-            }
-
             if(bestScore>6.5) bestChar="?";
             drawingArea.clear();
             clearDownSample();
@@ -390,20 +416,20 @@ exports.neural = function(runtime) {
         }
     }
 
-function preload()
-{
-    defineChar("click", new Array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1) );
-    defineChar("0", new Array( -1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1 ) );
-    defineChar("1", new Array( -1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,1,1) );
-    defineChar("2", new Array(1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,1,1,-1,1,-1,1,1,-1,1,1,1,1,1) );
-    defineChar("3", new Array(1,1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
-    defineChar("4", new Array(1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,1) );
-    defineChar("5", new Array(1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
-    defineChar("6", new Array(-1,1,1,1,-1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,-1,1,1,1,1,1,1,1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,1) );
-    defineChar("7", new Array(1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1) );
-    defineChar("8", new Array(1,1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1) );
-    defineChar("9", new Array(1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1) );
-}
+    function preload()
+    {
+        defineChar("click", new Array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1) );
+        defineChar("0", new Array( -1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1 ) );
+        defineChar("1", new Array( -1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,1,1) );
+        defineChar("2", new Array(1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,1,1,-1,1,-1,1,1,-1,1,1,1,1,1) );
+        defineChar("3", new Array(1,1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
+        defineChar("4", new Array(1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,1) );
+        defineChar("5", new Array(1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
+        defineChar("6", new Array(-1,1,1,1,-1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,-1,1,1,1,1,1,1,1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,1) );
+        defineChar("7", new Array(1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,-1,1,-1,-1,-1) );
+        defineChar("8", new Array(1,1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1) );
+        defineChar("9", new Array(1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1) );
+    }
 
     function defineChar(charEntered, data) {
         charData[charEntered] = data;
@@ -412,5 +438,4 @@ function preload()
         init_draw : init_draw,
     }
 };
-
 

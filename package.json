@@ -1,21 +1,39 @@
 {
-  "name": "Virtual-Market",
-  "version": "",
+  "name": "virtualmarket",
+  "version": "1.0.0",
   "description": "",
-  "author": "",
-  "main": "index.html",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Viseo/VirtualMarket.git"
+  "main": "app.js",
+  "directories": {
+    "test": "tests"
   },
   "dependencies": {
-    "lib": "lib/*",
-    "mock-browser": "^0.92.14",
-    "node-module": "node-modules/*",
-    "primus": "*"
+    "async": "^2.3.0",
+    "binary-pack": "^1.0.2",
+    "binaryjs": "^0.2.1",
+    "binarypack": "^0.0.4",
+    "core-util-is": "^1.0.2",
+    "ejs": "^2.5.6",
+    "express": "^4.15.2",
+    "googleapis": "^19.0.0",
+    "node-forge": "^0.7.1",
+    "options": "^0.0.6",
+    "streamers": "^0.1.1",
+    "wav": "^1.0.1"
   },
   "devDependencies": {
-    "jsdom": "9.12.0",
-    "jsdom-global": "2.1.1"
-  }
+    "mocha": "^3.2.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Viseo/VirtualMarket.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Viseo/VirtualMarket/issues"
+  },
+  "homepage": "https://github.com/Viseo/VirtualMarket#readme"
 }

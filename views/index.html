@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<meta charset="UTF-8">
+	<title>DigiMarket</title>
+    <script src="https://cdn.jsdelivr.net/binaryjs/0.2.1/binary.min.js"></script>
+    <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&callback=initMap"-->
+            <!--async defer></script>-->
+
+    </head>
+<body style="margin:0">
+    <div id="content"></div>
+    <!--<div id="map"></div>-->
+    <script src="lib/module.js"></script>
+    <script src="lib/runtimemock.js"></script>
+    <script src="lib/targetruntime.js"></script>
+    <script src="lib/svghandler.js"></script>
+    <script src="supermarche.js"></script>
+    <script src="lib/svggui.js"></script>
+    <script src="data.js"></script>
+    <script src="neuralNetDrawing.js"></script>
+    <script src="lib/recorder.js"></script>
+    <script src="lib/map.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&libraries=places"></script>
+
+    <script>
+        document.documentElement.style.overflow = 'hidden';
+        let targetRuntime = require("lib/targetruntime").targetRuntime;
+        let SVG = require("lib/svghandler").SVG;
+        let main = require("supermarche").main;
+
+        let DATA = require("data").data;
+        let data = DATA();
+        let Map = require("lib/map");
+        let GUI = require("lib/svggui").Gui;
+        let svg = SVG(targetRuntime());
+        let NEURAL=require("neuralNetDrawing").neural;
+        let neural=NEURAL(targetRuntime());
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),Map);
+    </script>
+
+    <style>
+        input#pac-input{
+            position: absolute;
+            top: 9px !important;
+            border-color: #0074D9;
+        }
+    </style>
+
+</body>
+</html>	
