@@ -761,7 +761,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if(check===false){
                         if(self.code.length>1){
                             market.payment.iteration++;
+                            textToSpeech("Code erroné.");
                             if (market.payment.iteration >3) {
+                                textToSpeech("Veuillez patienter"+10+"secondes");
                                 self.launchTimer(10, false);
                             }
                         }
@@ -977,6 +979,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         checkPassword(password){
               if(password === "321456987"){
+                  textToSpeech("Code bon ! Veuillez indiquer votre adresse de livraison. ");
                   return true;
               }
               return false;
@@ -1860,6 +1863,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if(!self.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
+                        // textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
                         self.anim=true;
                     }
                 }
@@ -1869,6 +1873,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         if(c=="?")return;
                     }
                     element.addAnimation(number);
+                    // textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
                 }
             }
@@ -2216,6 +2221,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     order.indexOf(tab[i].name.toLowerCase()) - 1);
                                 var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
                                     order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
                                 if (quantity >= "0" && quantity <= "9") {
                                     let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
                                     if (isNaN(bef)) {
@@ -2225,14 +2232,47 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if (isNaN(bef2)) {
                                         bef2 = "";
                                     }
+                                    textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
+
                                 }
-                                else if (determining.trim() == "de") {
+                                else if (determining.trim() == "de" || determining2.trim() == "deux") {
                                     market.basket.addProducts(tab[i], 2);
+                                    textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
+                                }
+                                else if (determining2.trim() == "neuf") {
+                                    market.basket.addProducts(tab[i], 9);
+                                    textToSpeech("Ok, j'ajoute neuf "+ tab[i].name+" au panier");
+                                }
+                                else if (determining2.trim() == "huit") {
+                                    market.basket.addProducts(tab[i], 8);
+                                    textToSpeech("Ok, j'ajoute huit "+ tab[i].name+" au panier");
+                                }
+                                else if (determining2.trim() == "cinq") {
+                                    market.basket.addProducts(tab[i], 5);
+                                    textToSpeech("Ok, j'ajoute 5 "+ tab[i].name+" au panier");
+                                }
+                                else if (determining2.trim() == "trois") {
+                                    market.basket.addProducts(tab[i], 3);
+                                    textToSpeech("Ok, j'ajoute trois "+ tab[i].name+" au panier");
+                                }
+                                else if (determining.trim() == "six") {
+                                    market.basket.addProducts(tab[i], 6);
+                                    textToSpeech("Ok, j'ajoute 6"+ tab[i].name+" au panier");
+                                }
+                                else if (determining.trim() == "dix") {
+                                    market.basket.addProducts(tab[i], 10);
+                                    textToSpeech("Ok, j'ajoute 10 "+ tab[i].name+" au panier");
                                 }
                                 else if (determining2.trim() == "cette" || determining.trim() == "cet") {
+                                    textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 7);
+                                }
+                                else if (determiningFour.trim() == "quatre"){
+                                    textToSpeech("Ok, je retire 4 "+ tab[i].name +" du panier");
+                                    market.basket.deleteFromName(tab[i].name, 4);
                                 } else {
+                                    textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 1);
                                 }
                             }
@@ -2244,6 +2284,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     order.indexOf(tab[i].name.toLowerCase()) - 1);
                                 var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
                                     order.indexOf(tab[i].name.toLowerCase()) - 1);
+                                var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
+                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
                                 if (number >= "0" && number <= "9") {
                                     let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
                                     if (isNaN(bef)) {
@@ -2253,29 +2295,69 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if (isNaN(bef2)) {
                                         bef2 = "";
                                     }
+                                    textToSpeech("Ok, je retire "+quantity+" "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                                 }
-                                else if (determining == " un" || determining == "une")
+                                else if (determining == " un" || determining == "une"){
+                                    textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 1);
-                                else if (determining.trim() == "de")
+                                } else if (determining2.trim() == "neuf") {
+                                    market.basket.addProducts(tab[i], 9);
+                                    textToSpeech("Ok, je retire neuf "+ tab[i].name+" du panier");
+                                }
+                                else if (determining2.trim() == "huit") {
+                                    market.basket.addProducts(tab[i], 8);
+                                    textToSpeech("Ok, je retire huit "+ tab[i].name+" du panier");
+                                }
+                                else if (determining2.trim() == "cinq") {
+                                    market.basket.addProducts(tab[i], 5);
+                                    textToSpeech("Ok, je retire 5 "+ tab[i].name+" du panier");
+                                }
+                                else if (determining2.trim() == "trois") {
+                                    market.basket.addProducts(tab[i], 3);
+                                    textToSpeech("Ok, je retire trois "+ tab[i].name+" du panier");
+                                }
+                                else if (determining.trim() == "six") {
+                                    market.basket.addProducts(tab[i], 6);
+                                    textToSpeech("Ok, je retire 6"+ tab[i].name+" du panier");
+                                }
+                                else if (determining.trim() == "dix") {
+                                    market.basket.addProducts(tab[i], 10);
+                                    textToSpeech("Ok, je retire 10 "+ tab[i].name+" du panier");
+                                }
+                                else if (determining.trim() == "de" || determining2.trim() == "deux"){
+                                    textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 2);
-                                else if (determining2.trim() == "cette" || determining.trim() == "cet")
+                                }
+                                else if (determining2.trim() == "cette" || determining.trim() == "cet"){
+                                    textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, 7);
-                                else market.basket.deleteFromName(tab[i].name, null);
+                                }
+                                else if (determiningFour.trim() == "quatre"){
+                                    textToSpeech("Ok, je retire 4 "+ tab[i].name +" du panier");
+                                    market.basket.deleteFromName(tab[i].name, 4);
+                                }
+                                else{
+                                    textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
+                                    market.basket.deleteFromName(tab[i].name, null);
+                                }
                             }
                         }
                         else {
                             tab = search(order, "all");
+                            textToSpeech("ok je cherche.")
                             doSearch(tab);
                         }
                         oneOrderChecked = true;
                     }
                     else {
                         if (order.includes("vide") && order.includes("panier")) {
+                            textToSpeech("Ok, Je vide le panier");
                             market.basket.emptyBasket();
                             oneOrderChecked = true;
                         }
                         else if (order.includes("paye") || order.includes("paie")) {
+                            textToSpeech("Ok, passons au payement")
                             market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
                             market.payment.cardIn = true;
                             market.payment.showCode();
