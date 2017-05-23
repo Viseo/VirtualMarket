@@ -61,6 +61,62 @@ describe("Test",function (){
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
     });
 
+    it("ensure that chevronE ray is working",function(){
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        runtime.event(categories,"click",{});
+        let ray = retrieve(market.component,"[ray Fruits].[listRay]");
+        inspect(ray,{tag:"g",transform:"translate(0 0)"});
+        let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
+        let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
+        runtime.event(chevronE,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronE,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronE,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronE,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronE,"click",{});
+        runtime.advanceAll();
+        inspect(ray,{tag:"g",transform:"translate(-746.6999999999997 0)"});
+
+    });
+
+    it("ensure that chevronW ray is working",function(){
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        runtime.event(categories,"click",{});
+        let ray = retrieve(market.component,"[ray Fruits].[listRay]");
+        inspect(ray,{tag:"g",transform:"translate(0 0)"});
+        let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
+        let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
+        runtime.event(chevronE,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW,"click",{});
+        runtime.advanceAll();
+        inspect(ray,{tag:"g",transform:"translate(0 0)"});
+
+        let categories2 = retrieve(market.component,"[categories].[Legumes]");
+        runtime.event(categories2,"click",{});
+        let ray2 = retrieve(market.component,"[ray Legumes].[listRay]");
+        inspect(ray2,{tag:"g",transform:"translate(0 0)"});
+        let chevronW2 = retrieve(market.component,"[ray Legumes].[chevronWRay]");
+        let chevronE2 = retrieve(market.component,"[ray Legumes].[chevronERay]");
+        runtime.event(chevronE2,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronE2,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW2,"click",{});
+        runtime.advanceAll();
+        runtime.event(chevronW2,"click",{});
+        runtime.advanceAll();
+        inspect(ray2,{tag:"g",transform:"translate(0 0)"});
+
+    });
+
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
@@ -232,6 +288,72 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(basketProd2,"touchend",{touches:{0:{clientX:5,clientY:10}}});
         runtime.advanceAll();
+    });
+
+    // it("ensure that we can mousehover and mouseout on a categorie",function(){
+    //     let categories = retrieve(market.component,"[categories].[Fruits]");
+    //     let categories2 = retrieve(market.component,"[categories].[Fruits2]");
+    //     let categorieTitle = retrieve(market.component,"[categories].[Fruits title]");
+    //     runtime.event(categories,"mouseenter",{});
+    //     runtime.advanceAll();
+    //     inspect(categories,{tag:"image",href:"img/categories/fruits.png",opacity:"0"});
+    //     inspect(categories2,{tag:"image",href:"img/categories/fruits2.png",opacity:"1"});
+    //     runtime.event(categorieTitle,"mouseenter",{});
+    //     runtime.advanceAll();
+    //     runtime.event(categories2,"mouseout",{});
+    //     runtime.advanceAll();
+    //     inspect(categories,{tag:"image",href:"img/categories/fruits.png",opacity:"1"});
+    //     inspect(categories2,{tag:"image",href:"img/categories/fruits2.png",opacity:"0"});
+    //     runtime.event(categories,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(categories2,"mouseenter",{});
+    //     runtime.advanceAll();
+    //     runtime.event(categories2,"mouseout",{});
+    //     runtime.advanceAll();
+    //     runtime.event(categories,"mouseout",{});
+    //     runtime.advanceAll();
+    // });
+
+    it("ensure that we can mouseover and mouseout on a product and it title",function(){
+        let categories = retrieve(market.component,"[categories].[Fruits]");
+        runtime.event(categories,"click",{});
+        runtime.advanceAll();
+        let product2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine].[Image Clementine]");
+        let product3 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise].[Image Fraise]");
+        let title2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine].[Title Clementine]");
+        let title3 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise].[Title Fraise]");
+
+        runtime.event(product2,"mouseenter");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
+
+        runtime.event(product2,"mouseout");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
+
+        runtime.event(product3,"mouseenter");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
+
+        runtime.event(product3,"mouseout");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
+
+        runtime.event(title2,"mouseenter");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
+
+        runtime.event(title2,"mouseout");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
+
+        runtime.event(title3,"mouseenter");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
+
+        runtime.event(title3,"mouseout");
+        runtime.advanceAll();
+        inspect(product2,{tag:"image"});
     });
 
     it("ensure that clicking on a product in the basket print the corresponding section",function(){
@@ -761,7 +883,6 @@ describe("Test",function (){
             done();
         },15000);
     });
-
     it("ensure that the interface to enter the code pattern is working with touch event",function(done){
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);

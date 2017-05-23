@@ -114,48 +114,86 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 			var self = this; // Gestion Evenements
 
 			this.name = cat;
-			this.listHeight=Math.ceil(tabThumbnail.length/4)*(height/3*0.98);
-            console.log(Math.ceil(tabThumbnail.length/4),(height/3*0.98));
+			this.thumbWidth=(width / 4*0.94);
+			this.listWidth=Math.ceil(tabThumbnail.length/3)*(this.thumbWidth);
             let fond = new svg.Rect(width, height).position(width/2,height/2);
             fond.color([230,230,230]);
             this.component.add(fond);
 
             this.listThumbnails = new svg.Translation().mark("listRay");
-            let row=0;
-            for(let i=0;i<tabThumbnail.length;i=i+4){
+            let col=0;
+            for(let i=0;i<tabThumbnail.length;i=i+3){
                 for(let j=0;j<4;j++) {
                     if(tabThumbnail[j+i]) {
                         tabThumbnail[j+i].placeElements(1);
-                        tabThumbnail[j+i].move(width*0.01+(width / 4*0.94)*j ,width*0.01+(height/3*0.98) * row);
+                        tabThumbnail[j+i].move(width*0.01+this.thumbWidth*col,width*0.01+(height/3*0.98)*j);
                         this.listThumbnails.add(tabThumbnail[j+i].component);
                     }
                 }
-                row++;
+                col++;
             }
             this.component.add(this.listThumbnails);
 
             this.currentDrawn=null;
 
-            /*let chevronWest = new svg.Chevron(20, 70, 3, "W").position(30, this.component.height / 2).color(svg.WHITE);
-            let chevronEast = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
-            let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                            .position(30, this.component.height / 2);
-            let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                            .position(this.component.width - 30, this.component.height / 2);
-            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0.2).mark("chevronWRay");
-            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).mark("chevronERay");
+            let chevronWest = new svg.Chevron(this.thumbWidth/4, this.thumbWidth*0.7, 16, "W").position(30, this.component.height / 2).color([0, 195, 235]);
+            let chevronEast = new svg.Chevron(this.thumbWidth/4, this.thumbWidth*0.7, 16, "E").position(width - 30, this.component.height / 2).color([0, 195, 235]);
+            let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
+                .position(30, this.component.height / 2);
+            let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
+                .position(this.component.width - 30, this.component.height / 2);
+            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay");
+            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay");
+
+//             if(pos[l]>(self.lNum)*(self.space)-(self.height/2)-2 && (mouse-y)<0 ) {
+//                 pos[l]=pos[(Number(l)+1)%self.lNum]-(self.space)
+//             }else if(pos[l]<2-(self.height/2)  && (mouse-y)>0){
+//                 pos[l]=pos[(Number(l)+(self.lNum-1))%(self.lNum)]+((self.space))
+//             }
+//             self.traits[l].start(-12, pos[l] - (mouse - y) + 1).end(12, pos[l] - (mouse - y) + 1);
+//             self.lines[l].position(0, pos[l] - (mouse - y));
+//             pos[l] = pos[l] - (mouse - y);
+//
+//         }
+//
+//         if(categories.ray.listHeight>=Number(market.height*0.75)){
+//         categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(0, categories.ray.listThumbnails.y + (mouse - y));
+//     }
+// }
+//
+//     svg.addEvent(self.component, eventTypeUp, function () {
+//         if(categories.ray.listHeight>=Number(market.height*0.75)){
+//             if (categories.ray.listThumbnails.y>0) {
+//                 categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
+//             }
+//             else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
+//                 categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.74);
+//
+//             }
+//         }
 
             zoneChevronWest.onClick(function () {
-                self.listThumbnails.smoothy(10, 20).onChannel("rayUp").moveTo(0, self.listThumbnails.y);
-                zoneChevronWest.opacity(0.2);
-                zoneChevronEast.opacity(1);
+                if(self.listWidth!=0 && self.listThumbnails.x+self.thumbWidth*1.5<0) {
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth*1.5, 0);
+                    zoneChevronEast.opacity(0.6);
+                }else{
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(0, 0);
+                    zoneChevronWest.opacity(0);
+                    zoneChevronEast.opacity(0.6);
+                }
             });
 
             zoneChevronEast.onClick(function () {
-                let widthView = width;
-                let widthTotalH = height / 2 * Math.ceil(tabThumbnail.length / 2);
+                if(self.listWidth!=0 && self.listThumbnails.x+self.listWidth-self.thumbWidth*1.5>=width) {
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth*1.5, 0);
+                    zoneChevronWest.opacity(0.6);
+                }else{
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(width-self.listWidth-width*0.01, 0);
+                    zoneChevronWest.opacity(0.6);
+                    zoneChevronEast.opacity(0);
+                }
             });
-            this.component.add(zoneChevronEast).add(zoneChevronWest);*/
+            this.component.add(zoneChevronEast).add(zoneChevronWest);
         }
     }
 
@@ -522,7 +560,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(digi.component, "font-style", "italic");
             this.logo=new svg.Image("img/picto.png").position(width*0.025,height*0.5).dimension(height,height);
             this.component.add(this.logo);
-            this.micro = new svg.Image("img/microphone-deactivated.png");
+            this.micro = new svg.Image("img/microphone-deactivated.png").mark('micro');
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
             this.height = height;
@@ -535,7 +573,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.micro.onClick(function(){
                 if(!recording) {
                     voice = [];
-                    startRecording();
+                    if (Maps)startRecording();
                     recording=true;
                     console.log("je record");
                     micro.url("img/microphone.gif");
@@ -547,6 +585,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         timer = setInterval(function () {
                             i++;
                             voice = getMessage();
+                            console.log(getMessage())
                             if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
@@ -1018,90 +1057,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     }
 
-    class ScrollWheel{
-        constructor(height){
-            this.height=height;
-            this.component = new svg.Translation();
-            this.contour= new svg.Rect(35,height*1.1).color(svg.LIGHT_GREY, 1, svg.LIGHT_GREY).corners(7,7);
-            this.scroll = new svg.Rect(28,height).color(svg.GREY, 1, svg.GREY);
-            this.scroll.corners(7,7);
-            this.component.add(this.contour).add(this.scroll);
-            this.traits=[];
-            this.lines=[];
-            this.onMove=false;
-            this.lNum=7
-            this.space=(height)/this.lNum;
-            for(i=0;i<this.lNum;i++){
-                this.traits.push(new svg.Line(-12,(i+0.5)*this.space-height/2+1,12,(i+0.5)*this.space-height/2+1).color(svg.GREY,1,svg.GREY));
-                this.lines.push(new svg.Rect(24, 3).corners(3,3).position(0,(i+0.5)*this.space-height/2).color(svg.BLACK, 1, svg.BLACK));
-                this.component.add(this.lines[i]).add(this.traits[i]);
-            }
-            this.component.move(500,300);
-            let self =this;
-
-            this.component.onMouseDown(function (e) {
-                beginMove(e.pageY, "mousemove", "mouseup");
-            });
-
-            svg.addEvent(this.component, "touchstart", function (e) {
-                beginMove(e.touches[0].clientY, "touchmove", "touchend");
-            });
-
-            function beginMove(y, eventTypeMove, eventTypeUp) {
-                self.onMove = true;
-                let prevMouse = y;
-
-                var pos=[]
-                for(let l in self.lines){
-                    pos[l]=(Number(l)+0.5)*(self.space)-(self.height/2);
-                }
-
-                svg.addEvent(self.component, eventTypeMove, function (e) {
-                    if (self.onMove) {
-                        if (eventTypeMove.includes("mouse")) {
-                            toMove(e.pageY, prevMouse);
-                            prevMouse = e.pageY;
-                        }
-                        else {
-                            toMove(e.touches[0].clientY, prevMouse);
-                            prevMouse = e.touches[0].clientY;
-                        }
-                    }
-                });
-                function toMove(y, mouse) {
-                    for(let l in self.lines){
-                        if(pos[l]>(self.lNum)*(self.space)-(self.height/2)-2 && (mouse-y)<0 ) {
-                            pos[l]=pos[(Number(l)+1)%self.lNum]-(self.space)
-                        }else if(pos[l]<2-(self.height/2)  && (mouse-y)>0){
-                            pos[l]=pos[(Number(l)+(self.lNum-1))%(self.lNum)]+((self.space))
-                        }
-                        self.traits[l].start(-12, pos[l] - (mouse - y) + 1).end(12, pos[l] - (mouse - y) + 1);
-                        self.lines[l].position(0, pos[l] - (mouse - y));
-                        pos[l] = pos[l] - (mouse - y);
-
-                    }
-
-                    if(categories.ray.listHeight>=Number(market.height*0.75)){
-                        categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(0, categories.ray.listThumbnails.y + (mouse - y));
-                    }
-                }
-
-                svg.addEvent(self.component, eventTypeUp, function () {
-                    console.log(categories.ray.listThumbnails.y,-(categories.ray.listHeight+market.height*0.75));
-                    if (categories.ray.listThumbnails.y>0) {
-                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
-                    }
-                    else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
-                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.75);
-
-                    }
-                    self.onMove = false;
-                });
-            }
-            this.component.move(market.width*0.735,market.height*0.625)
-        }
-    }
-
     class Round{
         constructor(x,y,width,height,place,left,TPH){
             this.component = new svg.Translation();
@@ -1455,13 +1410,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
                     hourCase.add(t);
                     if(i==4){
-                        // let secondText = new svg.Text("indisponible").font("calibri",this.width / 100, 1).color(svg.BLACK)
-                        //     .position(t.x,t.y+20);
-                        //
-                        // let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-5).color(svg.RED,1,svg.WHITE);
-
                         hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
-                        // hourCase.add(redPoint);
                     }
 
                     tabHours.push((i + 8) + "h");
@@ -1648,16 +1597,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let hourCase = new svg.Translation();
                 hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
                 if(i!=0){
-                    let t = new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
-                    hourCase.add(t);
-                    if(i==4) {
-                        hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
 
-                        // let secondText = new svg.Text("indisponible").font("calibri", this.width / 100, 1).color(svg.BLACK)
-                        //     .position(t.x, t.y + 20);
-                        // let redPoint = new svg.Circle(6).position(secondText.x - 50, secondText.y - 5).color(svg.RED, 1, svg.BLACK);
-                        // hourCase.add(secondText);
-                        // hourCase.add(redPoint);
+                    let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
+                    hourCase.add(t);
+                    if(i==4){
+                        hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
                     }
 
                     tabHours.push((i + 8) + "h");
@@ -1672,10 +1616,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let line = new svg.Translation();
                 for (var j=0;j<11;j++){
                     let element = new svg.Rect(this.caseWidth,this.caseHeight);
-                    if(i%2){
-                        element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
-                    }else{
+                    if(j%2){
                         element.color(svg.ALMOST_WHITE,1,svg.ALMOST_WHITE).position(j*this.caseWidth,0).opacity(1);
+                    }else{
+                        element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
                     }
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
@@ -2386,7 +2330,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     function textToSpeech(msg){
         var speak = new SpeechSynthesisUtterance(msg);
-        window.speechSynthesis.speak(speak);
+        speechSynthesis.speak(speak);
     }
 
     function replaceChar(msg){
@@ -2500,7 +2444,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     //Tab:
     let tabX = market.width*0.98;
         //CALENDAR
-        let calendarOnglY = (market.height*0.56);
+        let calendarOnglY = (market.height*0.57);
         let linePathCalendar=new svg.Path(tabX,calendarOnglY);
         linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
         linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
