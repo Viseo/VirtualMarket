@@ -108,65 +108,67 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     }
     
     class Ray extends DrawingZone {
-		constructor(width,height,x,y,tabThumbnail,cat){
-			super(width,height,x,y);
+		constructor(width,height,x,y,tabThumbnail,cat) {
+            super(width, height, x, y);
 
-			var self = this; // Gestion Evenements
+            var self = this; // Gestion Evenements
 
-			this.name = cat;
-			this.thumbWidth=(width / 4*0.94);
-			this.listWidth=Math.ceil(tabThumbnail.length/3)*(this.thumbWidth);
-            let fond = new svg.Rect(width, height).position(width/2,height/2);
-            fond.color([230,230,230]);
+            this.name = cat;
+            this.thumbWidth = (width / 4 * 0.94);
+            this.listWidth = Math.ceil(tabThumbnail.length / 3) * (this.thumbWidth);
+            let fond = new svg.Rect(width, height).position(width / 2, height / 2);
+            fond.color([230, 230, 230]);
             this.component.add(fond);
 
             this.listThumbnails = new svg.Translation().mark("listRay");
-            let col=0;
-            for(let i=0;i<tabThumbnail.length;i=i+3){
-                for(let j=0;j<4;j++) {
-                    if(tabThumbnail[j+i]) {
-                        tabThumbnail[j+i].placeElements(1);
-                        tabThumbnail[j+i].move(width*0.01+this.thumbWidth*col,width*0.01+(height/3*0.98)*j);
-                        this.listThumbnails.add(tabThumbnail[j+i].component);
+            let col = 0;
+            for (let i = 0; i < tabThumbnail.length; i = i + 3) {
+                for (let j = 0; j < 4; j++) {
+                    if (tabThumbnail[j + i]) {
+                        tabThumbnail[j + i].placeElements(1);
+                        tabThumbnail[j + i].move(width * 0.01 + this.thumbWidth * col, width * 0.01 + (height / 3 * 0.98) * j);
+                        this.listThumbnails.add(tabThumbnail[j + i].component);
                     }
                 }
                 col++;
             }
             this.component.add(this.listThumbnails);
 
-            this.currentDrawn=null;
+            this.currentDrawn = null;
+            if (tabThumbnail.length > 12) {
 
-            let chevronWest = new svg.Chevron(this.thumbWidth/4, this.thumbWidth*0.7, 16, "W").position(30, this.component.height / 2).color([0, 195, 235]);
-            let chevronEast = new svg.Chevron(this.thumbWidth/4, this.thumbWidth*0.7, 16, "E").position(width - 30, this.component.height / 2).color([0, 195, 235]);
-            let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
-                .position(30, this.component.height / 2);
-            let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
-                .position(this.component.width - 30, this.component.height / 2);
-            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('zoneChevron',7,8,8);
-            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay");
+                let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    .position(this.thumbWidth / 4, this.component.height / 2);
+                let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
+                let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
+                let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
 
-            zoneChevronWest.onClick(function () {
-                if(self.listWidth!=0 && self.listThumbnails.x+self.thumbWidth*1.5<0) {
-                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth*1.5, 0);
-                    zoneChevronEast.opacity(0.6);
-                }else{
-                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(0, 0);
-                    zoneChevronWest.opacity(0);
-                    zoneChevronEast.opacity(0.6);
-                }
-            });
+                zoneChevronWest.onClick(function () {
+                    if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth * 1.5, 0);
+                        zoneChevronEast.opacity(0.6);
+                    } else {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(0, 0);
+                        zoneChevronWest.opacity(0);
+                        zoneChevronEast.opacity(0.6);
+                    }
+                });
 
-            zoneChevronEast.onClick(function () {
-                if(self.listWidth!=0 && self.listThumbnails.x+self.listWidth-self.thumbWidth*1.5>=width) {
-                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth*1.5, 0);
-                    zoneChevronWest.opacity(0.6);
-                }else{
-                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(width-self.listWidth-width*0.01, 0);
-                    zoneChevronWest.opacity(0.6);
-                    zoneChevronEast.opacity(0);
-                }
-            });
-            this.component.add(zoneChevronEast).add(zoneChevronWest);
+                zoneChevronEast.onClick(function () {
+                    if (self.listWidth != 0 && self.listThumbnails.x + self.listWidth - self.thumbWidth * 1.5 >= width) {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth * 1.5, 0);
+                        zoneChevronWest.opacity(0.6);
+                    } else {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(width - self.listWidth - width * 0.01, 0);
+                        zoneChevronWest.opacity(0.6);
+                        zoneChevronEast.opacity(0);
+                    }
+                });
+                this.component.add(zoneChevronEast).add(zoneChevronWest);
+            }
         }
     }
 
@@ -1293,13 +1295,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     nbdays = self.numberDaysThisMonth;
                 }
                 var height = self.caseHeight * (nbdays);
-                if (self.calendarContent.y + height + self.caseHeight / 2 < market.height) {
+                if ((self.calendarContent.y + height + self.caseHeight / 2 < market.height)&&(nbdays>10)) {
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
                         .moveTo(0, market.height-height-self.caseHeight/2);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
                         .moveTo(0, market.height-height-self.caseHeight/2);
                 }
-                else if(self.calendarContent.y>header.height+self.caseHeight*2){
+                else if((self.calendarContent.y>header.height+self.caseHeight*2)||(nbdays<=10)){
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
                         .moveTo(0, header.height + self.caseHeight * 2.6);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
@@ -1763,7 +1765,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 categories.ray.currentDrawn.component.remove(categories.ray.currentDrawn.waitingNumber);
                 categories.ray.currentDrawn.waitingNumber = new svg.Text(number);
                 categories.ray.currentDrawn.waitingNumber.position(self.width/2,self.height*0.65)
-                    .font("Calibri",self.width/1.5,1).opacity(0.7);
+                    .font("Calibri",self.width*0.5,1).opacity(0.7);
                 categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
@@ -1774,7 +1776,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if(!self.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
-                        // textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
+                        if(Maps)textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
                         self.anim=true;
                     }
                 }
@@ -1784,7 +1786,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         if(c=="?")return;
                     }
                     element.addAnimation(number);
-                    // textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
+                    if(Maps)textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
                 }
             }
@@ -1856,6 +1858,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.mark(this.name);
             this.width = market.basket.component.width;
             this.height = market.basket.component.height*0.1;
+            this.comp = complement.replace("/","");
+            this.compTitle= new svg.Text(this.comp);
+            this.component.add(this.compTitle);
         }
 
         addQuantity(num){
@@ -1869,16 +1874,29 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         changeText(newText){
             this.component.remove(this.printPrice);
             this.printPrice = new svg.Text(newText).anchor("left");
-            this.printPrice.position(this.width*0.08,this.height/2).font("Tahoma",this.height*0.3,1).color([255, 110, 0]);
+            this.printPrice.position(this.width*0.05,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]);
             this.component.add(this.printPrice);
+            if((newText>1)&&(this.comp!="")){
+                this.component.remove(this.compTitle);
+                this.compTitle = new svg.Text(this.comp+"s");
+                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+                this.component.add(this.compTitle);
+            }
+            else{
+                this.component.remove(this.compTitle);
+                this.compTitle = new svg.Text(this.comp);
+                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+                this.component.add(this.compTitle);
+            }
         }
 
         placeElements(){
             this.component.mark("Product basket " + this.name);
             this.image.position(this.width*0.8,this.height*0.4).dimension(this.height*0.90,this.height*0.90).mark(this.name);
-            this.printPrice.position(this.width*0.08,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
-            this.title.position(this.width*0.2,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
+            this.printPrice.position(this.width*0.05,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+            this.title.position(this.width*0.30,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).mark("background "+this.name);
+            this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
         }
     }
 
@@ -2214,7 +2232,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                             }
                         }
                         else if (order.includes("supprime")) {
-                            let det = ["un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
                             for (var i = 0; i < tab.length; i++) {
                                 var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
                                 var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
