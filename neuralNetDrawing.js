@@ -103,7 +103,7 @@ exports.neural = function(runtime) {
                 ev._y = Math.round(ev.pageY * 1.25);
 
                 if (ev.type === 'mousemove'||control=="mousemove") {
-                    if(this.currentX!=0&&this.currentY!=0) {
+                    if(this.currentX!=0||this.currentY!=0) {
                         let dx = ev._x - this.currentX;
                         let dy = ev._y - this.currentY;
                         if (dx < 0) {
@@ -118,15 +118,17 @@ exports.neural = function(runtime) {
                                 this.drawing[i][y] = 1;
                             }
                         }
+                        this.drawn=true;
                     }
                     this.currentX=ev._x;
                     this.currentY=ev._y;
+
                 }
 
                 else if (ev.type === 'touchmove'||control=="touchmove") {
                     ev.touchX=Math.round(ev.touches[0].clientX*1.25);
                     ev.touchY=Math.round(ev.touches[0].clientY*1.25);
-                    if(this.currentX!=0&&this.currentY!=0) {
+                    if(this.currentX!=0||this.currentY!=0) {
                         let dx = ev.touchX - this.currentX;
                         let dy = ev.touchY- this.currentY;
                         if (dx < 0) {
@@ -144,6 +146,7 @@ exports.neural = function(runtime) {
                     }
                     this.currentX=ev.touchX;
                     this.currentY=ev.touchY;
+                    this.drawn=true;
                 }
 
                 // This is called when you release the mouse button.
@@ -275,9 +278,12 @@ exports.neural = function(runtime) {
         runtime.addEvent(drawingArea.canvasDiv,'mouseup', function (e) {
             if(numToSend.element=="") numToSend.element=name;
             bestchar = ev_recognize();
+            if((bestchar=="click")&&(drawingArea.drawn)) bestchar=1;
             drawingArea.ev_canvas(e, "mouseup");
             if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
-            else numToSend.num += bestchar;
+            else {
+                numToSend.num += bestchar;
+            }
             if(numToSend.num.length<3) {
                 printNumber(numToSend.num+"_");
             }
@@ -320,6 +326,7 @@ exports.neural = function(runtime) {
         runtime.addEvent(prod.component.component,'touchend', function (e) {
             if(numToSend.element=="") numToSend.element=name;
             bestchar = ev_recognize();
+            if((bestchar=="click")&&(drawingArea.drawn)) bestchar=1;
             drawingArea.ev_canvas(e, "touchend");
             if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
             else numToSend.num += bestchar;

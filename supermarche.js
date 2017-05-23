@@ -135,7 +135,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
             this.component.add(this.listThumbnails);
 
             this.currentDrawn=null;
-
             if(tabThumbnail.length>12) {
                 let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(30, this.component.height / 2).color([0, 195, 235]);
                 let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - 30, this.component.height / 2).color([0, 195, 235]);
@@ -145,7 +144,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                     .position(this.component.width - 30, this.component.height / 2);
                 let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay");
                 let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay");
-
 
                 zoneChevronWest.onClick(function () {
                     if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
@@ -2237,7 +2235,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                             }
                         }
                         else if (order.includes("supprime")) {
-                            let det = ["un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
                             for (var i = 0; i < tab.length; i++) {
                                 var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
                                 var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
