@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
+exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
@@ -142,35 +142,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                 .position(30, this.component.height / 2);
             let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
                 .position(this.component.width - 30, this.component.height / 2);
-            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay");
+            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('zoneChevron',7,8,8);
             let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay");
-
-//             if(pos[l]>(self.lNum)*(self.space)-(self.height/2)-2 && (mouse-y)<0 ) {
-//                 pos[l]=pos[(Number(l)+1)%self.lNum]-(self.space)
-//             }else if(pos[l]<2-(self.height/2)  && (mouse-y)>0){
-//                 pos[l]=pos[(Number(l)+(self.lNum-1))%(self.lNum)]+((self.space))
-//             }
-//             self.traits[l].start(-12, pos[l] - (mouse - y) + 1).end(12, pos[l] - (mouse - y) + 1);
-//             self.lines[l].position(0, pos[l] - (mouse - y));
-//             pos[l] = pos[l] - (mouse - y);
-//
-//         }
-//
-//         if(categories.ray.listHeight>=Number(market.height*0.75)){
-//         categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(0, categories.ray.listThumbnails.y + (mouse - y));
-//     }
-// }
-//
-//     svg.addEvent(self.component, eventTypeUp, function () {
-//         if(categories.ray.listHeight>=Number(market.height*0.75)){
-//             if (categories.ray.listThumbnails.y>0) {
-//                 categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
-//             }
-//             else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
-//                 categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.74);
-//
-//             }
-//         }
 
             zoneChevronWest.onClick(function () {
                 if(self.listWidth!=0 && self.listThumbnails.x+self.thumbWidth*1.5<0) {
@@ -570,87 +543,86 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
             var voice=[];
             let timer;
 
-            window.launchSTT = function(){
-                if(!recording) {
-                    voice = [];
-                    startRecording();
-                    recording=true;
-                    console.log("je record");
-                    micro.url("img/microphone.gif");
-                    setTimeout(function () {
-                        stopRecording();
-                        micro.url("img/microphoneload.gif");
-                        console.log("je record plus");
-                        let i = 0;
-                        timer = setInterval(function () {
-                            i++;
-                            voice = getMessage();
-                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
-                                clearInterval(timer);
-                                console.log(voice['transcript']);
-                                if (i == 25) {
-                                    textToSpeech("Je n'ai rien entendu", "FR");
-                                    micro.url("img/microphone-deactivated.png");
+            if (Maps){
+                window.launchSTT = function(){
+                    if(!recording) {
+                        voice = [];
+                        startRecording();
+                        recording=true;
+                        console.log("je record");
+                        micro.url("img/microphone.gif");
+                        setTimeout(function () {
+                            stopRecording();
+                            micro.url("img/microphoneload.gif");
+                            console.log("je record plus");
+                            let i = 0;
+                            timer = setInterval(function () {
+                                i++;
+                                voice = getMessage();
+                                if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
+                                    clearInterval(timer);
+                                    console.log(voice['transcript']);
+                                    if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
+                                    else if (voice['confidence'] > 0.5) {
+                                        market.vocalRecognition(voice['transcript']);
+                                    }
+                                    else {
+                                        console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
+                                        textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+                                    }
+                                    i = 0;
+                                    micro.url("img/microphone.png");
+                                    voice = [];
+                                    recording = false;
+                                    bool=false
                                 }
-                                else if (voice['confidence'] > 0.5) {
-                                    market.vocalRecognition(voice['transcript']);
-                                    micro.url("img/microphone-deactivated.png");
-                                }
-                                else {
-                                    console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
-                                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
-                                    micro.url("img/microphone-deactivated.png");
-                                }
-                                i = 0;
-                                voice = [];
-                                recording = false;
-                                bool=false;
-                            }
 
-                        }, 200);
-                    }, 4000);
+                            }, 200);
+                        }, 4000);
 
+                    }
                 }
             }
 
-            svg.addEvent(this.micro,"touchstart",function(){
-                if(!recording) {
-                    voice = [];
-                    startRecording();
-                    recording=true;
-                    console.log("je record");
-                    micro.url("img/microphone.gif");
-                    setTimeout(function () {
-                        stopRecording();
-                        micro.url("img/microphoneload.gif");
-                        console.log("je record plus");
-                        let i = 0;
-                        timer = setInterval(function () {
-                            i++;
-                            voice = getMessage();
-                            if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
-                                clearInterval(timer);
-                                console.log(voice['transcript']);
-                                if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
-                                else if (voice['confidence'] > 0.5) {
-                                    market.vocalRecognition(voice['transcript']);
-                                }
-                                else {
-                                    console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
-                                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
 
-                                }
-                                i = 0;
-
-                                voice = [];
-                                recording = false;
-                            }
-                            micro.url("img/microphone-deactivated.png");
-                        }, 200);
-                    }, 4000);
-
-                }
-            });
+            // svg.addEvent(this.micro,"touchstart",function(){
+            //     if(!recording) {
+            //         voice = [];
+            //         startRecording();
+            //         recording=true;
+            //         console.log("je record");
+            //         micro.url("img/microphone.gif");
+            //         setTimeout(function () {
+            //             stopRecording();
+            //             micro.url("img/microphoneload.gif");
+            //             console.log("je record plus");
+            //             let i = 0;
+            //             timer = setInterval(function () {
+            //                 i++;
+            //                 voice = getMessage();
+            //                 if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
+            //                     clearInterval(timer);
+            //                     console.log(voice['transcript']);
+            //                     if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
+            //                     else if (voice['confidence'] > 0.5) {
+            //                         market.vocalRecognition(voice['transcript']);
+            //                     }
+            //                     else {
+            //                         console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
+            //                         textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+            //
+            //                     }
+            //                     i = 0;
+            //
+            //                     voice = [];
+            //                     recording = false;
+            //                 }
+            //                 micro.url("img/microphone-deactivated.png");
+            //             }, 200);
+            //         }, 4000);
+            //
+            //     }
+            // });
         }
     }
     
@@ -764,7 +736,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                     if (self.value != market.payment.zoneCode.code.slice(-1)){
                         market.payment.zoneCode.code+= self.value;
                     }
-
                 }
             });
         }
@@ -1028,14 +999,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                   return true;
               }
               return false;
-        }
-
-        printCalendar(){
-            market.remove(market.payment.zoneCode.component);
-            market.calendar = new Calendar(market.width,market.height,0,0);
-            market.calendar.placeElements();
-            market.add(market.calendar.component);
-            market.add(zoneHeader);
         }
     }
 
@@ -1505,7 +1468,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                 });
                 tab.push({
                     dayP: date2.getDate() + "/" + modul + (date2.getMonth() + 1) + "/" + date2.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address: this.address
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
                 });
                 tab.push({
                     dayP: date3.getDate() + "/" + modul + (date3.getMonth() + 1) + "/" + date3.getFullYear(),
@@ -2101,7 +2064,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                                 let selec = message[i];
                                 if (selec == "un") selec = 1;
 
-                                if (Maps) toCalendar(market.mapsfunction.chooseRelai(selec));
+                                if (Maps) market.toCalendar(market.mapsfunction.chooseRelai(selec));
                                 end = true;
                                 break;
                             }
@@ -2235,11 +2198,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                                     if(Maps)textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 1);
                                 } else {
+                                    let tor=false;
                                     for(let k = 0; k< det.length;k++){
                                         if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
+                                            tor=true;
                                             market.basket.addProducts(tab[i],k+1);
                                             if(Maps)textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
                                         }
+                                    }
+                                    if(tor==false){
+                                        market.basket.addProducts(tab[i],1);
+                                        if(Maps)textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
                                     }
                                 }
                             }
@@ -2276,15 +2245,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
                                     if(Maps)textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, 7);
                                 }else {
-                                    let bool = false;
+                                    let tor = false;
                                     for(let k = 0; k< det.length;k++){
                                         if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
-                                            bool = true;
+                                            tor = true;
                                             market.basket.deleteFromName(tab[i].name,k+1);
                                             if(Maps)textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
                                         }
                                     }
-                                    if(bool == false){
+                                    if(tor == false){
                                         if(Maps)textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
                                         market.basket.deleteFromName(tab[i].name, null);
                                     }
@@ -2486,7 +2455,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
         mapPage.add(market.map.component);
         setTimeout(function(){
             if(Maps){
-                market.mapsfunction = Maps.initMap(param.data.getMarker(), toCalendar);
+                market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar);
                 if (currentMapSearch != "") {
                     market.mapsfunction.research(currentMapSearch);
                 }
@@ -2497,10 +2466,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
         },500);
     }
 
-    function toCalendar(message){
-        currentMapSearch= market.map.input.value;
-        mapPage.remove(market.map.component);
-        market.map=null;
+    market.toCalendar= function(message){
+        if (Maps){
+            currentMapSearch= market.map.input.value;
+            mapPage.remove(market.map.component);
+            market.map=null;
+        }
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth - market.width * 0.02), 0);
         market.calendar.address=message;
         market.calendar.calendarOn=true;

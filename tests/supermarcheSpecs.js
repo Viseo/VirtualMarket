@@ -1475,4 +1475,10 @@ describe("Test",function (){
 
 
     });
+    it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
+        market.toCalendar('Parc des Princes')
+        setTimeout(function(){
+            done();
+        },300);
+    });
 });
