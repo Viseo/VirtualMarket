@@ -62,10 +62,10 @@ describe("Test",function (){
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
     });
 
-    it("ensure that chevronEray is working",function(){
+    it("ensure that chevronE ray is working",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
-        let ray = retrieve(market.component,"[ray Fruits].[listRayUp]");
+        let ray = retrieve(market.component,"[ray Fruits].[listRay]");
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
         let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
         let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
@@ -81,14 +81,14 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(chevronE,"click",{});
         runtime.advanceAll();
-        inspect(ray,{tag:"g",transform:"translate(-2500.5 0)"});
+        inspect(ray,{tag:"g",transform:"translate(-746.6999999999997 0)"});
 
     });
 
     it("ensure that chevronWray is working",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
-        let ray = retrieve(market.component,"[ray Fruits].[listRayUp]");
+        let ray = retrieve(market.component,"[ray Fruits].[listRay]");
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
         let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
         let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
@@ -102,7 +102,7 @@ describe("Test",function (){
 
         let categories2 = retrieve(market.component,"[categories].[Legumes]");
         runtime.event(categories2,"click",{});
-        let ray2 = retrieve(market.component,"[ray Legumes].[listRayUp]");
+        let ray2 = retrieve(market.component,"[ray Legumes].[listRay]");
         inspect(ray2,{tag:"g",transform:"translate(0 0)"});
         let chevronW2 = retrieve(market.component,"[ray Legumes].[chevronWRay]");
         let chevronE2 = retrieve(market.component,"[ray Legumes].[chevronERay]");
@@ -125,13 +125,13 @@ describe("Test",function (){
         let canv = retrieve(market.component,"[glassCanvas]");
         assert(canv);
 
-        let product = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Banane]");
-        let product2 = retrieve(market.component,"[ray Fruits].[listRayDown].[Product Citron vert]");
-        let product3= retrieve(market.component,"[ray Fruits].[listRayUp].[Product Framboise]");
-        let product4 = retrieve(market.component,"[ray Fruits].[listRayDown].[Product Fraise]");
-        let product5 = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Clementine]");
-        let product6 = retrieve(market.component,"[ray Fruits].[listRayDown].[Product Kiwi]");
-        let product7 = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Mangue]");
+        let product = retrieve(market.component,"[ray Fruits].[listRay].[Product Banane]");
+        let product2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Citron vert]");
+        let product3= retrieve(market.component,"[ray Fruits].[listRay].[Product Framboise]");
+        let product4 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise]");
+        let product5 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine]");
+        let product6 = retrieve(market.component,"[ray Fruits].[listRay].[Product Kiwi]");
+        let product7 = retrieve(market.component,"[ray Fruits].[listRay].[Product Mangue]");
 
         let listBasket = retrieve(market.component,"[basket].[listBasket]");
         assert.ok(listBasket);
@@ -303,10 +303,10 @@ describe("Test",function (){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
-        let product2 = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Clementine].[Image Clementine]");
-        let product3 = retrieve(market.component,"[ray Fruits].[listRayDown].[Product Fraise].[Image Fraise]");
-        let title2 = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Clementine].[Title Clementine]");
-        let title3 = retrieve(market.component,"[ray Fruits].[listRayDown].[Product Fraise].[Title Fraise]");
+        let product2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine].[Image Clementine]");
+        let product3 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise].[Image Fraise]");
+        let title2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine].[Title Clementine]");
+        let title3 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise].[Title Fraise]");
 
         runtime.event(product2,"mouseenter");
         runtime.advanceAll();
@@ -345,7 +345,7 @@ describe("Test",function (){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
-        let product = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Banane]");
+        let product = retrieve(market.component,"[ray Fruits].[listRay].[Product Banane]");
         runtime.event(product,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
         let drawing = retrieve(market.component,"[draw Banane]");
@@ -363,7 +363,7 @@ describe("Test",function (){
         let categories2 = retrieve(market.component,"[categories].[Legumes]");
         runtime.event(categories2,"click",{});
 
-        let product2 = retrieve(market.component,"[ray Legumes].[listRayUp].[Product Carotte]");
+        let product2 = retrieve(market.component,"[ray Legumes].[listRay].[Product Carotte]");
         runtime.event(product2,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
         let drawing2 = retrieve(market.component,"[draw Carotte]");
@@ -426,7 +426,7 @@ describe("Test",function (){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
         runtime.advanceAll();
-        let product = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Banane]");
+        let product = retrieve(market.component,"[ray Fruits].[listRay].[Product Banane]");
         runtime.event(product,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
         let drawing = retrieve(market.component,"[draw Banane]");
@@ -434,7 +434,7 @@ describe("Test",function (){
         runtime.event(drawing,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
         assert.ok(retrieve(market.component,"[basket].[listBasket].[Banane]"));
-        let product1 = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Clementine]");
+        let product1 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine]");
         runtime.event(product1,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
         let drawing1 = retrieve(market.component,"[draw Clementine]");
@@ -447,7 +447,7 @@ describe("Test",function (){
         runtime.advanceAll();
         let proddrag = retrieve(market.component,"[basket].[listBasket].[Clementine]");
         assert.ok(proddrag);
-        let product2 = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Framboise]");
+        let product2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Framboise]");
         runtime.event(product2,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
         let drawing2 = retrieve(market.component,"[draw Framboise]");
@@ -455,7 +455,7 @@ describe("Test",function (){
         runtime.event(drawing2,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
         assert.ok(retrieve(market.component,"[basket].[listBasket].[Framboise]"));
-        let product3 = retrieve(market.component,"[ray Fruits].[listRayUp].[Product Mangue]");
+        let product3 = retrieve(market.component,"[ray Fruits].[listRay].[Product Mangue]");
         runtime.event(product3,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
         let drawing3 = retrieve(market.component,"[draw Mangue]");
@@ -567,7 +567,7 @@ describe("Test",function (){
         let catMode = retrieve(market.component,"[categories].[Mode]");
         runtime.event(catMode,"click",{});
 
-        let product = retrieve(market.component,"[ray Mode].[listRayDown].[Product Montre]");
+        let product = retrieve(market.component,"[ray Mode].[listRay].[Product Montre]");
         runtime.advanceAll();
         runtime.event(product,"mousedown",{ pageX:5, pageY:5});
         runtime.advanceAll();
@@ -599,7 +599,7 @@ describe("Test",function (){
             inspect(bigPrice, {tag: "text"});
             assert.equal(bigPrice["font-size"], 26.25);
 
-            let product2 = retrieve(market.component, "[ray Mode].[listRayUp].[Product Costume]");
+            let product2 = retrieve(market.component, "[ray Mode].[listRay].[Product Costume]");
             runtime.advanceAll();
 
             let decalHeader = market.height / 19;
@@ -861,615 +861,615 @@ describe("Test",function (){
         },15000);
     });
 
-    it("ensure that the interface to enter the code pattern is working with touch event",function(done){
-        let payment_zone = retrieve(market.component,"[payment]");
-        assert.ok(payment_zone);
-        let card = retrieve(market.component,"[payment].[card]");
-        assert.ok(card);
-
-        runtime.event(card,"touchstart",{touches:{0:{clientX:market.width*0.80+5,clientY:market.height*0.5}}});
-        runtime.advanceAll();
-        runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+10,clientY:market.height*0.90}}});
-        runtime.advanceAll();
-        runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+1000,clientY:market.height*0.90}}});
-        runtime.advanceAll();
-        runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+1000,clientY:market.height*0.90}}});
-        runtime.advanceAll();
-
-        let code = retrieve(market.component,"[code]");
-        assert.ok(code);
-        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
-        assert.ok(buttonGroup);
-        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
-        assert.ok(button1);
-        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
-        assert.ok(button2);
-        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
-        assert.ok(button3);
-
-        runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
-        runtime.advanceAll();
-        runtime.event(button2, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
-        runtime.advanceAll();
-
-        for(let i = 0;i<3;i++) {
-            runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
-            runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[1].gapX,
-                clientY:market.payment.zoneCode.tabButtons[1].gapY+market.height/19}}});
-            runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
-                clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
-            runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100+market.height/19}}});
-            runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
-                clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
-            runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[0].gapX,
-                clientY:market.payment.zoneCode.tabButtons[0].gapY+market.height/19}}});
-            runtime.advanceAll();
-            runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100+market.height/19}}});
-            runtime.advanceAll();
-            runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
-            runtime.advanceAll();
-        }
-
-        setTimeout(function(){
-            done();
-        },15000);
-
-        runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[2].gapX,
-            clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[1].gapX*0.96,
-            clientY:market.payment.zoneCode.tabButtons[1].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[0].gapX*0.96,
-            clientY:market.payment.zoneCode.tabButtons[0].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[3].gapX*0.96,
-            clientY:market.payment.zoneCode.tabButtons[3].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[4].gapX*0.96,
-            clientY:market.payment.zoneCode.tabButtons[4].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[5].gapX,
-            clientY:market.payment.zoneCode.tabButtons[5].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[8].gapX,
-            clientY:market.payment.zoneCode.tabButtons[8].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[7].gapX*0.96,
-            clientY:market.payment.zoneCode.tabButtons[7].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX*0.96,
-            clientY:market.payment.zoneCode.tabButtons[6].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX*0.96,
-            clientY:market.payment.zoneCode.tabButtons[6].gapY+market.height/19}}});
-        runtime.advanceAll();
-        runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
-        runtime.advanceAll();
-    });
-
-    it("ensures that the calendar is shown when the right code is entered",function(){
-        let payment_zone = retrieve(market.component,"[payment]");
-        assert.ok(payment_zone);
-        let card = retrieve(market.component,"[payment].[card]");
-        assert.ok(card);
-
-        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
-        runtime.advanceAll();
-        let dragged2 = retrieve(market.component,"[payment].[dragged]");
-        assert.ok(dragged2);
-        runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-        runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-
-        let code = retrieve(market.component,"[code]");
-        assert.ok(code);
-        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
-        assert.ok(buttonGroup);
-        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
-        assert.ok(button1);
-        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
-        assert.ok(button2);
-        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
-        assert.ok(button3);
-
-        runtime.event(code, "mousemove", {pageX:100,pageY:100});
-        runtime.advanceAll();
-        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-        runtime.event(code, "mousemove", {pageX:100,pageY:100});
-        runtime.advanceAll();
-        runtime.event(button2, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(code, "mousemove", {pageX:100,pageY:100});
-        runtime.advanceAll();
-        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-
-        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
-        assert.ok(button4);
-        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
-        assert.ok(button5);
-        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
-        assert.ok(button6);
-        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
-        assert.ok(button7);
-        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
-        assert.ok(button8);
-        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
-        assert.ok(button9);
-
-        //check
-        runtime.event(button3, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button2, "mouseenter", {});
-        runtime.advanceAll();
-        //Password ok
-        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-        runtime.event(button3, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button2, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseout", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button4, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button5, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button6, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button9, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button8, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button7, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-
-        let calendar=retrieve(market.component,"[calendar]");
-        assert.ok(calendar);
-        let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
-        let chevronWest=retrieve(market.component,"[calendar].[monthChoice].[chevronWCalendar]");
-        assert.ok(chevronEast);
-        assert.ok(chevronWest);
-        runtime.event(chevronEast,"click", {});
-        runtime.advanceAll();
-        runtime.event(chevronEast,"click", {});
-        runtime.advanceAll();
-        runtime.event(chevronWest,"click", {});
-        runtime.advanceAll();
-        runtime.event(chevronWest,"click", {});
-        runtime.advanceAll();
-
-        let column = retrieve(market.component,"[calendar].[column]");
-        assert(column);
-
-        runtime.event(column,"mousedown",{pageX:100,pageY:100});
-        runtime.event(column,"mousemove",{pageX:200,pageY:-2000});
-        runtime.advanceAll();
-        runtime.event(column,"mouseup",{pageX:200,pageY:-2000});
-        runtime.advanceAll();
-
-        runtime.event(column,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
-        runtime.event(column,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
-        runtime.advanceAll();
-        runtime.event(column,"touchend",{touches:{0:{clientX:100,clientY:100}}});
-        runtime.advanceAll();
-
-        let content = retrieve(market.component,"[contenu]");
-        runtime.event(content,"mousedown",{pageX:100,pageY:100});
-        runtime.event(content,"mousemove",{pageX:200,pageY:2000});
-        runtime.advanceAll();
-        runtime.event(content,"mouseup",{pageX:200,pageY:2000});
-        runtime.advanceAll();
-
-        runtime.event(content,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
-        runtime.event(content,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
-        runtime.advanceAll();
-        runtime.event(content,"touchend",{touches:{0:{clientX:200,clientY:200}}});
-        runtime.advanceAll();
-
-        runtime.event(content,"mousemove",{pageX:100,pageY:200});
-        runtime.advanceAll();
-        runtime.event(column,"mousemove",{pageX:100,pageY:200});
-        runtime.advanceAll();
-
-        let picto = retrieve(market.component,"[calendar].[iconUser]");
-        let round1 = retrieve(market.component,"[calendar].[round 0]");
-        runtime.event(round1, "click", {})
-        runtime.advanceAll();
-        let round2 = retrieve(market.component,"[calendar].[round 2]");
-        runtime.event(round2, "click", {});
-        runtime.advanceAll();
-        let round3 = retrieve(market.component,"[calendar].[round 3]");
-        runtime.event(round3, "click", {});
-        runtime.advanceAll();
-        runtime.event(round1, "click", {})
-        runtime.advanceAll();
-        // runtime.event(picto,"mousedown",{pageX:0,pageY:0});
-        // runtime.advanceAll();
-        // runtime.event(picto,"mousemove",{pageX:400,pageY:500});
-        // runtime.advanceAll();
-        // runtime.event(picto,"mouseup",{pageX:400,pageY:500});
-        // runtime.advanceAll();
-        // runtime.event(picto,"mouseup",{pageX:0,pageY:0});
-        // runtime.advanceAll();
-        // runtime.event(picto,"mousemove",{pageX:10,pageY:10});
-        // runtime.advanceAll();
-    });
-
-    it("ensures that we can control the app by sending it command that represent the voice",function(done){
-        market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
-        market.vocalRecognition("je veux ajouter un concombre et 44 carottes et 365 clementines");
-        market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer 2 Souris");
-        market.vocalRecognition("il faudrait supprimer 2 tables");
-        market.vocalRecognition("en fait je voudrais vider le panier");
-        market.vocalRecognition("Recherche les voyages !");
-        market.vocalRecognition("Ajoute moi un voyage à Tokyo");
-        market.vocalRecognition("Ajoute cette banane et ajoute de cerise");
-        market.vocalRecognition("supprime de banane et ajoute cette concombre");
-        market.vocalRecognition("supprime cette concombre");
-        market.vocalRecognition("");
-        market.vocalRecognition("Maintenant je veux payer");
-
-        let payment_zone = retrieve(market.component,"[payment]");
-        assert.ok(payment_zone);
-        let card = retrieve(market.component,"[payment].[card]");
-        assert.ok(card);
-        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
-        runtime.advanceAll();
-        let dragged2 = retrieve(market.component,"[payment].[dragged]");
-        assert.ok(dragged2);
-        runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-        runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-
-        let code = retrieve(market.component,"[code]");
-        assert.ok(code);
-        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
-        assert.ok(buttonGroup);
-        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
-        assert.ok(button1);
-        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
-        assert.ok(button2);
-        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
-        assert.ok(button3);
-        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
-        assert.ok(button4);
-        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
-        assert.ok(button5);
-        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
-        assert.ok(button6);
-        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
-        assert.ok(button7);
-        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
-        assert.ok(button8);
-        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
-        assert.ok(button9);
-
-        //Password ok
-        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-        runtime.event(button3, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button2, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseout", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button4, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button5, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button6, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button9, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button8, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button7, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-
-        let calendar = retrieve(market.component,"[calendar]");
-        runtime.event(calendar,"click",{});
-        runtime.advanceAll();
-
-        setTimeout(function() {
-            market.vocalRecognition("je veux me faire livrer " + new Date().getDate() + " " + (new Date().getMonth() + 1)
-                + " " + new Date().getFullYear());
-            market.vocalRecognition("je veux me faire livrer " + new Date().getDate() + " " + (new Date().getMonth() + 1)
-                + " " + new Date().getFullYear());
-            done();
-        },2000);
-    });
-
-    it("ensures that you can change the page",function(){
-        let mainPage = retrieve(market.component,"[mainPage]");
-        let map = retrieve(market.component,"[map]");
-        let calendar = retrieve(market.component,"[calendar]");
-        assert(mainPage&&map&&calendar);
-        runtime.event(calendar,"click",{});
-
-        let payment_zone = retrieve(market.component,"[payment]");
-        assert.ok(payment_zone);
-        let card = retrieve(market.component,"[payment].[card]");
-        assert.ok(card);
-        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
-        runtime.advanceAll();
-        let dragged2 = retrieve(market.component,"[payment].[dragged]");
-        assert.ok(dragged2);
-        runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-        runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-
-        let product = retrieve(market.component,"[ray HighTech].[listRayUp].[Product Casque]");
-        runtime.advanceAll();
-        runtime.event(product,"mousedown",{ pageX:5, pageY:5});
-        runtime.advanceAll();
-        let drawing = retrieve(market.component,"[draw Casque]");
-        assert(drawing);
-        runtime.event(drawing,"mouseup",{ pageX:5, pageY:5});
-        runtime.advanceAll();
-
-        let code = retrieve(market.component,"[code]");
-        assert.ok(code);
-        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
-        assert.ok(buttonGroup);
-        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
-        assert.ok(button1);
-        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
-        assert.ok(button2);
-        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
-        assert.ok(button3);
-        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
-        assert.ok(button4);
-        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
-        assert.ok(button5);
-        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
-        assert.ok(button6);
-        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
-        assert.ok(button7);
-        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
-        assert.ok(button8);
-        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
-        assert.ok(button9);
-
-        //Password ok
-        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-        runtime.event(button3, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button2, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseout", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button4, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button5, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button6, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button9, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button8, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button7, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-
-        let vignette = retrieve(market.component,"[basket].[listBasket].[Casque]");
-        runtime.event(vignette,"mousedown",{ pageX:5, pageY:5});
-
-        runtime.event(mainPage,"click",{});
-        runtime.event(calendar,"click",{});
-        runtime.event(mainPage,"click",{});
-        runtime.event(map,"click",{});
-        runtime.event(calendar,"click",{});
-        runtime.event(map,"click",{});
-
-    });
-
-    it("ensures that the touch-sensitive works for categories while using a mouse",function(){
-        let touchCategories = retrieve(market.component,"[listeCategories]");
-
-        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:100,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
-        runtime.advanceAll();
-        let categories = retrieve(market.component,"[categories].[Fruits]");
-        runtime.event(categories,"click",{});
-        runtime.event(touchCategories,"mouseup",{pageX:200,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mouseout",{pageX:200,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mouseout",{pageX:200,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
-        runtime.advanceAll();
-
-        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:-1000,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mouseup",{pageX:-1000,pageY:50});
-        runtime.advanceAll();
-
-        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:1000,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mouseup",{pageX:1000,pageY:50});
-        runtime.advanceAll();
-
-        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:-1000,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mouseout",{pageX:-1000,pageY:50});
-        runtime.advanceAll();
-
-        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:2000,pageY:50});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"mouseout",{pageX:2000,pageY:50});
-        runtime.advanceAll();
-
-    });
-
-    it("ensures that the touch-sensitive works for categories (tablet)",function(){
-        let touchCategories = retrieve(market.component,"[listeCategories]");
-
-        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: 200, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchend",{touches:{0:{clientX: 200, clientY: 50}}});
-        runtime.advanceAll();
-
-        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchend",{touches:{0:{clientX: 200, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: 200, clientY: 50}}});
-        runtime.advanceAll();
-
-        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: -1000, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchend",{touches:{0:{clientX:-1000, clientY: 50}}});
-        runtime.advanceAll();
-
-        runtime.event(touchCategories,"touchstart",{touches:{0:{clientX:100, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchmove",{touches:{0:{clientX:1000, clientY: 50}}});
-        runtime.advanceAll();
-        runtime.event(touchCategories,"touchend",{touches:{0:{clientX:1000, clientY: 50}}});
-        runtime.advanceAll();
-
-    });
-
-    it("ensures that you can control the map with voice",function(done) {
-        let payment_zone = retrieve(market.component,"[payment]");
-        assert.ok(payment_zone);
-        let card = retrieve(market.component,"[payment].[card]");
-        assert.ok(card);
-        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
-        runtime.advanceAll();
-        let dragged2 = retrieve(market.component,"[payment].[dragged]");
-        assert.ok(dragged2);
-        runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-        runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
-        runtime.advanceAll();
-
-        let code = retrieve(market.component,"[code]");
-        assert.ok(code);
-        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
-        assert.ok(buttonGroup);
-        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
-        assert.ok(button1);
-        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
-        assert.ok(button2);
-        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
-        assert.ok(button3);
-        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
-        assert.ok(button4);
-        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
-        assert.ok(button5);
-        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
-        assert.ok(button6);
-        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
-        assert.ok(button7);
-        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
-        assert.ok(button8);
-        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
-        assert.ok(button9);
-
-        //Password ok
-        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-        runtime.event(button3, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button2, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseout", {});
-        runtime.advanceAll();
-        runtime.event(button1, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button4, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button5, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button6, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button9, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button8, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(button7, "mouseenter", {});
-        runtime.advanceAll();
-        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
-        runtime.advanceAll();
-
-        setTimeout(function(){
-            market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
-            market.vocalRecognition("J'habite 64 Boulevard Garibaldi Paris");
-            market.vocalRecognition("J'habite un Chemin des Etelles");
-            market.vocalRecognition("Je selectionne le point relai numero 1");
-            setTimeout(function() {
-                market.vocalRecognition("Je valide");
-
-                runtime.advanceAll();
-
-                market.vocalRecognition("Je dis un truc");
-                done();
-            },500);
-        },1000);
-
-
-    });
+//     it("ensure that the interface to enter the code pattern is working with touch event",function(done){
+//         let payment_zone = retrieve(market.component,"[payment]");
+//         assert.ok(payment_zone);
+//         let card = retrieve(market.component,"[payment].[card]");
+//         assert.ok(card);
+//
+//         runtime.event(card,"touchstart",{touches:{0:{clientX:market.width*0.80+5,clientY:market.height*0.5}}});
+//         runtime.advanceAll();
+//         runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+10,clientY:market.height*0.90}}});
+//         runtime.advanceAll();
+//         runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+1000,clientY:market.height*0.90}}});
+//         runtime.advanceAll();
+//         runtime.event(card,"touchmove",{touches:{0:{clientX:market.width*0.95+1000,clientY:market.height*0.90}}});
+//         runtime.advanceAll();
+//
+//         let code = retrieve(market.component,"[code]");
+//         assert.ok(code);
+//         let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+//         assert.ok(buttonGroup);
+//         let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+//         assert.ok(button1);
+//         let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+//         assert.ok(button2);
+//         let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+//         assert.ok(button3);
+//
+//         runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+//         runtime.advanceAll();
+//         runtime.event(button2, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+//         runtime.advanceAll();
+//
+//         for(let i = 0;i<3;i++) {
+//             runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
+//             runtime.advanceAll();
+//             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[1].gapX,
+//                 clientY:market.payment.zoneCode.tabButtons[1].gapY+market.height/19}}});
+//             runtime.advanceAll();
+//             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
+//                 clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
+//             runtime.advanceAll();
+//             runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100+market.height/19}}});
+//             runtime.advanceAll();
+//             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[2].gapX,
+//                 clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
+//             runtime.advanceAll();
+//             runtime.event(code, "touchmove", {touches:{0:{clientX:market.payment.zoneCode.tabButtons[0].gapX,
+//                 clientY:market.payment.zoneCode.tabButtons[0].gapY+market.height/19}}});
+//             runtime.advanceAll();
+//             runtime.event(code, "touchmove", {touches:{0:{clientX:100,clientY:100+market.height/19}}});
+//             runtime.advanceAll();
+//             runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+//             runtime.advanceAll();
+//         }
+//
+//         setTimeout(function(){
+//             done();
+//         },15000);
+//
+//         runtime.event(code, "touchstart", {touches:{0:{clientX: 5, clientY: 5}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[2].gapX,
+//             clientY:market.payment.zoneCode.tabButtons[2].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[1].gapX*0.96,
+//             clientY:market.payment.zoneCode.tabButtons[1].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[0].gapX*0.96,
+//             clientY:market.payment.zoneCode.tabButtons[0].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[3].gapX*0.96,
+//             clientY:market.payment.zoneCode.tabButtons[3].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[4].gapX*0.96,
+//             clientY:market.payment.zoneCode.tabButtons[4].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[5].gapX,
+//             clientY:market.payment.zoneCode.tabButtons[5].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[8].gapX,
+//             clientY:market.payment.zoneCode.tabButtons[8].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[7].gapX*0.96,
+//             clientY:market.payment.zoneCode.tabButtons[7].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX*0.96,
+//             clientY:market.payment.zoneCode.tabButtons[6].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchmove", {touches:{0:{  clientX:market.payment.zoneCode.tabButtons[6].gapX*0.96,
+//             clientY:market.payment.zoneCode.tabButtons[6].gapY+market.height/19}}});
+//         runtime.advanceAll();
+//         runtime.event(code, "touchend", {touches:{0:{clientX: 5, clientY: 5}}});
+//         runtime.advanceAll();
+//     });
+//
+//     it("ensures that the calendar is shown when the right code is entered",function(){
+//         let payment_zone = retrieve(market.component,"[payment]");
+//         assert.ok(payment_zone);
+//         let card = retrieve(market.component,"[payment].[card]");
+//         assert.ok(card);
+//
+//         runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         let dragged2 = retrieve(market.component,"[payment].[dragged]");
+//         assert.ok(dragged2);
+//         runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//
+//         let code = retrieve(market.component,"[code]");
+//         assert.ok(code);
+//         let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+//         assert.ok(buttonGroup);
+//         let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+//         assert.ok(button1);
+//         let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+//         assert.ok(button2);
+//         let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+//         assert.ok(button3);
+//
+//         runtime.event(code, "mousemove", {pageX:100,pageY:100});
+//         runtime.advanceAll();
+//         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//         runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//         runtime.event(code, "mousemove", {pageX:100,pageY:100});
+//         runtime.advanceAll();
+//         runtime.event(button2, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(code, "mousemove", {pageX:100,pageY:100});
+//         runtime.advanceAll();
+//         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//
+//         let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+//         assert.ok(button4);
+//         let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+//         assert.ok(button5);
+//         let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+//         assert.ok(button6);
+//         let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+//         assert.ok(button7);
+//         let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+//         assert.ok(button8);
+//         let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+//         assert.ok(button9);
+//
+//         //check
+//         runtime.event(button3, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button2, "mouseenter", {});
+//         runtime.advanceAll();
+//         //Password ok
+//         runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//         runtime.event(button3, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button2, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseout", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button4, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button5, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button6, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button9, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button8, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button7, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//
+//         let calendar=retrieve(market.component,"[calendar]");
+//         assert.ok(calendar);
+//         let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
+//         let chevronWest=retrieve(market.component,"[calendar].[monthChoice].[chevronWCalendar]");
+//         assert.ok(chevronEast);
+//         assert.ok(chevronWest);
+//         runtime.event(chevronEast,"click", {});
+//         runtime.advanceAll();
+//         runtime.event(chevronEast,"click", {});
+//         runtime.advanceAll();
+//         runtime.event(chevronWest,"click", {});
+//         runtime.advanceAll();
+//         runtime.event(chevronWest,"click", {});
+//         runtime.advanceAll();
+//
+//         let column = retrieve(market.component,"[calendar].[column]");
+//         assert(column);
+//
+//         runtime.event(column,"mousedown",{pageX:100,pageY:100});
+//         runtime.event(column,"mousemove",{pageX:200,pageY:-2000});
+//         runtime.advanceAll();
+//         runtime.event(column,"mouseup",{pageX:200,pageY:-2000});
+//         runtime.advanceAll();
+//
+//         runtime.event(column,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+//         runtime.event(column,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
+//         runtime.advanceAll();
+//         runtime.event(column,"touchend",{touches:{0:{clientX:100,clientY:100}}});
+//         runtime.advanceAll();
+//
+//         let content = retrieve(market.component,"[contenu]");
+//         runtime.event(content,"mousedown",{pageX:100,pageY:100});
+//         runtime.event(content,"mousemove",{pageX:200,pageY:2000});
+//         runtime.advanceAll();
+//         runtime.event(content,"mouseup",{pageX:200,pageY:2000});
+//         runtime.advanceAll();
+//
+//         runtime.event(content,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+//         runtime.event(content,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
+//         runtime.advanceAll();
+//         runtime.event(content,"touchend",{touches:{0:{clientX:200,clientY:200}}});
+//         runtime.advanceAll();
+//
+//         runtime.event(content,"mousemove",{pageX:100,pageY:200});
+//         runtime.advanceAll();
+//         runtime.event(column,"mousemove",{pageX:100,pageY:200});
+//         runtime.advanceAll();
+//
+//         let picto = retrieve(market.component,"[calendar].[iconUser]");
+//         let round1 = retrieve(market.component,"[calendar].[round 0]");
+//         runtime.event(round1, "click", {})
+//         runtime.advanceAll();
+//         let round2 = retrieve(market.component,"[calendar].[round 2]");
+//         runtime.event(round2, "click", {});
+//         runtime.advanceAll();
+//         let round3 = retrieve(market.component,"[calendar].[round 3]");
+//         runtime.event(round3, "click", {});
+//         runtime.advanceAll();
+//         runtime.event(round1, "click", {})
+//         runtime.advanceAll();
+//         // runtime.event(picto,"mousedown",{pageX:0,pageY:0});
+//         // runtime.advanceAll();
+//         // runtime.event(picto,"mousemove",{pageX:400,pageY:500});
+//         // runtime.advanceAll();
+//         // runtime.event(picto,"mouseup",{pageX:400,pageY:500});
+//         // runtime.advanceAll();
+//         // runtime.event(picto,"mouseup",{pageX:0,pageY:0});
+//         // runtime.advanceAll();
+//         // runtime.event(picto,"mousemove",{pageX:10,pageY:10});
+//         // runtime.advanceAll();
+//     });
+//
+//     it("ensures that we can control the app by sending it command that represent the voice",function(done){
+//         market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
+//         market.vocalRecognition("je veux ajouter un concombre et 44 carottes et 365 clementines");
+//         market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer 2 Souris");
+//         market.vocalRecognition("il faudrait supprimer 2 tables");
+//         market.vocalRecognition("en fait je voudrais vider le panier");
+//         market.vocalRecognition("Recherche les voyages !");
+//         market.vocalRecognition("Ajoute moi un voyage à Tokyo");
+//         market.vocalRecognition("Ajoute cette banane et ajoute de cerise");
+//         market.vocalRecognition("supprime de banane et ajoute cette concombre");
+//         market.vocalRecognition("supprime cette concombre");
+//         market.vocalRecognition("");
+//         market.vocalRecognition("Maintenant je veux payer");
+//
+//         let payment_zone = retrieve(market.component,"[payment]");
+//         assert.ok(payment_zone);
+//         let card = retrieve(market.component,"[payment].[card]");
+//         assert.ok(card);
+//         runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         let dragged2 = retrieve(market.component,"[payment].[dragged]");
+//         assert.ok(dragged2);
+//         runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//
+//         let code = retrieve(market.component,"[code]");
+//         assert.ok(code);
+//         let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+//         assert.ok(buttonGroup);
+//         let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+//         assert.ok(button1);
+//         let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+//         assert.ok(button2);
+//         let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+//         assert.ok(button3);
+//         let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+//         assert.ok(button4);
+//         let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+//         assert.ok(button5);
+//         let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+//         assert.ok(button6);
+//         let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+//         assert.ok(button7);
+//         let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+//         assert.ok(button8);
+//         let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+//         assert.ok(button9);
+//
+//         //Password ok
+//         runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//         runtime.event(button3, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button2, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseout", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button4, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button5, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button6, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button9, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button8, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button7, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//
+//         let calendar = retrieve(market.component,"[calendar]");
+//         runtime.event(calendar,"click",{});
+//         runtime.advanceAll();
+//
+//         setTimeout(function() {
+//             market.vocalRecognition("je veux me faire livrer " + new Date().getDate() + " " + (new Date().getMonth() + 1)
+//                 + " " + new Date().getFullYear());
+//             market.vocalRecognition("je veux me faire livrer " + new Date().getDate() + " " + (new Date().getMonth() + 1)
+//                 + " " + new Date().getFullYear());
+//             done();
+//         },2000);
+//     });
+//
+//     it("ensures that you can change the page",function(){
+//         let mainPage = retrieve(market.component,"[mainPage]");
+//         let map = retrieve(market.component,"[map]");
+//         let calendar = retrieve(market.component,"[calendar]");
+//         assert(mainPage&&map&&calendar);
+//         runtime.event(calendar,"click",{});
+//
+//         let payment_zone = retrieve(market.component,"[payment]");
+//         assert.ok(payment_zone);
+//         let card = retrieve(market.component,"[payment].[card]");
+//         assert.ok(card);
+//         runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         let dragged2 = retrieve(market.component,"[payment].[dragged]");
+//         assert.ok(dragged2);
+//         runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//
+//         let product = retrieve(market.component,"[ray HighTech].[listRay].[Product Casque]");
+//         runtime.advanceAll();
+//         runtime.event(product,"mousedown",{ pageX:5, pageY:5});
+//         runtime.advanceAll();
+//         let drawing = retrieve(market.component,"[draw Casque]");
+//         assert(drawing);
+//         runtime.event(drawing,"mouseup",{ pageX:5, pageY:5});
+//         runtime.advanceAll();
+//
+//         let code = retrieve(market.component,"[code]");
+//         assert.ok(code);
+//         let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+//         assert.ok(buttonGroup);
+//         let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+//         assert.ok(button1);
+//         let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+//         assert.ok(button2);
+//         let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+//         assert.ok(button3);
+//         let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+//         assert.ok(button4);
+//         let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+//         assert.ok(button5);
+//         let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+//         assert.ok(button6);
+//         let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+//         assert.ok(button7);
+//         let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+//         assert.ok(button8);
+//         let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+//         assert.ok(button9);
+//
+//         //Password ok
+//         runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//         runtime.event(button3, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button2, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseout", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button4, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button5, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button6, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button9, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button8, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button7, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//
+//         let vignette = retrieve(market.component,"[basket].[listBasket].[Casque]");
+//         runtime.event(vignette,"mousedown",{ pageX:5, pageY:5});
+//
+//         runtime.event(mainPage,"click",{});
+//         runtime.event(calendar,"click",{});
+//         runtime.event(mainPage,"click",{});
+//         runtime.event(map,"click",{});
+//         runtime.event(calendar,"click",{});
+//         runtime.event(map,"click",{});
+//
+//     });
+//
+//     it("ensures that the touch-sensitive works for categories while using a mouse",function(){
+//         let touchCategories = retrieve(market.component,"[listeCategories]");
+//
+//         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousemove",{pageX:100,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
+//         runtime.advanceAll();
+//         let categories = retrieve(market.component,"[categories].[Fruits]");
+//         runtime.event(categories,"click",{});
+//         runtime.event(touchCategories,"mouseup",{pageX:200,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mouseout",{pageX:200,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mouseout",{pageX:200,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
+//         runtime.advanceAll();
+//
+//         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousemove",{pageX:-1000,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mouseup",{pageX:-1000,pageY:50});
+//         runtime.advanceAll();
+//
+//         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousemove",{pageX:1000,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mouseup",{pageX:1000,pageY:50});
+//         runtime.advanceAll();
+//
+//         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousemove",{pageX:-1000,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mouseout",{pageX:-1000,pageY:50});
+//         runtime.advanceAll();
+//
+//         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mousemove",{pageX:2000,pageY:50});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"mouseout",{pageX:2000,pageY:50});
+//         runtime.advanceAll();
+//
+//     });
+//
+//     it("ensures that the touch-sensitive works for categories (tablet)",function(){
+//         let touchCategories = retrieve(market.component,"[listeCategories]");
+//
+//         runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: 200, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchend",{touches:{0:{clientX: 200, clientY: 50}}});
+//         runtime.advanceAll();
+//
+//         runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchend",{touches:{0:{clientX: 200, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: 200, clientY: 50}}});
+//         runtime.advanceAll();
+//
+//         runtime.event(touchCategories,"touchstart",{touches:{0:{clientX: 100, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchmove",{touches:{0:{clientX: -1000, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchend",{touches:{0:{clientX:-1000, clientY: 50}}});
+//         runtime.advanceAll();
+//
+//         runtime.event(touchCategories,"touchstart",{touches:{0:{clientX:100, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchmove",{touches:{0:{clientX:1000, clientY: 50}}});
+//         runtime.advanceAll();
+//         runtime.event(touchCategories,"touchend",{touches:{0:{clientX:1000, clientY: 50}}});
+//         runtime.advanceAll();
+//
+//     });
+//
+//     it("ensures that you can control the map with voice",function(done) {
+//         let payment_zone = retrieve(market.component,"[payment]");
+//         assert.ok(payment_zone);
+//         let card = retrieve(market.component,"[payment].[card]");
+//         assert.ok(card);
+//         runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         let dragged2 = retrieve(market.component,"[payment].[dragged]");
+//         assert.ok(dragged2);
+//         runtime.event(dragged2,"mousemove",{pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//         runtime.event(dragged2,"mouseup",{ pageX:market.width*0.80+60,pageY:market.height*0.90});
+//         runtime.advanceAll();
+//
+//         let code = retrieve(market.component,"[code]");
+//         assert.ok(code);
+//         let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+//         assert.ok(buttonGroup);
+//         let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+//         assert.ok(button1);
+//         let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+//         assert.ok(button2);
+//         let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+//         assert.ok(button3);
+//         let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+//         assert.ok(button4);
+//         let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+//         assert.ok(button5);
+//         let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+//         assert.ok(button6);
+//         let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+//         assert.ok(button7);
+//         let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+//         assert.ok(button8);
+//         let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+//         assert.ok(button9);
+//
+//         //Password ok
+//         runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//         runtime.event(button3, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button2, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseout", {});
+//         runtime.advanceAll();
+//         runtime.event(button1, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button4, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button5, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button6, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button9, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button8, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(button7, "mouseenter", {});
+//         runtime.advanceAll();
+//         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+//         runtime.advanceAll();
+//
+//         setTimeout(function(){
+//             market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
+//             market.vocalRecognition("J'habite 64 Boulevard Garibaldi Paris");
+//             market.vocalRecognition("J'habite un Chemin des Etelles");
+//             market.vocalRecognition("Je selectionne le point relai numero 1");
+//             setTimeout(function() {
+//                 market.vocalRecognition("Je valide");
+//
+//                 runtime.advanceAll();
+//
+//                 market.vocalRecognition("Je dis un truc");
+//                 done();
+//             },500);
+//         },1000);
+//
+//
+//     });
 });

@@ -1,7 +1,7 @@
 exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     let screenSize = svg.runtime.screenSize();
-	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
+	let market = new svg.Drawing(screenSize.width*0.999,screenSize.height*0.999).show('content');
     let runtime=targetruntime;
     ///////////////BANDEAUX/////////////////
 	class DrawingZone {
@@ -115,48 +115,87 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 			var self = this; // Gestion Evenements
 
 			this.name = cat;
-			this.listHeight=Math.ceil(tabThumbnail.length/4)*(height/3*0.98);
-            console.log(Math.ceil(tabThumbnail.length/4),(height/3*0.98));
+			this.thumbWidth=(width / 4*0.94);
+			this.listWidth=Math.ceil(tabThumbnail.length/3)*(this.thumbWidth);
             let fond = new svg.Rect(width, height).position(width/2,height/2);
             fond.color([230,230,230]);
             this.component.add(fond);
 
             this.listThumbnails = new svg.Translation().mark("listRay");
-            let row=0;
-            for(let i=0;i<tabThumbnail.length;i=i+4){
+            let col=0;
+            for(let i=0;i<tabThumbnail.length;i=i+3){
                 for(let j=0;j<4;j++) {
                     if(tabThumbnail[j+i]) {
                         tabThumbnail[j+i].placeElements(1);
-                        tabThumbnail[j+i].move(width*0.01+(width / 4*0.94)*j ,width*0.01+(height/3*0.98) * row);
+                        tabThumbnail[j+i].move(width*0.01+this.thumbWidth*col,width*0.01+(height/3*0.98)*j);
                         this.listThumbnails.add(tabThumbnail[j+i].component);
                     }
                 }
-                row++;
+                col++;
             }
             this.component.add(this.listThumbnails);
 
             this.currentDrawn=null;
 
-            /*let chevronWest = new svg.Chevron(20, 70, 3, "W").position(30, this.component.height / 2).color(svg.WHITE);
-            let chevronEast = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
-            let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                            .position(30, this.component.height / 2);
-            let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                            .position(this.component.width - 30, this.component.height / 2);
-            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0.2).mark("chevronWRay");
-            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).mark("chevronERay");
+            let chevronWest = new svg.Chevron(this.thumbWidth/4, this.thumbWidth*0.7, 16, "W").position(30, this.component.height / 2).color([0, 195, 235]);
+            let chevronEast = new svg.Chevron(this.thumbWidth/4, this.thumbWidth*0.7, 16, "E").position(width - 30, this.component.height / 2).color([0, 195, 235]);
+            let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
+                .position(30, this.component.height / 2);
+            let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
+                .position(this.component.width - 30, this.component.height / 2);
+            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay");
+            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay");
+
+//             if(pos[l]>(self.lNum)*(self.space)-(self.height/2)-2 && (mouse-y)<0 ) {
+//                 pos[l]=pos[(Number(l)+1)%self.lNum]-(self.space)
+//             }else if(pos[l]<2-(self.height/2)  && (mouse-y)>0){
+//                 pos[l]=pos[(Number(l)+(self.lNum-1))%(self.lNum)]+((self.space))
+//             }
+//             self.traits[l].start(-12, pos[l] - (mouse - y) + 1).end(12, pos[l] - (mouse - y) + 1);
+//             self.lines[l].position(0, pos[l] - (mouse - y));
+//             pos[l] = pos[l] - (mouse - y);
+//
+//         }
+//
+//         if(categories.ray.listHeight>=Number(market.height*0.75)){
+//         categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(0, categories.ray.listThumbnails.y + (mouse - y));
+//     }
+// }
+//
+//     svg.addEvent(self.component, eventTypeUp, function () {
+//         if(categories.ray.listHeight>=Number(market.height*0.75)){
+//             if (categories.ray.listThumbnails.y>0) {
+//                 categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
+//             }
+//             else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
+//                 categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.74);
+//
+//             }
+//         }
 
             zoneChevronWest.onClick(function () {
-                self.listThumbnails.smoothy(10, 20).onChannel("rayUp").moveTo(0, self.listThumbnails.y);
-                zoneChevronWest.opacity(0.2);
-                zoneChevronEast.opacity(1);
+                if(self.listWidth!=0 && self.listThumbnails.x+self.thumbWidth*1.5<0) {
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth*1.5, 0);
+                    zoneChevronEast.opacity(0.6);
+                }else{
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(0, 0);
+                    zoneChevronWest.opacity(0);
+                    zoneChevronEast.opacity(0.6);
+                }
             });
 
             zoneChevronEast.onClick(function () {
-                let widthView = width;
-                let widthTotalH = height / 2 * Math.ceil(tabThumbnail.length / 2);
+                if(self.listWidth!=0 && self.listThumbnails.x+self.listWidth-self.thumbWidth*1.5>=width) {
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth*1.5, 0);
+                    zoneChevronWest.opacity(0.6);
+                }else{
+                    self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(width-self.listWidth-width*0.01, 0);
+                    zoneChevronWest.opacity(0.6);
+                    zoneChevronEast.opacity(0);
+                }
+                console.log('salut')
             });
-            this.component.add(zoneChevronEast).add(zoneChevronWest);*/
+            this.component.add(zoneChevronEast).add(zoneChevronWest);
         }
     }
 
@@ -402,7 +441,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     let heightView = self.component.height*0.77;
                                     let positionDown = self.listProducts.y + heightTotal;
                                     if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=7)) {
-                                        self.listProducts.smoothy(10, 10).moveTo(0, this.component.height*0.1);
+                                        self.listProducts.smoothy(10, 10).moveTo(0, self.component.height*0.1);
                                     }
                                     else if(positionDown < heightView) {
                                         self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
@@ -538,6 +577,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         timer = setInterval(function () {
                             i++;
                             voice = getMessage();
+                            console.log(getMessage())
                             if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
@@ -1005,8 +1045,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         constructor(height){
             this.height=height;
             this.component = new svg.Translation();
-            this.contour= new svg.Rect(35,height*1.1).color(svg.LIGHT_GREY, 1, svg.LIGHT_GREY).corners(7,7);
-            this.scroll = new svg.Rect(28,height).color(svg.GREY, 1, svg.GREY);
+            console.log(market.width*0.05)
+            this.contour= new svg.Rect(market.width*0.04,height*1.1).color(svg.LIGHT_GREY, 1, svg.LIGHT_GREY).corners(7,7);
+            this.scroll = new svg.Rect(market.width*0.03,height).color(svg.GREY, 1, svg.GREY);
             this.scroll.corners(7,7);
             this.component.add(this.contour).add(this.scroll);
             this.traits=[];
@@ -1070,14 +1111,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 }
 
                 svg.addEvent(self.component, eventTypeUp, function () {
-                    console.log(categories.ray.listThumbnails.y,-(categories.ray.listHeight+market.height*0.75));
-                    if (categories.ray.listThumbnails.y>0) {
-                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
-                    }
-                    else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
-                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.75);
+                    if(categories.ray.listHeight>=Number(market.height*0.75)){
+                        if (categories.ray.listThumbnails.y>0) {
+                            categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
+                        }
+                        else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
+                            categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.74);
 
+                        }
                     }
+
                     self.onMove = false;
                 });
             }
@@ -1437,13 +1480,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
                     hourCase.add(t);
                     if(i==4){
-                        // let secondText = new svg.Text("indisponible").font("calibri",this.width / 100, 1).color(svg.BLACK)
-                        //     .position(t.x,t.y+20);
-                        //
-                        // let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-5).color(svg.RED,1,svg.WHITE);
-
                         hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
-                        // hourCase.add(redPoint);
                     }
 
                     tabHours.push((i + 8) + "h");
@@ -1629,14 +1666,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let hourCase = new svg.Translation();
                 hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
                 if(i!=0){
-                    let t = new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK)
+                    let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
                     hourCase.add(t);
-                    if(i==4) {
-                        let secondText = new svg.Text("indisponible").font("calibri", this.width / 100, 1).color(svg.BLACK)
-                            .position(t.x, t.y + 20);
-                        let redPoint = new svg.Circle(6).position(secondText.x - 50, secondText.y - 5).color(svg.RED, 1, svg.BLACK);
-                        hourCase.add(secondText);
-                        hourCase.add(redPoint);
+                    if(i==4){
+                        hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
                     }
 
                     tabHours.push((i + 8) + "h");
@@ -1651,10 +1684,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let line = new svg.Translation();
                 for (var j=0;j<11;j++){
                     let element = new svg.Rect(this.caseWidth,this.caseHeight);
-                    if(i%2){
-                        element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
-                    }else{
+                    if(j%2){
                         element.color(svg.ALMOST_WHITE,1,svg.ALMOST_WHITE).position(j*this.caseWidth,0).opacity(1);
+                    }else{
+                        element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
                     }
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
@@ -2004,7 +2037,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             mainPage.remove(categories.rayTranslation);
         }
         categories.ray = new Ray(market.width*0.76, market.height * 0.75, 0, market.height / 4, tab, name);
-        categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name).add(new ScrollWheel(market.height*0.3).component);
+        categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
+            // .add(new ScrollWheel(market.height*0.3).component);
         mainPage.add(categories.rayTranslation);
         for(let v=0;v<categories.tabCategories.length;v++)
         {
@@ -2300,7 +2334,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     function textToSpeech(msg){
         var speak = new SpeechSynthesisUtterance(msg);
-        window.speechSynthesis.speak(speak);
+        speechSynthesis.speak(speak);
     }
 
     function replaceChar(msg){
@@ -2414,7 +2448,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     //Tab:
     let tabX = market.width*0.98;
         //CALENDAR
-        let calendarOnglY = (market.height*0.56);
+        let calendarOnglY = (market.height*0.57);
         let linePathCalendar=new svg.Path(tabX,calendarOnglY);
         linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
         linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
