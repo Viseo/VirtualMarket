@@ -1375,13 +1375,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     nbdays = self.numberDaysThisMonth;
                 }
                 var height = self.caseHeight * (nbdays);
-                if (self.calendarContent.y + height + self.caseHeight / 2 < market.height) {
+                if ((self.calendarContent.y + height + self.caseHeight / 2 < market.height)&&(nbdays>10)) {
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
                         .moveTo(0, market.height-height-self.caseHeight/2);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
                         .moveTo(0, market.height-height-self.caseHeight/2);
                 }
-                else if(self.calendarContent.y>header.height+self.caseHeight*2){
+                else if((self.calendarContent.y>header.height+self.caseHeight*2)||(nbdays<=10)){
                     self.calendarContent.smoothy(10, 10).onChannel("calendarContent")
                         .moveTo(0, header.height + self.caseHeight * 2.6);
                     self.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
@@ -1854,7 +1854,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 categories.ray.currentDrawn.component.remove(categories.ray.currentDrawn.waitingNumber);
                 categories.ray.currentDrawn.waitingNumber = new svg.Text(number);
                 categories.ray.currentDrawn.waitingNumber.position(self.width/2,self.height*0.65)
-                    .font("Calibri",self.width/1.5,1).opacity(0.7);
+                    .font("Calibri",self.width*0.5,1).opacity(0.7);
                 categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
@@ -1865,7 +1865,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if(!self.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
-                        // textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
+                        if(Maps)textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
                         self.anim=true;
                     }
                 }
@@ -1875,7 +1875,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         if(c=="?")return;
                     }
                     element.addAnimation(number);
-                    // textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
+                    if(Maps)textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
                 }
             }
@@ -1947,6 +1947,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.mark(this.name);
             this.width = market.basket.component.width;
             this.height = market.basket.component.height*0.1;
+            this.comp = complement.replace("/","");
+            this.compTitle= new svg.Text(this.comp);
+            this.component.add(this.compTitle);
         }
 
         addQuantity(num){
@@ -1960,16 +1963,29 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         changeText(newText){
             this.component.remove(this.printPrice);
             this.printPrice = new svg.Text(newText).anchor("left");
-            this.printPrice.position(this.width*0.08,this.height/2).font("Tahoma",this.height*0.3,1).color([255, 110, 0]);
+            this.printPrice.position(this.width*0.05,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]);
             this.component.add(this.printPrice);
+            if((newText>1)&&(this.comp!="")){
+                this.component.remove(this.compTitle);
+                this.compTitle = new svg.Text(this.comp+"s");
+                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+                this.component.add(this.compTitle);
+            }
+            else{
+                this.component.remove(this.compTitle);
+                this.compTitle = new svg.Text(this.comp);
+                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+                this.component.add(this.compTitle);
+            }
         }
 
         placeElements(){
             this.component.mark("Product basket " + this.name);
             this.image.position(this.width*0.8,this.height*0.4).dimension(this.height*0.90,this.height*0.90).mark(this.name);
-            this.printPrice.position(this.width*0.08,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
-            this.title.position(this.width*0.2,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
+            this.printPrice.position(this.width*0.05,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+            this.title.position(this.width*0.30,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).mark("background "+this.name);
+            this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
         }
     }
 
