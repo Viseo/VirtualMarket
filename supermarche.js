@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
+exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
@@ -570,10 +570,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             var voice=[];
             let timer;
 
-            this.micro.onClick(function(){
+            window.launchSTT = function(){
                 if(!recording) {
                     voice = [];
-                    if (Maps)startRecording();
+                    startRecording();
                     recording=true;
                     console.log("je record");
                     micro.url("img/microphone.gif");
@@ -585,7 +585,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         timer = setInterval(function () {
                             i++;
                             voice = getMessage();
-                            console.log(getMessage())
                             if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
                                 clearInterval(timer);
                                 console.log(voice['transcript']);
@@ -605,13 +604,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                 i = 0;
                                 voice = [];
                                 recording = false;
+                                bool=false;
                             }
 
                         }, 200);
                     }, 4000);
 
                 }
-            });
+            }
 
             svg.addEvent(this.micro,"touchstart",function(){
                 if(!recording) {
