@@ -1,15 +1,12 @@
 <!DOCTYPE HTML>
 <html lang="en">
-	<meta charset="UTF-8">
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 	<title>DigiMarket</title>
     <script src="https://cdn.jsdelivr.net/binaryjs/0.2.1/binary.min.js"></script>
-    <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&callback=initMap"-->
-            <!--async defer></script>-->
 
     </head>
 <body style="margin:0">
     <div id="content"></div>
-    <!--<div id="map"></div>-->
     <script src="lib/module.js"></script>
     <script src="lib/runtimemock.js"></script>
     <script src="lib/targetruntime.js"></script>
@@ -31,11 +28,12 @@
         let DATA = require("data").data;
         let data = DATA();
         let Map = require("lib/map");
+        let Recorder = require('lib/recorder');
         let GUI = require("lib/svggui").Gui;
         let svg = SVG(targetRuntime());
         let NEURAL=require("neuralNetDrawing").neural;
         let neural=NEURAL(targetRuntime());
-        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),Map);
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),Map,Recorder);
     </script>
 
     <style>

@@ -37,3 +37,8 @@ ajoute trois pommes de terre, Mon May 22 2017 15:50:19 GMT+0200 (Paris, Madrid (
 bonjour sophie, Fri May 19 2017 17:09:05 GMT+0200 (Paris, Madrid (heure d’été))
 d'accord si tu veux, Fri May 19 2017 17:10:41 GMT+0200 (Paris, Madrid (heure d’été))
 >>>>>>> server
+supprime de 13, Tue May 23 2017 10:49:41 GMT+0200 (Paris, Madrid (heure d’été))
+supprime 3 13, Tue May 23 2017 10:50:11 GMT+0200 (Paris, Madrid (heure d’été))
+supprime 3 freeze, Tue May 23 2017 10:50:20 GMT+0200 (Paris, Madrid (heure d’été))
+supprime 3 13, Tue May 23 2017 10:51:06 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Tue May 23 2017 11:58:37 GMT+0200 (Paris, Madrid (heure d’été))

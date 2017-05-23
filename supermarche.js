@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
+exports.main = function(svg,gui,param,neural,targetruntime,Maps,Recorder) {
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
@@ -114,48 +114,62 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 			var self = this; // Gestion Evenements
 
 			this.name = cat;
-			this.listHeight=Math.ceil(tabThumbnail.length/4)*(height/3*0.98);
-            console.log(Math.ceil(tabThumbnail.length/4),(height/3*0.98));
+			this.thumbWidth=(width / 4*0.94);
+			this.listWidth=Math.ceil(tabThumbnail.length/3)*(this.thumbWidth);
             let fond = new svg.Rect(width, height).position(width/2,height/2);
             fond.color([230,230,230]);
             this.component.add(fond);
 
             this.listThumbnails = new svg.Translation().mark("listRay");
-            let row=0;
-            for(let i=0;i<tabThumbnail.length;i=i+4){
+            let col=0;
+            for(let i=0;i<tabThumbnail.length;i=i+3){
                 for(let j=0;j<4;j++) {
                     if(tabThumbnail[j+i]) {
                         tabThumbnail[j+i].placeElements(1);
-                        tabThumbnail[j+i].move(width*0.01+(width / 4*0.94)*j ,width*0.01+(height/3*0.98) * row);
+                        tabThumbnail[j+i].move(width*0.01+this.thumbWidth*col,width*0.01+(height/3*0.98)*j);
                         this.listThumbnails.add(tabThumbnail[j+i].component);
                     }
                 }
-                row++;
+                col++;
             }
             this.component.add(this.listThumbnails);
 
             this.currentDrawn=null;
 
-            /*let chevronWest = new svg.Chevron(20, 70, 3, "W").position(30, this.component.height / 2).color(svg.WHITE);
-            let chevronEast = new svg.Chevron(20, 70, 3, "E").position(width - 30, this.component.height / 2).color(svg.WHITE);
-            let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                            .position(30, this.component.height / 2);
-            let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0.40)
-                                                            .position(this.component.width - 30, this.component.height / 2);
-            let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0.2).mark("chevronWRay");
-            let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).mark("chevronERay");
+            if(tabThumbnail.length>12) {
+                let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(30, this.component.height / 2).color([0, 195, 235]);
+                let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - 30, this.component.height / 2).color([0, 195, 235]);
+                let ellipseChevronWest = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
+                    .position(30, this.component.height / 2);
+                let ellipseChevronEast = new svg.Ellipse(30, 50).color(svg.BLACK).opacity(0)
+                    .position(this.component.width - 30, this.component.height / 2);
+                let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay");
+                let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay");
 
-            zoneChevronWest.onClick(function () {
-                self.listThumbnails.smoothy(10, 20).onChannel("rayUp").moveTo(0, self.listThumbnails.y);
-                zoneChevronWest.opacity(0.2);
-                zoneChevronEast.opacity(1);
-            });
 
-            zoneChevronEast.onClick(function () {
-                let widthView = width;
-                let widthTotalH = height / 2 * Math.ceil(tabThumbnail.length / 2);
-            });
-            this.component.add(zoneChevronEast).add(zoneChevronWest);*/
+                zoneChevronWest.onClick(function () {
+                    if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth * 1.5, 0);
+                        zoneChevronEast.opacity(0.6);
+                    } else {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(0, 0);
+                        zoneChevronWest.opacity(0);
+                        zoneChevronEast.opacity(0.6);
+                    }
+                });
+
+                zoneChevronEast.onClick(function () {
+                    if (self.listWidth != 0 && self.listThumbnails.x + self.listWidth - self.thumbWidth * 1.5 >= width) {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth * 1.5, 0);
+                        zoneChevronWest.opacity(0.6);
+                    } else {
+                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(width - self.listWidth - width * 0.01, 0);
+                        zoneChevronWest.opacity(0.6);
+                        zoneChevronEast.opacity(0);
+                    }
+                });
+                this.component.add(zoneChevronEast).add(zoneChevronWest);
+            }
         }
     }
 
@@ -522,7 +536,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(digi.component, "font-style", "italic");
             this.logo=new svg.Image("img/picto.png").position(width*0.025,height*0.5).dimension(height,height);
             this.component.add(this.logo);
-            this.micro = new svg.Image("img/microphone-deactivated.png");
+            this.micro = new svg.Image("img/microphone-deactivated.png").mark('micro');
             this.component.add(this.micro);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
             this.height = height;
@@ -532,7 +546,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             var voice=[];
             let timer;
 
-            this.micro.onClick(function(){
+            window.launchSTT = function(){
                 if(!recording) {
                     voice = [];
                     startRecording();
@@ -566,13 +580,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                 i = 0;
                                 voice = [];
                                 recording = false;
+                                bool=false;
                             }
 
                         }, 200);
                     }, 4000);
 
                 }
-            });
+            }
 
             svg.addEvent(this.micro,"touchstart",function(){
                 if(!recording) {
@@ -1018,90 +1033,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
     }
 
-    class ScrollWheel{
-        constructor(height){
-            this.height=height;
-            this.component = new svg.Translation();
-            this.contour= new svg.Rect(35,height*1.1).color(svg.LIGHT_GREY, 1, svg.LIGHT_GREY).corners(7,7);
-            this.scroll = new svg.Rect(28,height).color(svg.GREY, 1, svg.GREY);
-            this.scroll.corners(7,7);
-            this.component.add(this.contour).add(this.scroll);
-            this.traits=[];
-            this.lines=[];
-            this.onMove=false;
-            this.lNum=7
-            this.space=(height)/this.lNum;
-            for(i=0;i<this.lNum;i++){
-                this.traits.push(new svg.Line(-12,(i+0.5)*this.space-height/2+1,12,(i+0.5)*this.space-height/2+1).color(svg.GREY,1,svg.GREY));
-                this.lines.push(new svg.Rect(24, 3).corners(3,3).position(0,(i+0.5)*this.space-height/2).color(svg.BLACK, 1, svg.BLACK));
-                this.component.add(this.lines[i]).add(this.traits[i]);
-            }
-            this.component.move(500,300);
-            let self =this;
-
-            this.component.onMouseDown(function (e) {
-                beginMove(e.pageY, "mousemove", "mouseup");
-            });
-
-            svg.addEvent(this.component, "touchstart", function (e) {
-                beginMove(e.touches[0].clientY, "touchmove", "touchend");
-            });
-
-            function beginMove(y, eventTypeMove, eventTypeUp) {
-                self.onMove = true;
-                let prevMouse = y;
-
-                var pos=[]
-                for(let l in self.lines){
-                    pos[l]=(Number(l)+0.5)*(self.space)-(self.height/2);
-                }
-
-                svg.addEvent(self.component, eventTypeMove, function (e) {
-                    if (self.onMove) {
-                        if (eventTypeMove.includes("mouse")) {
-                            toMove(e.pageY, prevMouse);
-                            prevMouse = e.pageY;
-                        }
-                        else {
-                            toMove(e.touches[0].clientY, prevMouse);
-                            prevMouse = e.touches[0].clientY;
-                        }
-                    }
-                });
-                function toMove(y, mouse) {
-                    for(let l in self.lines){
-                        if(pos[l]>(self.lNum)*(self.space)-(self.height/2)-2 && (mouse-y)<0 ) {
-                            pos[l]=pos[(Number(l)+1)%self.lNum]-(self.space)
-                        }else if(pos[l]<2-(self.height/2)  && (mouse-y)>0){
-                            pos[l]=pos[(Number(l)+(self.lNum-1))%(self.lNum)]+((self.space))
-                        }
-                        self.traits[l].start(-12, pos[l] - (mouse - y) + 1).end(12, pos[l] - (mouse - y) + 1);
-                        self.lines[l].position(0, pos[l] - (mouse - y));
-                        pos[l] = pos[l] - (mouse - y);
-
-                    }
-
-                    if(categories.ray.listHeight>=Number(market.height*0.75)){
-                        categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(0, categories.ray.listThumbnails.y + (mouse - y));
-                    }
-                }
-
-                svg.addEvent(self.component, eventTypeUp, function () {
-                    console.log(categories.ray.listThumbnails.y,-(categories.ray.listHeight+market.height*0.75));
-                    if (categories.ray.listThumbnails.y>0) {
-                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,0);
-                    }
-                    else if(categories.ray.listThumbnails.y<-(categories.ray.listHeight)+market.height*0.75){
-                        categories.ray.listThumbnails.smoothy(20, 10).moveTo(0,-categories.ray.listHeight+market.height*0.75);
-
-                    }
-                    self.onMove = false;
-                });
-            }
-            this.component.move(market.width*0.735,market.height*0.625)
-        }
-    }
-
     class Round{
         constructor(x,y,width,height,place,left,TPH){
             this.component = new svg.Translation();
@@ -1455,13 +1386,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
                     hourCase.add(t);
                     if(i==4){
-                        // let secondText = new svg.Text("indisponible").font("calibri",this.width / 100, 1).color(svg.BLACK)
-                        //     .position(t.x,t.y+20);
-                        //
-                        // let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-5).color(svg.RED,1,svg.WHITE);
-
                         hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
-                        // hourCase.add(redPoint);
                     }
 
                     tabHours.push((i + 8) + "h");
@@ -1648,14 +1573,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let hourCase = new svg.Translation();
                 hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
                 if(i!=0){
-                    let t = new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK)
+
+                    let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
                     hourCase.add(t);
-                    if(i==4) {
-                        let secondText = new svg.Text("indisponible").font("calibri", this.width / 100, 1).color(svg.BLACK)
-                            .position(t.x, t.y + 20);
-                        let redPoint = new svg.Circle(6).position(secondText.x - 50, secondText.y - 5).color(svg.RED, 1, svg.BLACK);
-                        hourCase.add(secondText);
-                        hourCase.add(redPoint);
+                    if(i==4){
+                        hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
                     }
 
                     tabHours.push((i + 8) + "h");
@@ -1670,10 +1592,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let line = new svg.Translation();
                 for (var j=0;j<11;j++){
                     let element = new svg.Rect(this.caseWidth,this.caseHeight);
-                    if(i%2){
-                        element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
-                    }else{
+                    if(j%2){
                         element.color(svg.ALMOST_WHITE,1,svg.ALMOST_WHITE).position(j*this.caseWidth,0).opacity(1);
+                    }else{
+                        element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
                     }
                     line.add(element);
                     this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
@@ -2272,6 +2194,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 for (var j = splitMessage.length - 1; j >= 0; j--) {
                     let order = splitMessage[j];
                     let tab = search(order, "all");
+                    let det = ["un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
                     if (tab[0]) {
                         tab = search(order, "prod");
                         if (order.includes("ajoute")) {
@@ -2294,50 +2217,27 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     }
                                     if(Maps)textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
-
-                                }
-                                else if (determining.trim() == "de" || determining2.trim() == "deux") {
+                                } else if (determining.trim() == "de") {
                                     market.basket.addProducts(tab[i], 2);
                                     if(Maps)textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
-                                }
-                                else if (determining2.trim() == "neuf") {
-                                    market.basket.addProducts(tab[i], 9);
-                                    if(Maps)textToSpeech("Ok, j'ajoute neuf "+ tab[i].name+" au panier");
-                                }
-                                else if (determining2.trim() == "huit") {
-                                    market.basket.addProducts(tab[i], 8);
-                                    if(Maps)textToSpeech("Ok, j'ajoute huit "+ tab[i].name+" au panier");
-                                }
-                                else if (determining2.trim() == "cinq") {
-                                    market.basket.addProducts(tab[i], 5);
-                                    if(Maps)textToSpeech("Ok, j'ajoute 5 "+ tab[i].name+" au panier");
-                                }
-                                else if (determining2.trim() == "trois") {
-                                    market.basket.addProducts(tab[i], 3);
-                                    if(Maps)textToSpeech("Ok, j'ajoute trois "+ tab[i].name+" au panier");
-                                }
-                                else if (determining.trim() == "six") {
-                                    market.basket.addProducts(tab[i], 6);
-                                    if(Maps)textToSpeech("Ok, j'ajoute 6"+ tab[i].name+" au panier");
-                                }
-                                else if (determining.trim() == "dix") {
-                                    market.basket.addProducts(tab[i], 10);
-                                    if(Maps)textToSpeech("Ok, j'ajoute 10 "+ tab[i].name+" au panier");
-                                }
-                                else if (determining2.trim() == "cette" || determining.trim() == "cet") {
+                                } else if (determining2.trim() == "cette" || determining.trim() == "cet") {
                                     if(Maps)textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 7);
-                                }
-                                else if (determiningFour.trim() == "quatre"){
-                                    if(Maps)textToSpeech("Ok, je retire 4 "+ tab[i].name +" du panier");
-                                    market.basket.deleteFromName(tab[i].name, 4);
-                                } else {
+                                } else if(determining.trim() == "un" || determining.trim() == "une") {
                                     if(Maps)textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 1);
+                                } else {
+                                    for(let k = 0; k< det.length;k++){
+                                        if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
+                                            market.basket.addProducts(tab[i],k+1);
+                                            if(Maps)textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
+                                        }
+                                    }
                                 }
                             }
                         }
                         else if (order.includes("supprime")) {
+                            let det = ["un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
                             for (var i = 0; i < tab.length; i++) {
                                 var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
                                 var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
@@ -2355,57 +2255,37 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     if (isNaN(bef2)) {
                                         bef2 = "";
                                     }
-                                    if(Maps)textToSpeech("Ok, je retire "+quantity+" "+ tab[i].name +" du panier");
+                                    if(Maps)textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                                 }
                                 else if (determining == " un" || determining == "une"){
                                     if(Maps)textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 1);
-                                } else if (determining2.trim() == "neuf") {
-                                    market.basket.addProducts(tab[i], 9);
-                                    if(Maps)textToSpeech("Ok, je retire neuf "+ tab[i].name+" du panier");
-                                }
-                                else if (determining2.trim() == "huit") {
-                                    market.basket.addProducts(tab[i], 8);
-                                    if(Maps)textToSpeech("Ok, je retire huit "+ tab[i].name+" du panier");
-                                }
-                                else if (determining2.trim() == "cinq") {
-                                    market.basket.addProducts(tab[i], 5);
-                                    if(Maps)textToSpeech("Ok, je retire 5 "+ tab[i].name+" du panier");
-                                }
-                                else if (determining2.trim() == "trois") {
-                                    market.basket.addProducts(tab[i], 3);
-                                    if(Maps)textToSpeech("Ok, je retire trois "+ tab[i].name+" du panier");
-                                }
-                                else if (determining.trim() == "six") {
-                                    market.basket.addProducts(tab[i], 6);
-                                    if(Maps)textToSpeech("Ok, je retire 6"+ tab[i].name+" du panier");
-                                }
-                                else if (determining.trim() == "dix") {
-                                    market.basket.addProducts(tab[i], 10);
-                                    if(Maps)textToSpeech("Ok, je retire 10 "+ tab[i].name+" du panier");
-                                }
-                                else if (determining.trim() == "de" || determining2.trim() == "deux"){
+                                } else if (determining.trim() == "de"){
                                     if(Maps)textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 2);
-                                }
-                                else if (determining2.trim() == "cette" || determining.trim() == "cet"){
+                                } else if (determining2.trim() == "cette" || determining.trim() == "cet"){
                                     if(Maps)textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, 7);
-                                }
-                                else if (determiningFour.trim() == "quatre"){
-                                    if(Maps)textToSpeech("Ok, je retire 4 "+ tab[i].name +" du panier");
-                                    market.basket.deleteFromName(tab[i].name, 4);
-                                }
-                                else{
-                                    if(Maps)textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
-                                    market.basket.deleteFromName(tab[i].name, null);
+                                }else {
+                                    let bool = false;
+                                    for(let k = 0; k< det.length;k++){
+                                        if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
+                                            bool = true;
+                                            market.basket.deleteFromName(tab[i].name,k+1);
+                                            if(Maps)textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
+                                        }
+                                    }
+                                    if(bool == false){
+                                        if(Maps)textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
+                                        market.basket.deleteFromName(tab[i].name, null);
+                                    }
                                 }
                             }
                         }
                         else {
                             tab = search(order, "all");
-                            if(Maps)textToSpeech("ok je cherche.")
+                            if(Maps)textToSpeech("Ok, je cherche.")
                             doSearch(tab);
                         }
                         oneOrderChecked = true;
@@ -2442,7 +2322,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     function textToSpeech(msg){
         var speak = new SpeechSynthesisUtterance(msg);
-        window.speechSynthesis.speak(speak);
+        speechSynthesis.speak(speak);
     }
 
     function replaceChar(msg){
@@ -2556,7 +2436,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     //Tab:
     let tabX = market.width*0.98;
         //CALENDAR
-        let calendarOnglY = (market.height*0.56);
+        let calendarOnglY = (market.height*0.57);
         let linePathCalendar=new svg.Path(tabX,calendarOnglY);
         linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
         linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
