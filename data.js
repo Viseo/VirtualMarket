@@ -5,7 +5,7 @@ exports.data = function() {
                 "Lait": {
                     image: "img/produits/ProduitsLaitiers/lait.jpg",
                     prix: 15,
-                    nom: "lait",
+                    nom: "Lait",
                     complement: "/litre"
                 },
                 "Camembert": {
@@ -17,13 +17,13 @@ exports.data = function() {
                 "Oeuf": {
                     image: "img/produits/ProduitsLaitiers/oeuf.jpg",
                     prix: 3,
-                    nom: "oeuf",
+                    nom: "Oeuf",
                     complement: "",
                 },
                 "Yaourt": {
                     image: "img/produits/ProduitsLaitiers/yaourt.jpg",
                     prix: 1,
-                    nom: "yaourt",
+                    nom: "Yaourt",
                     complement: " l'unite",
                 },
                 "Beurre" : {
@@ -552,7 +552,7 @@ exports.data = function() {
                 "Masque": {
                     image: "img/produits/Soins/masque.jpg",
                     prix: 2,
-                    nom: "masque Cheveux",
+                    nom: "Masque Cheveux",
                     complement: "",
                 },
                 "Deodorant": {
@@ -759,7 +759,7 @@ exports.data = function() {
                 "Flash": {
                     image: "img/produits/SuperPouvoirs/flash.png",
                     prix: 0,
-                    nom: "flash",
+                    nom: "Flash",
                     complement: "",
                 },
                 "Green Lantern": {
@@ -783,13 +783,13 @@ exports.data = function() {
                 "Wonder Woman": {
                     image: "img/produits/SuperPouvoirs/wonder-woman.png",
                     prix: 0,
-                    nom: "flash",
+                    nom: "WonderWoman",
                     complement: "",
                 },
                 "Iron Man": {
                     image: "img/produits/SuperPouvoirs/iron man.png",
                     prix: 0,
-                    nom: "iron man",
+                    nom: "IronMan",
                     complement: "",
                 },
                 "Hulk": {
@@ -843,7 +843,7 @@ exports.data = function() {
             let name = product.toLowerCase();
             name = name.replace(/ /g,"");
             //ajouter la vignette au tableau
-            tabVignettes.push(new typeVig("img/categories/"+name+".jpg","img/categories/"+name+"2.jpg",product));
+            tabVignettes.push(new typeVig("img/categories/"+name+".png",product));
         }
         return tabVignettes;
     }
