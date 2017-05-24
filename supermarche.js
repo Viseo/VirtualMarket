@@ -2546,7 +2546,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.add(glassDnD);
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
-    
+
     if(Maps)textToSpeech("Bonjour, Bienvenue!","fr");
 
     if(Maps&&getCookie("Cookie")){
