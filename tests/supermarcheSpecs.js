@@ -99,12 +99,12 @@ describe("Test",function (){
         runtime.advanceAll();
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
 
-        let categories2 = retrieve(market.component,"[categories].[Legumes]");
+        let categories2 = retrieve(market.component,"[categories].[Mode]");
         runtime.event(categories2,"click",{});
-        let ray2 = retrieve(market.component,"[ray Legumes].[listRay]");
+        let ray2 = retrieve(market.component,"[ray Mode].[listRay]");
         inspect(ray2,{tag:"g",transform:"translate(0 0)"});
-        let chevronW2 = retrieve(market.component,"[ray Legumes].[chevronWRay]");
-        let chevronE2 = retrieve(market.component,"[ray Legumes].[chevronERay]");
+        let chevronW2 = retrieve(market.component,"[ray Mode].[chevronWRay]");
+        let chevronE2 = retrieve(market.component,"[ray Mode].[chevronERay]");
         runtime.event(chevronE2,"click",{});
         runtime.advanceAll();
         runtime.event(chevronE2,"click",{});
@@ -1118,17 +1118,16 @@ describe("Test",function (){
         runtime.event(column,"mousemove",{pageX:100,pageY:200});
         runtime.advanceAll();
 
-        let picto = retrieve(market.component,"[calendar].[iconUser]");
-        let round1 = retrieve(market.component,"[calendar].[round 0]");
-        runtime.event(round1, "click", {})
+        let round0 = retrieve(market.component,"[calendar].[round 0]");
+        runtime.event(round0, "click", {})
+        runtime.advanceAll();
+        let round1 = retrieve(market.component,"[calendar].[round 1]");
+        runtime.event(round1, "click", {});
         runtime.advanceAll();
         let round2 = retrieve(market.component,"[calendar].[round 2]");
         runtime.event(round2, "click", {});
         runtime.advanceAll();
-        let round3 = retrieve(market.component,"[calendar].[round 3]");
-        runtime.event(round3, "click", {});
-        runtime.advanceAll();
-        runtime.event(round1, "click", {})
+        runtime.event(round0, "click", {})
         runtime.advanceAll();
     });
 
