@@ -144,26 +144,26 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
                     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
                 let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
-                let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.6).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
+                let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
 
                 zoneChevronWest.onClick(function () {
                     if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
                         self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth * 1.5, 0);
-                        zoneChevronEast.opacity(0.6);
+                        zoneChevronEast.opacity(0.3);
                     } else {
                         self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(0, 0);
                         zoneChevronWest.opacity(0);
-                        zoneChevronEast.opacity(0.6);
+                        zoneChevronEast.opacity(0.3);
                     }
                 });
 
                 zoneChevronEast.onClick(function () {
                     if (self.listWidth != 0 && self.listThumbnails.x + self.listWidth - self.thumbWidth * 1.5 >= width) {
                         self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth * 1.5, 0);
-                        zoneChevronWest.opacity(0.6);
+                        zoneChevronWest.opacity(0.3);
                     } else {
                         self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(width - self.listWidth - width * 0.01, 0);
-                        zoneChevronWest.opacity(0.6);
+                        zoneChevronWest.opacity(0.3);
                         zoneChevronEast.opacity(0);
                     }
                 });
@@ -425,7 +425,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                                     let heightView = self.component.height*0.77;
                                     let positionDown = self.listProducts.y + heightTotal;
                                     if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=7)) {
-                                        self.listProducts.smoothy(10, 10).moveTo(0, self.component.height*0.1);
+                                        self.listProducts.smoothy(10, 10).moveTo(0, 0);
                                     }
                                     else if(positionDown < heightView) {
                                         self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
@@ -632,9 +632,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         constructor(width,height,x,y){
             super(width,height,x,y);
             this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE);
-            this.card = new svg.Image("img/card.png").dimension(width*0.60,height*0.65).position(width*0.1,height/2).mark("card");
-            this.tpeBack = new svg.Image("img/atm-empty-background.png").dimension(width,height).position(width,height/2);
-            this.tpe = new svg.Image("img/atm-empty.png").dimension(width,height).position(width,height/2);
+            this.card = new svg.Image("img/credit-card.png").dimension(width*0.60,height*0.65).position(width*0.1,height/2).mark("card");
+            this.tpeBack = new svg.Image("img/tpeFond.png").dimension(width,height*0.9).position(width*0.99,height/2);
+            this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
 
             this.iteration = 1;
             this.width = width;
@@ -1052,7 +1052,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         placeElements(){
-            this.titleText.position(this.x, this.y - this.height*0.75).message(this.left+" / "+this.place);
+            this.titleText.position(this.x, this.y - this.height*0.75).message(this.left+" / "+this.place).font("Calibri",this.height*0.60,1);
             this.deliveryRect.dimension(this.width,this.height).corners(15,15);
             this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             this.jauge.position(-this.width/2+this.x+(this.width/(2*this.place)),this.y).color(svg.GREEN,2,svg.GREEN);
@@ -1482,9 +1482,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             let self = this;
             for(let i = 0; i<dayMonth.length;i++){
                 let totLeft = 0;
-                let dayText = new svg.Text(this.dayCases[i].messageText).font("calibri", this.calendarWidth / 70, 1).color(svg.BLACK);
-                // let secondText = new svg.Text("indisponible").font("calibri", this.calendarWidth / 90, 1).color(svg.BLACK);
-                //     .position(dayText.x,dayText.y+20);
 
                 for(let j = 0; j < tab.length; j++){
                     if(dayMonth[i]==tab[j].dayP){
@@ -1510,11 +1507,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
                 if(totLeft == 0) {
                     this.dayCases[i].add(new Switch("unavailable",this.caseWidth,this.caseHeight).component)
-                    this.dayCases[i].add(dayText);
 
                 }else {
                     this.dayCases[i].add(new Switch("available",this.caseWidth,this.caseHeight).component)
-                    this.dayCases[i].add(dayText);
                 }
             }
        }
@@ -1545,16 +1540,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.dayCases[j].move(0,j*this.caseHeight);
                 this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
                 this.calendarFirstColumn.move(0,this.calendarPositionY);
-
-                // if(this.getWeekDay()[(j+this.startDay)%7] == "Dimanche"){
-                //     let dayText = new svg.Text("Dimanche "+ (j+1)).font("calibri", this.calendarWidth / 70, 1).color(svg.BLACK);
-                //     // let secondText = new svg.Text("indisponible").font("calibri", this.calendarWidth / 90, 1).color(svg.BLACK)
-                //     //     .position(dayText.x,dayText.y+20);
-                //     // let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-3).color(svg.RED,1,svg.BLACK);
-                //     this.dayCases[j].add(dayText);
-                //     // this.dayCases[j].add(secondText);
-                //     this.dayCases[j].add(new Switc);
-                // }
             }
 
             let tabHours = [];
@@ -1616,7 +1601,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.picto.position(0,0);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL)+1)+" heure", "fr");
+                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.replace("/"," ")
+                    + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
             else if(this.choice!=round && this.choice!=null && round.left>0) {
@@ -1630,7 +1616,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 round.changeColor(2);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv+ " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL)+1)+" heure", "fr");
+                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.replace("/"," ")
+                    + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
         }
