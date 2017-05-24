@@ -33,8 +33,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 listThumbnail.add(current.component);
             }
             this.component.add(listThumbnail);
-
-            this.component.add(new svg.Rect(width*0.01,height).position(width,height/2).color([230,230,230]));
+            this.transRect=new svg.Translation().shadow('catrect',-5,0,5).add(new svg.Circle(1).opacity(0).position(width*0.95,market.height+header.height));
+            this.transRect.add(new svg.Rect(width*0.01,market.height-header.height).position(width*(1.005),(market.height+header.height)/2).color([230,230,230]));
+            this.component.add(this.transRect);
             this.previousMouseX=0;
             this.navigation=false;
             let mouvement = false;
@@ -1896,8 +1897,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             runtime.attr(this.divMap,"id","divMap");
             runtime.add(this.foreign,this.divMap);
             runtime.add(this.component.component,this.foreign);
-            this.mapHeight=height*1.19;
-            this.mapWidth=width*1.21*0.75;
+            this.mapHeight=height*0.90;
+            this.mapWidth=width*1.21*0.58;
             this.x=x;
             this.y=y;
             runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+
@@ -1975,12 +1976,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         if(categories.rayTranslation!=null){
-            mainPage.remove(categories.rayTranslation);
+            mainPage.remove(categories.rayTranslation).remove(categories.transRect).remove(zoneBasket).remove(zonePayment);;
         }
 
         categories.ray=new Ray(market.width*0.76, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
-        mainPage.add(categories.rayTranslation);
+        mainPage.add(categories.rayTranslation).add(categories.transRect).add(zoneBasket).add(zonePayment);
 
         if(Maps){
             let cookie = getCookie("Cookie");
