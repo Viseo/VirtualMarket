@@ -33,8 +33,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 listThumbnail.add(current.component);
             }
             this.component.add(listThumbnail);
-
-            this.component.add(new svg.Rect(width*0.01,height).position(width,height/2).color([230,230,230]));
+            this.transRect=new svg.Translation().shadow('catrect',-5,0,5).add(new svg.Circle(1).opacity(0).position(width*0.95,market.height+header.height));
+            this.transRect.add(new svg.Rect(width*0.01,market.height-header.height).position(width*(1.005),(market.height+header.height)/2).color([230,230,230]));
+            this.component.add(this.transRect);
             this.previousMouseX=0;
             this.navigation=false;
             let mouvement = false;
@@ -1483,8 +1484,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             for(let i = 0; i<dayMonth.length;i++){
                 let totLeft = 0;
                 let dayText = new svg.Text(this.dayCases[i].messageText).font("calibri", this.calendarWidth / 70, 1).color(svg.BLACK);
-                // let secondText = new svg.Text("indisponible").font("calibri", this.calendarWidth / 90, 1).color(svg.BLACK);
-                //     .position(dayText.x,dayText.y+20);
 
                 for(let j = 0; j < tab.length; j++){
                     if(dayMonth[i]==tab[j].dayP){
@@ -1545,16 +1544,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.dayCases[j].move(0,j*this.caseHeight);
                 this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
                 this.calendarFirstColumn.move(0,this.calendarPositionY);
-
-                // if(this.getWeekDay()[(j+this.startDay)%7] == "Dimanche"){
-                //     let dayText = new svg.Text("Dimanche "+ (j+1)).font("calibri", this.calendarWidth / 70, 1).color(svg.BLACK);
-                //     // let secondText = new svg.Text("indisponible").font("calibri", this.calendarWidth / 90, 1).color(svg.BLACK)
-                //     //     .position(dayText.x,dayText.y+20);
-                //     // let redPoint = new svg.Circle(6).position(secondText.x-50,secondText.y-3).color(svg.RED,1,svg.BLACK);
-                //     this.dayCases[j].add(dayText);
-                //     // this.dayCases[j].add(secondText);
-                //     this.dayCases[j].add(new Switc);
-                // }
             }
 
             let tabHours = [];
@@ -1988,12 +1977,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         if(categories.rayTranslation!=null){
-            mainPage.remove(categories.rayTranslation);
+            mainPage.remove(categories.rayTranslation).remove(categories.transRect).remove(zoneBasket).remove(zonePayment);;
         }
 
         categories.ray=new Ray(market.width*0.76, market.height * 0.75, 0, market.height / 4, tab, name);
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
-        mainPage.add(categories.rayTranslation);
+        mainPage.add(categories.rayTranslation).add(categories.transRect).add(zoneBasket).add(zonePayment);
 
         if(Maps){
             let cookie = getCookie("Cookie");
