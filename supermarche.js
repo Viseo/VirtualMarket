@@ -1789,12 +1789,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else if(number!="?") {
                     for(var c of number.split('')){
 
-                        if(c=="?")return;
+                        if(c=="?"){
+                            if(Maps)textToSpeech("Je n'ai pas compris");
+                            return;
+                        }
                     }
                     element.addAnimation(number);
                     if(Maps)textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
-                }
+                }else if(number == "?") textToSpeech("Je n'ai pas compris");
+
             }
 
             let mousePos ={};
@@ -2102,8 +2106,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         currentMapSearch = message;
                         i = words.length;
                         if(Maps){
-                            textToSpeech("Vous ne pouvez pas vous faire livrer directement à " + message +
-                                ". Voici le magazin qui va vous livrer.", "fr");
+                            textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
                             market.mapsfunction.research(currentMapSearch);
                             setTimeout(function(){
                                 market.map.updateMarkersSide();
