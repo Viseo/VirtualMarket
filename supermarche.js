@@ -113,7 +113,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             super(width, height, x, y);
 
             var self = this; // Gestion Evenements
-
+            this.width=width;
             this.name = cat;
             this.thumbWidth = (width / 4 * 0.94);
             this.listWidth = Math.ceil(tabThumbnail.length / 3) * (this.thumbWidth);
@@ -136,39 +136,54 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.listThumbnails);
 
             this.currentDrawn = null;
-            if (tabThumbnail.length > 12) {
+            // if (tabThumbnail.length > 12) {
+            //
+            //     // let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+            //     // let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+            //     // let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+            //     //     .position(this.thumbWidth / 4, this.component.height / 2);
+            //     // let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+            //     //     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
+            //     // let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
+            //     // let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
+            //     //
+            //     // zoneChevronWest.onClick(function () {
+            //     //     if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
+            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth * 1.5, 0);
+            //     //         zoneChevronEast.opacity(0.3);
+            //     //     } else {
+            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+            //     //         zoneChevronWest.opacity(0);
+            //     //         zoneChevronEast.opacity(0.3);
+            //     //     }
+            //     // });
+            //     //
+            //     // zoneChevronEast.onClick(function () {
+            //     //     if (self.listWidth != 0 && self.listThumbnails.x + self.listWidth - self.thumbWidth * 1.5 >= width) {
+            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth * 1.5, 0);
+            //     //         zoneChevronWest.opacity(0.3);
+            //     //     } else {
+            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - self.listWidth - width * 0.01, 0);
+            //     //         zoneChevronWest.opacity(0.3);
+            //     //         zoneChevronEast.opacity(0);
+            //     //     }
+            //     // });
+            //     // this.component.add(zoneChevronEast).add(zoneChevronWest);
+            // }
+        }
 
-                let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                    .position(this.thumbWidth / 4, this.component.height / 2);
-                let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                    .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
-                let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
-                let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
+        gesture(type, dx){
+		    if(type=="move"){
+                categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
+            }
+            else if(type=="up"){
+                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0){
+                    categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                }
+                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width){
+                    categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
+                }
 
-                zoneChevronWest.onClick(function () {
-                    if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
-                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth * 1.5, 0);
-                        zoneChevronEast.opacity(0.3);
-                    } else {
-                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(0, 0);
-                        zoneChevronWest.opacity(0);
-                        zoneChevronEast.opacity(0.3);
-                    }
-                });
-
-                zoneChevronEast.onClick(function () {
-                    if (self.listWidth != 0 && self.listThumbnails.x + self.listWidth - self.thumbWidth * 1.5 >= width) {
-                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth * 1.5, 0);
-                        zoneChevronWest.opacity(0.3);
-                    } else {
-                        self.listThumbnails.smoothy(20, 10).onChannel("rayon").moveTo(width - self.listWidth - width * 0.01, 0);
-                        zoneChevronWest.opacity(0.3);
-                        zoneChevronEast.opacity(0);
-                    }
-                });
-                this.component.add(zoneChevronEast).add(zoneChevronWest);
             }
         }
     }
@@ -520,16 +535,18 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         {
             super(width,height,x,y);
             this.component.add(new svg.Rect(width,height).position(width/2,height/2).color([0,58,112]));
+            this.logoComp=new svg.Translation().mark("logo");
             let digi=new svg.Text("Digi").position(width*0.05,height*0.75).font("Tahoma",this.component.height*0.75,1)
                 .color(svg.LIGHT_BLUE);
-            this.component.add(digi);
-            this.component.add(new svg.Text("Market").position(width*0.09,height*0.75).font("Tahoma",this.component.height*0.75,1)
+            this.logoComp.add(digi);
+            this.logoComp.add(new svg.Text("Market").position(width*0.09,height*0.75).font("Tahoma",this.component.height*0.75,1)
                 .color(svg.WHITE));
             runtime.attr(digi.component, "font-style", "italic");
             this.logo=new svg.Image("img/picto.png").position(width*0.025,height*0.5).dimension(height,height);
-            this.component.add(this.logo);
+            this.logoComp.add(this.logo);
             this.micro = new svg.Image("img/microphone-deactivated.png").mark('micro');
             this.component.add(this.micro);
+            this.component.add(this.logoComp);
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
             this.height = height;
             this.width=width;
@@ -537,6 +554,21 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             let micro=this.micro;
             var voice=[];
             let timer;
+
+            this.logoComp.onClick(function(){
+                if(market.map!=null){
+                    currentMapSearch= market.map.input.value;
+                    mapPage.remove(market.map.component);
+                    market.map=null;
+                }
+                currentPage=mainPage;
+                currentIndex=2;
+                market.pages[2].obj.smoothy(10, 40).onChannel(2).moveTo(0, 0);
+                market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(0, 0);
+                market.pages[0].obj.smoothy(10, 40).onChannel(0).moveTo(0, 0);
+                market.calendar.calendarOn = false;
+                market.calendar.mapOn = false;
+            });
 
             if (Maps){
                 window.launchSTT = function(){
@@ -1044,8 +1076,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         placeElements(){
-            this.titleText.position(this.x, this.y - this.height*0.75).message(this.left+" / "+this.place).font("Calibri",this.height*0.60,1);
-            this.deliveryRect.dimension(this.width,this.height).corners(15,15);
+            this.titleText.position(this.x, this.y - this.height*0.75).message(this.left+" / "+this.place).font("Calibri",this.height,1);
+            this.deliveryRect.dimension(this.width,this.height).corners(10,10);
             this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             this.jauge.position(-this.width/2+this.x+(this.width/(2*this.place)),this.y).color(svg.GREEN,2,svg.GREEN);
             this.roundContent.add(this.jauge);
@@ -1305,7 +1337,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         placeElements(){
             this.caseWidth = this.calendarWidth/12;
             this.caseHeight = this.calendarHeight/10;
-            this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.5,this.caseHeight*0.5);
+            this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.25,this.caseHeight*0.25);
             this.title.dimension(this.calendarWidth+2,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.LIGHT_GREY).opacity(1);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
 
@@ -1478,7 +1510,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 for(let j = 0; j < tab.length; j++){
                     if(dayMonth[i]==tab[j].dayP){
                         totLeft += tab[j].left;
-                        this.rounds[j] = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/2,tab[j].nbT,tab[j].left, tab[j].TPH);
+                        this.rounds[j] = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/4,tab[j].nbT,tab[j].left, tab[j].TPH);
                         this.rounds[j].roundContent.mark("round "+j);
                         this.rounds[j].tabH=tab[j];
                         this.rounds[j].placeElements();
@@ -1798,7 +1830,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 mousePos = {x:e.pageX,y:e.pageY};
                 self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
                 if(!categories.ray.currentDrawn) categories.ray.currentDrawn=self;
-                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,self,glassCanvas);
+                neural.init_draw(self.drawNumber,e.pageX,0,self.name, getNumber,printNumber,self,glassCanvas,categories.ray.gesture);
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
             });
@@ -1809,7 +1841,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             svg.addEvent(this.component, "touchstart", function (e) {
                 touchPos = {x:e.touches[0].clientX,y:e.touches[0].clientY};
                 self.drawNumber = new svg.Drawing(0,0).mark("draw "+self.name);
-                neural.init_draw(self.drawNumber,0,0,self.name, getNumber,printNumber,self,glassCanvas);
+                neural.init_draw(self.drawNumber,e.touches[0].clientX,0,self.name, getNumber,printNumber,self,glassCanvas,categories.ray.gesture);
                 if(!categories.ray.currentDrawn) categories.ray.currentDrawn=self;
                 glassCanvas.add(self.drawNumber);
                 self.drawNumber.opacity(0);
@@ -2473,7 +2505,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     market.mapsfunction.research(currentMapSearch);
                 }
                 setTimeout(function(){
-                    market.map.updateMarkersSide();
+                    if(market.map!=null) {
+                        market.map.updateMarkersSide();
+                    }
                 },500);
             }
         },500);
@@ -2523,7 +2557,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         loadMap();
                         if(Maps){
                             setTimeout(function(){
-                                market.map.updateMarkersSide();
+                                if(market.map!=null) {
+                                    market.map.updateMarkersSide();
+                                }
                             },3500);
                         }
                     }

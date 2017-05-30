@@ -96,62 +96,73 @@ exports.neural = function(runtime) {
             width:0,
             height:0,
             glass:null,
+            gesture:false,
 
             // Handle events to the canvas.  This allows drawing to occur.
-            ev_canvas: function (ev,control) {
+            ev_canvas: function (ev,control,x,gest) {
                 ev._x = Math.round(ev.pageX * 1.25);
                 ev._y = Math.round(ev.pageY * 1.25);
-
                 if (ev.type === 'mousemove'||control=="mousemove") {
                     if(this.currentX!=0||this.currentY!=0) {
                         let dx = ev._x - this.currentX;
                         let dy = ev._y - this.currentY;
-                        if (dx < 0) {
-                            for (var i = ev._x; i < this.currentX; i++) {
-                                let y = Math.round(ev._y + dy * (i - ev._x) / dx);
-                                this.drawing[i][y] = 1;
+                        if(Math.abs(ev._x-x*1.25)>this.width*0.15){
+                            gest("move",dx);
+                            this.gesture=true;
+                        }else{
+                            if (dx < 0) {
+                                for (var i = ev._x; i < this.currentX; i++) {
+                                    let y = Math.round(ev._y + dy * (i - ev._x) / dx);
+                                    this.drawing[i][y] = 1;
+                                }
                             }
-                        }
-                        else {
-                            for (var i = ev._x; i > this.currentX; i--) {
-                                let y = Math.round(ev._y + dy * (i - ev._x) / dx);
-                                this.drawing[i][y] = 1;
+                            else {
+                                for (var i = ev._x; i > this.currentX; i--) {
+                                    let y = Math.round(ev._y + dy * (i - ev._x) / dx);
+                                    this.drawing[i][y] = 1;
+                                }
                             }
+                            this.drawn=true;
                         }
-                        this.drawn=true;
                     }
                     this.currentX=ev._x;
                     this.currentY=ev._y;
-
                 }
-
                 else if (ev.type === 'touchmove'||control=="touchmove") {
                     ev.touchX=Math.round(ev.touches[0].clientX*1.25);
                     ev.touchY=Math.round(ev.touches[0].clientY*1.25);
                     if(this.currentX!=0||this.currentY!=0) {
                         let dx = ev.touchX - this.currentX;
                         let dy = ev.touchY- this.currentY;
-                        if (dx < 0) {
-                            for (var i = ev.touchX; i < this.currentX; i++) {
-                                let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
-                                this.drawing[i][y] = 1;
+                        if(Math.abs(ev.touchX-x*1.25)>this.width*0.15){
+                            gest("move",dx);
+                            this.gesture=true;
+                        }else{
+                            if (dx < 0) {
+                                for (var i = ev.touchX; i < this.currentX; i++) {
+                                    let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
+                                    this.drawing[i][y] = 1;
+                                }
                             }
-                        }
-                        else {
-                            for (var i = ev.touchX; i > this.currentX; i--) {
-                                let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
-                                this.drawing[i][y] = 1;
+                            else {
+                                for (var i = ev.touchX; i > this.currentX; i--) {
+                                    let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
+                                    this.drawing[i][y] = 1;
+                                }
                             }
+                            this.drawn=true;
                         }
+
                     }
                     this.currentX=ev.touchX;
                     this.currentY=ev.touchY;
-                    this.drawn=true;
+
                 }
 
                 // This is called when you release the mouse button.
                 else if(ev.type === 'mouseup'||control=="mouseup"){
                     if (this.started) {
+                        gest("up",0);
                         this.started = false;
                         ENCOG.drawingDelete(this.glass,this.element);
                     }
@@ -159,6 +170,7 @@ exports.neural = function(runtime) {
 
                 else if(ev.type === 'touchend'||control=="touchend"){
                     if (this.started) {
+                        gest("up",0);
                         this.started = false;
                         ENCOG.drawingDelete(this.glass,this.element);
                     }
@@ -268,7 +280,7 @@ exports.neural = function(runtime) {
     var set = false;
     var ondraw=false;
 
-    function init_draw(element,x,y,name,callback,printNumber,prod,glass) {
+    function init_draw(element,x,y,name,callback,printNumber,prod,glass,gest) {
         let drawingArea;
         let bestchar;
         ondraw=true;
@@ -276,98 +288,106 @@ exports.neural = function(runtime) {
         preload();
 
         runtime.addEvent(drawingArea.canvasDiv,'mouseup', function (e) {
-            if(numToSend.element=="") numToSend.element=name;
-            bestchar = ev_recognize();
-            if((bestchar=="click")&&(drawingArea.drawn)) bestchar=1;
-            drawingArea.ev_canvas(e, "mouseup");
-            if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
-            else {
-                numToSend.num += bestchar;
-            }
-            if(numToSend.num.length<3) {
-                printNumber(numToSend.num+"_");
-            }
-            else {
-                printNumber(numToSend.num);
-            }
-            if (numToSend.num == "click") {
-                clearTimeout();
-                printNumber("");
-                callback(numToSend.num, prod);
-                numToSend.num = "";
-                numToSend.element = "";
-            }
-            else {
-                if (!set) {
-                    set=true;
-                    setTimeout((function () {
-                        drawingArea.ev_canvas(e, "mouseup");
-                        if (isNaN(parseInt(numToSend.num))){
-                            numToSend.num = "";
-                            printNumber("");
-                            callback("?",prod);
-                        }
-                        if (numToSend.num != "") {
-                            printNumber("");
-                            callback(numToSend.num, prod);
-                        }
-                        numToSend.num = "";
-                        numToSend.element = "";
-                        ondraw = false;
-                        set = false;
-                    }), 2500);
+            if(drawingArea.gesture==false) {
+                if (numToSend.element == "") numToSend.element = name;
+                bestchar = ev_recognize();
+                if ((bestchar == "click") && (drawingArea.drawn)) bestchar = 1;
+                drawingArea.ev_canvas(e, "mouseup",0,gest);
+                if ((bestchar == "click") && (numToSend.num.length != 0)) numToSend.num += "?";
+                else {
+                    numToSend.num += bestchar;
                 }
+                if (numToSend.num.length < 3) {
+                    printNumber(numToSend.num + "_");
+                }
+                else {
+                    printNumber(numToSend.num);
+                }
+                if (numToSend.num == "click") {
+                    clearTimeout();
+                    printNumber("");
+                    callback(numToSend.num, prod);
+                    numToSend.num = "";
+                    numToSend.element = "";
+                }
+                else {
+                    if (!set) {
+                        set = true;
+                        setTimeout((function () {
+                            drawingArea.ev_canvas(e, "mouseup",0,gest);
+                            if (isNaN(parseInt(numToSend.num))) {
+                                numToSend.num = "";
+                                printNumber("");
+                                callback("?", prod);
+                            }
+                            if (numToSend.num != "") {
+                                printNumber("");
+                                callback(numToSend.num, prod);
+                            }
+                            numToSend.num = "";
+                            numToSend.element = "";
+                            ondraw = false;
+                            set = false;
+                        }), 2500);
+                    }
+                }
+            }else{
+                drawingArea.ev_canvas(e, "mouseup",0,gest);
             }
         });
         runtime.addEvent(drawingArea.canvasDiv,'mousemove', function (e) {
-            drawingArea.ev_canvas(e,"mousemove");
+            drawingArea.ev_canvas(e,"mousemove",x,gest);
         }, true);
 
         runtime.addEvent(prod.component.component,'touchend', function (e) {
-            if(numToSend.element=="") numToSend.element=name;
-            bestchar = ev_recognize();
-            if((bestchar=="click")&&(drawingArea.drawn)) bestchar=1;
-            drawingArea.ev_canvas(e, "touchend");
-            if((bestchar =="click")&&(numToSend.num.length!=0))numToSend.num+="?";
-            else numToSend.num += bestchar;
-            if(numToSend.num.length<3) {
-                printNumber(numToSend.num+"_");
-            }
-            else {
-                printNumber(numToSend.num);
-            }
-            if (numToSend.num == "click") {
-                clearTimeout();
-                printNumber("");
-                callback(numToSend.num,prod);
-                numToSend.num = "";
-                numToSend.element = "";
-            }
-            else {
-                if (!set) {
-                    set=true;
-                    setTimeout((function () {
-                        drawingArea.ev_canvas(e, "touchend");
-                        if (isNaN(parseInt(numToSend.num))){
-                            numToSend.num = "";
-                            printNumber("");
-                            callback("?",prod);
-                        }
-                        if (numToSend.num != "") {
-                            printNumber("");
-                            callback(numToSend.num, prod);
-                        }
-                        numToSend.num = "";
-                        numToSend.element = "";
-                        ondraw = false;
-                        set = false;
-                    }), 2500);
+            if(drawingArea.gesture==false) {
+                if (numToSend.element == "") numToSend.element = name;
+                bestchar = ev_recognize();
+                if ((bestchar == "click") && (drawingArea.drawn)) bestchar = 1;
+                drawingArea.ev_canvas(e, "touchend",0,gest);
+                if ((bestchar == "click") && (numToSend.num.length != 0)) numToSend.num += "?";
+                else numToSend.num += bestchar;
+                if (numToSend.num.length < 3) {
+                    printNumber(numToSend.num + "_");
                 }
+                else {
+                    printNumber(numToSend.num);
+                }
+                if (numToSend.num == "click") {
+                    clearTimeout();
+                    printNumber("");
+                    callback(numToSend.num, prod);
+                    numToSend.num = "";
+                    numToSend.element = "";
+                }
+                else {
+                    if (!set) {
+                        set = true;
+                        setTimeout((function () {
+                            drawingArea.ev_canvas(e, "touchend",0,gest);
+                            if (isNaN(parseInt(numToSend.num))) {
+                                numToSend.num = "";
+                                printNumber("");
+                                callback("?", prod);
+                            }
+                            if (numToSend.num != "") {
+                                printNumber("");
+                                callback(numToSend.num, prod);
+                            }
+                            numToSend.num = "";
+                            numToSend.element = "";
+                            ondraw = false;
+                            set = false;
+                        }), 2500);
+                    }
+                }
+            }else{
+                drawingArea.ev_canvas(e, "touchend",0,gest);
             }
         }, true);
 
         runtime.addEvent(prod.component.component,'touchmove', function (e) {
-            drawingArea.ev_canvas(e);
+            drawingArea.ev_canvas(e,"touchmove",x,gest);
         }, true);
         runtime.addEvent(drawingArea.canvasDiv,'mouseout', function (e) {
             drawingArea.ev_canvas(e,"mouseout");
