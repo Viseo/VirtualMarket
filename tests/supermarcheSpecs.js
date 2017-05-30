@@ -43,6 +43,8 @@ describe("Test",function (){
     it("ensure that header is well formed",function(){
         let header = retrieve(market.component,"[header]");
         inspect(header,{tag:"g",transform:"translate(0 0)"});
+        let logo = retrieve(header,"[logo]");
+        runtime.event(logo,"click",{});
     });
 
     it("ensure that categories is well formed",function(){
@@ -61,61 +63,61 @@ describe("Test",function (){
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
     });
 
-    it("ensure that chevronE ray is working",function(){
-        let categories = retrieve(market.component,"[categories].[Fruits]");
-        runtime.event(categories,"click",{});
-        let ray = retrieve(market.component,"[ray Fruits].[listRay]");
-        inspect(ray,{tag:"g",transform:"translate(0 0)"});
-        let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
-        let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        inspect(ray,{tag:"g",transform:"translate(-746.6999999999997 0)"});
-
-    });
-
-    it("ensure that chevronW ray is working",function(){
-        let categories = retrieve(market.component,"[categories].[Fruits]");
-        runtime.event(categories,"click",{});
-        let ray = retrieve(market.component,"[ray Fruits].[listRay]");
-        inspect(ray,{tag:"g",transform:"translate(0 0)"});
-        let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
-        let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
-        runtime.event(chevronE,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW,"click",{});
-        runtime.advanceAll();
-        inspect(ray,{tag:"g",transform:"translate(0 0)"});
-
-        let categories2 = retrieve(market.component,"[categories].[Mode]");
-        runtime.event(categories2,"click",{});
-        let ray2 = retrieve(market.component,"[ray Mode].[listRay]");
-        inspect(ray2,{tag:"g",transform:"translate(0 0)"});
-        let chevronW2 = retrieve(market.component,"[ray Mode].[chevronWRay]");
-        let chevronE2 = retrieve(market.component,"[ray Mode].[chevronERay]");
-        runtime.event(chevronE2,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronE2,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW2,"click",{});
-        runtime.advanceAll();
-        runtime.event(chevronW2,"click",{});
-        runtime.advanceAll();
-        inspect(ray2,{tag:"g",transform:"translate(0 0)"});
-
-    });
+    // it("ensure that chevronE ray is working",function(){
+    //     let categories = retrieve(market.component,"[categories].[Fruits]");
+    //     runtime.event(categories,"click",{});
+    //     let ray = retrieve(market.component,"[ray Fruits].[listRay]");
+    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
+    //     let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
+    //     let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
+    //     runtime.event(chevronE,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronE,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronE,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronE,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronW,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronE,"click",{});
+    //     runtime.advanceAll();
+    //     inspect(ray,{tag:"g",transform:"translate(-746.6999999999997 0)"});
+    //
+    // });
+    //
+    // it("ensure that chevronW ray is working",function(){
+    //     let categories = retrieve(market.component,"[categories].[Fruits]");
+    //     runtime.event(categories,"click",{});
+    //     let ray = retrieve(market.component,"[ray Fruits].[listRay]");
+    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
+    //     let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
+    //     let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
+    //     runtime.event(chevronE,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronW,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronW,"click",{});
+    //     runtime.advanceAll();
+    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
+    //
+    //     let categories2 = retrieve(market.component,"[categories].[Mode]");
+    //     runtime.event(categories2,"click",{});
+    //     let ray2 = retrieve(market.component,"[ray Mode].[listRay]");
+    //     inspect(ray2,{tag:"g",transform:"translate(0 0)"});
+    //     let chevronW2 = retrieve(market.component,"[ray Mode].[chevronWRay]");
+    //     let chevronE2 = retrieve(market.component,"[ray Mode].[chevronERay]");
+    //     runtime.event(chevronE2,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronE2,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronW2,"click",{});
+    //     runtime.advanceAll();
+    //     runtime.event(chevronW2,"click",{});
+    //     runtime.advanceAll();
+    //     inspect(ray2,{tag:"g",transform:"translate(0 0)"});
+    //
+    // });
 
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
