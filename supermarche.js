@@ -1734,7 +1734,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         constructor(image,title){
             super(image,title);
             this.component.add(this.title);
-            this.name = title;
 
             this.width = market.width*0.08;
             this.height = market.height*0.2;
@@ -1742,6 +1741,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.add(this.background);
             this.component.add(this.image);
             this.component.add(this.title);
+
+            this.responsivName = this.name.split(" ");
+            if(this.responsivName.length>1){
+                this.title.message(this.responsivName[0]);
+                this.title2 = new svg.Text(this.responsivName[1]+" "+(this.responsivName[2]?this.responsivName[2]:""));
+                this.component.add(this.title2);
+            }
+            else if(this.name.length>10){
+                this.responsivName=[this.name.substring(0,Math.floor(this.name.length/2)),this.name.substring(Math.floor(this.name.length/2))];
+                this.title.message(this.responsivName[0]);
+                this.title2 = new svg.Text(this.responsivName[1]);
+                this.component.add(this.title2);
+            }
 
             this.active = false;
 
@@ -1755,10 +1767,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
 		placeElements(){
             this.image.position(this.width/2,this.height*0.4).dimension(this.width,this.height*0.6).mark(this.name);
-            this.title.position(this.width/2,this.height*0.90).font("Calibri",this.height*0.12,1)
+            this.title.position(this.width/2,this.height*0.85).font("Calibri",this.height*0.10,1)
                 .color([[0,120,200]]).mark(this.name + " title").anchor("middle");
             runtime.attr(this.title.component,"font-weight","bold");
             this.background.position(this.width/2,this.height/2).corners(8,8);
+
+            if(this.responsivName.length>1) {
+                this.title2.position(this.width/2,this.height*0.95).font("Calibri",this.height*0.10,1)
+                    .color([[0,120,200]]).mark(this.name + " title").anchor("middle");
+                runtime.attr(this.title2.component,"font-weight","bold");
+            }
         }
 	}
 
@@ -1803,12 +1821,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 else if(number!="?") {
                     for(var c of number.split('')){
 
-                        if(c=="?")return;
+                        if(c=="?"){
+                            if(Maps)textToSpeech("Je n'ai pas compris");
+                            return;
+                        }
                     }
                     element.addAnimation(number);
                     if(Maps)textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
-                }
+                }else if(number == "?") textToSpeech("Je n'ai pas compris");
+
             }
 
             let mousePos ={};
@@ -2116,8 +2138,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         currentMapSearch = message;
                         i = words.length;
                         if(Maps){
-                            textToSpeech("Vous ne pouvez pas vous faire livrer directement à " + message +
-                                ". Voici le magazin qui va vous livrer.", "fr");
+                            textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
                             market.mapsfunction.research(currentMapSearch);
                             setTimeout(function(){
                                 market.map.updateMarkersSide();
