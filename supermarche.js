@@ -319,16 +319,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             for (let product of this.thumbnailsProducts) {
                 this.stringPanier+=product.name+":"+product.quantity+",";
             }
-            let cookie = getCookie("Cookie");
-            if(cookie){
-                market.deleteCookie("Cookie");
-            }
-            if(cookie.split("|")[1]=="payment") {
-                createCookie("Cookie", cookie.split("|")[0].split("/")[0] + "/" + this.stringPanier.substring(0, this.stringPanier.length - 1) + "|payment", 1);
-            }
-            else{
-                createCookie("Cookie", cookie.split("|")[0].split("/")[0] + "/" + this.stringPanier.substring(0, this.stringPanier.length - 1) + "|", 1);
-            }
+            createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
+
 
         };
 
@@ -907,9 +899,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         paymentCookie(){
             if(Maps) {
-                let cookie = getCookie("Cookie");
-                market.deleteCookie("Cookie");
-                createCookie("Cookie", cookie.split("|")[0]+ "|" + "payment", 1);
+                createCookie("payment", "done", 1);
             }
         }
 
@@ -935,6 +925,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             market.pages[0].active = true;
             currentPage=market.map;
             currentIndex=1;
+            createCookie("page",1,1);
             loadMap();
         }
 
@@ -1602,7 +1593,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.picto.position(0,0);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.replace("/"," ")
+                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
                     + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
@@ -1617,7 +1608,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 round.changeColor(2);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.replace("/"," ")
+                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
                     + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
@@ -1998,7 +1989,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         }
 
         if(categories.rayTranslation!=null){
-            mainPage.remove(categories.rayTranslation).remove(categories.transRect).remove(zoneBasket).remove(zonePayment);;
+            mainPage.remove(categories.rayTranslation).remove(categories.transRect).remove(zoneBasket).remove(zonePayment);
         }
 
         categories.ray=new Ray(market.width*0.76, market.height * 0.75, 0, market.height / 4, tab, name);
@@ -2006,19 +1997,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mainPage.add(categories.rayTranslation).add(categories.transRect).add(zoneBasket).add(zonePayment);
 
         if(Maps){
-            let cookie = getCookie("Cookie");
+            let cookie = getCookie("ray");
             if(cookie){
-                market.deleteCookie("Cookie");
-                if(cookie.split("|")[1]=="payment"){
-                    createCookie("Cookie", categories.ray.name + "/" + cookie.split("|")[0].split("/")[1] + "|payment", 1);
-                }
-                else{
-                    createCookie("Cookie", categories.ray.name + "/" + cookie.split("|")[0].split("/")[1] + "|", 1);
-                }
+                market.deleteCookie("ray");
             }
-            else{
-                createCookie("Cookie", categories.ray.name + "/", 1);
-            }
+            createCookie("ray", categories.ray.name, 1);
         }
     };
 
@@ -2083,27 +2066,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             if (market.map) {
                 let words = message.split(" ");
                 for (var i = 0; i < words.length; i++) {
-                    if ((words[i].includes("poin")) && (words[i + 1].includes("relai"))) {
-                        message = message.substring(message.indexOf(words[i])).split(" ");
-                        i = words.length;
-                        let end = false;
-                        for (var i = 0; i < message.length; i++) {
-                            if ((message[i] >= "0" && message[i] <= "9") || (message[i - 1] == "numero")) {
-                                let selec = message[i];
-                                if (selec == "un") selec = 1;
-
-                                if (Maps) market.toCalendar(market.mapsfunction.chooseRelai(selec));
-                                end = true;
-                                break;
-                            }
-                        }
-                        if (end) break;
-                    }
-                    else if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) ||
+                    if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) ||
                         ((words[i] == "avenue") || (words[i] == "rue") || (words[i] == "route") || (words[i] == "boulevard") || (words[i] == "quai")
                         || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
                         message = message.substring(message.indexOf(words[i]));
                         currentMapSearch = message;
+                        createCookie("address",currentMapSearch,1);
                         i = words.length;
                         if(Maps){
                             textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
@@ -2120,6 +2088,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         market.map.mapOn = false;
                         market.calendar.calendarOn = true;
                         currentMapSearch = market.map.input.value;
+                        createCookie("address",currentMapSearch,1);
                         mapPage.remove(market.map.component);
                         market.map = null;
                     }
@@ -2164,8 +2133,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     let answer = message.toLowerCase();
 
                     if (answer.includes("oui") && market.calendar.selectedHourday) {
-                        textToSpeech("Ok vous serez livrés à ces horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
-                        resetMarket();
+                        textToSpeech("Ok vous serez livrés aux horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
+                        setTimeout(function(){
+                            resetMarket();
+                        },3000);
                     }
                     else if (answer.includes("non") && market.calendar.selectedHourday) {
                         textToSpeech("Nous annulons votre livraison", "fr");
@@ -2370,7 +2341,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         return obj;
     }
 
-    function createCookie(name, value, expires, path, domain) {
+    function createCookie(name, value, expires,path,domain) {
         var cookie = name + "=" + value + ";";
 
         if (expires) {
@@ -2386,20 +2357,26 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             cookie += "expires=" + expires.toGMTString() + ";";
         }
 
-        if (path)
-        cookie += "path=" + path + ";";
-        if (domain)
-            cookie += "domain=" + domain + ";";
+        cookie += "domain=;";
+        cookie += "path=/;";
 
         if(Maps)document.cookie = cookie;
     }
 
-    function getCookie(name) {
-        if(Maps) {
-            var regexp = new RegExp("(?:^" + name + "|;\s*" + name + ")=(.*?)(?:;|$)", "g");
-            var result = regexp.exec(document.cookie);
-            return (result === null) ? null : result[1];
+    function getCookie(cname){
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
         }
+        return "";
     }
 
     market.deleteCookie = function( name){
@@ -2407,11 +2384,21 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     };
 
     function resetMarket(){
-        market.deleteCookie("Cookie");
+        market.deleteCookie("ray");
+        market.deleteCookie("basket");
+        market.deleteCookie("payment");
+        market.deleteCookie("address");
+        market.deleteCookie("page");
         if(Maps){
             window.location.reload();
         }
     }
+
+    window.onresize = function(){
+        if(Maps){
+            window.location.reload();
+        }
+    };
 
     /////Déclaration Interface////
     let mainPage=new svg.Translation().mark("mainPage");
@@ -2438,36 +2425,36 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.calendar.component.move(market.width*0.06,0);
     //Tab:
     let tabX = market.width*0.98;
-        //CALENDAR
-        let calendarOnglY = (market.height*0.57);
-        let linePathCalendar=new svg.Path(tabX,calendarOnglY);
-        linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
-        linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
-        linePathCalendar.line(tabX,calendarOnglY+market.height*0.27).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
-        let calendarIcon = new svg.Image("img/calendarIcon.png").dimension(market.width*0.018,market.width*0.018)
-            .position(tabX+market.width*0.0105,calendarOnglY+market.height*0.1);
-        let calendarPage = new svg.Translation()
-            .add(new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).color([230,230,230]))
-            .add(linePathCalendar).add(market.calendar.component).add(calendarIcon);
+    //CALENDAR
+    let calendarOnglY = (market.height*0.57);
+    let linePathCalendar=new svg.Path(tabX,calendarOnglY);
+    linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+    linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+    linePathCalendar.line(tabX,calendarOnglY+market.height*0.27).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+    let calendarIcon = new svg.Image("img/calendarIcon.png").dimension(market.width*0.018,market.width*0.018)
+        .position(tabX+market.width*0.0105,calendarOnglY+market.height*0.1);
+    let calendarPage = new svg.Translation()
+        .add(new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).color([230,230,230]))
+        .add(linePathCalendar).add(market.calendar.component).add(calendarIcon);
 
-        //MAP
-        let mapOnglY = Math.round(market.height*0.31);
-        let linePathMap=new svg.Path(tabX,mapOnglY);
-        linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.02).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
-        linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.25).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
-        linePathMap.line(tabX,mapOnglY+market.height*0.27).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
-        let mapIcon = new svg.Image("img/mapIcon.png").dimension(market.width*0.018,market.width*0.018)
-            .position(tabX+market.width*0.0105,mapOnglY+market.height*0.1);
+    //MAP
+    let mapOnglY = Math.round(market.height*0.31);
+    let linePathMap=new svg.Path(tabX,mapOnglY);
+    linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.02).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+    linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.25).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+    linePathMap.line(tabX,mapOnglY+market.height*0.27).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+    let mapIcon = new svg.Image("img/mapIcon.png").dimension(market.width*0.018,market.width*0.018)
+        .position(tabX+market.width*0.0105,mapOnglY+market.height*0.1);
 
-        //MAINPAGE
-        let mainOnglY = Math.round(market.height*0.05);
-        let linePathMain=new svg.Path(tabX,mainOnglY);
-        linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.02).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
-        linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.25).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
-        linePathMain.line(tabX,mainOnglY+market.height*0.27).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
-        let mainIcon = new svg.Image("img/panier.png").dimension(market.width*0.018,market.width*0.018)
-            .position(tabX+market.width*0.0105,mainOnglY+market.height*0.1);
-        mainPage.add(linePathMain).add(mainIcon);
+    //MAINPAGE
+    let mainOnglY = Math.round(market.height*0.05);
+    let linePathMain=new svg.Path(tabX,mainOnglY);
+    linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.02).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+    linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.25).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+    linePathMain.line(tabX,mainOnglY+market.height*0.27).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+    let mainIcon = new svg.Image("img/panier.png").dimension(market.width*0.018,market.width*0.018)
+        .position(tabX+market.width*0.0105,mainOnglY+market.height*0.1);
+    mainPage.add(linePathMain).add(mainIcon);
 
     let mapPage = new svg.Translation().mark("map");
     let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
@@ -2482,7 +2469,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         setTimeout(function(){
             if(Maps){
                 market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar);
-                if (currentMapSearch != "") {
+                if (currentMapSearch != ""){
                     market.mapsfunction.research(currentMapSearch);
                 }
                 setTimeout(function(){
@@ -2495,6 +2482,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
     market.toCalendar= function(message){
         if (Maps){
             currentMapSearch= market.map.input.value;
+            createCookie("address",currentMapSearch,1);
             mapPage.remove(market.map.component);
             market.map=null;
         }
@@ -2506,11 +2494,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             currentIndex = 0;
         },200);
 
+        createCookie("page",0,1);
         market.calendar.printCurrentMonthContent();
         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
-    }
+    };
 
     let currentMapSearch = "";
+    if(getCookie("address")) currentMapSearch = getCookie("address");
     let currentPage=mainPage;
     let currentIndex=2;
     market.pages=[];
@@ -2524,6 +2514,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     if (index != 1) {
                         if(market.map!=null){
                             currentMapSearch= market.map.input.value;
+                            createCookie("address",currentMapSearch,1);
                             mapPage.remove(market.map.component);
                             market.map=null;
                         }
@@ -2555,6 +2546,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     else if (currentIndex==1){
                         market.calendar.calendarOn = false;
                     }
+
+                    createCookie("page",index,1);
                 }
             }
         });
@@ -2569,28 +2562,53 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     if(Maps)textToSpeech("Bonjour, Bienvenue!","fr");
 
-    if(Maps&&getCookie("Cookie")){
-        let cookiePayment = getCookie("Cookie").split("|");
-        let cookie=getCookie("Cookie").split("|")[0].split("/");
-        if(cookie[0]!="Recherche"){
-            market.changeRay(cookie[0]);
+    if(Maps){
+        let cookiePayment = getCookie("payment");
+        let cookieRay=getCookie("ray");
+        let cookieBasket=getCookie("basket");
+        if((cookieRay!="Recherche")&&(cookieRay)){
+            market.changeRay(cookieRay);
         }
         else {
             market.changeRay("HighTech");
         }
 
-        if(cookie[1]) {
-            let stringBasket = cookie[1].split(",");
+        if(cookieBasket) {
+            let stringBasket = cookieBasket.split(",");
             for (let i in stringBasket) {
                 let tabProd = stringBasket[i].split(":");
                 let prod = search(tabProd[0]);
                 market.basket.addProducts(prod[0], tabProd[1]);
             }
         }
-        if(cookiePayment[1]=="payment")
-        {
+        if(cookiePayment=="done"){
             market.pages[1].active = true;
             market.pages[0].active = true;
+
+            let index=getCookie("page");
+            if(index==1){
+                loadMap();
+                setTimeout(function(){
+                    market.map.updateMarkersSide();
+                },3500);
+            }
+            if (2 > index) {
+                for (let j = 2; j > index; j--) {
+                    market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
+                }
+            }
+            currentPage = market.pages[index].obj;
+            currentIndex = index;
+
+            if (currentIndex == 0) {
+                market.calendar.calendarOn = true;
+            }
+            else if (currentIndex==1){
+                market.calendar.calendarOn = false;
+            }
+        }
+        else{
+            createCookie("page",2,1);
         }
     }
     else{
@@ -2599,4 +2617,4 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
     return market;
     //////////////////////////////
-}
+};
