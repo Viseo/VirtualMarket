@@ -174,13 +174,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
         gesture(type, dx){
 		    if(type=="move"){
-                categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
+                if (categories.ray.listWidth > market.width*0.75) {
+                    categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
+                }
             }
             else if(type=="up"){
-                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0){
+                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth > market.width*0.75){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
-                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width){
+                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width && categories.ray.listWidth > market.width*0.75){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
                 }
 
@@ -1219,20 +1221,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                         self.month = self.getMonth()[self.monthNumber];
                         self.changeTitleText(self.month + " " + self.year);
                         self.printCurrentMonthContent();
-                    } else {
-                        if ((self.presentMonth > self.monthNumber) && (self.presentYear === self.year)) {
-                            self.monthNumber++;
-                            self.chevronWest.opacity(0.5);
-                        }
-                        else {
-                            if (self.monthNumber < 0) {
-                                self.monthNumber = 11;
-                                self.year--;
-                            }
-                            self.month = self.getMonth()[self.monthNumber];
-                            self.changeTitleText(self.month + " " + self.year);
-                            self.printMonthContent(self.monthNumber, self.year);
-                        }
                     }
                     if (self.choice == null) {
                         self.picto.position(self.pictoPosX, self.pictoPosY);
