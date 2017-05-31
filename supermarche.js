@@ -107,7 +107,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             });
         }
     }
-    
+
     class Ray extends DrawingZone {
 		constructor(width,height,x,y,tabThumbnail,cat) {
             super(width, height, x, y);
@@ -662,7 +662,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             // });
         }
     }
-    
+
     class Payment extends DrawingZone {
         constructor(width,height,x,y){
             super(width,height,x,y);

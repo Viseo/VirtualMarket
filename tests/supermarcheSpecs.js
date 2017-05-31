@@ -13,11 +13,14 @@ let data = DATA();
 let NEURAL = require("../neuralNetDrawing").neural;
 let neural = NEURAL(mockRuntime());
 
+let timer = require("./timer-fake").timer;
+
 let runtime;
 let svg;
 let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 let market;
+let fakeTimer;
 
 describe("Test",function (){
     this.timeout(50000);
@@ -26,7 +29,8 @@ describe("Test",function (){
         runtime.declareAnchor("content");
         svg = SVG(runtime);
         gui = GUI((svg),"");
-        market = main(svg,gui,{data},neural,mockRuntime());
+        fakeTimer = new timer().setNow(new Date(2017,6,10,8,0));
+        market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer);
         market.changeRay("HighTech");
     });
 
@@ -62,62 +66,6 @@ describe("Test",function (){
         let ray = retrieve(market.component,"[ray Fruits]");
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
     });
-
-    // it("ensure that chevronE ray is working",function(){
-    //     let categories = retrieve(market.component,"[categories].[Fruits]");
-    //     runtime.event(categories,"click",{});
-    //     let ray = retrieve(market.component,"[ray Fruits].[listRay]");
-    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
-    //     let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
-    //     let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     inspect(ray,{tag:"g",transform:"translate(-746.6999999999997 0)"});
-    //
-    // });
-    //
-    // it("ensure that chevronW ray is working",function(){
-    //     let categories = retrieve(market.component,"[categories].[Fruits]");
-    //     runtime.event(categories,"click",{});
-    //     let ray = retrieve(market.component,"[ray Fruits].[listRay]");
-    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
-    //     let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
-    //     let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW,"click",{});
-    //     runtime.advanceAll();
-    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
-    //
-    //     let categories2 = retrieve(market.component,"[categories].[Mode]");
-    //     runtime.event(categories2,"click",{});
-    //     let ray2 = retrieve(market.component,"[ray Mode].[listRay]");
-    //     inspect(ray2,{tag:"g",transform:"translate(0 0)"});
-    //     let chevronW2 = retrieve(market.component,"[ray Mode].[chevronWRay]");
-    //     let chevronE2 = retrieve(market.component,"[ray Mode].[chevronERay]");
-    //     runtime.event(chevronE2,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE2,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW2,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW2,"click",{});
-    //     runtime.advanceAll();
-    //     inspect(ray2,{tag:"g",transform:"translate(0 0)"});
-    //
-    // });
 
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
@@ -937,6 +885,7 @@ describe("Test",function (){
             done();
         },15000);
     });
+
     it("ensure that the interface to enter the code pattern is working with touch event",function(done){
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
@@ -1187,6 +1136,7 @@ describe("Test",function (){
         runtime.event(round2, "click", {});
         runtime.advanceAll();
         runtime.event(round0, "click", {})
+
         runtime.advanceAll();
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
@@ -1535,6 +1485,7 @@ describe("Test",function (){
 
 
     });
+
     it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
         market.toCalendar('Parc des Princes')
         setTimeout(function(){
