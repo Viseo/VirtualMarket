@@ -1,4 +1,5 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
+exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap){
+
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
@@ -610,46 +611,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     }
                 }
             }
-
-
-            // svg.addEvent(this.micro,"touchstart",function(){
-            //     if(!recording) {
-            //         voice = [];
-            //         startRecording();
-            //         recording=true;
-            //         console.log("je record");
-            //         micro.url("img/microphone.gif");
-            //         setTimeout(function () {
-            //             stopRecording();
-            //             micro.url("img/microphoneload.gif");
-            //             console.log("je record plus");
-            //             let i = 0;
-            //             timer = setInterval(function () {
-            //                 i++;
-            //                 voice = getMessage();
-            //                 if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
-            //                     clearInterval(timer);
-            //                     console.log(voice['transcript']);
-            //                     if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
-            //                     else if (voice['confidence'] > 0.5) {
-            //                         market.vocalRecognition(voice['transcript']);
-            //                     }
-            //                     else {
-            //                         console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
-            //                         textToSpeech("Je n'ai pas bien compris votre demande", "fr");
-            //
-            //                     }
-            //                     i = 0;
-            //
-            //                     voice = [];
-            //                     recording = false;
-            //                 }
-            //                 micro.url("img/microphone-deactivated.png");
-            //             }, 200);
-            //         }, 4000);
-            //
-            //     }
-            // });
         }
     }
     
@@ -1160,39 +1121,37 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.calendarWidth = width;
             this.calendarHeight = height*0.8;
 
-            this.date = new Date();
-            this.monthNumber = this.date.getMonth();
+            timer.pickDate();
+            this.monthNumber = timer.getMonth();
             this.presentMonth = this.monthNumber;
-            this.presentYear = this.date.getYear()+1900;
+            this.presentYear = timer.getYear();
             this.month = this.getMonth()[this.monthNumber];
-            this.year = this.date.getYear()+1900;
-
-            let self = this;
-            this.zoneChevronEast.onClick(function(){
-                if(self.chevronEast._opacity==0.5){
+            this.year = timer.getYear();
+            this.zoneChevronEast.onClick(()=>{
+                if(this.chevronEast._opacity==0.5){
                 }
                 else{
-                    if(self.presentMonth===self.monthNumber){
-                        self.monthNumber++;
-                        if (self.monthNumber===12){
-                            self.monthNumber=0;
-                            self.year++;
+                    if(this.presentMonth===this.monthNumber){
+                        this.monthNumber++;
+                        if (this.monthNumber===12){
+                            this.monthNumber=0;
+                            this.year++;
                         }
-                        self.month = self.getMonth()[self.monthNumber];
-                        self.changeTitleText(self.month+" "+self.year);
-                        self.chevronWest.opacity(1);
-                        self.chevronEast.opacity(0.5);
-                        self.printMonthContent(self.monthNumber,self.year);
+                        this.month = this.getMonth()[this.monthNumber];
+                        this.changeTitleText(this.month+" "+this.year);
+                        this.chevronWest.opacity(1);
+                        this.chevronEast.opacity(0.5);
+                        this.printMonthContent(this.monthNumber,this.year);
                     }
-                    if(self.choice==null) {
-                        self.picto.position(self.pictoPosX,self.pictoPosY);
+                    if(this.choice==null) {
+                        this.picto.position(this.pictoPosX,this.pictoPosY);
                     }
                     else{
-                        self.component.remove(self.picto);
-                        for (let round in self.rounds) {
-                            if((self.rounds[round].tabH.dayP == self.choice.tabH.dayP) && (self.rounds[round].tabH.hourAL == self.choice.tabH.hourAL)) {
-                                self.checkPlace(self.rounds[round]);
-                                self.rounds[round].changeColor(2);
+                        this.component.remove(this.picto);
+                        for (let round in this.rounds) {
+                            if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
+                                this.checkPlace(this.rounds[round]);
+                                this.rounds[round].changeColor(2);
                             }
                         }
                     }
@@ -1200,40 +1159,40 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
 
             });
 
-            this.zoneChevronWest.onClick(function(){
-                if(self.chevronWest._opacity==0.5){}
+            this.zoneChevronWest.onClick(()=>{
+                if(this.chevronWest._opacity==0.5){}
                 else {
-                    self.monthNumber--;
-                    if ((self.presentMonth === self.monthNumber) && (self.presentYear === self.year)) {
-                        self.chevronWest.opacity(0.5);
-                        self.chevronEast.opacity(1);
-                        self.month = self.getMonth()[self.monthNumber];
-                        self.changeTitleText(self.month + " " + self.year);
-                        self.printCurrentMonthContent();
+                    this.monthNumber--;
+                    if ((this.presentMonth === this.monthNumber) && (this.presentYear === this.year)) {
+                        this.chevronWest.opacity(0.5);
+                        this.chevronEast.opacity(1);
+                        this.month = this.getMonth()[this.monthNumber];
+                        this.changeTitleText(this.month + " " + this.year);
+                        this.printCurrentMonthContent();
                     } else {
-                        if ((self.presentMonth > self.monthNumber) && (self.presentYear === self.year)) {
-                            self.monthNumber++;
-                            self.chevronWest.opacity(0.5);
+                        if ((this.presentMonth > this.monthNumber) && (this.presentYear === this.year)) {
+                            this.monthNumber++;
+                            this.chevronWest.opacity(0.5);
                         }
                         else {
-                            if (self.monthNumber < 0) {
-                                self.monthNumber = 11;
-                                self.year--;
+                            if (this.monthNumber < 0) {
+                                this.monthNumber = 11;
+                                this.year--;
                             }
-                            self.month = self.getMonth()[self.monthNumber];
-                            self.changeTitleText(self.month + " " + self.year);
-                            self.printMonthContent(self.monthNumber, self.year);
+                            this.month = this.getMonth()[this.monthNumber];
+                            this.changeTitleText(this.month + " " + this.year);
+                            this.printMonthContent(this.monthNumber, this.year);
                         }
                     }
-                    if (self.choice == null) {
-                        self.picto.position(self.pictoPosX, self.pictoPosY);
+                    if (this.choice == null) {
+                        this.picto.position(this.pictoPosX, this.pictoPosY);
                     }
                     else {
-                        self.component.remove(self.picto);
-                        for (let round in self.rounds) {
-                            if((self.rounds[round].tabH.dayP == self.choice.tabH.dayP) && (self.rounds[round].tabH.hourAL == self.choice.tabH.hourAL)) {
-                                self.checkPlace(self.rounds[round]);
-                                self.rounds[round].changeColor(2);
+                        this.component.remove(this.picto);
+                        for (let round in this.rounds) {
+                            if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
+                                this.checkPlace(this.rounds[round]);
+                                this.rounds[round].changeColor(2);
 
                             }
                         }
@@ -1314,7 +1273,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             function toEndMove() {
                 let nbdays = 0;
                 if (self.current === true) {
-                    nbdays = self.numberDaysThisMonth - self.currentDate.getDate();
+                    nbdays = self.numberDaysThisMonth - timer.getDate();
                 } else {
                     nbdays = self.numberDaysThisMonth;
                 }
@@ -1358,18 +1317,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
-            this.monthNumber=new Date().getMonth();
-            this.month=this.getMonth()[this.monthNumber]
+            this.monthNumber=timer.getMonth();
+            this.month=this.getMonth()[this.monthNumber];
             this.chevronWest.opacity(0.5);
             this.chevronEast.opacity(1);
             this.calendarFirstColumn = new svg.Translation();
             this.calendarContent = new svg.Translation();
-            this.currentDate = new Date();
             this.changeTitleText(this.month+" "+this.year);
             let tabDays = [];
-            this.numberDaysThisMonth = this.daysInMonth(this.currentDate.getMonth(),this.currentDate.getYear());
+            this.numberDaysThisMonth = this.daysInMonth(timer.getMonth(),timer.getYear());
 
-            for(let j=0;j<this.numberDaysThisMonth-this.currentDate.getDate()+1;j++){
+            for(let j=0;j<this.numberDaysThisMonth-timer.getDay()+1;j++){
                 this.dayCases[j] = new svg.Translation();
                 this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
                 let text = "";
@@ -1380,7 +1338,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                     text = "Demain";
                 }
                 else{
-                    text = this.getWeekDay()[(this.currentDate.getDay()+j)%7]+" "+ (this.currentDate.getDate()+j);
+                    text = this.getWeekDay()[(timer.getDay()+j)%7]+" "+ (timer.getDay()+j);
                 }
                 this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
                 tabDays.push(text);
@@ -1411,10 +1369,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             }
 
 
-            for(let i = 0; i<this.numberDaysThisMonth-this.currentDate.getDate()+1;i++){
+            for(let i = 0; i<this.numberDaysThisMonth-timer.getDay()+1;i++){
                 let line = new svg.Translation();
                 for (var j=0;j<11;j++){
-                    let element = new svg.Rect(this.caseWidth,this.caseHeight)
+                    let element = new svg.Rect(this.caseWidth,this.caseHeight);
                     if(j%2){
                         element.color(svg.ALMOST_WHITE,1,svg.ALMOST_WHITE).position(j*this.caseWidth,0).opacity(1);
                     }else{
@@ -1449,16 +1407,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             let dayMonth = [];
 
             if(this.current===true){
-                for(let i = 0; i<this.numberDaysThisMonth-this.currentDate.getDate()+1;i++){
+                for(let i = 0; i<this.numberDaysThisMonth-timer.getDay()+1;i++){
                     let str = "";
-                    if(this.currentDate.getDate()+i>=10)
-                        str += Number(this.currentDate.getDate() + i)+ "/";
+                    if(timer.getDay()+i>=10)
+                        str += Number(timer.getDay() + i)+ "/";
                     else
-                        str +="0"+Number(this.currentDate.getDate() + i) +"/";
-                    if(this.currentDate.getMonth()<10)
-                        str += "0"+(this.currentDate.getMonth()+1) +"/"+this.currentDate.getFullYear();
+                        str +="0"+Number(timer.getDay() + i) +"/";
+                    if(timer.getMonth()<10)
+                        str += "0"+(timer.getMonth()+1) +"/"+timer.getYear();
                     else
-                        str += (this.currentDate.getMonth()+1) +"/"+this.currentDate.getFullYear();
+                        str += (timer.getMonth()+1) +"/"+timer.getYear();
                     dayMonth.push(str);
                 }
             }
@@ -1483,21 +1441,21 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 tab = placePerDay(dayMonth[j],tab);
             }
 
-            if(this.currentDate!=0) {
-                var date2 = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-                var date3 = new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000);
+            if(timer.getDay()!=0){
+                var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
+                var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
                 let modul = "";
-                if (this.currentDate.getMonth() + 1 < 10) modul = "0";
+                if (timer.getMonth() + 1 < 10) modul = "0";
                 tab.push({
-                    dayP: this.currentDate.getDate() + "/" + modul + (this.currentDate.getMonth() + 1) + "/" + this.currentDate.getFullYear(),
+                    dayP: timer.getDay() + "/" + modul + (timer.getMonth() + 1) + "/" + timer.getYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address: this.address
                 });
                 tab.push({
-                    dayP: date2.getDate() + "/" + modul + (date2.getMonth() + 1) + "/" + date2.getFullYear(),
+                    dayP: tomorrow.getDay() + "/" + modul + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
                 });
                 tab.push({
-                    dayP: date3.getDate() + "/" + modul + (date3.getMonth() + 1) + "/" + date3.getFullYear(),
+                    dayP: afterTomorrow.getDay() + "/" + modul + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
                 });
             }
@@ -1549,12 +1507,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
 
-            this.currentDate=0;
             let tabDays = [];
             this.numberDaysThisMonth=this.daysInMonth(month,year);
             this.startDay=new Date(year,month,1).getDay();
 
-            for(let j=0;j+this.startDay<=this.numberDaysThisMonth+this.startDay;j++){
+            for(let j=0;j<=this.numberDaysThisMonth-1;j++){
                 this.dayCases[j] = new svg.Translation();
                 this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.WHITE));
                 let text = this.getWeekDay()[(j+this.startDay)%7]+" "+(j+1);
@@ -1586,7 +1543,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 this.calendarFirstRow.move(0,this.height*0.05+this.title.height*1.5);
             }
 
-            for(var i=0;i+this.startDay<=this.numberDaysThisMonth+this.startDay;i++){
+            for(var i=0;i<=this.numberDaysThisMonth-1;i++){
                 let line = new svg.Translation();
                 for (var j=0;j<11;j++){
                     let element = new svg.Rect(this.caseWidth,this.caseHeight);
@@ -1682,8 +1639,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
                 }
         }
 
-        daysInMonth(month, year) {
-            return new Date(year, month+1, 0).getDate();
+        daysInMonth(month, year){
+            return timer.getNumberOfDaysInMonth(month,year);
         }
     }
 
@@ -2500,7 +2457,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps) {
         mapPage.add(market.map.component);
         setTimeout(function(){
             if(Maps){
-                market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar);
+                market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
                 if (currentMapSearch != ""){
                     market.mapsfunction.research(currentMapSearch);
                 }

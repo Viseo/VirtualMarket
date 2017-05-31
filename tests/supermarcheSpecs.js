@@ -13,11 +13,14 @@ let data = DATA();
 let NEURAL = require("../neuralNetDrawing").neural;
 let neural = NEURAL(mockRuntime());
 
+let timer = require("./timer-fake").timer;
+
 let runtime;
 let svg;
 let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 let market;
+let fakeTimer;
 
 describe("Test",function (){
     this.timeout(50000);
@@ -26,7 +29,8 @@ describe("Test",function (){
         runtime.declareAnchor("content");
         svg = SVG(runtime);
         gui = GUI((svg),"");
-        market = main(svg,gui,{data},neural,mockRuntime());
+        fakeTimer = new timer().setNow(new Date(2017,6,10,8,0));
+        market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer);
         market.changeRay("HighTech");
     });
 
@@ -62,62 +66,6 @@ describe("Test",function (){
         let ray = retrieve(market.component,"[ray Fruits]");
         inspect(ray,{tag:"g",transform:"translate(0 0)"});
     });
-
-    // it("ensure that chevronE ray is working",function(){
-    //     let categories = retrieve(market.component,"[categories].[Fruits]");
-    //     runtime.event(categories,"click",{});
-    //     let ray = retrieve(market.component,"[ray Fruits].[listRay]");
-    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
-    //     let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
-    //     let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     inspect(ray,{tag:"g",transform:"translate(-746.6999999999997 0)"});
-    //
-    // });
-    //
-    // it("ensure that chevronW ray is working",function(){
-    //     let categories = retrieve(market.component,"[categories].[Fruits]");
-    //     runtime.event(categories,"click",{});
-    //     let ray = retrieve(market.component,"[ray Fruits].[listRay]");
-    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
-    //     let chevronE = retrieve(market.component,"[ray Fruits].[chevronERay]");
-    //     let chevronW = retrieve(market.component,"[ray Fruits].[chevronWRay]");
-    //     runtime.event(chevronE,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW,"click",{});
-    //     runtime.advanceAll();
-    //     inspect(ray,{tag:"g",transform:"translate(0 0)"});
-    //
-    //     let categories2 = retrieve(market.component,"[categories].[Mode]");
-    //     runtime.event(categories2,"click",{});
-    //     let ray2 = retrieve(market.component,"[ray Mode].[listRay]");
-    //     inspect(ray2,{tag:"g",transform:"translate(0 0)"});
-    //     let chevronW2 = retrieve(market.component,"[ray Mode].[chevronWRay]");
-    //     let chevronE2 = retrieve(market.component,"[ray Mode].[chevronERay]");
-    //     runtime.event(chevronE2,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronE2,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW2,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(chevronW2,"click",{});
-    //     runtime.advanceAll();
-    //     inspect(ray2,{tag:"g",transform:"translate(0 0)"});
-    //
-    // });
 
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
@@ -291,30 +239,6 @@ describe("Test",function (){
         runtime.event(basketProd2,"touchend",{touches:{0:{clientX:5,clientY:10}}});
         runtime.advanceAll();
     });
-
-    // it("ensure that we can mousehover and mouseout on a categorie",function(){
-    //     let categories = retrieve(market.component,"[categories].[Fruits]");
-    //     let categories2 = retrieve(market.component,"[categories].[Fruits2]");
-    //     let categorieTitle = retrieve(market.component,"[categories].[Fruits title]");
-    //     runtime.event(categories,"mouseenter",{});
-    //     runtime.advanceAll();
-    //     inspect(categories,{tag:"image",href:"img/categories/fruits.png",opacity:"0"});
-    //     inspect(categories2,{tag:"image",href:"img/categories/fruits2.png",opacity:"1"});
-    //     runtime.event(categorieTitle,"mouseenter",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories2,"mouseout",{});
-    //     runtime.advanceAll();
-    //     inspect(categories,{tag:"image",href:"img/categories/fruits.png",opacity:"1"});
-    //     inspect(categories2,{tag:"image",href:"img/categories/fruits2.png",opacity:"0"});
-    //     runtime.event(categories,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories2,"mouseenter",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories2,"mouseout",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories,"mouseout",{});
-    //     runtime.advanceAll();
-    // });
 
     it("ensure that we can mouseover and mouseout on a product and it title",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
@@ -885,6 +809,7 @@ describe("Test",function (){
             done();
         },15000);
     });
+
     it("ensure that the interface to enter the code pattern is working with touch event",function(done){
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
@@ -1120,7 +1045,7 @@ describe("Test",function (){
         runtime.event(column,"mousemove",{pageX:100,pageY:200});
         runtime.advanceAll();
 
-        let round0 = retrieve(market.component,"[calendar].[round 0]");
+        /*let round0 = retrieve(market.component,"[calendar].[round 0]");
         runtime.event(round0, "click", {})
         runtime.advanceAll();
         let round1 = retrieve(market.component,"[calendar].[round 1]");
@@ -1130,7 +1055,7 @@ describe("Test",function (){
         runtime.event(round2, "click", {});
         runtime.advanceAll();
         runtime.event(round0, "click", {})
-        runtime.advanceAll();
+        runtime.advanceAll();*/
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(done){
@@ -1476,6 +1401,7 @@ describe("Test",function (){
 
 
     });
+
     it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
         market.toCalendar('Parc des Princes')
         setTimeout(function(){
