@@ -854,7 +854,7 @@ exports.data = function() {
                 coord: {lat : 48.841436, lng : 2.253049},
                 address: "Parc des Princes",
                 dist:0,
-                livraison : [{"16/05/2017": {debut:"14", fin:"15", place:2, left:2, TPH:1.5}},{"15/05/2017": {debut:"9", fin:"11", place:3, left:0, TPH:1.3}},{"15/05/2017": {debut:"16", fin:"18", place:2, left:1, TPH:1.25}},{"08/06/2017":{debut:"13",fin:"14", place:1, left:2, TPH:2}},{"05/06/2017": {debut:"16", fin:"18", place:2, left:2, TPH:1.25}}]
+                livraison : [{"16/05/2017": {debut:"14", fin:"15", place:2, left:2, TPH:1.5}},{"15/05/2017": {debut:"9", fin:"11", place:3, left:0, TPH:1.3}},{"15/05/2017": {debut:"16", fin:"18", place:2, left:1, TPH:1.25}},{"08/06/2017":{debut:"13",fin:"14", place:1, left:1, TPH:2}},{"05/06/2017": {debut:"16", fin:"18", place:2, left:2, TPH:1.25}}]
             },
             "2": {
                 coord: {lat : 48.831481, lng : 2.276131},

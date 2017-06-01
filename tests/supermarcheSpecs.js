@@ -29,7 +29,7 @@ describe("Test",function (){
         runtime.declareAnchor("content");
         svg = SVG(runtime);
         gui = GUI((svg),"");
-        fakeTimer = new timer().setNow(new Date(2017,6,01,8,0));
+        fakeTimer = new timer().setNow(new Date(2017,5,01));
         market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer);
         market.changeRay("HighTech");
     });
@@ -274,22 +274,21 @@ describe("Test",function (){
         inspect(rayFruits,{tag:"g",transform:"translate(-746.6999999999997 0)"});
 
 
-        // let catHT = retrieve(market.component, "[categories].[HighTech]");
-        // runtime.event(catHT, "click", {});
-        // let rayHT = retrieve(market.component, "[ray HighTech].[listRay]");
-        // let canv2 = retrieve(market.component, "[glassCanvas]");
-        // assert(canv2);
-        // let product2 = retrieve(market.component, "[ray HighTech].[listRay].[Product Clavier]");
-        // runtime.event(product2,"mousedown",{type:"mousedown",pageX:0,pageY:0});
-        // runtime.advanceAll();
-        // let drawing2 = retrieve(market.component,"[glassCanvas].[draw Clavier]");
-        //
-        // runtime.event(drawing2,"mousemove",{pageX:1500,pageY:5});
-        // runtime.advanceAll();
-        // runtime.event(drawing2,"mousemove",{pageX:15000,pageY:5});
-        // runtime.advanceAll();
-        // inspect(rayHT,{tag:"g",transform:"translate(0 0)"});
-        // inspect(product2,{tag:"g",transform:"translate(11.4 11.4)"});
+        let catHT = retrieve(market.component, "[categories].[HighTech]");
+        runtime.event(catHT, "click", {});
+        let rayHT = retrieve(market.component, "[ray HighTech].[listRay]");
+        let canv2 = retrieve(market.component, "[glassCanvas]");
+        assert(canv2);
+        let product2 = retrieve(market.component, "[ray HighTech].[listRay].[Product Clavier]");
+        runtime.event(product2,"mousedown",{type:"mousedown",pageX:0,pageY:0});
+        runtime.advanceAll();
+        let drawing3 = retrieve(market.component,"[glassCanvas].[draw Clavier]");
+
+        runtime.event(drawing3,"mousemove",{pageX:1500,pageY:5});
+        runtime.advanceAll();
+        runtime.event(drawing3,"mousemove",{pageX:15000,pageY:5});
+        runtime.advanceAll();
+        inspect(rayHT,{tag:"g",transform:"translate(0 0)"});
     });
 
     // it("ensure that we can mousehover and mouseout on a categorie",function(){
@@ -1489,7 +1488,23 @@ describe("Test",function (){
     it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
         market.toCalendar('Parc des Princes')
         setTimeout(function(){
-            done();
-        },300);
+            market.vocalRecognition("je veux me faire livrer aujourd'hui à 10h");
+            market.vocalRecognition("je veux me faire livrer aujourd'hui");
+            market.vocalRecognition("je veux me faire livrer demain à 13h");
+            market.vocalRecognition("je veux me faire livrer demain");
+            market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
+            market.vocalRecognition("je veux me faire livrer le 10 juin");
+// market.vocalRecognition("oui");
+// market.vocalRecognition("non");
+// market.vocalRecognition("Je selectionne le point relai numero 1");
+            setTimeout(function() {
+                market.vocalRecognition("Je valide");
+
+                runtime.advanceAll();
+
+                market.vocalRecognition("Je dis un truc");
+                done();
+            },500);
+        },1000);
     });
 });
