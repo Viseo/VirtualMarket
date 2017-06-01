@@ -7,6 +7,7 @@ let testUtil = require ("./testutils");
 let mockRuntime = require("../lib/runtimemock").mockRuntime;
 let main = require("../supermarche").main;
 let GUI = require("../lib/svggui").Gui;
+let MapFile = require("../lib/map.js");
 
 let DATA = require("../data").data;
 let data = DATA();
@@ -14,13 +15,18 @@ let NEURAL = require("../neuralNetDrawing").neural;
 let neural = NEURAL(mockRuntime());
 
 let timer = require("./timer-fake").timer;
+let map = require("./google-map-fake").googleMap;
+let cookie = require("./cookie-fake").cookie;
+let speech = require("./textToSpeech-fake").speech;
+let listener = require("./speechToText-fake").speechToText;
 
 let runtime;
-let svg;
+let svg,gui;
 let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 let market;
-let fakeTimer;
+let fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener;
+
 
 describe("Test",function (){
     this.timeout(50000);
@@ -29,9 +35,13 @@ describe("Test",function (){
         runtime.declareAnchor("content");
         svg = SVG(runtime);
         gui = GUI((svg),"");
-        fakeTimer = new timer().setNow(new Date(2017,5,01));
-        market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer);
-        market.changeRay("HighTech");
+        fakeTimer = new timer().setNow(new Date(2017,6,1,8,0));
+        fakeMap = new map();
+        fakeCookie = new cookie();
+        fakeCookie.setCookie("",2,"","","");
+        fakeSpeech = new speech();
+        fakeListener = new listener();
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
     });
 
     it("ensure that page structure is ok at start",function(){
@@ -241,6 +251,8 @@ describe("Test",function (){
     });
 
     it("ensure that we can navigate by gesture on ray",function() {
+        fakeCookie.setCookie("Drone:1,Webcam:1",2,"done","HighTech","64 boulevard garibaldi");
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
         let catFruits = retrieve(market.component, "[categories].[Fruits]");
         runtime.event(catFruits, "click", {});
         let rayFruits = retrieve(market.component, "[ray Fruits].[listRay]");
@@ -290,30 +302,6 @@ describe("Test",function (){
         runtime.advanceAll();
         inspect(rayHT,{tag:"g",transform:"translate(0 0)"});
     });
-
-    // it("ensure that we can mousehover and mouseout on a categorie",function(){
-    //     let categories = retrieve(market.component,"[categories].[Fruits]");
-    //     let categories2 = retrieve(market.component,"[categories].[Fruits2]");
-    //     let categorieTitle = retrieve(market.component,"[categories].[Fruits title]");
-    //     runtime.event(categories,"mouseenter",{});
-    //     runtime.advanceAll();
-    //     inspect(categories,{tag:"image",href:"img/categories/fruits.png",opacity:"0"});
-    //     inspect(categories2,{tag:"image",href:"img/categories/fruits2.png",opacity:"1"});
-    //     runtime.event(categorieTitle,"mouseenter",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories2,"mouseout",{});
-    //     runtime.advanceAll();
-    //     inspect(categories,{tag:"image",href:"img/categories/fruits.png",opacity:"1"});
-    //     inspect(categories2,{tag:"image",href:"img/categories/fruits2.png",opacity:"0"});
-    //     runtime.event(categories,"click",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories2,"mouseenter",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories2,"mouseout",{});
-    //     runtime.advanceAll();
-    //     runtime.event(categories,"mouseout",{});
-    //     runtime.advanceAll();
-    // });
 
     it("ensure that we can mouseover and mouseout on a product and it title",function(){
         let categories = retrieve(market.component,"[categories].[Fruits]");
@@ -1121,7 +1109,7 @@ describe("Test",function (){
         runtime.advanceAll();
 
         let round0 = retrieve(market.component,"[calendar].[round 0]");
-        runtime.event(round0, "click", {})
+        runtime.event(round0, "click", {});
         runtime.advanceAll();
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
@@ -1134,8 +1122,7 @@ describe("Test",function (){
         let round2 = retrieve(market.component,"[calendar].[round 2]");
         runtime.event(round2, "click", {});
         runtime.advanceAll();
-        runtime.event(round0, "click", {})
-
+        runtime.event(round0, "click", {});
         runtime.advanceAll();
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
@@ -1486,7 +1473,79 @@ describe("Test",function (){
     });
 
     it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
-        market.toCalendar('Parc des Princes')
+        let payment_zone = retrieve(market.component,"[payment]");
+        assert.ok(payment_zone);
+        let card = retrieve(market.component,"[payment].[card]");
+        assert.ok(card);
+        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(card,"mousemove",{pageX:market.width*0.80+500,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(card,"mouseup",{ pageX:market.width*0.80+500,pageY:market.height*0.90});
+        runtime.advanceAll();
+
+        let code = retrieve(market.component,"[code]");
+        assert.ok(code);
+        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+        assert.ok(buttonGroup);
+        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+        assert.ok(button1);
+        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+        assert.ok(button2);
+        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+        assert.ok(button3);
+        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+        assert.ok(button4);
+        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+        assert.ok(button5);
+        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+        assert.ok(button6);
+        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+        assert.ok(button7);
+        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+        assert.ok(button8);
+        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+        assert.ok(button9);
+
+        //Password ok
+        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+        runtime.event(button3, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button2, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseout", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button4, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button5, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button6, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button9, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button8, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button7, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+
+        fakeTimer.setNow(new Date(2017,6,1,8,1));
+
+        market.toCalendar('Parc des Princes');
+
+        fakeTimer.setNow(new Date(2017,6,1,8,2));
+        done();
+    });
+
+    it('ensure that cookie for page 1 is working',function(done){
+        fakeCookie.setCookie("Drone:1,Webcam:1",1,"done","HighTech","64 boulevard garibaldi");
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
         setTimeout(function(){
             market.vocalRecognition("je veux me faire livrer aujourd'hui à 10h");
             market.vocalRecognition("je veux me faire livrer aujourd'hui");

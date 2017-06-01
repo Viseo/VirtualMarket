@@ -21,8 +21,11 @@
     <script src="lib/recorder.js"></script>
     <script src="lib/map.js"></script>
     <script src="timer-impl.js"></script>
+    <script src="cookie-impl.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&libraries=places"></script>
     <script src="google-map-impl.js"></script>
+    <script src="textToSpeech-impl.js"></script>
+    <script src="speechToText-impl.js"></script>
 
     <script>
         document.documentElement.style.overflow = 'hidden';
@@ -38,9 +41,13 @@
         let NEURAL=require("neuralNetDrawing").neural;
         let neural=NEURAL(targetRuntime());
         let timer = require("timer-impl").timer;
+        let cookie = require("cookie-impl").cookie;
         let targetMap = require("google-map-impl").googleMap;
+        let speech = require("textToSpeech-impl").speech;
+        let listener = require("speechToText-impl").speechToText;
 
-        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),Map,new timer(),new targetMap());
+        main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),
+            Map,new timer(),new targetMap(),new cookie(),new speech(),new listener());
     </script>
 
     <style>

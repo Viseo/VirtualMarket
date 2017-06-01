@@ -43,4 +43,36 @@ exports.googleMap=class {
         autocomplete.bindTo('bounds', this.map);
         return autocomplete;
     }
+
+    getTopLeftControl(){
+        return google.maps.ControlPosition.TOP_LEFT;
+    }
+
+    createMapSize(l,h){
+        return new google.maps.Size(l, h);
+    }
+
+    getBounceAnimation(){
+        return google.maps.Animation.BOUNCE;
+    }
+
+    getInputDiv(){
+        return document.getElementById('pac-input');
+    }
+
+    getItemDiv(){
+        return document.getElementsByClassName('pac-item');
+    }
+
+    getItemQueryDiv(item){
+        return item.getElementsByClassName('pac-item-query')[0].outerText + " " + item.children[2].textContent;
+    }
+
+    createMapPoint(x,y){
+        return new google.maps.Point(x,y);
+    }
+
+    handleError(){
+        handleLocationError(false, infoWindowMyPos, map.getCenter());
+    }
 };

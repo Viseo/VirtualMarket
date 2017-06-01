@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap){
+exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,cookie,speech,listener){
 
     let screenSize = svg.runtime.screenSize();
     let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -291,7 +291,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 }
             }
 
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         deleteProducts(vignette,numberProduct){
@@ -311,7 +311,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
             }
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         findInBasket(name)
@@ -329,7 +329,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 if (quantity == null || quantity >= toDelete.quantity) this.deleteProducts(toDelete, toDelete.quantity);
                 else this.deleteProducts(toDelete, quantity);
             }
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         basketCookie(){
@@ -337,7 +337,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             for (let product of this.thumbnailsProducts) {
                 this.stringPanier+=product.name+":"+product.quantity+",";
             }
-            createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
+            cookie.createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
 
 
         };
@@ -553,10 +553,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
             this.height = height;
             this.width=width;
-            let recording=false;
             let micro=this.micro;
-            var voice=[];
-            let timer;
+
 
             this.logoComp.onClick(function(){
                 if(market.map!=null){
@@ -573,46 +571,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 market.calendar.mapOn = false;
             });
 
-            if (Maps){
-                window.launchSTT = function(){
-                    if(!recording) {
-                        voice = [];
-                        startRecording();
-                        recording=true;
-                        console.log("je record");
-                        micro.url("img/microphone.gif");
-                        setTimeout(function () {
-                            stopRecording();
-                            micro.url("img/microphoneload.gif");
-                            console.log("je record plus");
-                            let i = 0;
-                            timer = setInterval(function () {
-                                i++;
-                                voice = getMessage();
-                                if ((voice['transcript'].length != 0 && voice['transcript'] != "Je n'ai pas compris") || i == 15) {
-                                    clearInterval(timer);
-                                    console.log(voice['transcript']);
-                                    if (i == 25) textToSpeech("Je n'ai rien entendu", "FR");
-                                    else if (voice['confidence'] > 0.5) {
-                                        market.vocalRecognition(voice['transcript']);
-                                    }
-                                    else {
-                                        console.log("je n'ai pas bien saisi votre demande : " + voice['transcript']);
-                                        textToSpeech("Je n'ai pas bien compris votre demande", "fr");
-                                    }
-                                    i = 0;
-                                    micro.url("img/microphone.png");
-                                    voice = [];
-                                    recording = false;
-                                    bool=false
-                                }
+            listener.listen(micro,market);
 
-                            }, 200);
-                        }, 4000);
-
-                    }
-                }
-            }
         }
     }
 
@@ -767,9 +727,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     if(check===false){
                         if(self.code.length>1){
                             market.payment.iteration++;
-                            textToSpeech("Code erroné.");
+                            market.textToSpeech("Code erroné.");
                             if (market.payment.iteration >3) {
-                                if(Maps)textToSpeech("Veuillez patienter"+10+"secondes");
+                                market.textToSpeech("Veuillez patienter"+10+"secondes");
                                 self.launchTimer(10, false);
                             }
                         }
@@ -893,9 +853,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         }
 
         paymentCookie(){
-            if(Maps) {
-                createCookie("payment", "done", 1);
-            }
+            cookie.createCookie("payment", "done", 1);
         }
 
         placeElements()
@@ -920,8 +878,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             market.pages[0].active = true;
             currentPage=market.map;
             currentIndex=1;
-            createCookie("page",1,1);
+            cookie.createCookie("page",1,1);
             loadMap();
+
         }
 
         changeTimer(newTimer,color){
@@ -984,7 +943,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
 
         checkPassword(password){
             if(password === "321456987"){
-                if(Maps)textToSpeech("Code bon ! Veuillez indiquer votre adresse de livraison. ");
+                market.textToSpeech("Code bon ! Veuillez indiquer votre adresse de livraison. ");
                 return true;
             }
             return false;
@@ -1053,7 +1012,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             else if (bool==2)
                 this.left--;
             else {}
-
+            console.log(this.place,this.left,this.width,this.tabH.hourDL,this.tabH.dayP)
             let taille=(this.place-this.left)*(this.width/this.place);
             this.jauge.dimension(taille, this.height);
             this.titleText.message(this.left+" / "+this.place);
@@ -1468,11 +1427,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 });
                 tab.push({
                     dayP: modulDay+tomorrow.getDate() + "/" + modul + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 3, TPH: 2, address: this.address
                 });
                 tab.push({
                     dayP: modulDay+afterTomorrow.getDate() + "/" + modul + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address : this.address
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2.5, address : this.address
                 });
                 tab.push({
                     dayP: modulTest+dayTest.getDate() + "/" + modul + (dayTest.getMonth() + 1) + "/" + dayTest.getFullYear(),
@@ -1535,9 +1494,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         printMonthContent(month,year){
             this.current=false;
             for(let i = 0; i<this.rounds.length;i++){
-                if(Maps){
-                    if(this.rounds[i].component)this.calendarContent.remove(this.rounds[i].component);
-                }
+                if(this.rounds[i].component)this.calendarContent.remove(this.rounds[i].component);
             }
             this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
@@ -1618,7 +1575,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 this.picto.position(0,0);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
+                market.textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
                     + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
@@ -1633,7 +1590,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 round.changeColor(2);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
+                market.textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
                     + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
@@ -1798,7 +1755,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     if(!self.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
-                        if(Maps)textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
+                        market.textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
                         self.anim=true;
                     }
                 }
@@ -1806,14 +1763,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     for(var c of number.split('')){
 
                         if(c=="?"){
-                            if(Maps)textToSpeech("Je n'ai pas compris");
+                            market.textToSpeech("Je n'ai pas compris");
                             return;
                         }
                     }
                     element.addAnimation(number);
-                    if(Maps)textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
+                    market.textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
-                }else if(number == "?") textToSpeech("Je n'ai pas compris");
+                }else if(number == "?") market.textToSpeech("Je n'ai pas compris");
 
             }
 
@@ -2021,13 +1978,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         mainPage.add(categories.rayTranslation).add(categories.transRect).add(zoneBasket).add(zonePayment);
 
-        if(Maps){
-            let cookie = getCookie("ray");
-            if(cookie){
-                market.deleteCookie("ray");
-            }
-            createCookie("ray", categories.ray.name, 1);
+
+        let cookies = cookie.getCookie("ray");
+        if(cookies){
+            cookie.deleteCookie("ray");
         }
+        cookie.createCookie("ray", categories.ray.name, 1);
+
     };
 
     function search(sentence,config){
@@ -2096,15 +2053,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
                         message = message.substring(message.indexOf(words[i]));
                         currentMapSearch = message;
-                        createCookie("address",currentMapSearch,1);
+                        cookie.createCookie("address",currentMapSearch,1);
                         i = words.length;
-                        if(Maps){
-                            textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
-                            market.mapsfunction.research(currentMapSearch);
-                            setTimeout(function(){
-                                market.map.updateMarkersSide();
-                            },3500);
-                        }
+                        market.textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
+                        market.mapsfunction.research(currentMapSearch);
+                        setTimeout(function(){
+                            market.map.updateMarkersSide();
+                        },500);
                     }
                     else if (words[i].includes("valide")) {
                         market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
@@ -2113,7 +2068,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         market.map.mapOn = false;
                         market.calendar.calendarOn = true;
                         currentMapSearch = market.map.input.value;
-                        createCookie("address",currentMapSearch,1);
+                        cookie.createCookie("address",currentMapSearch,1);
                         mapPage.remove(market.map.component);
                         market.map = null;
                     }
@@ -2159,13 +2114,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     let answer = message.toLowerCase();
 
                     if (answer.includes("oui") && market.calendar.selectedHourday) {
-                        textToSpeech("Ok vous serez livrés aux horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
+                        market.textToSpeech("Ok vous serez livrés aux horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
                         setTimeout(function(){
                             resetMarket();
                         },3000);
                     }
                     else if (answer.includes("non") && market.calendar.selectedHourday) {
-                        textToSpeech("Nous annulons votre livraison", "fr");
+                        market.textToSpeech("Nous annulons votre livraison", "fr");
                         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
                         this.selectedHourday = false;
                     }
@@ -2210,16 +2165,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                     if (isNaN(bef2)) {
                                         bef2 = "";
                                     }
-                                    if(Maps)textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
+                                    market.textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
                                 } else if (determining.trim() == "de") {
                                     market.basket.addProducts(tab[i], 2);
-                                    if(Maps)textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
+                                    market.textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
                                 } else if (determining2.trim() == "cette" || determining.trim() == "cet") {
-                                    if(Maps)textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
+                                    market.textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 7);
                                 } else if(determining.trim() == "un" || determining.trim() == "une") {
-                                    if(Maps)textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
+                                    market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 1);
                                 } else {
                                     let tor=false;
@@ -2227,12 +2182,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                         if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
                                             tor=true;
                                             market.basket.addProducts(tab[i],k+1);
-                                            if(Maps)textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
+                                            market.textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
                                         }
                                     }
                                     if(tor==false){
                                         market.basket.addProducts(tab[i],1);
-                                        if(Maps)textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
+                                        market.textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
                                     }
                                 }
                             }
@@ -2255,17 +2210,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                     if (isNaN(bef2)) {
                                         bef2 = "";
                                     }
-                                    if(Maps)textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
+                                    market.textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                                 }
                                 else if (determining == " un" || determining == "une"){
-                                    if(Maps)textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
+                                    market.textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 1);
                                 } else if (determining.trim() == "de"){
-                                    if(Maps)textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
+                                    market.textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 2);
                                 } else if (determining2.trim() == "cette" || determining.trim() == "cet"){
-                                    if(Maps)textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
+                                    market.textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, 7);
                                 }else {
                                     let tor = false;
@@ -2273,11 +2228,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                         if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
                                             tor = true;
                                             market.basket.deleteFromName(tab[i].name,k+1);
-                                            if(Maps)textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
+                                            market.textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
                                         }
                                     }
                                     if(tor == false){
-                                        if(Maps)textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
+                                        market.textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
                                         market.basket.deleteFromName(tab[i].name, null);
                                     }
                                 }
@@ -2285,19 +2240,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         }
                         else {
                             tab = search(order, "all");
-                            if(Maps)textToSpeech("Ok, je cherche.")
+                            market.textToSpeech("Ok, je cherche.")
                             doSearch(tab);
                         }
                         oneOrderChecked = true;
                     }
                     else {
                         if (order.includes("vide") && order.includes("panier")) {
-                            if(Maps)textToSpeech("Ok, Je vide le panier");
+                            market.textToSpeech("Ok, Je vide le panier");
                             market.basket.emptyBasket();
                             oneOrderChecked = true;
                         }
                         else if (order.includes("paye") || order.includes("paie")) {
-                            if(Maps)textToSpeech("Ok, passons au payement")
+                            market.textToSpeech("Ok, passons au payement")
                             market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
                             market.payment.cardIn = true;
                             market.payment.showCode();
@@ -2311,7 +2266,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     writeLog(message);
 
                     console.log("No Correct Order Given");
-                    if(Maps)textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+                    market.textToSpeech("Je n'ai pas bien compris votre demande", "fr");
                 }
             }
         }
@@ -2320,9 +2275,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         }
     };
 
-    function textToSpeech(msg){
-        var speak = new SpeechSynthesisUtterance(msg);
-        speechSynthesis.speak(speak);
+    market.textToSpeech=function(msg){
+        speech.talk(msg);
     }
 
     function replaceChar(msg){
@@ -2368,54 +2322,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         return obj;
     }
 
-    function createCookie(name, value, expires,path,domain) {
-        var cookie = name + "=" + value + ";";
-
-        if (expires) {
-            // If it's a date
-            if(expires instanceof Date) {
-                // If it isn't a valid date
-                if (isNaN(expires.getTime()))
-                    expires = new Date();
-            }
-            else
-                expires = new Date(new Date().getTime() + parseInt(expires) * 1000 * 60 * 60 * 24);
-
-            cookie += "expires=" + expires.toGMTString() + ";";
-        }
-
-        cookie += "domain=;";
-        cookie += "path=/;";
-
-        if(Maps)document.cookie = cookie;
-    }
-
-    function getCookie(cname){
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
-    market.deleteCookie = function( name){
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    };
-
     function resetMarket(){
-        market.deleteCookie("ray");
-        market.deleteCookie("basket");
-        market.deleteCookie("payment");
-        market.deleteCookie("address");
-        market.deleteCookie("page");
+        cookie.deleteCookie("ray");
+        cookie.deleteCookie("basket");
+        cookie.deleteCookie("payment");
+        cookie.deleteCookie("address");
+        cookie.deleteCookie("page");
         if(Maps){
             window.location.reload();
         }
@@ -2494,27 +2406,23 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         market.map.mapOn=true;
         mapPage.add(market.map.component);
         setTimeout(function(){
-            if(Maps){
-                market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
-                if (currentMapSearch != ""){
-                    market.mapsfunction.research(currentMapSearch);
-                }
-                setTimeout(function(){
-                    if(market.map!=null) {
-                        market.map.updateMarkersSide();
-                    }
-                },500);
+            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
+            if (currentMapSearch != ""){
+                market.mapsfunction.research(currentMapSearch);
             }
+            setTimeout(function(){
+                if(market.map!=null) {
+                    market.map.updateMarkersSide();
+                }
+            },500);
         },500);
     }
 
     market.toCalendar= function(message){
-        if (Maps){
-            currentMapSearch= market.map.input.value;
-            createCookie("address",currentMapSearch,1);
-            mapPage.remove(market.map.component);
-            market.map=null;
-        }
+        currentMapSearch= market.map.input.value;
+        cookie.createCookie("address",currentMapSearch,1);
+        mapPage.remove(market.map.component);
+        market.map=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth - market.width * 0.02), 0);
         market.calendar.address=message;
         market.calendar.calendarOn=true;
@@ -2523,13 +2431,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             currentIndex = 0;
         },200);
 
-        createCookie("page",0,1);
+        cookie.createCookie("page",0,1);
         market.calendar.printCurrentMonthContent();
         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
     };
 
     let currentMapSearch = "";
-    if(getCookie("address")) currentMapSearch = getCookie("address");
+    if(cookie.getCookie("address")) currentMapSearch = cookie.getCookie("address");
     let currentPage=mainPage;
     let currentIndex=2;
     market.pages=[];
@@ -2543,20 +2451,18 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     if (index != 1) {
                         if(market.map!=null){
                             currentMapSearch= market.map.input.value;
-                            createCookie("address",currentMapSearch,1);
+                            cookie.createCookie("address",currentMapSearch,1);
                             mapPage.remove(market.map.component);
                             market.map=null;
                         }
                     }
                     else{
                         loadMap();
-                        if(Maps){
-                            setTimeout(function(){
-                                if(market.map!=null) {
-                                    market.map.updateMarkersSide();
-                                }
-                            },3500);
-                        }
+                        setTimeout(function(){
+                            if(market.map!=null) {
+                                market.map.updateMarkersSide();
+                            }
+                        },3500);
                     }
                     if (currentIndex > index) {
                         for (let j = currentIndex; j > index; j--) {
@@ -2578,7 +2484,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         market.calendar.calendarOn = false;
                     }
 
-                    createCookie("page",index,1);
+                    cookie.createCookie("page",index,1);
                 }
             }
         });
@@ -2591,60 +2497,57 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
 
-    if(Maps)textToSpeech("Bonjour, Bienvenue!","fr");
+    market.textToSpeech("Bonjour, Bienvenue!","fr");
 
-    if(Maps){
-        let cookiePayment = getCookie("payment");
-        let cookieRay=getCookie("ray");
-        let cookieBasket=getCookie("basket");
-        if((cookieRay!="Recherche")&&(cookieRay)){
-            market.changeRay(cookieRay);
+
+    let cookiePayment = cookie.getCookie("payment");
+    let cookieRay=cookie.getCookie("ray");
+    let cookieBasket=cookie.getCookie("basket");
+    if((cookieRay!="Recherche")&&(cookieRay)){
+        market.changeRay(cookieRay);
+    }
+    else {
+        market.changeRay("HighTech");
+    }
+
+    if(cookieBasket) {
+        let stringBasket = cookieBasket.split(",");
+        for (let i in stringBasket) {
+            let tabProd = stringBasket[i].split(":");
+            let prod = search(tabProd[0]);
+            market.basket.addProducts(prod[0], tabProd[1]);
         }
-        else {
-            market.changeRay("HighTech");
+    }
+    if(cookiePayment=="done"){
+        market.pages[1].active = true;
+        market.pages[0].active = true;
+
+        let index=cookie.getCookie("page");
+        if(index==1){
+            loadMap();
+            setTimeout(function(){
+                market.map.updateMarkersSide();
+            },3500);
         }
-
-        if(cookieBasket) {
-            let stringBasket = cookieBasket.split(",");
-            for (let i in stringBasket) {
-                let tabProd = stringBasket[i].split(":");
-                let prod = search(tabProd[0]);
-                market.basket.addProducts(prod[0], tabProd[1]);
-            }
-        }
-        if(cookiePayment=="done"){
-            market.pages[1].active = true;
-            market.pages[0].active = true;
-
-            let index=getCookie("page");
-            if(index==1){
-                loadMap();
-                setTimeout(function(){
-                    market.map.updateMarkersSide();
-                },3500);
-            }
-            if (2 > index) {
-                for (let j = 2; j > index; j--) {
-                    market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
-                }
-            }
-            currentPage = market.pages[index].obj;
-            currentIndex = index;
-
-            if (currentIndex == 0) {
-                market.calendar.calendarOn = true;
-            }
-            else if (currentIndex==1){
-                market.calendar.calendarOn = false;
+        if (2 > index) {
+            for (let j = 2; j > index; j--) {
+                market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
             }
         }
-        else{
-            createCookie("page",2,1);
+        currentPage = market.pages[index].obj;
+        currentIndex = index;
+
+        if (currentIndex == 0) {
+            market.calendar.calendarOn = true;
+        }
+        else if (currentIndex==1){
+            market.calendar.calendarOn = false;
         }
     }
     else{
-        market.changeRay("HighTech");
+        cookie.createCookie("page",2,1);
     }
+
 
     return market;
     //////////////////////////////
