@@ -18,13 +18,14 @@ let timer = require("./timer-fake").timer;
 let map = require("./google-map-fake").googleMap;
 let cookie = require("./cookie-fake").cookie;
 let speech = require("./textToSpeech-fake").speech;
+let listener = require("./speechToText-fake").speechToText;
 
 let runtime;
-let svg;
+let svg,gui;
 let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 let market;
-let fakeTimer,fakeMap,fakeCookie,fakeSpeech;
+let fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener;
 
 
 describe("Test",function (){
@@ -33,13 +34,14 @@ describe("Test",function (){
         runtime = mockRuntime();
         runtime.declareAnchor("content");
         svg = SVG(runtime);
-        let gui = GUI((svg),"");
+        gui = GUI((svg),"");
         fakeTimer = new timer().setNow(new Date(2017,6,1,8,0));
         fakeMap = new map();
         fakeCookie = new cookie();
         fakeCookie.setCookie("",2,"","","");
         fakeSpeech = new speech();
-        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech);
+        fakeListener = new listener();
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
     });
 
     it("ensure that page structure is ok at start",function(){
@@ -249,6 +251,8 @@ describe("Test",function (){
     });
 
     it("ensure that we can navigate by gesture on ray",function() {
+        fakeCookie.setCookie("Drone:1,Webcam:1",2,"done","HighTech","64 boulevard garibaldi");
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
         let catFruits = retrieve(market.component, "[categories].[Fruits]");
         runtime.event(catFruits, "click", {});
         let rayFruits = retrieve(market.component, "[ray Fruits].[listRay]");
@@ -1538,5 +1542,18 @@ describe("Test",function (){
 
         fakeTimer.setNow(new Date(2017,6,1,8,2));
         done();
+    });
+
+    it('ensure that cookie for page 1 is working',function(done){
+        fakeCookie.setCookie("Drone:1,Webcam:1",1,"done","HighTech","64 boulevard garibaldi");
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
+        setTimeout(function(){
+            done();
+        },3600);
+    });
+
+    it('ensure that cookie for page 0 is working',function(){
+        fakeCookie.setCookie("Drone:1,Webcam:1",0,"done","HighTech","64 boulevard garibaldi");
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
     });
 });
