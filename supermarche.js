@@ -920,6 +920,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             currentIndex=1;
             createCookie("page",1,1);
             loadMap();
+
         }
 
         changeTimer(newTimer,color){
@@ -2284,8 +2285,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
     };
 
     function textToSpeech(msg){
-        var speak = new SpeechSynthesisUtterance(msg);
-        speechSynthesis.speak(speak);
+        //var speak = new SpeechSynthesisUtterance(msg);
+        //speechSynthesis.speak(speak);
+
+        console.log(msg);
+
     }
 
     function replaceChar(msg){
@@ -2511,6 +2515,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         }
                     }
                     else{
+                        console.log("click");
                         loadMap();
                         if(Maps){
                             setTimeout(function(){
@@ -2579,6 +2584,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             market.pages[0].active = true;
 
             let index=getCookie("page");
+
             if(index==1){
                 loadMap();
                 setTimeout(function(){

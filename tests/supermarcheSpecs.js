@@ -7,7 +7,7 @@ let testUtil = require ("./testutils");
 let mockRuntime = require("../lib/runtimemock").mockRuntime;
 let main = require("../supermarche").main;
 let GUI = require("../lib/svggui").Gui;
-let MapFile = require("../lib/map");
+let MapFile = require("../lib/map.js");
 
 let DATA = require("../data").data;
 let data = DATA();
@@ -23,6 +23,7 @@ let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 let market;
 let fakeTimer;
+let fakeMap;
 
 describe("Test",function (){
     this.timeout(50000);
@@ -32,7 +33,8 @@ describe("Test",function (){
         svg = SVG(runtime);
         gui = GUI((svg),"");
         fakeTimer = new timer().setNow(new Date(2017,6,10,8,0));
-        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,new map());
+        fakeMap = new map();
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap);
         market.changeRay("HighTech");
     });
 
@@ -1047,8 +1049,8 @@ describe("Test",function (){
         runtime.event(column,"mousemove",{pageX:100,pageY:200});
         runtime.advanceAll();
 
-        /*let round0 = retrieve(market.component,"[calendar].[round 0]");
-        runtime.event(round0, "click", {})
+        let round0 = retrieve(market.component,"[calendar].[round 0]");
+        runtime.event(round0, "click", {});
         runtime.advanceAll();
         let round1 = retrieve(market.component,"[calendar].[round 1]");
         runtime.event(round1, "click", {});
@@ -1056,8 +1058,8 @@ describe("Test",function (){
         let round2 = retrieve(market.component,"[calendar].[round 2]");
         runtime.event(round2, "click", {});
         runtime.advanceAll();
-        runtime.event(round0, "click", {})
-        runtime.advanceAll();*/
+        runtime.event(round0, "click", {});
+        runtime.advanceAll();
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(done){
