@@ -1,15 +1,15 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap){
+exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,cookie,speech){
 
     let screenSize = svg.runtime.screenSize();
-	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
+    let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
     ///////////////BANDEAUX/////////////////
-	class DrawingZone {
-		constructor(width,height,x,y)
-		{
-			this.component = new svg.Drawing(width,height).position(x,y);
-		}
-	}
+    class DrawingZone {
+        constructor(width,height,x,y)
+        {
+            this.component = new svg.Drawing(width,height).position(x,y);
+        }
+    }
 
     class ListCategorie extends DrawingZone {
         constructor(width, height, x, y, tabCat) {
@@ -108,9 +108,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             });
         }
     }
-    
+
     class Ray extends DrawingZone {
-		constructor(width,height,x,y,tabThumbnail,cat) {
+        constructor(width,height,x,y,tabThumbnail,cat) {
             super(width, height, x, y);
 
             var self = this; // Gestion Evenements
@@ -174,14 +174,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         }
 
         gesture(type, dx){
-		    if(type=="move"){
-                categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
+            if(type=="move"){
+                if(categories.ray.listWidth>market.width*0.76){
+                    categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
+                }
             }
             else if(type=="up"){
-                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0){
+                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
-                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width){
+                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
                 }
 
@@ -289,7 +291,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 }
             }
 
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         deleteProducts(vignette,numberProduct){
@@ -309,7 +311,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
             }
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         findInBasket(name)
@@ -327,7 +329,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 if (quantity == null || quantity >= toDelete.quantity) this.deleteProducts(toDelete, toDelete.quantity);
                 else this.deleteProducts(toDelete, quantity);
             }
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         basketCookie(){
@@ -335,7 +337,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             for (let product of this.thumbnailsProducts) {
                 this.stringPanier+=product.name+":"+product.quantity+",";
             }
-            createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
+            cookie.createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
 
 
         };
@@ -613,7 +615,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             }
         }
     }
-    
+
     class Payment extends DrawingZone {
         constructor(width,height,x,y){
             super(width,height,x,y);
@@ -765,9 +767,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     if(check===false){
                         if(self.code.length>1){
                             market.payment.iteration++;
-                            if(Maps)textToSpeech("Code erroné.");
+                            textToSpeech("Code erroné.");
                             if (market.payment.iteration >3) {
-                                if(Maps)textToSpeech("Veuillez patienter"+10+"secondes");
+                                textToSpeech("Veuillez patienter"+10+"secondes");
                                 self.launchTimer(10, false);
                             }
                         }
@@ -891,9 +893,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         }
 
         paymentCookie(){
-            if(Maps) {
-                createCookie("payment", "done", 1);
-            }
+            cookie.createCookie("payment", "done", 1);
         }
 
         placeElements()
@@ -918,7 +918,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             market.pages[0].active = true;
             currentPage=market.map;
             currentIndex=1;
-            createCookie("page",1,1);
+            cookie.createCookie("page",1,1);
             loadMap();
 
         }
@@ -954,39 +954,39 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         }
 
         launchTimer(seconds,state){
-             let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
-             glassTimer.add(fillGlass);
-             market.add(glassTimer);
-             market.payment.zoneCode.changeTimer(seconds,svg.RED);
-             if(state===false){
-                 for(let i =0;i<=seconds+1;i++){
-                     setTimeout(function(i){
-                         return function(){
-                             market.payment.zoneCode.changeTimer(seconds-i,svg.RED);
-                             market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
-                             if(seconds-2>i && i>=(seconds/2)){
-                                 market.payment.zoneCode.changeTimer(seconds-i,svg.ORANGE);
-                             }
+            let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
+            glassTimer.add(fillGlass);
+            market.add(glassTimer);
+            market.payment.zoneCode.changeTimer(seconds,svg.RED);
+            if(state===false){
+                for(let i =0;i<=seconds+1;i++){
+                    setTimeout(function(i){
+                        return function(){
+                            market.payment.zoneCode.changeTimer(seconds-i,svg.RED);
+                            market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
+                            if(seconds-2>i && i>=(seconds/2)){
+                                market.payment.zoneCode.changeTimer(seconds-i,svg.ORANGE);
+                            }
                             else if(i>=(seconds-2) && i!=seconds+1){
-                                 market.payment.zoneCode.changeTimer(seconds-i,svg.GREEN);
-                             }
-                             else if (i===seconds+1){
-                                 market.remove(glassTimer);
-                                 market.payment.zoneCode.changeText("");
-                                 market.payment.zoneCode.hideCircle();
-                             }
-                         }
-                     }(i),i*1000);
-                 }
-             }
+                                market.payment.zoneCode.changeTimer(seconds-i,svg.GREEN);
+                            }
+                            else if (i===seconds+1){
+                                market.remove(glassTimer);
+                                market.payment.zoneCode.changeText("");
+                                market.payment.zoneCode.hideCircle();
+                            }
+                        }
+                    }(i),i*1000);
+                }
+            }
         }
 
         checkPassword(password){
-              if(password === "321456987"){
-                  if(Maps)textToSpeech("Code bon ! Veuillez indiquer votre adresse de livraison. ");
-                  return true;
-              }
-              return false;
+            if(password === "321456987"){
+                textToSpeech("Code bon ! Veuillez indiquer votre adresse de livraison. ");
+                return true;
+            }
+            return false;
         }
     }
 
@@ -1041,7 +1041,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             this.titleText.position(this.x, this.y - this.height*0.75).message(this.left+" / "+this.place).font("Calibri",this.height,1);
             this.deliveryRect.dimension(this.width,this.height).corners(10,10);
             this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
-            this.jauge.position(-this.width/2+this.x+(this.width/(2*this.place)),this.y).color(svg.GREEN,2,svg.GREEN);
+            this.jauge.position(-this.width/2+this.x+(this.width/(2*this.place)),this.y).color(svg.GREEN,2,svg.GREEN).corners(10,10);
             this.roundContent.add(this.jauge);
 
         }
@@ -1058,11 +1058,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             this.titleText.message(this.left+" / "+this.place);
             if(this.left<this.place && this.left!=0) {
                 this.deliveryRect.color(svg.WHITE,1,svg.GREY_GREEN);
-                this.jauge.color(svg.GREY_GREEN,1,svg.GREY_GREEN).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0).corners(15,15);
+                this.jauge.color(svg.GREY_GREEN,1,svg.GREY_GREEN).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0);
             }
             else if(this.left==0)  {
                 this.deliveryRect.color(svg.WHITE,1,svg.LIGHT_GREY);
-                this.jauge.color(svg.LIGHT_GREY,1,svg.LIGHT_GREY).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0).corners(15,15);
+                this.jauge.color(svg.LIGHT_GREY,1,svg.LIGHT_GREY).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0);
             }else if(this.place==this.left){
                 this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             }
@@ -1328,7 +1328,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             let tabDays = [];
             this.numberDaysThisMonth = this.daysInMonth(timer.getMonth(),timer.getYear());
 
-            for(let j=0;j<this.numberDaysThisMonth-timer.getDay()+1;j++){
+            for(let j=0;j<this.numberDaysThisMonth-timer.getDayInMonth()+1;j++){
                 this.dayCases[j] = new svg.Translation();
                 this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
                 let text = "";
@@ -1339,7 +1339,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     text = "Demain";
                 }
                 else{
-                    text = this.getWeekDay()[(timer.getDay()+j)%7]+" "+ (timer.getDay()+j);
+                    text = this.getWeekDay()[(timer.getDayInWeek()+j)%7]+" "+ (timer.getDayInMonth()+j);
                 }
                 this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
                 tabDays.push(text);
@@ -1370,7 +1370,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             }
 
 
-            for(let i = 0; i<this.numberDaysThisMonth-timer.getDay()+1;i++){
+            for(let i = 0; i<this.numberDaysThisMonth-timer.getDayInMonth()+1;i++){
                 let line = new svg.Translation();
                 for (var j=0;j<11;j++){
                     let element = new svg.Rect(this.caseWidth,this.caseHeight);
@@ -1408,12 +1408,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             let dayMonth = [];
 
             if(this.current===true){
-                for(let i = 0; i<this.numberDaysThisMonth-timer.getDay()+1;i++){
+                for(let i = 0; i<this.numberDaysThisMonth-timer.getDayInMonth()+1;i++){
                     let str = "";
-                    if(timer.getDay()+i>=10)
-                        str += Number(timer.getDay() + i)+ "/";
+                    if(timer.getDayInMonth()+i>=10)
+                        str += Number(timer.getDayInMonth() + i)+ "/";
                     else
-                        str +="0"+Number(timer.getDay() + i) +"/";
+                        str +="0"+Number(timer.getDayInMonth() + i) +"/";
                     if(timer.getMonth()<10)
                         str += "0"+(timer.getMonth()+1) +"/"+timer.getYear();
                     else
@@ -1441,22 +1441,43 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             for(let j = 0; j<dayMonth.length;j++){
                 tab = placePerDay(dayMonth[j],tab);
             }
+            this.address=market.calendar.address;
 
-            if(timer.getDay()!=0){
+            if(timer.getDate()!=0){
                 var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
                 var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
+                var dayTest = timer.getDate(1496268000000 + 24 * 60 * 60 * 1000);
+                var dayTest2 = timer.getDate(1496268000000 + 2 * 24 * 60 * 60 * 1000);
+                var nextMonth = timer.getDate(timer.getTime() + 31 * 24 * 60 * 60 * 1000);
+                var nextMonthAndOne = timer.getDate(timer.getTime() + 32 * 24 * 60 * 60 * 1000);
                 let modul = "";
                 if (timer.getMonth() + 1 < 10) modul = "0";
                 tab.push({
-                    dayP: timer.getDay() + "/" + modul + (timer.getMonth() + 1) + "/" + timer.getYear(),
+                    dayP: modul+timer.getDayInMonth() + "/" + modul + (timer.getMonth() + 1) + "/" + timer.getYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address: this.address
                 });
                 tab.push({
-                    dayP: tomorrow.getDay() + "/" + modul + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
+                    dayP: modul+tomorrow.getDate() + "/" + modul + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
                 });
                 tab.push({
-                    dayP: afterTomorrow.getDay() + "/" + modul + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
+                    dayP: modul+afterTomorrow.getDate() + "/" + modul + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
+                });
+                tab.push({
+                    dayP: modul+dayTest.getDate() + "/" + modul + (dayTest.getMonth() + 1) + "/" + dayTest.getFullYear(),
+                    hourDL: "13", hourAL: "17", nbT: 4, left: 1, TPH: 1.5, address: this.address
+                });
+                tab.push({
+                    dayP: modul+dayTest2.getDate() + "/" + modul + (dayTest2.getMonth() + 1) + "/" + dayTest2.getFullYear(),
+                    hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
+                });
+                tab.push({
+                    dayP: modul+nextMonth.getDate() + "/" + modul + (nextMonth.getMonth() + 1) + "/" + nextMonth.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
+                });
+                tab.push({
+                    dayP: modul+nextMonthAndOne.getDate() + "/" + modul + (nextMonthAndOne.getMonth() + 1) + "/" + nextMonthAndOne.getFullYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
                 });
             }
@@ -1495,14 +1516,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     this.dayCases[i].add(new Switch("available",this.caseWidth,this.caseHeight).component)
                 }
             }
-       }
+        }
 
         printMonthContent(month,year){
             this.current=false;
             for(let i = 0; i<this.rounds.length;i++){
-                if(Maps){
-                    if(this.rounds[i].component)this.calendarContent.remove(this.rounds[i].component);
-                }
+                if(this.rounds[i].component)this.calendarContent.remove(this.rounds[i].component);
             }
             this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
@@ -1510,11 +1529,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
 
             let tabDays = [];
             this.numberDaysThisMonth=this.daysInMonth(month,year);
-            this.startDay=new Date(year,month,1).getDay();
+            this.startDay=new Date(year,month+1,0).getDate();
 
             for(let j=0;j<=this.numberDaysThisMonth-1;j++){
                 this.dayCases[j] = new svg.Translation();
-                this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.WHITE));
+                this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
                 let text = this.getWeekDay()[(j+this.startDay)%7]+" "+(j+1);
                 this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
                 tabDays.push(text);
@@ -1583,7 +1602,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 this.picto.position(0,0);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
+                textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
                     + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
@@ -1598,7 +1617,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 round.changeColor(2);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
-                if(Maps)textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
+                textToSpeech("Souhaitez-vous confirmer votre choix le :"+this.choiceRdv.split("/").join(" ")
                     + " entre "+round.tabH.hourDL+" et "+(Number(round.tabH.hourAL))+" heure", "fr");
                 this.selectedHourday=true;
             }
@@ -1624,20 +1643,20 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         }
 
         getMonth() {
-                return {
-                    0: "Janvier",
-                    1: "Février",
-                    2: "Mars",
-                    3: "Avril",
-                    4: "Mai",
-                    5: "Juin",
-                    6: "Juillet",
-                    7: "Août",
-                    8: "Septembre",
-                    9: "Octobre",
-                    10: "Novembre",
-                    11: "Décembre"
-                }
+            return {
+                0: "Janvier",
+                1: "Février",
+                2: "Mars",
+                3: "Avril",
+                4: "Mai",
+                5: "Juin",
+                6: "Juillet",
+                7: "Août",
+                8: "Septembre",
+                9: "Octobre",
+                10: "Novembre",
+                11: "Décembre"
+            }
         }
 
         daysInMonth(month, year){
@@ -1646,7 +1665,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
     }
 
     ////////////VIGNETTES//////////////////
-	class Thumbnail {
+    class Thumbnail {
         constructor(image,title){
             this.component = new svg.Translation();
             this.image = new svg.Image(image);
@@ -1677,9 +1696,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             this.title.position(this.width*0.4,this.height/2).font("Calibri",this.height*0.3,1).color(svg.BLACK);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height);
         }
-	}
+    }
 
-	class ThumbnailCategorie extends Thumbnail {
+    class ThumbnailCategorie extends Thumbnail {
         constructor(image,title){
             super(image,title);
             this.component.add(this.title);
@@ -1712,9 +1731,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 if(!categories.navigation) market.changeRay(current.name);
                 else categories.navigation=false;
             });
-		}
+        }
 
-		placeElements(){
+        placeElements(){
             this.image.position(this.width/2,this.height*0.4).dimension(this.width,this.height*0.6).mark(this.name);
             this.title.position(this.width/2,this.height*0.85).font("Calibri",this.height*0.10,1)
                 .color([[0,120,200]]).mark(this.name + " title").anchor("middle");
@@ -1727,7 +1746,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 runtime.attr(this.title2.component,"font-weight","bold");
             }
         }
-	}
+    }
 
     class ThumbnailRayon extends Thumbnail {
         constructor(image,title,price,complement,cat)
@@ -1763,7 +1782,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     if(!self.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
-                        if(Maps)textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
+                        textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
                         self.anim=true;
                     }
                 }
@@ -1771,12 +1790,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     for(var c of number.split('')){
 
                         if(c=="?"){
-                            if(Maps)textToSpeech("Je n'ai pas compris");
+                            textToSpeech("Je n'ai pas compris");
                             return;
                         }
                     }
                     element.addAnimation(number);
-                    if(Maps)textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
+                    textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
                 }else if(number == "?") textToSpeech("Je n'ai pas compris");
 
@@ -1905,7 +1924,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             this.x=x;
             this.y=y;
             runtime.attr(this.divMap,"style","height: "+this.mapHeight+"px; width: "+
-            this.mapWidth+"px; left:"+(this.x)+"px;top:"+(this.y)+"px;");
+                this.mapWidth+"px; left:"+(this.x)+"px;top:"+(this.y)+"px;");
 
             this.input = runtime.createDOM('input');
             runtime.attr(this.input,"id","pac-input");
@@ -1986,13 +2005,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         mainPage.add(categories.rayTranslation).add(categories.transRect).add(zoneBasket).add(zonePayment);
 
-        if(Maps){
-            let cookie = getCookie("ray");
-            if(cookie){
-                market.deleteCookie("ray");
-            }
-            createCookie("ray", categories.ray.name, 1);
+
+        let cookies = cookie.getCookie("ray");
+        if(cookies){
+            cookie.deleteCookie("ray");
         }
+        cookie.createCookie("ray", categories.ray.name, 1);
+
     };
 
     function search(sentence,config){
@@ -2019,17 +2038,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 }
                 var products = jsonFile[cat];
                 for (var prodName in products){
-                   if (words[i].toLowerCase().includes(replaceChar(prodName).toLowerCase())
-                                ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(replaceChar(prodName).toLowerCase())
-                                ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(replaceChar(prodName).toLowerCase())
-                                ||(words[i] + "s").toLowerCase().includes(replaceChar(prodName).toLowerCase())){
-                            if(prodDone.indexOf(prodName)==-1) {
+                    if (words[i].toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                        ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                        ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(replaceChar(prodName).toLowerCase())
+                        ||(words[i] + "s").toLowerCase().includes(replaceChar(prodName).toLowerCase())){
+                        if(prodDone.indexOf(prodName)==-1) {
                             prodDone.push(prodName);
                             var prod = products[prodName];
                             var thumbnailProduct = new ThumbnailRayon(prod.image, prod.nom, prod.prix, prod.complement, cat);
                             tabProduct.push(thumbnailProduct);
                         }
-                   }
+                    }
                 }
             }
         }
@@ -2061,15 +2080,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
                         message = message.substring(message.indexOf(words[i]));
                         currentMapSearch = message;
-                        createCookie("address",currentMapSearch,1);
+                        cookie.createCookie("address",currentMapSearch,1);
                         i = words.length;
-                        if(Maps){
-                            textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
-                            market.mapsfunction.research(currentMapSearch);
-                            setTimeout(function(){
-                                market.map.updateMarkersSide();
-                            },3500);
-                        }
+                        textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
+                        market.mapsfunction.research(currentMapSearch);
+                        setTimeout(function(){
+                            market.map.updateMarkersSide();
+                        },3500);
                     }
                     else if (words[i].includes("valide")) {
                         market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
@@ -2078,7 +2095,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         market.map.mapOn = false;
                         market.calendar.calendarOn = true;
                         currentMapSearch = market.map.input.value;
-                        createCookie("address",currentMapSearch,1);
+                        cookie.createCookie("address",currentMapSearch,1);
                         mapPage.remove(market.map.component);
                         market.map = null;
                     }
@@ -2174,16 +2191,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                     if (isNaN(bef2)) {
                                         bef2 = "";
                                     }
-                                    if(Maps)textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
+                                    textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
                                 } else if (determining.trim() == "de") {
                                     market.basket.addProducts(tab[i], 2);
-                                    if(Maps)textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
+                                    textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
                                 } else if (determining2.trim() == "cette" || determining.trim() == "cet") {
-                                    if(Maps)textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
+                                    textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 7);
                                 } else if(determining.trim() == "un" || determining.trim() == "une") {
-                                    if(Maps)textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
+                                    textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
                                     market.basket.addProducts(tab[i], 1);
                                 } else {
                                     let tor=false;
@@ -2191,12 +2208,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                         if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
                                             tor=true;
                                             market.basket.addProducts(tab[i],k+1);
-                                            if(Maps)textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
+                                            textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
                                         }
                                     }
                                     if(tor==false){
                                         market.basket.addProducts(tab[i],1);
-                                        if(Maps)textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
+                                        textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
                                     }
                                 }
                             }
@@ -2219,17 +2236,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                     if (isNaN(bef2)) {
                                         bef2 = "";
                                     }
-                                    if(Maps)textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
+                                    textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
                                 }
                                 else if (determining == " un" || determining == "une"){
-                                    if(Maps)textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
+                                    textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 1);
                                 } else if (determining.trim() == "de"){
-                                    if(Maps)textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
+                                    textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
                                     market.basket.deleteFromName(tab[i].name, 2);
                                 } else if (determining2.trim() == "cette" || determining.trim() == "cet"){
-                                    if(Maps)textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
+                                    textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
                                     market.basket.deleteFromName(tab[i].name, 7);
                                 }else {
                                     let tor = false;
@@ -2237,11 +2254,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                                         if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
                                             tor = true;
                                             market.basket.deleteFromName(tab[i].name,k+1);
-                                            if(Maps)textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
+                                            textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
                                         }
                                     }
                                     if(tor == false){
-                                        if(Maps)textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
+                                        textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
                                         market.basket.deleteFromName(tab[i].name, null);
                                     }
                                 }
@@ -2249,19 +2266,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         }
                         else {
                             tab = search(order, "all");
-                            if(Maps)textToSpeech("Ok, je cherche.")
+                            textToSpeech("Ok, je cherche.")
                             doSearch(tab);
                         }
                         oneOrderChecked = true;
                     }
                     else {
                         if (order.includes("vide") && order.includes("panier")) {
-                            if(Maps)textToSpeech("Ok, Je vide le panier");
+                            textToSpeech("Ok, Je vide le panier");
                             market.basket.emptyBasket();
                             oneOrderChecked = true;
                         }
                         else if (order.includes("paye") || order.includes("paie")) {
-                            if(Maps)textToSpeech("Ok, passons au payement")
+                            textToSpeech("Ok, passons au payement")
                             market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
                             market.payment.cardIn = true;
                             market.payment.showCode();
@@ -2275,21 +2292,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     writeLog(message);
 
                     console.log("No Correct Order Given");
-                    if(Maps)textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+                    textToSpeech("Je n'ai pas bien compris votre demande", "fr");
                 }
             }
         }
         else {
-                console.log("S'il te plait puisses-tu discuter?");
+            console.log("S'il te plait puisses-tu discuter?");
         }
     };
 
     function textToSpeech(msg){
-        //var speak = new SpeechSynthesisUtterance(msg);
-        //speechSynthesis.speak(speak);
-
-        console.log(msg);
-
+        speech.talk(msg);
     }
 
     function replaceChar(msg){
@@ -2301,12 +2314,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         if(market.calendar.address!==''){
             rp= getDelivery(market.calendar.address);
         } else{
+            market.calendar.address=param.data.getMarker()[1].address;
             rp= getDelivery(param.data.getMarker()[1].address);
         }
         for (let jour in rp){
             if (rp[jour].dayL[0] === dayGiven) {
                 dayToDraw.push({dayP: rp[jour].dayL[0], hourDL: rp[jour].hourDL,hourAL: rp[jour].hourAL, nbT: rp[jour].nbT,
-                    left : rp[jour].left, TPH : rp[jour].TPH, address : rp });
+                    left : rp[jour].left, TPH : rp[jour].TPH, address : param.data.getMarker()[1].address });
             }
         }
         return dayToDraw;
@@ -2334,54 +2348,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         return obj;
     }
 
-    function createCookie(name, value, expires,path,domain) {
-        var cookie = name + "=" + value + ";";
-
-        if (expires) {
-            // If it's a date
-            if(expires instanceof Date) {
-                // If it isn't a valid date
-                if (isNaN(expires.getTime()))
-                    expires = new Date();
-            }
-            else
-                expires = new Date(new Date().getTime() + parseInt(expires) * 1000 * 60 * 60 * 24);
-
-            cookie += "expires=" + expires.toGMTString() + ";";
-        }
-
-        cookie += "domain=;";
-        cookie += "path=/;";
-
-        if(Maps)document.cookie = cookie;
-    }
-
-    function getCookie(cname){
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
-    market.deleteCookie = function( name){
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    };
-
     function resetMarket(){
-        market.deleteCookie("ray");
-        market.deleteCookie("basket");
-        market.deleteCookie("payment");
-        market.deleteCookie("address");
-        market.deleteCookie("page");
+        cookie.deleteCookie("ray");
+        cookie.deleteCookie("basket");
+        cookie.deleteCookie("payment");
+        cookie.deleteCookie("address");
+        cookie.deleteCookie("page");
         if(Maps){
             window.location.reload();
         }
@@ -2460,24 +2432,22 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         market.map.mapOn=true;
         mapPage.add(market.map.component);
         setTimeout(function(){
-            if(Maps){
-                market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
-                if (currentMapSearch != ""){
-                    market.mapsfunction.research(currentMapSearch);
-                }
-                setTimeout(function(){
-                    if(market.map!=null) {
-                        market.map.updateMarkersSide();
-                    }
-                },500);
+            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
+            if (currentMapSearch != ""){
+                market.mapsfunction.research(currentMapSearch);
             }
+            setTimeout(function(){
+                if(market.map!=null) {
+                    market.map.updateMarkersSide();
+                }
+            },500);
         },500);
     }
 
     market.toCalendar= function(message){
         if (Maps){
             currentMapSearch= market.map.input.value;
-            createCookie("address",currentMapSearch,1);
+            cookie.createCookie("address",currentMapSearch,1);
             mapPage.remove(market.map.component);
             market.map=null;
         }
@@ -2489,13 +2459,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             currentIndex = 0;
         },200);
 
-        createCookie("page",0,1);
+        cookie.createCookie("page",0,1);
         market.calendar.printCurrentMonthContent();
         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
     };
 
     let currentMapSearch = "";
-    if(getCookie("address")) currentMapSearch = getCookie("address");
+    if(cookie.getCookie("address")) currentMapSearch = cookie.getCookie("address");
     let currentPage=mainPage;
     let currentIndex=2;
     market.pages=[];
@@ -2509,21 +2479,18 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     if (index != 1) {
                         if(market.map!=null){
                             currentMapSearch= market.map.input.value;
-                            createCookie("address",currentMapSearch,1);
+                            cookie.createCookie("address",currentMapSearch,1);
                             mapPage.remove(market.map.component);
                             market.map=null;
                         }
                     }
                     else{
-                        console.log("click");
                         loadMap();
-                        if(Maps){
-                            setTimeout(function(){
-                                if(market.map!=null) {
-                                    market.map.updateMarkersSide();
-                                }
-                            },3500);
-                        }
+                        setTimeout(function(){
+                            if(market.map!=null) {
+                                market.map.updateMarkersSide();
+                            }
+                        },3500);
                     }
                     if (currentIndex > index) {
                         for (let j = currentIndex; j > index; j--) {
@@ -2545,7 +2512,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         market.calendar.calendarOn = false;
                     }
 
-                    createCookie("page",index,1);
+                    cookie.createCookie("page",index,1);
                 }
             }
         });
@@ -2558,61 +2525,57 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
 
-    if(Maps)textToSpeech("Bonjour, Bienvenue!","fr");
+    textToSpeech("Bonjour, Bienvenue!","fr");
 
-    if(Maps){
-        let cookiePayment = getCookie("payment");
-        let cookieRay=getCookie("ray");
-        let cookieBasket=getCookie("basket");
-        if((cookieRay!="Recherche")&&(cookieRay)){
-            market.changeRay(cookieRay);
+
+    let cookiePayment = cookie.getCookie("payment");
+    let cookieRay=cookie.getCookie("ray");
+    let cookieBasket=cookie.getCookie("basket");
+    if((cookieRay!="Recherche")&&(cookieRay)){
+        market.changeRay(cookieRay);
+    }
+    else {
+        market.changeRay("HighTech");
+    }
+
+    if(cookieBasket) {
+        let stringBasket = cookieBasket.split(",");
+        for (let i in stringBasket) {
+            let tabProd = stringBasket[i].split(":");
+            let prod = search(tabProd[0]);
+            market.basket.addProducts(prod[0], tabProd[1]);
         }
-        else {
-            market.changeRay("HighTech");
+    }
+    if(cookiePayment=="done"){
+        market.pages[1].active = true;
+        market.pages[0].active = true;
+
+        let index=cookie.getCookie("page");
+        if(index==1){
+            loadMap();
+            setTimeout(function(){
+                market.map.updateMarkersSide();
+            },3500);
         }
-
-        if(cookieBasket) {
-            let stringBasket = cookieBasket.split(",");
-            for (let i in stringBasket) {
-                let tabProd = stringBasket[i].split(":");
-                let prod = search(tabProd[0]);
-                market.basket.addProducts(prod[0], tabProd[1]);
-            }
-        }
-        if(cookiePayment=="done"){
-            market.pages[1].active = true;
-            market.pages[0].active = true;
-
-            let index=getCookie("page");
-
-            if(index==1){
-                loadMap();
-                setTimeout(function(){
-                    market.map.updateMarkersSide();
-                },3500);
-            }
-            if (2 > index) {
-                for (let j = 2; j > index; j--) {
-                    market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
-                }
-            }
-            currentPage = market.pages[index].obj;
-            currentIndex = index;
-
-            if (currentIndex == 0) {
-                market.calendar.calendarOn = true;
-            }
-            else if (currentIndex==1){
-                market.calendar.calendarOn = false;
+        if (2 > index) {
+            for (let j = 2; j > index; j--) {
+                market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
             }
         }
-        else{
-            createCookie("page",2,1);
+        currentPage = market.pages[index].obj;
+        currentIndex = index;
+
+        if (currentIndex == 0) {
+            market.calendar.calendarOn = true;
+        }
+        else if (currentIndex==1){
+            market.calendar.calendarOn = false;
         }
     }
     else{
-        market.changeRay("HighTech");
+        cookie.createCookie("page",2,1);
     }
+
 
     return market;
     //////////////////////////////
