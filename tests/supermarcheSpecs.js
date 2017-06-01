@@ -29,7 +29,7 @@ describe("Test",function (){
         runtime.declareAnchor("content");
         svg = SVG(runtime);
         gui = GUI((svg),"");
-        fakeTimer = new timer().setNow(new Date(2017,6,10,8,0));
+        fakeTimer = new timer().setNow(new Date(2017,6,01,8,0));
         market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer);
         market.changeRay("HighTech");
     });

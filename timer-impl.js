@@ -19,13 +19,10 @@ exports.timer = class {
     getDayInMonth(){
         return this.currentDate.getDate();
     }
+
     getDayInWeek(){
         return this.currentDate.getDay();
     }
-    getDay(){
-        return this.currentDate.getDay();
-    }
-
 
     getNextMonth(){
         return (this.currentDate.getMonth()+1)%12;

@@ -1447,6 +1447,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             if(timer.getDate()!=0){
                 var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
                 var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
+                var dayTest = timer.getDate(1496268000000 + 24 * 60 * 60 * 1000);
+                var dayTest2 = timer.getDate(1496268000000 + 2 * 24 * 60 * 60 * 1000);
                 var nextMonth = timer.getDate(timer.getTime() + 31 * 24 * 60 * 60 * 1000);
                 var nextMonthAndOne = timer.getDate(timer.getTime() + 32 * 24 * 60 * 60 * 1000);
                 let modul = "";
@@ -1462,6 +1464,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 tab.push({
                     dayP: modul+afterTomorrow.getDate() + "/" + modul + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
+                });
+                tab.push({
+                    dayP: modul+dayTest.getDate() + "/" + modul + (dayTest.getMonth() + 1) + "/" + dayTest.getFullYear(),
+                    hourDL: "13", hourAL: "17", nbT: 4, left: 1, TPH: 1.5, address: this.address
+                });
+                tab.push({
+                    dayP: modul+dayTest2.getDate() + "/" + modul + (dayTest2.getMonth() + 1) + "/" + dayTest2.getFullYear(),
+                    hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
                 });
                 tab.push({
                     dayP: modul+nextMonth.getDate() + "/" + modul + (nextMonth.getMonth() + 1) + "/" + nextMonth.getFullYear(),
