@@ -7,6 +7,7 @@ let testUtil = require ("./testutils");
 let mockRuntime = require("../lib/runtimemock").mockRuntime;
 let main = require("../supermarche").main;
 let GUI = require("../lib/svggui").Gui;
+let MapFile = require("../lib/map");
 
 let DATA = require("../data").data;
 let data = DATA();
@@ -14,6 +15,7 @@ let NEURAL = require("../neuralNetDrawing").neural;
 let neural = NEURAL(mockRuntime());
 
 let timer = require("./timer-fake").timer;
+let map = require("./google-map-fake").googleMap;
 
 let runtime;
 let svg;
@@ -30,7 +32,7 @@ describe("Test",function (){
         svg = SVG(runtime);
         gui = GUI((svg),"");
         fakeTimer = new timer().setNow(new Date(2017,6,10,8,0));
-        market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer);
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,new map());
         market.changeRay("HighTech");
     });
 
