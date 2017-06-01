@@ -14,6 +14,7 @@ let NEURAL = require("../neuralNetDrawing").neural;
 let neural = NEURAL(mockRuntime());
 
 let timer = require("./timer-fake").timer;
+let cookie = require("./cookie-fake").cookie;
 
 let runtime;
 let svg;
@@ -30,7 +31,9 @@ describe("Test",function (){
         svg = SVG(runtime);
         gui = GUI((svg),"");
         fakeTimer = new timer().setNow(new Date(2017,6,10,8,0));
-        market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer);
+        fakeCookie = new cookie();
+        fakeCookie.setCookie("",2,"","","");
+        market = main(svg,gui,{data},neural,mockRuntime(),null,fakeTimer,null,fakeCookie);
         market.changeRay("HighTech");
     });
 

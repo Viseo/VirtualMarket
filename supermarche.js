@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap){
+exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,cookie){
 
     let screenSize = svg.runtime.screenSize();
 	let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -289,7 +289,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 }
             }
 
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         deleteProducts(vignette,numberProduct){
@@ -309,7 +309,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
             }
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         findInBasket(name)
@@ -327,7 +327,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                 if (quantity == null || quantity >= toDelete.quantity) this.deleteProducts(toDelete, toDelete.quantity);
                 else this.deleteProducts(toDelete, quantity);
             }
-            if(Maps)this.basketCookie();
+            this.basketCookie();
         }
 
         basketCookie(){
@@ -335,7 +335,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             for (let product of this.thumbnailsProducts) {
                 this.stringPanier+=product.name+":"+product.quantity+",";
             }
-            createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
+            cookie.createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
 
 
         };
@@ -891,9 +891,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         }
 
         paymentCookie(){
-            if(Maps) {
-                createCookie("payment", "done", 1);
-            }
+            cookie.createCookie("payment", "done", 1);
         }
 
         placeElements()
@@ -918,7 +916,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             market.pages[0].active = true;
             currentPage=market.map;
             currentIndex=1;
-            createCookie("page",1,1);
+            cookie.createCookie("page",1,1);
             loadMap();
         }
 
@@ -1985,13 +1983,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
         mainPage.add(categories.rayTranslation).add(categories.transRect).add(zoneBasket).add(zonePayment);
 
-        if(Maps){
-            let cookie = getCookie("ray");
-            if(cookie){
-                market.deleteCookie("ray");
-            }
-            createCookie("ray", categories.ray.name, 1);
+
+        let cookies = cookie.getCookie("ray");
+        if(cookies){
+            cookie.deleteCookie("ray");
         }
+        cookie.createCookie("ray", categories.ray.name, 1);
+
     };
 
     function search(sentence,config){
@@ -2060,7 +2058,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
                         message = message.substring(message.indexOf(words[i]));
                         currentMapSearch = message;
-                        createCookie("address",currentMapSearch,1);
+                        cookie.createCookie("address",currentMapSearch,1);
                         i = words.length;
                         if(Maps){
                             textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
@@ -2077,7 +2075,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         market.map.mapOn = false;
                         market.calendar.calendarOn = true;
                         currentMapSearch = market.map.input.value;
-                        createCookie("address",currentMapSearch,1);
+                        cookie.createCookie("address",currentMapSearch,1);
                         mapPage.remove(market.map.component);
                         market.map = null;
                     }
@@ -2330,54 +2328,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
         return obj;
     }
 
-    function createCookie(name, value, expires,path,domain) {
-        var cookie = name + "=" + value + ";";
-
-        if (expires) {
-            // If it's a date
-            if(expires instanceof Date) {
-                // If it isn't a valid date
-                if (isNaN(expires.getTime()))
-                    expires = new Date();
-            }
-            else
-                expires = new Date(new Date().getTime() + parseInt(expires) * 1000 * 60 * 60 * 24);
-
-            cookie += "expires=" + expires.toGMTString() + ";";
-        }
-
-        cookie += "domain=;";
-        cookie += "path=/;";
-
-        if(Maps)document.cookie = cookie;
-    }
-
-    function getCookie(cname){
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
-    market.deleteCookie = function( name){
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    };
-
     function resetMarket(){
-        market.deleteCookie("ray");
-        market.deleteCookie("basket");
-        market.deleteCookie("payment");
-        market.deleteCookie("address");
-        market.deleteCookie("page");
+        cookie.deleteCookie("ray");
+        cookie.deleteCookie("basket");
+        cookie.deleteCookie("payment");
+        cookie.deleteCookie("address");
+        cookie.deleteCookie("page");
         if(Maps){
             window.location.reload();
         }
@@ -2473,7 +2429,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
     market.toCalendar= function(message){
         if (Maps){
             currentMapSearch= market.map.input.value;
-            createCookie("address",currentMapSearch,1);
+            cookie.createCookie("address",currentMapSearch,1);
             mapPage.remove(market.map.component);
             market.map=null;
         }
@@ -2485,13 +2441,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
             currentIndex = 0;
         },200);
 
-        createCookie("page",0,1);
+        cookie.createCookie("page",0,1);
         market.calendar.printCurrentMonthContent();
         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
     };
 
     let currentMapSearch = "";
-    if(getCookie("address")) currentMapSearch = getCookie("address");
+    if(cookie.getCookie("address")) currentMapSearch = cookie.getCookie("address");
     let currentPage=mainPage;
     let currentIndex=2;
     market.pages=[];
@@ -2505,7 +2461,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                     if (index != 1) {
                         if(market.map!=null){
                             currentMapSearch= market.map.input.value;
-                            createCookie("address",currentMapSearch,1);
+                            cookie.createCookie("address",currentMapSearch,1);
                             mapPage.remove(market.map.component);
                             market.map=null;
                         }
@@ -2540,7 +2496,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
                         market.calendar.calendarOn = false;
                     }
 
-                    createCookie("page",index,1);
+                    cookie.createCookie("page",index,1);
                 }
             }
         });
@@ -2555,58 +2511,55 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap)
 
     if(Maps)textToSpeech("Bonjour, Bienvenue!","fr");
 
-    if(Maps){
-        let cookiePayment = getCookie("payment");
-        let cookieRay=getCookie("ray");
-        let cookieBasket=getCookie("basket");
-        if((cookieRay!="Recherche")&&(cookieRay)){
-            market.changeRay(cookieRay);
-        }
-        else {
-            market.changeRay("HighTech");
-        }
 
-        if(cookieBasket) {
-            let stringBasket = cookieBasket.split(",");
-            for (let i in stringBasket) {
-                let tabProd = stringBasket[i].split(":");
-                let prod = search(tabProd[0]);
-                market.basket.addProducts(prod[0], tabProd[1]);
+    let cookiePayment = cookie.getCookie("payment");
+    let cookieRay=cookie.getCookie("ray");
+    let cookieBasket=cookie.getCookie("basket");
+    if((cookieRay!="Recherche")&&(cookieRay)){
+        market.changeRay(cookieRay);
+    }
+    else {
+        market.changeRay("HighTech");
+    }
+
+    if(cookieBasket) {
+        let stringBasket = cookieBasket.split(",");
+        for (let i in stringBasket) {
+            let tabProd = stringBasket[i].split(":");
+            let prod = search(tabProd[0]);
+            market.basket.addProducts(prod[0], tabProd[1]);
+        }
+    }
+    if(cookiePayment=="done"){
+        market.pages[1].active = true;
+        market.pages[0].active = true;
+
+        let index=cookie.getCookie("page");
+        if(index==1){
+            loadMap();
+            setTimeout(function(){
+                market.map.updateMarkersSide();
+            },3500);
+        }
+        if (2 > index) {
+            for (let j = 2; j > index; j--) {
+                market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
             }
         }
-        if(cookiePayment=="done"){
-            market.pages[1].active = true;
-            market.pages[0].active = true;
+        currentPage = market.pages[index].obj;
+        currentIndex = index;
 
-            let index=getCookie("page");
-            if(index==1){
-                loadMap();
-                setTimeout(function(){
-                    market.map.updateMarkersSide();
-                },3500);
-            }
-            if (2 > index) {
-                for (let j = 2; j > index; j--) {
-                    market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
-                }
-            }
-            currentPage = market.pages[index].obj;
-            currentIndex = index;
-
-            if (currentIndex == 0) {
-                market.calendar.calendarOn = true;
-            }
-            else if (currentIndex==1){
-                market.calendar.calendarOn = false;
-            }
+        if (currentIndex == 0) {
+            market.calendar.calendarOn = true;
         }
-        else{
-            createCookie("page",2,1);
+        else if (currentIndex==1){
+            market.calendar.calendarOn = false;
         }
     }
     else{
-        market.changeRay("HighTech");
+        cookie.createCookie("page",2,1);
     }
+
 
     return market;
     //////////////////////////////
