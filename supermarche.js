@@ -179,7 +179,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
                 }
             }
-            else if(type=="up"){
+            else {
                 if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
@@ -1129,20 +1129,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         this.month = this.getMonth()[this.monthNumber];
                         this.changeTitleText(this.month + " " + this.year);
                         this.printCurrentMonthContent();
-                    } else {
-                        if ((this.presentMonth > this.monthNumber) && (this.presentYear === this.year)) {
-                            this.monthNumber++;
-                            this.chevronWest.opacity(0.5);
-                        }
-                        else {
-                            if (this.monthNumber < 0) {
-                                this.monthNumber = 11;
-                                this.year--;
-                            }
-                            this.month = this.getMonth()[this.monthNumber];
-                            this.changeTitleText(this.month + " " + this.year);
-                            this.printMonthContent(this.monthNumber, this.year);
-                        }
                     }
                     if (this.choice == null) {
                         this.picto.position(this.pictoPosX, this.pictoPosY);
@@ -2178,7 +2164,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 } else {
                                     let tor=false;
                                     for(let k = 0; k< det.length;k++){
-                                        if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
+                                        console.log(determining,determining2,determiningFour)
+                                        if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
                                             tor=true;
                                             market.basket.addProducts(tab[i],k+1);
                                             market.textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
@@ -2224,7 +2211,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 }else {
                                     let tor = false;
                                     for(let k = 0; k< det.length;k++){
-                                        if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
+                                        if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
                                             tor = true;
                                             market.basket.deleteFromName(tab[i].name,k+1);
                                             market.textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
@@ -2262,7 +2249,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                 if (!oneOrderChecked) {
                     message += ", " + Date();
-                    writeLog(message);
+                    // writeLog(message);
 
                     console.log("No Correct Order Given");
                     market.textToSpeech("Je n'ai pas bien compris votre demande", "fr");
