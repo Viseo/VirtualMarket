@@ -19,13 +19,14 @@ let map = require("./google-map-fake").googleMap;
 let cookie = require("./cookie-fake").cookie;
 let speech = require("./textToSpeech-fake").speech;
 let listener = require("./speechToText-fake").speechToText;
+let windowFunc = require("./window-fake").windowFunc;
 
 let runtime;
 let svg,gui;
 let inspect = testUtil.inspect;
 let retrieve = testUtil.retrieve;
 let market;
-let fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener;
+let fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener,fakeWindow;
 
 
 describe("Test",function (){
@@ -35,13 +36,14 @@ describe("Test",function (){
         runtime.declareAnchor("content");
         svg = SVG(runtime);
         gui = GUI((svg),"");
-        fakeTimer = new timer().setNow(new Date(2017,6,1,8,0));
+        fakeTimer = new timer().setNow(new Date(2017,5,1,8,0));
         fakeMap = new map();
         fakeCookie = new cookie();
         fakeCookie.setCookie("",2,"","","");
         fakeSpeech = new speech();
         fakeListener = new listener();
-        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
+        fakeWindow = new windowFunc();
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener,fakeWindow);
     });
 
     it("ensure that page structure is ok at start",function(){
@@ -59,6 +61,72 @@ describe("Test",function (){
         inspect(header,{tag:"g",transform:"translate(0 0)"});
         let logo = retrieve(header,"[logo]");
         runtime.event(logo,"click",{});
+
+
+        let payment_zone = retrieve(market.component,"[payment]");
+        assert.ok(payment_zone);
+        let card = retrieve(market.component,"[payment].[card]");
+        assert.ok(card);
+        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(card,"mousemove",{pageX:market.width*0.80+500,pageY:market.height*0.90});
+        runtime.advanceAll();
+        runtime.event(card,"mouseup",{ pageX:market.width*0.80+500,pageY:market.height*0.90});
+        runtime.advanceAll();
+
+        let code = retrieve(market.component,"[code]");
+        assert.ok(code);
+        let buttonGroup = retrieve(market.component,"[code].[buttonGroup]");
+        assert.ok(buttonGroup);
+        let button1 = retrieve(market.component,"[code].[buttonGroup].[button1]");
+        assert.ok(button1);
+        let button2 = retrieve(market.component,"[code].[buttonGroup].[button2]");
+        assert.ok(button2);
+        let button3 = retrieve(market.component,"[code].[buttonGroup].[button3]");
+        assert.ok(button3);
+        let button4 = retrieve(market.component,"[code].[buttonGroup].[button4]");
+        assert.ok(button4);
+        let button5 = retrieve(market.component,"[code].[buttonGroup].[button5]");
+        assert.ok(button5);
+        let button6 = retrieve(market.component,"[code].[buttonGroup].[button6]");
+        assert.ok(button6);
+        let button7 = retrieve(market.component,"[code].[buttonGroup].[button7]");
+        assert.ok(button7);
+        let button8 = retrieve(market.component,"[code].[buttonGroup].[button8]");
+        assert.ok(button8);
+        let button9 = retrieve(market.component,"[code].[buttonGroup].[button9]");
+        assert.ok(button9);
+
+        //Password ok
+        runtime.event(code, "mousedown", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+        runtime.event(button3, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button2, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseout", {});
+        runtime.advanceAll();
+        runtime.event(button1, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button4, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button5, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button6, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button9, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button8, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(button7, "mouseenter", {});
+        runtime.advanceAll();
+        runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
+        runtime.advanceAll();
+
+        runtime.event(logo,"click",{});
+
     });
 
     it("ensure that categories is well formed",function(){
@@ -569,7 +637,6 @@ describe("Test",function (){
     it("ensure that adding the same product in the basket is working ",function(done){
         let catMode = retrieve(market.component,"[categories].[Mode]");
         runtime.event(catMode,"click",{});
-
         let product = retrieve(market.component,"[ray Mode].[listRay].[Product Montre]");
         runtime.advanceAll();
         runtime.event(product,"mousedown",{ pageX:5, pageY:5});
@@ -579,7 +646,6 @@ describe("Test",function (){
         runtime.event(drawing,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
         assert.ok(retrieve(market.component,"[basket].[listBasket].[Montre]"));
-
         let Price = retrieve(market.component,"[basket].[price]");
         let montre = retrieve(market.component,"[basket].[listBasket].[Product basket Montre]");
         inspect(montre,{tag:"g"});
@@ -591,7 +657,6 @@ describe("Test",function (){
         assert(drawing2);
         runtime.event(drawing2,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
-
         setTimeout(function(){
             runtime.event(product, "mousedown", {pageX: 5, pageY: 5});
             runtime.advanceAll();
@@ -601,16 +666,13 @@ describe("Test",function (){
             let bigPrice = retrieve(market.component, "[basket].[price]");
             inspect(bigPrice, {tag: "text"});
             assert.equal(bigPrice["font-size"], 37.5);
-
             let product2 = retrieve(market.component, "[ray Mode].[listRay].[Product Costume]");
             runtime.advanceAll();
-
             let decalHeader = market.height / 19;
             runtime.event(product2, "mousedown", {pageX: 5, pageY: 380 + decalHeader});
             runtime.advanceAll();
             let drawing3 = retrieve(market.component, "[draw Costume]");
             assert(drawing3);
-
             runtime.event(product2, "mousedown", {pageX: 5, pageY: 380 + decalHeader});
             runtime.advanceAll();
             runtime.event(drawing3, "mousedown", {pageX: 5, pageY: 380 + decalHeader});
@@ -623,7 +685,6 @@ describe("Test",function (){
             runtime.advanceAll();
             runtime.event(drawing3, "mouseup", {pageX: 5, pageY: 500 + decalHeader});
             runtime.advanceAll();
-
             setTimeout(function () {
                 runtime.event(product2, "mousedown", {pageX: 5, pageY: 380 + decalHeader});
                 runtime.advanceAll();
@@ -650,10 +711,8 @@ describe("Test",function (){
                     runtime.advanceAll();
                     runtime.event(drawing3, "mouseup", {pageX: 5, pageY: 500 + decalHeader});
                     runtime.advanceAll();
-
                 }, 2000);
             }, 2000);
-
             setTimeout(function () {
                 runtime.event(product2, "mousedown", {pageX: 400, pageY: 380 + decalHeader});
                 runtime.advanceAll();
@@ -663,9 +722,7 @@ describe("Test",function (){
                 runtime.advanceAll();
                 runtime.event(drawing7, "mouseup", {pageX: 400, pageY: 380 + decalHeader});
                 runtime.advanceAll();
-
             }, 1000);
-
             setTimeout(function () {
                 runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
                 runtime.advanceAll();
@@ -688,10 +745,21 @@ describe("Test",function (){
                     runtime.advanceAll();
                     runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
                     runtime.advanceAll();
-                    done();
                 }, 1500);
             }, 5000);
-
+            setTimeout(function () {
+                runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
+                runtime.advanceAll();
+                done();
+            }, 10000);
             runtime.event(product2, "mousedown", {pageX: 400, pageY: 380 + decalHeader});
             runtime.advanceAll();
             let drawing8 = retrieve(market.component, "[draw Costume]");
@@ -1129,9 +1197,12 @@ describe("Test",function (){
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(done){
+        market.vocalRecognition("journaux");
+        market.vocalRecognition("");
         market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
+        market.vocalRecognition("je veux ajouter un coca et huit whisky");
         market.vocalRecognition("je veux ajouter un concombre et 44 carottes et 365 clementines");
-        market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer 2 Souris");
+        market.vocalRecognition("il faudrait supprimer une tables et 300 clementines et les carottes et supprimer neuf Souris");
         market.vocalRecognition("il faudrait supprimer 2 tables");
         market.vocalRecognition("en fait je voudrais vider le panier");
         market.vocalRecognition("Recherche les voyages !");
@@ -1300,6 +1371,7 @@ describe("Test",function (){
 
         runtime.event(mainPage,"click",{});
         runtime.event(calendar,"click",{});
+        runtime.event(calendar,"click",{});
         runtime.event(mainPage,"click",{});
         runtime.event(map,"click",{});
         runtime.event(calendar,"click",{});
@@ -1353,6 +1425,8 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(touchCategories,"mousemove",{pageX:2000,pageY:50});
         runtime.advanceAll();
+        let catMode = retrieve(market.component,"[categories].[Mode]");
+        runtime.event(catMode,"click",{});
         runtime.event(touchCategories,"mouseout",{pageX:2000,pageY:50});
         runtime.advanceAll();
 
@@ -1535,41 +1609,44 @@ describe("Test",function (){
         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
         runtime.advanceAll();
 
-        fakeTimer.setNow(new Date(2017,6,1,8,1));
+        setTimeout(function() {
+            market.toCalendar('Parc des Princes');
+            let calendar = retrieve(market.component, "[calendar]");
+            assert(calendar)
+        },2000)
 
-        market.toCalendar('Parc des Princes');
-
-        fakeTimer.setNow(new Date(2017,6,1,8,2));
-        done();
-    });
-
-    it('ensure that cookie for page 2 is working',function(done){
-        fakeCookie.setCookie("Drone:1,Webcam:1",2,"done","HighTech","64 boulevard garibaldi");
-        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
 
         setTimeout(function(){
+            // cookie.setCookie("",0,0,"HighTech","Parc des Princes")
+            // fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
             market.vocalRecognition("je veux me faire livrer aujourd'hui à 10h");
+            market.vocalRecognition("je veux me faire livrer aujourd'hui a midi");
             market.vocalRecognition("je veux me faire livrer aujourd'hui");
-            market.vocalRecognition("je veux me faire livrer demain à 13h");
+            market.vocalRecognition("je veux me faire livrer demain à 10h");
             market.vocalRecognition("je veux me faire livrer demain");
+            market.vocalRecognition("Négatif");
+            market.vocalRecognition("je veux me faire livrer le 10 juin à midi");
             market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
-            market.vocalRecognition("je veux me faire livrer le 10 juin");
             market.vocalRecognition("non");
-            done();
-        },1000);
+            market.vocalRecognition("je veux me faire livrer le 10 juin");
+            market.vocalRecognition("oui");
+            setTimeout(function() {
+                done();
+            },3000);
+        },2000);
     });
 
     it('ensure that cookie for page 0 is working',function(){
         fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
-        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
     });
 
     it('ensure that cookie for page 1 is working',function(done) {
         fakeCookie.setCookie("Drone:1,Webcam:1", 1, "done", "HighTech", "64 boulevard garibaldi");
-        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
         setTimeout(function () {
             done();
-        }, 4000);
+        }, 10000);
     });
 
 });

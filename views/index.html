@@ -26,6 +26,7 @@
     <script src="google-map-impl.js"></script>
     <script src="textToSpeech-impl.js"></script>
     <script src="speechToText-impl.js"></script>
+    <script src="window-impl.js"></script>
 
     <script>
         document.documentElement.style.overflow = 'hidden';
@@ -45,9 +46,10 @@
         let targetMap = require("google-map-impl").googleMap;
         let speech = require("textToSpeech-impl").speech;
         let listener = require("speechToText-impl").speechToText;
+        let windowFunc = require("window-impl").windowFunc;
 
         main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),
-            Map,new timer(),new targetMap(),new cookie(),new speech(),new listener());
+            Map,new timer(),new targetMap(),new cookie(),new speech(),new listener(),new windowFunc());
     </script>
 
     <style>

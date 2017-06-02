@@ -1,4 +1,4 @@
-exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,cookie,speech,listener){
+exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,cookie,speech,listener,windowFunc){
 
     let screenSize = svg.runtime.screenSize();
     let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -179,7 +179,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
                 }
             }
-            else if(type=="up"){
+            else {
                 if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
@@ -918,26 +918,24 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             glassTimer.add(fillGlass);
             market.add(glassTimer);
             market.payment.zoneCode.changeTimer(seconds,svg.RED);
-            if(state===false){
-                for(let i =0;i<=seconds+1;i++){
-                    setTimeout(function(i){
-                        return function(){
-                            market.payment.zoneCode.changeTimer(seconds-i,svg.RED);
-                            market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
-                            if(seconds-2>i && i>=(seconds/2)){
-                                market.payment.zoneCode.changeTimer(seconds-i,svg.ORANGE);
-                            }
-                            else if(i>=(seconds-2) && i!=seconds+1){
-                                market.payment.zoneCode.changeTimer(seconds-i,svg.GREEN);
-                            }
-                            else if (i===seconds+1){
-                                market.remove(glassTimer);
-                                market.payment.zoneCode.changeText("");
-                                market.payment.zoneCode.hideCircle();
-                            }
+            for(let i =0;i<=seconds+1;i++){
+                setTimeout(function(i){
+                    return function(){
+                        market.payment.zoneCode.changeTimer(seconds-i,svg.RED);
+                        market.payment.zoneCode.changeText("Code erroné",svg.BLACK);
+                        if(seconds-2>i && i>=(seconds/2)){
+                            market.payment.zoneCode.changeTimer(seconds-i,svg.ORANGE);
                         }
-                    }(i),i*1000);
-                }
+                        else if(i>=(seconds-2) && i!=seconds+1){
+                            market.payment.zoneCode.changeTimer(seconds-i,svg.GREEN);
+                        }
+                        else if (i===seconds+1){
+                            market.remove(glassTimer);
+                            market.payment.zoneCode.changeText("");
+                            market.payment.zoneCode.hideCircle();
+                        }
+                    }
+                }(i),i*1000);
             }
         }
 
@@ -961,7 +959,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             }else if(color=="unavailable"){
                 this.bar.color(svg.RED, 1, svg.RED);
                 this.component.move(width/2-width/60,0);
-            }else if(color=="midday"){
+            }else{
                 this.bar.dimension(width,width/30).color(svg.RED, 1, svg.RED);
                 this.component.move(0,height/2-width/60);
             }
@@ -1012,7 +1010,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             else if (bool==2)
                 this.left--;
             else {}
-            console.log(this.place,this.left,this.width,this.tabH.hourDL,this.tabH.dayP)
             let taille=(this.place-this.left)*(this.width/this.place);
             this.jauge.dimension(taille, this.height);
             this.titleText.message(this.left+" / "+this.place);
@@ -1020,10 +1017,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.deliveryRect.color(svg.WHITE,1,svg.GREY_GREEN);
                 this.jauge.color(svg.GREY_GREEN,1,svg.GREY_GREEN).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0);
             }
-            else if(this.left==0)  {
+            else if(this.left==0){
                 this.deliveryRect.color(svg.WHITE,1,svg.LIGHT_GREY);
                 this.jauge.color(svg.LIGHT_GREY,1,svg.LIGHT_GREY).position(-this.width/2+((this.place-this.left)*this.width)/(2*this.place),0);
-            }else if(this.place==this.left){
+            }
+            else{
                 this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             }
         }
@@ -1130,20 +1128,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         this.month = this.getMonth()[this.monthNumber];
                         this.changeTitleText(this.month + " " + this.year);
                         this.printCurrentMonthContent();
-                    } else {
-                        if ((this.presentMonth > this.monthNumber) && (this.presentYear === this.year)) {
-                            this.monthNumber++;
-                            this.chevronWest.opacity(0.5);
-                        }
-                        else {
-                            if (this.monthNumber < 0) {
-                                this.monthNumber = 11;
-                                this.year--;
-                            }
-                            this.month = this.getMonth()[this.monthNumber];
-                            this.changeTitleText(this.month + " " + this.year);
-                            this.printMonthContent(this.monthNumber, this.year);
-                        }
                     }
                     if (this.choice == null) {
                         this.picto.position(this.pictoPosX, this.pictoPosY);
@@ -1770,7 +1754,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     element.addAnimation(number);
                     market.textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
-                }else if(number == "?") market.textToSpeech("Je n'ai pas compris");
+                }else market.textToSpeech("Je n'ai pas compris");
 
             }
 
@@ -2077,7 +2061,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 if (spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux") || spMessage.includes("livrer")) {
                     for (let word=0; word < spMessage.length; word ++) {
                         for (let k = 0; k < market.calendar.rounds.length; k++) {
-                            console.log(market.calendar.rounds[k].tabH.dayP,market.calendar.rounds[k].tabH.hourDL,market.calendar.rounds[k].tabH.left)
                             if (spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0, 2) && market.calendar.rounds[k].tabH.left !== 0) {
                                 if(spMessage[word+3]!== undefined){
                                     if(spMessage[word+3] == market.calendar.rounds[k].tabH.hourDL+"h") {
@@ -2121,8 +2104,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         market.textToSpeech("Nous annulons votre livraison", "fr");
                         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
                         this.selectedHourday = false;
+                    }else{
+                        market.textToSpeech("Dites OUI pour valider votre livraison, ou NON pour changer de date", "fr");
                     }
-
                 }
             }
 
@@ -2177,7 +2161,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 } else {
                                     let tor=false;
                                     for(let k = 0; k< det.length;k++){
-                                        if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
+                                        console.log(determining,determining2,determiningFour)
+                                        if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
                                             tor=true;
                                             market.basket.addProducts(tab[i],k+1);
                                             market.textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
@@ -2223,7 +2208,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 }else {
                                     let tor = false;
                                     for(let k = 0; k< det.length;k++){
-                                        if(determining == det[k] || determining2 == det[k] || determiningFour == det[k]){
+                                        if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
                                             tor = true;
                                             market.basket.deleteFromName(tab[i].name,k+1);
                                             market.textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
@@ -2262,7 +2247,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 if (!oneOrderChecked) {
                     message += ", " + Date();
                     listener.writeLog(message);
-
                     console.log("No Correct Order Given");
                     market.textToSpeech("Je n'ai pas bien compris votre demande", "fr");
                 }
@@ -2325,16 +2309,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         cookie.deleteCookie("basket");
         cookie.deleteCookie("payment");
         cookie.deleteCookie("page");
-        if(Maps){
-            window.location.reload();
-        }
+        windowFunc.reload();
     }
 
-    window.onresize = function(){
-        if(Maps){
-            window.location.reload();
-        }
-    };
+    windowFunc.setResize();
 
     /////Déclaration Interface////
     let mainPage=new svg.Translation().mark("mainPage");
@@ -2453,9 +2431,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     else{
                         loadMap();
                         setTimeout(function(){
-                            if(market.map!=null) {
-                                market.map.updateMarkersSide();
-                            }
+                            market.map.updateMarkersSide();
                         },3500);
                     }
                     if (currentIndex > index) {
@@ -2492,7 +2468,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     market.add(zoneHeader);
 
     market.textToSpeech("Bonjour, Bienvenue!","fr");
-
 
     let cookiePayment = cookie.getCookie("payment");
     let cookieRay=cookie.getCookie("ray");
