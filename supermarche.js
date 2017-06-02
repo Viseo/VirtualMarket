@@ -1755,7 +1755,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     element.addAnimation(number);
                     market.textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
-                }else if(number == "?") market.textToSpeech("Je n'ai pas compris");
+                }else market.textToSpeech("Je n'ai pas compris");
 
             }
 

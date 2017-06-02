@@ -754,9 +754,21 @@ describe("Test",function (){
                     runtime.advanceAll();
                     runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
                     runtime.advanceAll();
-                    done();
                 }, 1500);
             }, 5000);
+            setTimeout(function () {
+                runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
+                runtime.advanceAll();
+                done();
+            }, 10000);
 
             runtime.event(product2, "mousedown", {pageX: 400, pageY: 380 + decalHeader});
             runtime.advanceAll();
@@ -1525,7 +1537,7 @@ describe("Test",function (){
 
         setTimeout(function(){
             market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
-            market.vocalRecognition("J'habite 64 Boulevard Garibaldi Paris");
+            market.vocalRecognition("J'habite 64 Boulevard Garibaldi, Paris");
             market.vocalRecognition("J'habite un Chemin des Etelles");
             market.vocalRecognition("Je selectionne le point relai numero 1");
             setTimeout(function() {
