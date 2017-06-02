@@ -2400,7 +2400,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     mapPage.add(linePathMap).add(background).add(mapIcon);
     market.map = null;
 
-    market.loadMap=function(){
+    function loadMap(){
         market.map = new Map(pageWidth,market.height-header.height*1.5,market.width*0.04,header.height*2);
         market.map.mapOn=true;
         mapPage.add(market.map.component);
@@ -2418,8 +2418,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     market.toCalendar= function(message){
-        if(market.map)currentMapSearch= market.map.input.value;
-        else currentMapSearch="";
+        currentMapSearch= market.map.input.value;
         cookie.createCookie("address",currentMapSearch,1);
         mapPage.remove(market.map.component);
         market.map=null;

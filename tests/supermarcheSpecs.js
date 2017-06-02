@@ -1535,18 +1535,16 @@ describe("Test",function (){
         runtime.event(code, "mouseup", {pageX: 5, pageY: 5});
         runtime.advanceAll();
 
-        fakeTimer.setNow(new Date(2017,6,1,8,1));
+        setTimeout(function() {
+            market.toCalendar('Parc des Princes');
+            let calendar = retrieve(market.component, "[calendar]");
+            assert(calendar)
+        },2000)
 
-        market.toCalendar('Parc des Princes');
 
-        fakeTimer.setNow(new Date(2017,6,1,8,2));
-        done();
-    });
-
-    it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
-        market.loadMap()
-        market.toCalendar('Parc des Princes')
         setTimeout(function(){
+            // cookie.setCookie("",0,0,"HighTech","Parc des Princes")
+            fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
             market.vocalRecognition("je veux me faire livrer aujourd'hui à 10h");
             market.vocalRecognition("je veux me faire livrer aujourd'hui a midi");
             market.vocalRecognition("je veux me faire livrer aujourd'hui");
@@ -1557,13 +1555,14 @@ describe("Test",function (){
             market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
             market.vocalRecognition("non");
             market.vocalRecognition("je veux me faire livrer le 10 juin");
-            market.vocalRecognition("oui");
+            // market.vocalRecognition("oui");
 
 
             setTimeout(function() {
                 done();
             },3000);
-        },3500);
+        },2000);
+
     });
 
     it('ensure that cookie for page 0 is working',function(){
@@ -1576,7 +1575,7 @@ describe("Test",function (){
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
         setTimeout(function () {
             done();
-        }, 4000);
+        }, 10000);
     });
 
 });
