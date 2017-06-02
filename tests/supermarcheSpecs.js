@@ -1553,9 +1553,9 @@ describe("Test",function (){
             market.vocalRecognition("je veux me faire livrer demain");
             market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
             market.vocalRecognition("je veux me faire livrer le 10 juin");
-// market.vocalRecognition("oui");
-// market.vocalRecognition("non");
-// market.vocalRecognition("Je selectionne le point relai numero 1");
+            // market.vocalRecognition("oui");
+            // market.vocalRecognition("non");
+            // market.vocalRecognition("Je selectionne le point relai numero 1");
             setTimeout(function() {
                 market.vocalRecognition("Je valide");
 
