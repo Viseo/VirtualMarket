@@ -2053,10 +2053,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
                         message = message.substring(message.indexOf(words[i]));
                         currentMapSearch = message;
-                        cookie.createCookie("address",currentMapSearch,1);
                         i = words.length;
                         market.textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
-                        market.mapsfunction.research(currentMapSearch);
+                        market.mapsfunction.research(message);
                         setTimeout(function(){
                             market.map.updateMarkersSide();
                         },500);
@@ -2068,7 +2067,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         market.map.mapOn = false;
                         market.calendar.calendarOn = true;
                         currentMapSearch = market.map.input.value;
-                        cookie.createCookie("address",currentMapSearch,1);
                         mapPage.remove(market.map.component);
                         market.map = null;
                     }
@@ -2263,7 +2261,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                 if (!oneOrderChecked) {
                     message += ", " + Date();
-                    writeLog(message);
+                    listener.writeLog(message);
 
                     console.log("No Correct Order Given");
                     market.textToSpeech("Je n'ai pas bien compris votre demande", "fr");
@@ -2277,7 +2275,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
     market.textToSpeech=function(msg){
         speech.talk(msg);
-    }
+    };
 
     function replaceChar(msg){
         return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
@@ -2326,7 +2324,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         cookie.deleteCookie("ray");
         cookie.deleteCookie("basket");
         cookie.deleteCookie("payment");
-        cookie.deleteCookie("address");
         cookie.deleteCookie("page");
         if(Maps){
             window.location.reload();
@@ -2420,7 +2417,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
     market.toCalendar= function(message){
         currentMapSearch= market.map.input.value;
-        cookie.createCookie("address",currentMapSearch,1);
         mapPage.remove(market.map.component);
         market.map=null;
         market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth - market.width * 0.02), 0);
@@ -2437,7 +2433,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     };
 
     let currentMapSearch = "";
-    if(cookie.getCookie("address")) currentMapSearch = cookie.getCookie("address");
     let currentPage=mainPage;
     let currentIndex=2;
     market.pages=[];
@@ -2451,7 +2446,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     if (index != 1) {
                         if(market.map!=null){
                             currentMapSearch= market.map.input.value;
-                            cookie.createCookie("address",currentMapSearch,1);
                             mapPage.remove(market.map.component);
                             market.map=null;
                         }

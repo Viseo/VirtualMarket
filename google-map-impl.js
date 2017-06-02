@@ -34,6 +34,10 @@ exports.googleMap=class {
         this.map.setZoom(zoom);
     }
 
+    getMarkers(mark,ref,data,cb){
+        return mark;
+    }
+
     getControls(){
         return this.map.controls;
     }

@@ -27,8 +27,9 @@ exports.googleMap=class {
         content.setAnimation=function(x){content.animation=x};
         content.setPosition=function(x){};
         content.setIcon=function(x){content.icon=x};
-        content.setMap=function(g){};
+        content.setMap=function(g){content.map=g};
         content.getAnimation=function(){return content.animation};
+        content.addListener=function(event,func){};
         return content;
     }
 
@@ -38,9 +39,10 @@ exports.googleMap=class {
         return content;
     }
 
-    geocoder(){
+    geocoder() {
         return {
-            geocode(address,func){}
+            geocode(address, func){
+            }
         };
     }
 
@@ -57,13 +59,52 @@ exports.googleMap=class {
     }
 
     createAutocomplete(input){
-        let autocomplete = {
+        this.autocomplete = {
             input:input,
             addListener(place,func){
             },
-            getPlace(){return {geometry:{location:{lat(){return 0},lng(){return 1}}}}}
+            getPlace(){
+                return {
+                    geometry: {
+                        location:{
+                            lat(){return 48.856},
+                            lng(){return 2.29}
+                        }
+                    }
+                }
+            }
         };
-        return autocomplete;
+        return this.autocomplete;
+    }
+
+    getMarkers(mark,refresh,data,cb){
+        var pos={lat:48.856,lng:2.29};
+        var infowindow = this.createInfoWindow({content:""});
+        var infoWindowMyPos = this.createInfoWindow({map: this.map});
+        let tab = refresh(this,mark,infowindow,infoWindowMyPos,data,pos,cb);
+        tab.push(this.createMarker({
+            icon: "",
+            position: "",
+            title: "",
+            label: {
+                text: '' ,
+                fontSize: '20px',
+                fontWeight: 'bold',
+            },
+            animating:1
+        }));
+        tab.push(this.createMarker({
+            icon: "",
+            position: "",
+            title: "",
+            label: {
+                text: '',
+                fontSize: '20px',
+                fontWeight: 'bold',
+            },
+            map:null
+        }));
+        return tab;
     }
 
     getTopLeftControl(){

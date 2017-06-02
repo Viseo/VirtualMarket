@@ -1456,17 +1456,17 @@ describe("Test",function (){
 
         setTimeout(function(){
             market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
-            market.vocalRecognition("J'habite 64 Boulevard Garibaldi Paris");
-            market.vocalRecognition("J'habite un Chemin des Etelles");
-            market.vocalRecognition("Je selectionne le point relai numero 1");
+            market.vocalRecognition("J'habite 64 Boulevard Garibaldi, Paris, France");
             setTimeout(function() {
-                market.vocalRecognition("Je valide");
-
-                runtime.advanceAll();
-
-                market.vocalRecognition("Je dis un truc");
-                done();
-            },500);
+                market.vocalRecognition("J'habite un Chemin des Etelles");
+                market.vocalRecognition("Je selectionne le point relai numero 1");
+                setTimeout(function() {
+                    market.vocalRecognition("Je valide");
+                    runtime.advanceAll();
+                    market.vocalRecognition("Je dis un truc");
+                    done();
+                },500);
+            },1000);
         },1000);
 
 
@@ -1543,9 +1543,10 @@ describe("Test",function (){
         done();
     });
 
-    it('ensure that cookie for page 1 is working',function(done){
-        fakeCookie.setCookie("Drone:1,Webcam:1",1,"done","HighTech","64 boulevard garibaldi");
+    it('ensure that cookie for page 2 is working',function(done){
+        fakeCookie.setCookie("Drone:1,Webcam:1",2,"done","HighTech","64 boulevard garibaldi");
         market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
+
         setTimeout(function(){
             market.vocalRecognition("je veux me faire livrer aujourd'hui à 10h");
             market.vocalRecognition("je veux me faire livrer aujourd'hui");
@@ -1553,17 +1554,22 @@ describe("Test",function (){
             market.vocalRecognition("je veux me faire livrer demain");
             market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
             market.vocalRecognition("je veux me faire livrer le 10 juin");
-            // market.vocalRecognition("oui");
-            // market.vocalRecognition("non");
-            // market.vocalRecognition("Je selectionne le point relai numero 1");
-            setTimeout(function() {
-                market.vocalRecognition("Je valide");
-
-                runtime.advanceAll();
-
-                market.vocalRecognition("Je dis un truc");
-                done();
-            },500);
+            market.vocalRecognition("non");
+            done();
         },1000);
     });
+
+    it('ensure that cookie for page 0 is working',function(){
+        fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+    });
+
+    it('ensure that cookie for page 1 is working',function(done) {
+        fakeCookie.setCookie("Drone:1,Webcam:1", 1, "done", "HighTech", "64 boulevard garibaldi");
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+        setTimeout(function () {
+            done();
+        }, 4000);
+    });
+
 });

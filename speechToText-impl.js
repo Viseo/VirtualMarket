@@ -45,4 +45,8 @@ exports.speechToText=class {
             }
         };
     }
+
+    writeLog(msg){
+        writeLog(msg);
+    }
 };
