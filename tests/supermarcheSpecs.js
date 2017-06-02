@@ -35,7 +35,7 @@ describe("Test",function (){
         runtime.declareAnchor("content");
         svg = SVG(runtime);
         gui = GUI((svg),"");
-        fakeTimer = new timer().setNow(new Date(2017,6,1,8,0));
+        fakeTimer = new timer().setNow(new Date(2017,5,1,8,0));
         fakeMap = new map();
         fakeCookie = new cookie();
         fakeCookie.setCookie("",2,"","","");
@@ -1543,27 +1543,26 @@ describe("Test",function (){
         done();
     });
 
-    it('ensure that cookie for page 1 is working',function(done){
-        fakeCookie.setCookie("Drone:1,Webcam:1",1,"done","HighTech","64 boulevard garibaldi");
-        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
+    it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
+        market.loadMap()
+        market.toCalendar('Parc des Princes')
         setTimeout(function(){
             market.vocalRecognition("je veux me faire livrer aujourd'hui à 10h");
+            market.vocalRecognition("je veux me faire livrer aujourd'hui a midi");
             market.vocalRecognition("je veux me faire livrer aujourd'hui");
-            market.vocalRecognition("je veux me faire livrer demain à 13h");
+            market.vocalRecognition("je veux me faire livrer demain à 10h");
             market.vocalRecognition("je veux me faire livrer demain");
+            market.vocalRecognition("Négatif");
+            market.vocalRecognition("je veux me faire livrer le 10 juin à midi");
             market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
+            market.vocalRecognition("non");
             market.vocalRecognition("je veux me faire livrer le 10 juin");
-// market.vocalRecognition("oui");
-// market.vocalRecognition("non");
-// market.vocalRecognition("Je selectionne le point relai numero 1");
+            market.vocalRecognition("oui");
+
+
             setTimeout(function() {
-                market.vocalRecognition("Je valide");
-
-                runtime.advanceAll();
-
-                market.vocalRecognition("Je dis un truc");
                 done();
-            },500);
-        },1000);
+            },3000);
+        },3500);
     });
 });

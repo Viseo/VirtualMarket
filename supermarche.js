@@ -1012,7 +1012,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             else if (bool==2)
                 this.left--;
             else {}
-            console.log(this.place,this.left,this.width,this.tabH.hourDL,this.tabH.dayP)
             let taille=(this.place-this.left)*(this.width/this.place);
             this.jauge.dimension(taille, this.height);
             this.titleText.message(this.left+" / "+this.place);
@@ -2079,7 +2078,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 if (spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux") || spMessage.includes("livrer")) {
                     for (let word=0; word < spMessage.length; word ++) {
                         for (let k = 0; k < market.calendar.rounds.length; k++) {
-                            console.log(market.calendar.rounds[k].tabH.dayP,market.calendar.rounds[k].tabH.hourDL,market.calendar.rounds[k].tabH.left)
                             if (spMessage[word] == market.calendar.rounds[k].tabH.dayP.substring(0, 2) && market.calendar.rounds[k].tabH.left !== 0) {
                                 if(spMessage[word+3]!== undefined){
                                     if(spMessage[word+3] == market.calendar.rounds[k].tabH.hourDL+"h") {
@@ -2123,8 +2121,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         market.textToSpeech("Nous annulons votre livraison", "fr");
                         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
                         this.selectedHourday = false;
+                    }else{
+                        market.textToSpeech("Dites OUI pour valider votre livraison, ou NON pour changer de date", "fr");
                     }
-
                 }
             }
 
@@ -2401,7 +2400,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     mapPage.add(linePathMap).add(background).add(mapIcon);
     market.map = null;
 
-    function loadMap(){
+    market.loadMap=function(){
         market.map = new Map(pageWidth,market.height-header.height*1.5,market.width*0.04,header.height*2);
         market.map.mapOn=true;
         mapPage.add(market.map.component);
@@ -2419,7 +2418,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     market.toCalendar= function(message){
-        currentMapSearch= market.map.input.value;
+        if(market.map)currentMapSearch= market.map.input.value;
+        else currentMapSearch="";
         cookie.createCookie("address",currentMapSearch,1);
         mapPage.remove(market.map.component);
         market.map=null;
