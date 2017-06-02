@@ -1565,4 +1565,18 @@ describe("Test",function (){
             },3000);
         },3500);
     });
+
+    it('ensure that cookie for page 0 is working',function(){
+        fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+    });
+
+    it('ensure that cookie for page 1 is working',function(done) {
+        fakeCookie.setCookie("Drone:1,Webcam:1", 1, "done", "HighTech", "64 boulevard garibaldi");
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+        setTimeout(function () {
+            done();
+        }, 4000);
+    });
+
 });
