@@ -1546,6 +1546,7 @@ describe("Test",function (){
     it('ensure that cookie for page 1 is working',function(done){
         fakeCookie.setCookie("Drone:1,Webcam:1",1,"done","HighTech","64 boulevard garibaldi");
         market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
+
         setTimeout(function(){
             market.vocalRecognition("je veux me faire livrer aujourd'hui à 10h");
             market.vocalRecognition("je veux me faire livrer aujourd'hui");
@@ -1566,4 +1567,18 @@ describe("Test",function (){
             },500);
         },1000);
     });
+
+    it('ensure that cookie for page 0 is working',function(){
+        fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+    });
+
+    it('ensure that cookie for page 1 is working',function(done) {
+        fakeCookie.setCookie("Drone:1,Webcam:1", 1, "done", "HighTech", "64 boulevard garibaldi");
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener);
+        setTimeout(function () {
+            done();
+        }, 4000);
+    });
+
 });
