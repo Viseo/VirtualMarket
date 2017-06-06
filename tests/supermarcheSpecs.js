@@ -320,7 +320,7 @@ describe("Test",function (){
 
     it("ensure that we can navigate by gesture on ray",function() {
         fakeCookie.setCookie("Drone:1,Webcam:1",2,"done","HighTech","64 boulevard garibaldi");
-        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener);
+        market = main(svg,gui,{data},neural,mockRuntime(),MapFile,fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener,fakeWindow);
         let catFruits = retrieve(market.component, "[categories].[Fruits]");
         runtime.event(catFruits, "click", {});
         let rayFruits = retrieve(market.component, "[ray Fruits].[listRay]");
@@ -1163,6 +1163,9 @@ describe("Test",function (){
         runtime.event(content,"mousemove",{pageX:200,pageY:2000});
         runtime.advanceAll();
         runtime.event(content,"mouseup",{pageX:200,pageY:2000});
+        runtime.advanceAll();
+
+        runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
 
         runtime.event(content,"touchstart",{touches:{0:{clientX:100,clientY:100}}});

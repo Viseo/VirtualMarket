@@ -1086,22 +1086,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.presentYear = timer.getYear();
             this.month = this.getMonth()[this.monthNumber];
             this.year = timer.getYear();
+
             this.zoneChevronEast.onClick(()=>{
-                if(this.chevronEast._opacity==0.5){
-                }
-                else{
-                    if(this.presentMonth===this.monthNumber){
-                        this.monthNumber++;
-                        if (this.monthNumber===12){
-                            this.monthNumber=0;
-                            this.year++;
-                        }
-                        this.month = this.getMonth()[this.monthNumber];
-                        this.changeTitleText(this.month+" "+this.year);
-                        this.chevronWest.opacity(1);
-                        this.chevronEast.opacity(0.5);
-                        this.printMonthContent(this.monthNumber,this.year);
+                if(this.chevronEast._opacity!=0.5){
+                    this.monthNumber++;
+                    if (this.monthNumber===12){
+                        this.monthNumber=0;
+                        this.year++;
                     }
+                    this.month = this.getMonth()[this.monthNumber];
+                    this.changeTitleText(this.month+" "+this.year);
+                    this.chevronWest.opacity(1);
+                    this.chevronEast.opacity(0.5);
+                    this.printMonthContent(this.monthNumber,this.year);
                     if(this.choice==null) {
                         this.picto.position(this.pictoPosX,this.pictoPosY);
                     }
@@ -1115,12 +1112,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         }
                     }
                 }
-
             });
 
             this.zoneChevronWest.onClick(()=>{
-                if(this.chevronWest._opacity==0.5){}
-                else {
+                if(this.chevronWest._opacity!=0.5){
                     this.monthNumber--;
                     if ((this.presentMonth === this.monthNumber) && (this.presentYear === this.year)) {
                         this.chevronWest.opacity(0.5);
@@ -1207,7 +1202,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 });
             }
 
-
             function toMove(y,mouse){
                 self.calendarFirstColumn.steppy(1, 1).onChannel("calendarColumn")
                     .moveTo(0, self.calendarContent.y - (mouse - y));
@@ -1218,9 +1212,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             function toEndMove() {
                 let nbdays = 0;
                 if (self.current === true) {
-                    nbdays = self.numberDaysThisMonth - timer.getDate();
+                    nbdays = self.numberDaysThisMonth - timer.getDayInMonth();
                 } else {
-                    nbdays = self.numberDaysThisMonth;
+                    nbdays = self.numberDaysThisMonth-1;
                 }
                 var height = self.caseHeight * (nbdays);
                 if ((self.calendarContent.y + height + self.caseHeight / 2 < market.height)&&(nbdays>10)) {
@@ -1266,6 +1260,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.month=this.getMonth()[this.monthNumber];
             this.chevronWest.opacity(0.5);
             this.chevronEast.opacity(1);
+            this.current=true;
             this.calendarFirstColumn = new svg.Translation();
             this.calendarContent = new svg.Translation();
             this.changeTitleText(this.month+" "+this.year);
@@ -1478,15 +1473,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         printMonthContent(month,year){
             this.current=false;
             for(let i = 0; i<this.rounds.length;i++){
-                if(this.rounds[i].component)this.calendarContent.remove(this.rounds[i].component);
+                if(this.rounds[i])this.calendarContent.remove(this.rounds[i].component);
             }
             this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
             this.component.remove(this.calendarFirstRow);
 
             let tabDays = [];
-            this.numberDaysThisMonth=this.daysInMonth(month,year);
-            this.startDay=new Date(year,month+1,0).getDate();
+            this.numberDaysThisMonth=timer.getNumberOfDaysInMonth(month,year);
+            this.startDay=new Date(year,month,0).getDay()+1;
 
             for(let j=0;j<=this.numberDaysThisMonth-1;j++){
                 this.dayCases[j] = new svg.Translation();
