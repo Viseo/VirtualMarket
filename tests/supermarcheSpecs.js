@@ -1671,7 +1671,7 @@ describe("Test",function (){
         setTimeout(function() {
             market.toCalendar('Parc des Princes');
             let calendar = retrieve(market.component, "[calendar]");
-            assert(calendar)
+            assert(calendar);
         },2000)
 
 
@@ -1695,17 +1695,41 @@ describe("Test",function (){
         },2000);
     });
 
-    it('ensure that cookie for page 0 is working',function(){
+    it('ensure that cookie for page 0 is working',function(done){
         fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
+        fakeTimer = new timer().setNow(new Date(2017,11,1,8,0));
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
+        setTimeout(function () {
+            let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
+            let chevronWest=retrieve(market.component,"[calendar].[monthChoice].[chevronWCalendar]");
+            runtime.event(chevronEast,"click",{});
+            runtime.advanceAll();
+             runtime.event(chevronWest,"click",{});
+             runtime.advanceAll();
+            done();
+        },4000);
     });
+
+    it('ensure that management of month in calendar is working everytime',function(done){
+        fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
+        fakeTimer = new timer().setNow(new Date(2017,10,1,8,0));
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
+        setTimeout(function () {
+            let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
+            runtime.event(chevronEast,"click",{});
+            runtime.advanceAll();
+            done();
+        },4000);
+
+    });
+
 
     it('ensure that cookie for page 1 is working',function(done) {
         fakeCookie.setCookie("Drone:1,Webcam:1", 1, "done", "HighTech", "64 boulevard garibaldi");
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
         setTimeout(function () {
             done();
-        }, 10000);
+        }, 4000);
     });
 
 });
