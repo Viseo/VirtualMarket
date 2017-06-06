@@ -1728,14 +1728,26 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
+            function checkFirstLetter(element){
+                let letter = element.name[0].toLowerCase();
+                 if(letter=="a"||letter=="e"||letter=="i"||letter=="y" ||letter=="é"||letter=="o"){
+                     return "d'";
+                }
+                else {
+                     return "de ";
+                 }
+            }
+
             this.anim=false;
+
             function getNumber(number,element){
                 categories.ray.currentDrawn = null;
                 if(number=="click") {
                     if(!self.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
-                        market.textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
+                        self.anim=true;
+                        market.textToSpeech("Ok, j'ajoute 1 "+ element.complement.replace("/","")+" "+checkFirstLetter(element)+self.name + " au panier");
                         self.anim=true;
                     }
                 }
@@ -1748,7 +1760,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         }
                     }
                     element.addAnimation(number);
-                    market.textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
+                    market.textToSpeech("Ok, j'ajoute "+ number+ " "+ element.complement.replace("/","")+" "+checkFirstLetter(element)+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
                 }else market.textToSpeech("Je n'ai pas compris");
 
