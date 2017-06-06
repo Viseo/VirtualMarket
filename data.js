@@ -814,6 +814,7 @@ exports.data = function() {
         }
     }
 
+
     /////////// MANAGE JSON
     // Make vignettes tab for a category
     function makeVignettesForRay(catTitle,typeVig){
