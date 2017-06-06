@@ -443,7 +443,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                         self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
                                     }
                                     self.direction = null;
-                                }else()
+                                }else{}
                             });
                         }
                     }
