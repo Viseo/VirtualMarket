@@ -1136,7 +1136,7 @@ describe("Test",function (){
         runtime.advanceAll();
     });
 
-    it("ensures that the calendar is shown when the right code is entered",function(){
+    it("ensures that the calendar is working, that we can navigate in it and choose a delivery hour",function(){
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
         let card = retrieve(market.component,"[payment].[card]");
@@ -1236,6 +1236,25 @@ describe("Test",function (){
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
 
+        let round0 = retrieve(market.component,"[calendar].[round 0]");
+        runtime.event(round0, "click", {});
+        runtime.advanceAll();
+        runtime.event(chevronEast,"click", {});
+        runtime.advanceAll();
+        runtime.event(chevronWest,"click", {});
+        runtime.advanceAll();
+
+        let round1 = retrieve(market.component,"[calendar].[round 1]");
+        runtime.event(round1, "click", {});
+        runtime.advanceAll();
+        let round2 = retrieve(market.component,"[calendar].[round 2]");
+        runtime.event(round2, "click", {});
+        runtime.advanceAll();
+        runtime.event(round0, "click", {});
+        runtime.advanceAll();
+        runtime.event(chevronEast,"click", {});
+        runtime.advanceAll();
+
         let column = retrieve(market.component,"[calendar].[column]");
         assert(column);
 
@@ -1258,6 +1277,9 @@ describe("Test",function (){
         runtime.event(content,"mouseup",{pageX:200,pageY:2000});
         runtime.advanceAll();
 
+        runtime.event(chevronWest,"click", {});
+        runtime.advanceAll();
+
         runtime.event(content,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
         runtime.event(content,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
         runtime.advanceAll();
@@ -1267,25 +1289,6 @@ describe("Test",function (){
         runtime.event(content,"mousemove",{pageX:100,pageY:200});
         runtime.advanceAll();
         runtime.event(column,"mousemove",{pageX:100,pageY:200});
-        runtime.advanceAll();
-
-        let round0 = retrieve(market.component,"[calendar].[round 0]");
-        runtime.event(round0, "click", {});
-        runtime.advanceAll();
-        runtime.event(chevronEast,"click", {});
-        runtime.advanceAll();
-        runtime.event(chevronWest,"click", {});
-        runtime.advanceAll();
-
-        let round1 = retrieve(market.component,"[calendar].[round 1]");
-        runtime.event(round1, "click", {});
-        runtime.advanceAll();
-        let round2 = retrieve(market.component,"[calendar].[round 2]");
-        runtime.event(round2, "click", {});
-        runtime.advanceAll();
-        runtime.event(round0, "click", {});
-        runtime.advanceAll();
-        runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
     });
 
@@ -1764,7 +1767,6 @@ describe("Test",function (){
         },4000);
 
     });
-
 
     it('ensure that cookie for page 1 is working',function(done) {
         fakeCookie.setCookie("Drone:1,Webcam:1", 1, "done", "HighTech", "64 boulevard garibaldi");

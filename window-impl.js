@@ -3,7 +3,6 @@
  */
 
 exports.windowFunc=class {
-
     setResize(){
         window.onresize = ()=>{
             this.reload();
