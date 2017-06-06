@@ -582,6 +582,7 @@ describe("Test",function (){
         let fondbasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[background Banane]");
         let titlebasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[title Banane]");
         let compbasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane]");
+        let basket = retrieve(market.component,"[basket]");
 
         runtime.event(imagebasket,"mouseenter");
         runtime.advanceAll();
@@ -591,6 +592,17 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(titlebasket,"mouseenter");
         runtime.advanceAll();
+
+        // runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        // runtime.advanceAll();
+        //
+        // runtime.advanceAll();
+        // runtime.event(compbasket,"mouseout");
+        // runtime.advanceAll();
+        // runtime.event(fondbasket,"mousemove",{ pageX:25, pageY:5});
+        // runtime.advanceAll();
+        // runtime.event(fondbasket,"mousemove",{ pageX:50, pageY:5});
+        // runtime.advanceAll();
 
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
@@ -612,12 +624,30 @@ describe("Test",function (){
 
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:25, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:50, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mouseup",{ pageX:150, pageY:5});
+        runtime.advanceAll();
+        runtime.event(fondbasket,"mousemove",{ pageX:25, pageY:5});
+        runtime.advanceAll();
+        runtime.event(fondbasket,"mousemove",{ pageX:50, pageY:5});
+        runtime.advanceAll();
+
+
+        runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
         runtime.event(compbasket,"mousemove",{ pageX:5, pageY:50});
         runtime.advanceAll();
         runtime.event(compbasket,"mousemove",{ pageX:5, pageY:50});
         runtime.advanceAll();
         runtime.event(compbasket,"mouseup",{ pageX:100, pageY:5});
         runtime.advanceAll();
+        console.log('cest la')
+        runtime.event(compbasket,"mouseout");
+        runtime.advanceAll();
+
 
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
@@ -627,6 +657,9 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(compbasket,"mouseup",{ pageX:1000, pageY:5});
         runtime.advanceAll();
+        runtime.event(compbasket,"mouseout");
+        runtime.advanceAll();
+
 
         let compbasket2 = retrieve(market.component,"[basket].[listBasket].[Product basket Mangue]");
         runtime.event(compbasket2,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
@@ -645,6 +678,15 @@ describe("Test",function (){
         runtime.event(compbasket2,"mousemove",{ pageX:1000, pageY:5});
         runtime.advanceAll();
         runtime.event(compbasket2,"mouseout",{ pageX:1000, pageY:5});
+        runtime.advanceAll();
+
+        runtime.event(basket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{ pageX:5, pageY:50});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{ pageX:50, pageY:50});
+        runtime.advanceAll();
+        runtime.event(basket,"mouseup",{ pageX:50, pageY:50});
         runtime.advanceAll();
 
         let compbasket3 = retrieve(market.component,"[basket].[listBasket].[Product basket Clementine]");

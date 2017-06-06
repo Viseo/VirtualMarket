@@ -307,6 +307,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 for (let product of this.thumbnailsProducts) {
                     product.placeElements();
                     product.move(0,this.thumbnailsProducts.indexOf(product)*(product.height)+this.component.height*0.1);
+                }
                 if(this.thumbnailsProducts.length<=7) this.listProducts.smoothy(10,10).moveTo(0,0);
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
@@ -378,7 +379,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 self.direction = "RIGHT";
                                 self.previousMouseX = e.pageX;
                                 svg.addEvent(current.component, "mousemove", function (e) {
-                                    current.component.steppy(1, 1).moveTo(current.x + (e.pageX - self.previousMouseX), current.y);
+                                    if(self.direction=="RIGHT") {
+                                        current.component.steppy(1, 1).moveTo(current.x + (e.pageX - self.previousMouseX),
+                                            current.y);
+                                    }else{}
                                 });
 
                                 svg.addEvent(current.component, "mouseup", function () {
@@ -407,9 +411,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             // naviguer dans le panier avec la souris
                             self.previousMouseY = e.pageY;
                             svg.addEvent(self.component, "mousemove", function (e) {
-                                self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
-                                    self.listProducts.y+(e.pageY - self.previousMouseY));
-                                self.previousMouseY = e.pageY;
+                                if(self.direction=="VERTICAL") {
+                                    self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
+                                        self.listProducts.y+(e.pageY - self.previousMouseY));
+                                    self.previousMouseY = e.pageY;
+                                }else{}
                             });
 
                             svg.addEvent(self.component, "mouseup", function () {
@@ -426,16 +432,18 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             });
 
                             svg.addEvent(self.component, "mouseout", function () {
-                                let heightTotal = self.thumbnailsProducts.length * self.thumbnailsProducts[0].height;
-                                let heightView = self.component.height*0.77;
-                                let positionDown = self.listProducts.y + heightTotal;
-                                if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=7)) {
-                                    self.listProducts.smoothy(10, 10).moveTo(0, 0);
-                                }
-                                else if(positionDown < heightView) {
-                                    self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
-                                }
-                                self.direction = null;
+                                if(self.direction) {
+                                    let heightTotal = self.thumbnailsProducts.length * self.thumbnailsProducts[0].height;
+                                    let heightView = self.component.height*0.77;
+                                    let positionDown = self.listProducts.y + heightTotal;
+                                    if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=7)) {
+                                        self.listProducts.smoothy(10, 10).moveTo(0, 0);
+                                    }
+                                    else if(positionDown < heightView) {
+                                        self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
+                                    }
+                                    self.direction = null;
+                                }else()
                             });
                         }
                     }
@@ -631,6 +639,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             self.cardIn=true;
                         }
                         draw = false;
+
                     }
                 });
             });
