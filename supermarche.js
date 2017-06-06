@@ -62,6 +62,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     else if (positionRight <= widthView) {
                         listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
                     }
+                    else{}
                     mouvement = false;
                 });
 
@@ -273,7 +274,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             });
 
             svg.addEvent(newProd.component, "touchstart", function (e) {
-                if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
+                self.dragBasket(newProd,e);
             });
 
             this.calculatePrice(newProd.price*quantity);
@@ -306,7 +307,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 for (let product of this.thumbnailsProducts) {
                     product.placeElements();
                     product.move(0,this.thumbnailsProducts.indexOf(product)*(product.height)+this.component.height*0.1);
-                }
                 if(this.thumbnailsProducts.length<=7) this.listProducts.smoothy(10,10).moveTo(0,0);
             }else {
                 this.calculatePrice(-((vignette.price)*numberProduct));
@@ -378,10 +378,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 self.direction = "RIGHT";
                                 self.previousMouseX = e.pageX;
                                 svg.addEvent(current.component, "mousemove", function (e) {
-                                    if(self.direction=="RIGHT") {
-                                        current.component.steppy(1, 1).moveTo(current.x + (e.pageX - self.previousMouseX),
-                                            current.y);
-                                    }
+                                    current.component.steppy(1, 1).moveTo(current.x + (e.pageX - self.previousMouseX), current.y);
                                 });
 
                                 svg.addEvent(current.component, "mouseup", function () {
@@ -410,11 +407,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             // naviguer dans le panier avec la souris
                             self.previousMouseY = e.pageY;
                             svg.addEvent(self.component, "mousemove", function (e) {
-                                if(self.direction=="VERTICAL") {
-                                    self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
-                                        self.listProducts.y+(e.pageY - self.previousMouseY));
-                                    self.previousMouseY = e.pageY;
-                                }
+                                self.listProducts.steppy(1, 1).moveTo(self.listProducts.x,
+                                    self.listProducts.y+(e.pageY - self.previousMouseY));
+                                self.previousMouseY = e.pageY;
                             });
 
                             svg.addEvent(self.component, "mouseup", function () {
@@ -431,18 +426,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             });
 
                             svg.addEvent(self.component, "mouseout", function () {
-                                if(self.direction) {
-                                    let heightTotal = self.thumbnailsProducts.length * self.thumbnailsProducts[0].height;
-                                    let heightView = self.component.height*0.77;
-                                    let positionDown = self.listProducts.y + heightTotal;
-                                    if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=7)) {
-                                        self.listProducts.smoothy(10, 10).moveTo(0, 0);
-                                    }
-                                    else if(positionDown < heightView) {
-                                        self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
-                                    }
-                                    self.direction = null;
+                                let heightTotal = self.thumbnailsProducts.length * self.thumbnailsProducts[0].height;
+                                let heightView = self.component.height*0.77;
+                                let positionDown = self.listProducts.y + heightTotal;
+                                if ((self.listProducts.y > 0)||(self.thumbnailsProducts.length<=7)) {
+                                    self.listProducts.smoothy(10, 10).moveTo(0, 0);
                                 }
+                                else if(positionDown < heightView) {
+                                    self.listProducts.smoothy(10,10).moveTo(self.listProducts.x, heightView - heightTotal);
+                                }
+                                self.direction = null;
                             });
                         }
                     }
@@ -619,7 +612,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     if(draw) {
                         if (self.card.x + self.card.width / 2 < self.component.width * 0.80)
                             self.card.position(width * 0.1, self.card.y);
-                        else if (self.cardIn == false) {
+                        else{
                             self.showCode();
                             self.card.position(self.width * 0.65, self.card.y);
                             self.cardIn=true;
@@ -638,7 +631,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             self.cardIn=true;
                         }
                         draw = false;
-
                     }
                 });
             });
@@ -2161,7 +2153,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 } else {
                                     let tor=false;
                                     for(let k = 0; k< det.length;k++){
-                                        console.log(determining,determining2,determiningFour)
                                         if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
                                             tor=true;
                                             market.basket.addProducts(tab[i],k+1);
