@@ -146,9 +146,22 @@ describe("Test",function (){
     });
 
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
+
+        let categoriesTrip = retrieve(market.component,"[categories].[Voyages]");
+        runtime.event(categoriesTrip,"click",{});
+
+        let trip = retrieve(market.component,"[ray Voyages].[listRay].[Product Paris]");
+        runtime.event(trip,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawingtrip = retrieve(market.component,"[glassCanvas].[draw Paris]");
+        assert(drawingtrip);
+        runtime.event(drawingtrip,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert(retrieve(market.component,"[mainPage].[basket].[listBasket].[Paris]"));
+        runtime.advanceAll();
+
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
-
         let canv = retrieve(market.component,"[glassCanvas]");
         assert(canv);
 
@@ -837,8 +850,47 @@ describe("Test",function (){
                 runtime.advanceAll();
                 runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
                 runtime.advanceAll();
-                // done();
             }, 10000);
+
+            setTimeout(function () {
+                runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
+                runtime.advanceAll();
+                setTimeout(function () {
+                    runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 380 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 400 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 440 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 480 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 500 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 15, clientY: 500 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 15, clientY: 480 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 440 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 15, clientY: 400 + decalHeader}}});
+                    runtime.advanceAll();
+                    runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                    runtime.advanceAll();
+                },1000);
+            }, 15000);
+
             setTimeout(function () {
                 runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
                 runtime.advanceAll();
@@ -864,10 +916,11 @@ describe("Test",function (){
                 runtime.advanceAll();
                 runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
                 runtime.advanceAll();
-;                setTimeout(function(){
-                    done();
-                },2000)
-            }, 15000);
+            }, 20000);
+
+            setTimeout(function(){
+                done();
+            },24000);
             runtime.event(product2, "mousedown", {pageX: 400, pageY: 380 + decalHeader});
             runtime.advanceAll();
             let drawing8 = retrieve(market.component, "[draw Costume]");
@@ -1505,8 +1558,6 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(touchCategories,"mousemove",{pageX:100,pageY:50});
         runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
-        runtime.advanceAll();
         runtime.event(touchCategories,"mouseup",{pageX:200,pageY:50});
         runtime.advanceAll();
 
@@ -1798,5 +1849,4 @@ describe("Test",function (){
             done();
         }, 4000);
     });
-
 });

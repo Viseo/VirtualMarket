@@ -250,49 +250,51 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         addProducts(thumbnail,quantity) {
-            let newProd = new ThumbnailBasket(thumbnail.image.src, thumbnail.name, thumbnail.price, thumbnail.complement, thumbnail.categorie);
-            let occur=0;
-            let self =this;
-            for (let product of this.thumbnailsProducts) {
-                if (product.name == thumbnail.name) {
-                    product.addQuantity(quantity);
-                    let newText=product.quantity;
-                    product.changeText(newText);
-                    occur=1;
+            if(quantity != 0){
+                let newProd = new ThumbnailBasket(thumbnail.image.src, thumbnail.name, thumbnail.price, thumbnail.complement, thumbnail.categorie);
+                let occur=0;
+                let self =this;
+                for (let product of this.thumbnailsProducts) {
+                    if (product.name == thumbnail.name) {
+                        product.addQuantity(quantity);
+                        let newText=product.quantity;
+                        product.changeText(newText);
+                        occur=1;
+                    }
                 }
-            }
-            if (occur==0){
-                newProd.addQuantity(quantity);
-                this.listProducts.add(newProd.component);
-                this.thumbnailsProducts.push(newProd);
-                let newText=newProd.quantity;
-                newProd.changeText(newText);
-            }
+                if (occur==0){
+                    newProd.addQuantity(quantity);
+                    this.listProducts.add(newProd.component);
+                    this.thumbnailsProducts.push(newProd);
+                    let newText=newProd.quantity;
+                    newProd.changeText(newText);
+                }
 
-            newProd.component.onMouseDown(function(e){
-                if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
-            });
+                newProd.component.onMouseDown(function(e){
+                    if(market.pages[2].obj==currentPage) self.dragBasket(newProd,e);
+                });
 
-            svg.addEvent(newProd.component, "touchstart", function (e) {
-                self.dragBasket(newProd,e);
-            });
+                svg.addEvent(newProd.component, "touchstart", function (e) {
+                    self.dragBasket(newProd,e);
+                });
 
-            this.calculatePrice(newProd.price*quantity);
+                this.calculatePrice(newProd.price*quantity);
 
-            if (this.thumbnailsProducts.length < 2 && occur==0) {
-                newProd.placeElements();
-                newProd.move(0,this.originY);
-
-            }
-            else {
-                if(occur==0){
-                    let ref = this.thumbnailsProducts[this.thumbnailsProducts.length-2];
+                if (this.thumbnailsProducts.length < 2 && occur==0) {
                     newProd.placeElements();
-                    newProd.move(0,ref.y+ref.height);
-                }
-            }
+                    newProd.move(0,this.originY);
 
-            this.basketCookie();
+                }
+                else {
+                    if(occur==0){
+                        let ref = this.thumbnailsProducts[this.thumbnailsProducts.length-2];
+                        newProd.placeElements();
+                        newProd.move(0,ref.y+ref.height);
+                    }
+                }
+
+                this.basketCookie();
+            }
         }
 
         deleteProducts(vignette,numberProduct){
@@ -1728,6 +1730,22 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
+            function getGrammaticalTransition(element){
+                if(element.complement) {
+                    let letter = element.name[0].toLowerCase();
+                    if (letter == "a" || letter == "e" || letter == "i" || letter == "y" || letter == "é" || letter == "o") {
+                        return "d'";
+                    }
+                    else {
+                        return "de ";
+                    }
+                }
+                else if(element.categorie=="Voyages"){
+                    return "voyage à ";
+                }
+                else return "";
+            }
+
             this.anim=false;
             function getNumber(number,element){
                 categories.ray.currentDrawn = null;
@@ -1735,23 +1753,32 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     if(!self.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
-                        market.textToSpeech("Ok, j'ajoute 1 "+ self.name + " au panier");
+                        self.anim=true;
+                        market.textToSpeech("Ok, j'ajoute 1 "+ element.complement.replace("/","")
+                            +" "+getGrammaticalTransition(element)+self.name + " au panier");
                         self.anim=true;
                     }
                 }
                 else if(number!="?") {
+                    let nb = "";
                     for(var c of number.split('')){
-
                         if(c=="?"){
                             market.textToSpeech("Je n'ai pas compris");
                             return;
-                        }
+                        }else if(c == "0"){
+                            if(nb != "")nb+=c;
+                        }else nb+=c;
                     }
                     element.addAnimation(number);
-                    market.textToSpeech("Ok, j'ajoute "+ number+" "+ element.name + " au panier");
-                    market.basket.addProducts(element, parseInt(number));
-                }else market.textToSpeech("Je n'ai pas compris");
 
+                    if(nb != ""){
+                        market.textToSpeech("Ok, j'ajoute "+ number+ " "+ element.complement.replace("/","")
+                            +" "+getGrammaticalTransition(element)+ element.name + " au panier");
+                        market.basket.addProducts(element, parseInt(nb));
+                    }else
+                        market.textToSpeech("Je ne peux pas ajouter 0 "+ element.name);
+                }else market.textToSpeech("Je n'ai pas compris");
+                console.log(number)
             }
 
             let mousePos ={};
