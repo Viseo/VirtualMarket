@@ -296,6 +296,7 @@ exports.neural = function(runtime) {
                 if ((bestchar == "click") && (numToSend.num.length != 0)) numToSend.num += "?";
                 else {
                     numToSend.num += bestchar;
+                    console.log(numToSend)
                 }
                 if (numToSend.num.length < 3) {
                     printNumber(numToSend.num + "_");
@@ -400,18 +401,19 @@ exports.neural = function(runtime) {
             for (var p in downSampleData) {
                 if (p % 5 == 0) {
                     if (downSampleData[p] == "-1") {
-                        dessinpropre += "\n0,";
+                        dessinpropre += "\n0 ";
                     } else {
-                        dessinpropre += "\n" + downSampleData[p] + ",";
+                        dessinpropre += "\n" + "*" + " ";
                     }
                 } else {
                     if (downSampleData[p] == "-1") {
-                        dessinpropre += "0,";
+                        dessinpropre += "0 ";
                     } else {
-                        dessinpropre += downSampleData[p] + ",";
+                        dessinpropre += "*" + " ";
                     }
                 }
             }
+            // console.log(dessinpropre)
 
             var bestChar = '?';
             var bestScore = 0;
