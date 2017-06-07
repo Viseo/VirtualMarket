@@ -146,9 +146,22 @@ describe("Test",function (){
     });
 
     it("ensure that clicking on a product add it to the basket and that you can navigate in it",function(){
+
+        let categoriesTrip = retrieve(market.component,"[categories].[Voyages]");
+        runtime.event(categoriesTrip,"click",{});
+
+        let trip = retrieve(market.component,"[ray Voyages].[listRay].[Product Paris]");
+        runtime.event(trip,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawingtrip = retrieve(market.component,"[glassCanvas].[draw Paris]");
+        assert(drawingtrip);
+        runtime.event(drawingtrip,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert(retrieve(market.component,"[mainPage].[basket].[listBasket].[Paris]"));
+        runtime.advanceAll();
+
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
-
         let canv = retrieve(market.component,"[glassCanvas]");
         assert(canv);
 
@@ -535,11 +548,54 @@ describe("Test",function (){
         runtime.event(drawing3,"mouseup",{ pageX:5, pageY:5});
         runtime.advanceAll();
         assert.ok(retrieve(market.component,"[basket].[listBasket].[Mangue]"));
+        let product5 = retrieve(market.component,"[ray Fruits].[listRay].[Product Ananas]");
+        runtime.event(product5,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawing5 = retrieve(market.component,"[draw Ananas]");
+        assert(drawing5);
+        runtime.event(drawing5,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert.ok(retrieve(market.component,"[basket].[listBasket].[Ananas]"));
+        let product6 = retrieve(market.component,"[ray Fruits].[listRay].[Product Abricot]");
+        runtime.event(product6,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawing6 = retrieve(market.component,"[draw Abricot]");
+        assert(drawing6);
+        runtime.event(drawing6,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert.ok(retrieve(market.component,"[basket].[listBasket].[Abricot]"));
+        let product7 = retrieve(market.component,"[ray Fruits].[listRay].[Product Melon]");
+        runtime.event(product7,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawing7 = retrieve(market.component,"[draw Melon]");
+        assert(drawing7);
+        runtime.event(drawing7,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert.ok(retrieve(market.component,"[basket].[listBasket].[Melon]"));
+        let product8 = retrieve(market.component,"[ray Fruits].[listRay].[Product Kiwi]");
+        runtime.event(product8,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawing8 = retrieve(market.component,"[draw Kiwi]");
+        assert(drawing8);
+        runtime.event(drawing8,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert.ok(retrieve(market.component,"[basket].[listBasket].[Kiwi]"));
+        let product9 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise]");
+        runtime.event(product9,"mousedown",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        let drawing9 = retrieve(market.component,"[draw Fraise]");
+        assert(drawing9);
+        runtime.event(drawing9,"mouseup",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        assert.ok(retrieve(market.component,"[basket].[listBasket].[Fraise]"));
+
+
 
         let imagebasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[Banane]");
         let fondbasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[background Banane]");
         let titlebasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane].[title Banane]");
         let compbasket = retrieve(market.component,"[basket].[listBasket].[Product basket Banane]");
+        let basket = retrieve(market.component,"[basket]");
 
         runtime.event(imagebasket,"mouseenter");
         runtime.advanceAll();
@@ -561,11 +617,36 @@ describe("Test",function (){
 
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mouseout",{ pageX:5, pageY:5});
+        runtime.advanceAll();
+
+        runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:25, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mousemove",{ pageX:50, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mouseup",{ pageX:150, pageY:5});
+        runtime.advanceAll();
+        runtime.event(fondbasket,"mousemove",{ pageX:25, pageY:5});
+        runtime.advanceAll();
+        runtime.event(fondbasket,"mousemove",{ pageX:50, pageY:5});
+        runtime.advanceAll();
+
+        runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
         runtime.event(compbasket,"mousemove",{ pageX:5, pageY:50});
         runtime.advanceAll();
         runtime.event(compbasket,"mousemove",{ pageX:5, pageY:50});
         runtime.advanceAll();
         runtime.event(compbasket,"mouseup",{ pageX:100, pageY:5});
+        runtime.advanceAll();
+        market.basket.direction=null;
+        runtime.event(basket,"mouseout");
         runtime.advanceAll();
 
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
@@ -575,6 +656,8 @@ describe("Test",function (){
         runtime.event(compbasket,"mousemove",{ pageX:1000, pageY:5});
         runtime.advanceAll();
         runtime.event(compbasket,"mouseup",{ pageX:1000, pageY:5});
+        runtime.advanceAll();
+        runtime.event(compbasket,"mouseout");
         runtime.advanceAll();
 
         let compbasket2 = retrieve(market.component,"[basket].[listBasket].[Product basket Mangue]");
@@ -594,6 +677,15 @@ describe("Test",function (){
         runtime.event(compbasket2,"mousemove",{ pageX:1000, pageY:5});
         runtime.advanceAll();
         runtime.event(compbasket2,"mouseout",{ pageX:1000, pageY:5});
+        runtime.advanceAll();
+
+        runtime.event(basket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{ pageX:5, pageY:50});
+        runtime.advanceAll();
+        runtime.event(basket,"mousemove",{ pageX:50, pageY:50});
+        runtime.advanceAll();
+        runtime.event(basket,"mouseup",{ pageX:50, pageY:50});
         runtime.advanceAll();
 
         let compbasket3 = retrieve(market.component,"[basket].[listBasket].[Product basket Clementine]");
@@ -1161,6 +1253,14 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
+        let roundE0 = retrieve(market.component,"[calendar].[round 6]");
+
+        runtime.event(roundE0, "click", {});
+        runtime.advanceAll();
+        runtime.event(chevronWest,"click", {});
+        runtime.advanceAll();
+        runtime.event(chevronEast,"click", {});
+        runtime.advanceAll();
 
         let column = retrieve(market.component,"[calendar].[column]");
         assert(column);
@@ -1403,10 +1503,18 @@ describe("Test",function (){
 
         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
         runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:-1000,pageY:50});
+        runtime.event(touchCategories,"mouseup",{pageX:-200,pageY:50});
         runtime.advanceAll();
-        runtime.event(touchCategories,"mouseup",{pageX:-1000,pageY:50});
+
+        runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
         runtime.advanceAll();
+        runtime.event(touchCategories,"mousemove",{pageX:-2000,pageY:50});
+        runtime.advanceAll()
+        runtime.event(touchCategories,"mousemove",{pageX:-20000,pageY:50});
+        runtime.advanceAll();
+        runtime.event(touchCategories,"mouseup",{pageX:-20000,pageY:50});
+        runtime.advanceAll();
+
 
         runtime.event(touchCategories,"mousedown",{pageX:100,pageY:50});
         runtime.advanceAll();
@@ -1639,7 +1747,7 @@ describe("Test",function (){
 
     it('ensure that cookie for page 0 is working',function(done){
         fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
-        fakeTimer = new timer().setNow(new Date(2017,11,1,8,0));
+        fakeTimer = new timer().setNow(new Date(2017,11,25,8,0));
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
         setTimeout(function () {
             let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");
