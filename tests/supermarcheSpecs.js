@@ -1389,8 +1389,6 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(touchCategories,"mousemove",{pageX:100,pageY:50});
         runtime.advanceAll();
-        runtime.event(touchCategories,"mousemove",{pageX:200,pageY:50});
-        runtime.advanceAll();
         runtime.event(touchCategories,"mouseup",{pageX:200,pageY:50});
         runtime.advanceAll();
 
@@ -1674,5 +1672,4 @@ describe("Test",function (){
             done();
         }, 4000);
     });
-
 });

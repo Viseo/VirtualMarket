@@ -1728,14 +1728,20 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
             }
 
-            function checkFirstLetter(element){
-                let letter = element.name[0].toLowerCase();
-                 if(letter=="a"||letter=="e"||letter=="i"||letter=="y" ||letter=="é"||letter=="o"){
-                     return "d'";
+            function getGrammaticalTransition(element){
+                if(element.complement) {
+                    let letter = element.name[0].toLowerCase();
+                    if (letter == "a" || letter == "e" || letter == "i" || letter == "y" || letter == "é" || letter == "o") {
+                        return "d'";
+                    }
+                    else {
+                        return "de ";
+                    }
                 }
-                else {
-                     return "de ";
-                 }
+                else if(element.categorie=="Voyages"){
+                    return "voyage à ";
+                }
+                else return "";
             }
 
             this.anim=false;
@@ -1747,7 +1753,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         element.addAnimation("1");
                         market.basket.addProducts(self, "1");
                         self.anim=true;
-                        market.textToSpeech("Ok, j'ajoute 1 "+ element.complement.replace("/","")+" "+checkFirstLetter(element)+self.name + " au panier");
+                        market.textToSpeech("Ok, j'ajoute 1 "+ element.complement.replace("/","")
+                            +" "+getGrammaticalTransition(element)+self.name + " au panier");
                         self.anim=true;
                     }
                 }
@@ -1760,7 +1767,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         }
                     }
                     element.addAnimation(number);
-                    market.textToSpeech("Ok, j'ajoute "+ number+ " "+ element.complement.replace("/","")+" "+checkFirstLetter(element)+ element.name + " au panier");
+                    market.textToSpeech("Ok, j'ajoute "+ number+ " "+ element.complement.replace("/","")
+                        +" "+getGrammaticalTransition(element)+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
                 }else market.textToSpeech("Je n'ai pas compris");
 
