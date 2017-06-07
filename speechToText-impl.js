@@ -16,6 +16,8 @@ exports.speechToText=class {
                 micro.url("img/microphone.gif");
                 setTimeout(()=>{
                     stopRecording();
+                    var speak = new SpeechSynthesisUtterance("Je recherche.");
+                    speechSynthesis.speak(speak);
                     micro.url("img/microphoneload.gif");
                     console.log("je record plus");
                     let i = 0;

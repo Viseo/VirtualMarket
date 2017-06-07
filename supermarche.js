@@ -138,40 +138,39 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.component.add(this.listThumbnails);
 
             this.currentDrawn = null;
-            // if (tabThumbnail.length > 12) {
-            //
-            //     // let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-            //     // let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-            //     // let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-            //     //     .position(this.thumbWidth / 4, this.component.height / 2);
-            //     // let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-            //     //     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
-            //     // let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
-            //     // let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
-            //     //
-            //     // zoneChevronWest.onClick(function () {
-            //     //     if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
-            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth * 1.5, 0);
-            //     //         zoneChevronEast.opacity(0.3);
-            //     //     } else {
-            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
-            //     //         zoneChevronWest.opacity(0);
-            //     //         zoneChevronEast.opacity(0.3);
-            //     //     }
-            //     // });
-            //     //
-            //     // zoneChevronEast.onClick(function () {
-            //     //     if (self.listWidth != 0 && self.listThumbnails.x + self.listWidth - self.thumbWidth * 1.5 >= width) {
-            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth * 1.5, 0);
-            //     //         zoneChevronWest.opacity(0.3);
-            //     //     } else {
-            //     //         self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - self.listWidth - width * 0.01, 0);
-            //     //         zoneChevronWest.opacity(0.3);
-            //     //         zoneChevronEast.opacity(0);
-            //     //     }
-            //     // });
-            //     // this.component.add(zoneChevronEast).add(zoneChevronWest);
-            // }
+            if (tabThumbnail.length > 12){
+                let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    .position(this.thumbWidth / 4, this.component.height / 2);
+                let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
+                let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
+                let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
+
+                zoneChevronWest.onClick(function () {
+                    if (self.listWidth != 0 && self.listThumbnails.x + self.thumbWidth * 1.5 < 0) {
+                        self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(self.listThumbnails.x + self.thumbWidth * 1.5, 0);
+                        zoneChevronEast.opacity(0.3);
+                    } else {
+                        self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                        zoneChevronWest.opacity(0);
+                        zoneChevronEast.opacity(0.3);
+                    }
+                });
+
+                zoneChevronEast.onClick(function () {
+                    if (self.listWidth != 0 && self.listThumbnails.x + self.listWidth - self.thumbWidth * 1.5 >= width) {
+                        self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(self.listThumbnails.x - self.thumbWidth * 1.5, 0);
+                        zoneChevronWest.opacity(0.3);
+                    } else {
+                        self.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - self.listWidth - width * 0.01, 0);
+                        zoneChevronWest.opacity(0.3);
+                        zoneChevronEast.opacity(0);
+                    }
+                });
+                this.component.add(zoneChevronEast).add(zoneChevronWest);
+            }
         }
 
         gesture(type, dx){
@@ -1032,6 +1031,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     class Calendar{
         constructor(width,height,x,y){
             this.component = new svg.Translation().mark("calendar");
+            this.header = new svg.Translation();
+            this.background = new svg.Translation();
             this.title = new svg.Rect();
             this.titleText = new svg.Text("Avril");
             this.calendarFirstRow = new svg.Translation();
@@ -1048,7 +1049,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
             this.calendarOn=false;
             this.selectedHourday=false;
-            this.calendarRect = new svg.Rect();
             this.rounds=[];
             this.choice=null;
             this.address="";
@@ -1056,15 +1056,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.hideBehind = new svg.Rect(width,height*0.2).position(width/2-width/24,0).color([230,230,230]);
 
             this.dayCases = [];
-            this.component.add(this.title);
-            this.component.add(this.titleText);
-            this.component.add(this.calendarRect);
-            this.component.add(this.calendarFirstColumn);
-            this.component.add(this.calendarContent);
-            this.component.add(this.calendarFirstRow);
-            this.component.add(this.monthChoice);
-            this.component.add(this.hideBehind);
-            this.component.add(this.calendarRect);
+            this.component.add(this.background).add(this.header);
+            this.header.add(this.title);
+            this.header.add(this.titleText);
+            this.header.add(this.calendarFirstRow);
+            this.header.add(this.monthChoice);
+            this.header.add(this.hideBehind);
+            this.background.add(this.calendarFirstColumn);
+            this.background.add(this.calendarContent);
+
 
             this.x = x;
             this.y = y;
@@ -1076,7 +1076,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.pictoPosX = this.width*0.15;
             this.pictoPosY = this.height*0.09;
             this.onMove=false;
-            this.component.add(this.picto);
+            this.header.add(this.picto);
 
             this.calendarWidth = width;
             this.calendarHeight = height*0.8;
@@ -1142,7 +1142,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             });
         }
 
-        setEventsMovement() {
+        setEventsForScroll() {
             var self = this;
 
             this.calendarContent.onMouseDown(function (e) {
@@ -1247,104 +1247,110 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width/2-this.caseWidth/2, this.height*0.05+this.title.height/2);
             this.printCurrentMonthContent();
-            this.calendarRect.position(this.calendarFirstColumn.x+this.caseWidth/2+(this.calendarWidth-this.caseWidth)/2,
-                this.calendarFirstRow.y+this.caseHeight/2+this.caseHeight*this.numberDaysThisMonth/2)
-                .dimension(this.calendarWidth-this.caseWidth,this.numberDaysThisMonth*this.caseHeight).color(svg.WHITE,1,svg.LIGHT_GREY).opacity(1);
         }
 
         printCurrentMonthContent(){
-            this.current=true;
-            this.component.remove(this.calendarContent);
-            this.component.remove(this.calendarFirstColumn);
-            this.component.remove(this.calendarFirstRow);
-            this.monthNumber=timer.getMonth();
-            this.month=this.getMonth()[this.monthNumber];
-            this.chevronWest.opacity(0.5);
-            this.chevronEast.opacity(1);
-            this.current=true;
-            this.calendarFirstColumn = new svg.Translation();
-            this.calendarContent = new svg.Translation();
-            this.changeTitleText(this.month+" "+this.year);
-            let tabDays = [];
-            this.numberDaysThisMonth = this.daysInMonth(timer.getMonth(),timer.getYear());
+            let removeOldDisplay = ()=>{
+                this.current=true;
+                this.background.remove(this.calendarContent);
+                this.background.remove(this.calendarFirstColumn);
+                this.header.remove(this.calendarFirstRow);
+                this.monthNumber=timer.getMonth();
+                this.month=this.getMonth()[this.monthNumber];
+                this.chevronWest.opacity(0.5);
+                this.chevronEast.opacity(1);
+                this.current=true;
+                this.calendarFirstColumn = new svg.Translation();
+                this.calendarContent = new svg.Translation();
+                this.changeTitleText(this.month+" "+this.year);
+                this.numberDaysThisMonth = this.daysInMonth(timer.getMonth(),timer.getYear());
+                this.header.add(this.monthChoice);
+                this.header.add(this.picto);
 
-            for(let j=0;j<this.numberDaysThisMonth-timer.getDayInMonth()+1;j++){
-                this.dayCases[j] = new svg.Translation();
-                this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
-                let text = "";
-                if (j ==0){
-                    text = "Aujourd'hui";
-                }
-                else if (j ==1){
-                    text = "Demain";
-                }
-                else{
-                    text = this.getWeekDay()[(timer.getDayInWeek()+j)%7]+" "+ (timer.getDayInMonth()+j);
-                }
-                this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
-                tabDays.push(text);
-                this.calendarFirstColumn.add(this.dayCases[j]);
-                this.dayCases[j].move(0,j*this.caseHeight);
-                this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
-                this.calendarFirstColumn.move(0,this.calendarPositionY);
-
-            }
-
-            let tabHours = [];
-            for (var i=0;i<12;i++){
-                let hourCase = new svg.Translation();
-                hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
-                if(i!=0) {
-                    let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
-                    hourCase.add(t);
-                    if(i==4){
-                        hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
+            };
+            let showDaysColumn = ()=>{
+                let tabDays = [];
+                for(let j=0;j<this.numberDaysThisMonth-timer.getDayInMonth()+1;j++){
+                    this.dayCases[j] = new svg.Translation();
+                    this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
+                    let text = "";
+                    if (j ==0){
+                        text = "Aujourd'hui";
                     }
-
-                    tabHours.push((i + 8) + "h");
-                }
-                else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2));
-                hourCase.move(i*this.caseWidth,0);
-                this.calendarFirstRow.add(hourCase);
-                this.calendarFirstRow.move(0,this.height*0.05+this.title.height*1.5);
-            }
-
-
-            for(let i = 0; i<this.numberDaysThisMonth-timer.getDayInMonth()+1;i++){
-                let line = new svg.Translation();
-                for (var j=0;j<11;j++){
-                    let element = new svg.Rect(this.caseWidth,this.caseHeight);
-                    if(j%2){
-                        element.color(svg.ALMOST_WHITE,1,svg.ALMOST_WHITE).position(j*this.caseWidth,0).opacity(1);
-                    }else{
-
-                        element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
+                    else if (j ==1){
+                        text = "Demain";
                     }
+                    else{
+                        text = this.getWeekDay()[(timer.getDayInWeek()+j)%7]+" "+ (timer.getDayInMonth()+j);
+                    }
+                    this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
+                    tabDays.push(text);
+                    this.calendarFirstColumn.add(this.dayCases[j]);
+                    this.dayCases[j].move(0,j*this.caseHeight);
+                    this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
+                    this.calendarFirstColumn.move(0,this.calendarPositionY);
 
-                    line.add(element);
-                    this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i], droppable : false, available:false,
-                        x:j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
                 }
-                line.move(this.caseWidth,this.caseHeight*i);
-                this.calendarContent.add(line);
-                this.calendarContent.move(0,this.calendarPositionY)
-            }
+                this.background.add(this.calendarFirstColumn);
+                this.calendarFirstColumn.mark("column");
+                return tabDays;
+            };
+            let showHoursLine = () => {
+                let tabHours = [];
+                for (var i=0;i<12;i++){
+                    let hourCase = new svg.Translation();
+                    hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
+                    if(i!=0) {
+                        let t=new svg.Text((i + 8) + "h").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2);
+                        hourCase.add(t);
+                        if(i==4){
+                            hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
+                        }
 
-            this.placeRound();
+                        tabHours.push((i + 8) + "h");
+                    }
+                    else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK).position(-this.caseWidth/2,this.caseHeight*0.2));
+                    hourCase.move(i*this.caseWidth,0);
+                    this.calendarFirstRow.add(hourCase);
+                    this.calendarFirstRow.move(0,this.height*0.05+this.title.height*1.5);
+                }
+                this.header.add(this.calendarFirstRow);
+                return tabHours;
+            };
+            let showCalendarBackground = (tabDays, tabHours) => {
+                for(let i = 0; i<this.numberDaysThisMonth-timer.getDayInMonth()+1;i++){
+                    let line = new svg.Translation();
+                    for (var j=0;j<11;j++){
+                        let element = new svg.Rect(this.caseWidth,this.caseHeight);
+                        if(j%2){
+                            element.color(svg.ALMOST_WHITE,1,svg.ALMOST_WHITE).position(j*this.caseWidth,0).opacity(1);
+                        }else{
 
-            this.component.add(this.calendarFirstColumn);
-            this.component.add(this.calendarContent);
-            this.component.add(this.calendarFirstRow);
-            this.component.add(this.hideBehind);
-            this.component.add(this.monthChoice);
-            this.component.add(this.picto);
+                            element.color(svg.WHITE,1,svg.WHITE).position(j*this.caseWidth,0).opacity(1);
+                        }
 
-            this.calendarContent.mark("content");
-            this.calendarFirstColumn.mark("column");
-            this.setEventsMovement();
+                        line.add(element);
+                        this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i], droppable : false, available:false,
+                            x:j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                    }
+                    line.move(this.caseWidth,this.caseHeight*i);
+                    this.calendarContent.add(line);
+                    this.calendarContent.move(0,this.calendarPositionY)
+                }
+                this.background.add(this.calendarContent);
+                this.calendarContent.mark("content");
+
+            };
+
+            removeOldDisplay();
+            let tabDays = showDaysColumn();
+            let tabHours = showHoursLine();
+            showCalendarBackground(tabDays,tabHours);
+            this.placeRounds();
+            this.setEventsForScroll();
         }
 
-        placeRound(){
+        placeRounds(){
             let dayMonth = [];
 
             if(this.current===true){
@@ -1456,7 +1462,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].available = true;
                         }
                         this.calendarContent.add(newRound.component);
-                        this.component.add(this.calendarContent);
+                        this.background.add(this.calendarContent);
                         newRound.changeColor(3);
                         this.rounds.push(newRound);
                     }
@@ -1476,9 +1482,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             for(let i = 0; i<this.rounds.length;i++){
                     this.calendarContent.remove(this.rounds[i].component);
             }
-            this.component.remove(this.calendarContent);
-            this.component.remove(this.calendarFirstColumn);
-            this.component.remove(this.calendarFirstRow);
+            this.background.remove(this.calendarContent);
+            this.background.remove(this.calendarFirstColumn);
+            this.header.remove(this.calendarFirstRow);
 
             let tabDays = [];
             this.numberDaysThisMonth=timer.getNumberOfDaysInMonth(month,year);
@@ -1534,24 +1540,23 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.calendarContent.move(0,this.calendarPositionY)
             }
 
-            this.placeRound();
-            this.component.add(this.calendarFirstColumn);
-            this.component.add(this.calendarContent);
-            this.component.add(this.calendarFirstRow);
-            this.component.add(this.hideBehind);
-            this.component.add(this.monthChoice);
-            this.component.add(this.picto);
+            this.placeRounds();
+            this.background.add(this.calendarFirstColumn);
+            this.background.add(this.calendarContent);
+            this.header.add(this.calendarFirstRow);
+            this.header.add(this.monthChoice);
+            this.header.add(this.picto);
 
             this.calendarFirstColumn.mark("column");
             this.calendarContent.mark("content");
-            this.setEventsMovement();
+            this.setEventsForScroll();
         }
 
         checkPlace(round){
             if(round.left>0 && this.choice==null){
                 this.choice = round;
                 round.changeColor(2);
-                this.component.remove(this.picto);
+                this.header.remove(this.picto);
                 this.picto.position(0,0);
                 round.roundContent.add(this.picto);
                 this.choiceRdv=round.tabH.dayP;
@@ -1561,7 +1566,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             }
             else if(this.choice!=round && this.choice!=null && round.left>0) {
                 for(let round in this.rounds){
-                    if ((this.rounds[round].tabH.dayP==this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL) && (this.rounds[round].tabH.address == this.choice.tabH.address )){
+                    if ((this.rounds[round].tabH.dayP==this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)
+                        && (this.rounds[round].tabH.address == this.choice.tabH.address )){
                         this.rounds[round].changeColor(1);
                     }
                 }
@@ -1769,7 +1775,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     market.textToSpeech("Ok, j'ajoute "+ number+ " "+ element.complement.replace("/","")
                         +" "+getGrammaticalTransition(element)+ element.name + " au panier");
                     market.basket.addProducts(element, parseInt(number));
-                }else market.textToSpeech("Je n'ai pas compris");
+                }
+                else market.textToSpeech("Je n'ai pas compris");
 
             }
 
@@ -1987,7 +1994,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     };
 
     function search(sentence,config){
-        sentence=replaceChar(sentence);
+        sentence=prepareVocalMessage(sentence);
         let jsonFile = param.data.getJson();
         let words = sentence.split(" ");
         var tabProduct = [];
@@ -1997,10 +2004,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         for (var i=0; i<words.length;i++){
             for (var cat in jsonFile){
                 if(config=="all"){
-                    if (words[i].toLowerCase().includes(replaceChar(cat).toLowerCase())
-                        || (words[i] + " " + words[i + 1]).toLowerCase().includes(replaceChar(cat).toLowerCase())
-                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(replaceChar(cat).toLowerCase())
-                        || (words[i] + "s").toLowerCase().includes(replaceChar(cat).toLowerCase())) {
+                    if (words[i].toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1]).toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
+                        || (words[i] + "s").toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())) {
                         if(catDone.indexOf(cat)==-1){
                             catDone.push(cat);
                             var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
@@ -2010,10 +2017,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 }
                 var products = jsonFile[cat];
                 for (var prodName in products){
-                    if (words[i].toLowerCase().includes(replaceChar(prodName).toLowerCase())
-                        ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(replaceChar(prodName).toLowerCase())
-                        ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(replaceChar(prodName).toLowerCase())
-                        ||(words[i] + "s").toLowerCase().includes(replaceChar(prodName).toLowerCase())){
+                    if (words[i].toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
+                        ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
+                        ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
+                        ||(words[i] + "s").toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())){
                         if(prodDone.indexOf(prodName)==-1) {
                             prodDone.push(prodName);
                             var prod = products[prodName];
@@ -2042,235 +2049,284 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     market.vocalRecognition = function(message) {
-        message = replaceChar(message);
-        let oneOrderChecked = false;
-        if (message != "") {
-            if (market.map) {
-                let words = message.split(" ");
-                for (var i = 0; i < words.length; i++) {
-                    if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) ||
-                        ((words[i] == "avenue") || (words[i] == "rue") || (words[i] == "route") || (words[i] == "boulevard") || (words[i] == "quai")
-                        || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
-                        message = message.substring(message.indexOf(words[i]));
-                        currentMapSearch = message;
-                        i = words.length;
-                        market.textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
-                        market.mapsfunction.research(message);
-                        setTimeout(function(){
-                            market.map.updateMarkersSide();
-                        },500);
-                    }
-                    else if (words[i].includes("valide")) {
-                        market.pages[1].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth + market.width * 0.02), 0);
-                        currentPage = market.calendar;
-                        currentIndex = 0;
-                        market.map.mapOn = false;
-                        market.calendar.calendarOn = true;
-                        currentMapSearch = market.map.input.value;
-                        mapPage.remove(market.map.component);
-                        market.map = null;
-                    }
+        let chooseAddressUsingVocalMessage = () => {
+            let words = message.split(" ");
+            for (var i = 0; i < words.length; i++) {
+                if ((parseInt(words[i]) > 0 && parseInt(words[i]) < 1000) ||
+                    ((words[i] == "avenue") || (words[i] == "rue") || (words[i] == "route") || (words[i] == "boulevard") || (words[i] == "quai")
+                    || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
+                    message = message.substring(message.indexOf(words[i]));
+                    currentMapSearch = message;
+                    i = words.length;
+                    market.textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
+                    market.mapsfunction.research(message);
+                    setTimeout(function(){
+                        market.map.updateMarkersSide();
+                    },500);
+                    return true;
+                }
+                else if (words[i].includes("valide")) {
+                    market.toCalendar();
+                    return true;
                 }
             }
-            else if (market.calendar.calendarOn) {
-                let spMessage = message.split(" ");
-                if (spMessage.includes("choisis") || spMessage.includes("créneau") || spMessage.includes("veux") || spMessage.includes("livrer")) {
-                    let day =0;
-                    let numRound = 0;
-                    for(let word=0; word < spMessage.length; word ++) {
-                        for(let k = 0; k < market.calendar.rounds.length; k++) {
-                            if (spMessage[word] == parseInt(market.calendar.rounds[k].tabH.dayP.substring(0, 2))
-                                && market.calendar.rounds[k].tabH.left !== 0){
-                                day = spMessage[word];
-                                numRound = k;
-                            }
-                            else if((spMessage[word] == "aujourd'hui")
-                                &&(timer.getDayInMonth()==parseInt(market.calendar.rounds[k].tabH.dayP.substring(0, 2)))){
-                                day = timer.getDayInMonth();
-                                numRound = k;
-                            }
-                            else if((spMessage[word] == "demain")
-                                &&(timer.getDayInMonth()+1==parseInt(market.calendar.rounds[k].tabH.dayP.substring(0, 2)))){
-                                day = timer.getDayInMonth() + 1;
-                                numRound = k;
-                            }
-
-                            if((day!=0)&&(spMessage[word][spMessage[word].length-1]=="h")&&(numRound==k)){
-                                if(spMessage[word]== market.calendar.rounds[k].tabH.hourDL+"h") {
-                                    market.calendar.checkPlace(market.calendar.rounds[k]);
-                                    day=0;
-                                    numRound=k;
-                                    oneOrderChecked=true;
-                                }
+            return false;
+        };
+        let chooseRoundUsingVocalMessage = () => {
+            let lookForADate = (word,round) => {
+                if (word == parseInt(round.tabH.dayP.substring(0, 2))
+                    && round.tabH.left !== 0){
+                    return round;
+                }
+                else if((word == "aujourd'hui")
+                    &&(timer.getDayInMonth()==parseInt(round.tabH.dayP.substring(0, 2)))){
+                    return round;
+                }
+                else if((word == "demain")
+                    &&(timer.getDayInMonth()+1==parseInt(round.tabH.dayP.substring(0, 2)))){
+                    return round;
+                }
+                return null;
+            };
+            let lookForAnHour = (word,round) => {
+                if(word[word.length-1]=="h"){
+                    if(word== round.tabH.hourDL+"h") {
+                        return round;
+                    }
+                }
+                return null;
+            };
+            let doesMessageContainSelectRoundKeyWords = () => {
+                return spMessage.includes("choisis") ||
+                    spMessage.includes("créneau") ||
+                    spMessage.includes("veux") ||
+                    spMessage.includes("livrer");
+            };
+            let selectRoundUsingVocalMessage = () => {
+                let possibleRounds = [];
+                let roundFound = null;
+                for(let word=0; word < spMessage.length; word ++) {
+                    for(let k = 0; k < market.calendar.rounds.length; k++) {
+                        let currentRound = null;
+                        if(currentRound = lookForADate(spMessage[word],market.calendar.rounds[k])){
+                            possibleRounds.push(currentRound);
+                        }
+                        if(currentRound = lookForAnHour(spMessage[word],market.calendar.rounds[k])){
+                            if(possibleRounds.indexOf(currentRound)!= -1){
+                                roundFound = currentRound;
+                                market.calendar.checkPlace(roundFound);
+                                return true;
                             }
                         }
                     }
-                    if(day!=0){
-                        market.calendar.checkPlace(market.calendar.rounds[numRound]);
-                        oneOrderChecked=true;
-                    }
-                } else {
-                    let answer = message.toLowerCase();
+                }
+                if(!roundFound && possibleRounds.length > 0){
+                    market.calendar.checkPlace(possibleRounds[0]);
+                    return true;
+                }
+                return false;
+            };
+            let validateRoundUsingVocalMessage = () => {
+                let answer = message.toLowerCase();
+                if (answer.includes("oui") && market.calendar.selectedHourday) {
+                    market.textToSpeech("Ok vous serez livrés aux horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
+                    setTimeout(function(){
+                        resetMarket();
+                    },3000);
+                    return true;
+                }
+                else if (answer.includes("non") && market.calendar.selectedHourday) {
+                    market.textToSpeech("Nous annulons votre livraison","fr");
+                    market.calendar.header.add(market.calendar.picto);
+                    market.calendar.picto.position(market.calendar.pictoPosX, market.calendar.pictoPosY);
+                    this.selectedHourday = false;
+                    return true;
+                }
+                return false;
+            };
 
-                    if (answer.includes("oui") && market.calendar.selectedHourday) {
-                        market.textToSpeech("Ok vous serez livrés aux horaires choisis. Vous allez etre redirigé sur la page d'accueil.", "fr");
-                        oneOrderChecked=true;
-                        setTimeout(function(){
-                            resetMarket();
-                        },3000);
-
-                    }
-                    else if (answer.includes("non") && market.calendar.selectedHourday) {
-                        market.textToSpeech("Nous annulons votre livraison", "fr");
-                        market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
-                        this.selectedHourday = false;
-                        oneOrderChecked = true;
-                    }
+            let messageProcessed = false;
+            let spMessage = message.split(" ");
+            if(doesMessageContainSelectRoundKeyWords()){
+                messageProcessed |= selectRoundUsingVocalMessage();
+            } else {
+                messageProcessed |= validateRoundUsingVocalMessage();
+            }
+            return messageProcessed;
+        };
+        let shopUsingVocalMessage = () =>{
+            let messageProcessed = false;
+            let tabMessage = message.split(" ");
+            let splitMessage = [];
+            for (var i = tabMessage.length - 1; i > 0; i--) {
+                if (tabMessage[i].includes("ajoute") || tabMessage[i].includes("supprime") || tabMessage[i].includes("vide")
+                    || tabMessage[i].includes("paiement") || tabMessage[i].includes("paye")) {
+                    splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]), message.length));
+                    message = message.substring(0, message.lastIndexOf(tabMessage[i]));
                 }
             }
-            else {
-                let tabMessage = message.split(" ");
-                let splitMessage = [];
-                for (var i = tabMessage.length - 1; i > 0; i--) {
-                    if (tabMessage[i].includes("ajoute") || tabMessage[i].includes("supprime") || tabMessage[i].includes("vide")
-                        || tabMessage[i].includes("paiement") || tabMessage[i].includes("paye")) {
-                        splitMessage.push(message.substring(message.lastIndexOf(tabMessage[i]), message.length));
-                        message = message.substring(0, message.lastIndexOf(tabMessage[i]));
+            splitMessage.push(message);
+
+
+            for (var j = splitMessage.length - 1; j >= 0; j--) {
+                let order = splitMessage[j];
+                let tab = search(order, "all");
+                let det = ["un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
+                if (tab[0]) {
+                    tab = search(order, "prod");
+                    if (order.includes("ajoute")) {
+                        for (var i = 0; i < tab.length; i++) {
+                            let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            if (quantity >= "0" && quantity <= "9") {
+                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                if (isNaN(bef)) {
+                                    bef = "";
+                                }
+                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                if (isNaN(bef2)) {
+                                    bef2 = "";
+                                }
+                                market.textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
+                                market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
+                            } else if (determining.trim() == "de") {
+                                market.basket.addProducts(tab[i], 2);
+                                market.textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
+                            } else if (determining2.trim() == "cette" || determining.trim() == "cet") {
+                                market.textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
+                                market.basket.addProducts(tab[i], 7);
+                            } else if(determining.trim() == "un" || determining.trim() == "une") {
+                                market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
+                                market.basket.addProducts(tab[i], 1);
+                            } else {
+                                let tor=false;
+                                for(let k = 0; k< det.length;k++){
+                                    if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
+                                        tor=true;
+                                        market.basket.addProducts(tab[i],k+1);
+                                        market.textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
+                                    }
+                                }
+                                if(tor==false){
+                                    market.basket.addProducts(tab[i],1);
+                                    market.textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
+                                }
+                            }
+                        }
                     }
-                }
-                splitMessage.push(message);
-
-
-                for (var j = splitMessage.length - 1; j >= 0; j--) {
-                    let order = splitMessage[j];
-                    let tab = search(order, "all");
-                    let det = ["un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
-                    if (tab[0]) {
-                        tab = search(order, "prod");
-                        if (order.includes("ajoute")) {
-                            for (var i = 0; i < tab.length; i++) {
-                                let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                if (quantity >= "0" && quantity <= "9") {
-                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                    if (isNaN(bef)) {
-                                        bef = "";
+                    else if (order.includes("supprime")) {
+                        for (var i = 0; i < tab.length; i++) {
+                            var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
+                                order.indexOf(tab[i].name.toLowerCase()) - 1);
+                            if (number >= "0" && number <= "9") {
+                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                                if (isNaN(bef)) {
+                                    bef = "";
+                                }
+                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                                if (isNaN(bef2)) {
+                                    bef2 = "";
+                                }
+                                market.textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
+                                market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                            }
+                            else if (determining == " un" || determining == "une"){
+                                market.textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
+                                market.basket.deleteFromName(tab[i].name, 1);
+                            } else if (determining.trim() == "de"){
+                                market.textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
+                                market.basket.deleteFromName(tab[i].name, 2);
+                            } else if (determining2.trim() == "cette" || determining.trim() == "cet"){
+                                market.textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
+                                market.basket.deleteFromName(tab[i].name, 7);
+                            }else {
+                                let tor = false;
+                                for(let k = 0; k< det.length;k++){
+                                    if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
+                                        tor = true;
+                                        market.basket.deleteFromName(tab[i].name,k+1);
+                                        market.textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
                                     }
-                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                    if (isNaN(bef2)) {
-                                        bef2 = "";
-                                    }
-                                    market.textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
-                                    market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
-                                } else if (determining.trim() == "de") {
-                                    market.basket.addProducts(tab[i], 2);
-                                    market.textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
-                                } else if (determining2.trim() == "cette" || determining.trim() == "cet") {
-                                    market.textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
-                                    market.basket.addProducts(tab[i], 7);
-                                } else if(determining.trim() == "un" || determining.trim() == "une") {
-                                    market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
-                                    market.basket.addProducts(tab[i], 1);
-                                } else {
-                                    let tor=false;
-                                    for(let k = 0; k< det.length;k++){
-                                        if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
-                                            tor=true;
-                                            market.basket.addProducts(tab[i],k+1);
-                                            market.textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
-                                        }
-                                    }
-                                    if(tor==false){
-                                        market.basket.addProducts(tab[i],1);
-                                        market.textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
-                                    }
+                                }
+                                if(tor == false){
+                                    market.textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
+                                    market.basket.deleteFromName(tab[i].name, null);
                                 }
                             }
                         }
-                        else if (order.includes("supprime")) {
-                            for (var i = 0; i < tab.length; i++) {
-                                var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                                var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
-                                    order.indexOf(tab[i].name.toLowerCase()) - 1);
-                                if (number >= "0" && number <= "9") {
-                                    let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                    if (isNaN(bef)) {
-                                        bef = "";
-                                    }
-                                    let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                    if (isNaN(bef2)) {
-                                        bef2 = "";
-                                    }
-                                    market.textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
-                                    market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
-                                }
-                                else if (determining == " un" || determining == "une"){
-                                    market.textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
-                                    market.basket.deleteFromName(tab[i].name, 1);
-                                } else if (determining.trim() == "de"){
-                                    market.textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
-                                    market.basket.deleteFromName(tab[i].name, 2);
-                                } else if (determining2.trim() == "cette" || determining.trim() == "cet"){
-                                    market.textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
-                                    market.basket.deleteFromName(tab[i].name, 7);
-                                }else {
-                                    let tor = false;
-                                    for(let k = 0; k< det.length;k++){
-                                        if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
-                                            tor = true;
-                                            market.basket.deleteFromName(tab[i].name,k+1);
-                                            market.textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
-                                        }
-                                    }
-                                    if(tor == false){
-                                        market.textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
-                                        market.basket.deleteFromName(tab[i].name, null);
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            tab = search(order, "all");
-                            market.textToSpeech("Ok, je cherche.")
-                            doSearch(tab);
-                        }
-                        oneOrderChecked = true;
                     }
                     else {
-                        if (order.includes("vide") && order.includes("panier")) {
-                            market.textToSpeech("Ok, Je vide le panier");
-                            market.basket.emptyBasket();
-                            oneOrderChecked = true;
-                        }
-                        else if (order.includes("paye") || order.includes("paie")) {
-                            market.textToSpeech("Ok, passons au payement")
-                            market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
-                            market.payment.cardIn = true;
-                            market.payment.showCode();
-                            oneOrderChecked = true;
-                        }
+                        tab = search(order, "all");
+                        market.textToSpeech("Ok, je cherche.");
+                        doSearch(tab);
+                    }
+                    messageProcessed = true;
+                }
+                else {
+                    if (order.includes("vide") && order.includes("panier")) {
+                        market.textToSpeech("Ok, Je vide le panier");
+                        market.basket.emptyBasket();
+                        messageProcessed = true;
+                    }
+                    else if (order.includes("paye") || order.includes("paie")) {
+                        market.textToSpeech("Ok, passons au payement")
+                        market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
+                        market.payment.cardIn = true;
+                        market.payment.showCode();
+                        messageProcessed = true;
                     }
                 }
             }
-        }
-        else {
-            console.log("S'il te plait puisses-tu discuter?");
-        }
-
-        if (!oneOrderChecked) {
+            return messageProcessed;
+        };
+        let isMapDisplayed = () => {
+            return market.map;
+        };
+        let isCalendarDisplayed = () => {
+            return market.calendar.calendarOn;
+        };
+        let isVocalMessageEmpty = () => {
+            return message === "";
+        };
+        let processEmptyVocalMessage = () => {
+            market.textToSpeech("Je n'ai pas entendu");
+            return true;
+        };
+        let processMeaninglessVocalMessage = () => {
             message += ", " + Date();
             listener.writeLog(message);
             console.log("No Correct Order Given");
             market.textToSpeech("Je n'ai pas bien compris votre demande", "fr");
+        };
+
+        message = prepareVocalMessage(message);
+        let messageProcessed = false;
+        if (!isVocalMessageEmpty()) {
+            if (isMapDisplayed()) {
+                messageProcessed |= chooseAddressUsingVocalMessage();
+            }
+            else if (isCalendarDisplayed()) {
+                messageProcessed |= chooseRoundUsingVocalMessage();
+            }
+            else {
+                messageProcessed |= shopUsingVocalMessage();
+            }
+        }
+        else {
+            messageProcessed |= processEmptyVocalMessage();
+        }
+        if (!messageProcessed){
+            processMeaninglessVocalMessage();
         }
     };
 
@@ -2278,7 +2334,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         speech.talk(msg);
     };
 
-    function replaceChar(msg){
+    function prepareVocalMessage(msg){
         return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
     }
 
