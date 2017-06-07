@@ -837,8 +837,37 @@ describe("Test",function (){
                 runtime.advanceAll();
                 runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
                 runtime.advanceAll();
-                done();
+                // done();
             }, 10000);
+            setTimeout(function () {
+                runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 400 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 440 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 480 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 500 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 15, clientY: 500 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 15, clientY: 480 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 440 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 15, clientY: 400 + decalHeader}}});
+                runtime.advanceAll();
+                runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+                runtime.advanceAll();
+;                setTimeout(function(){
+                    done();
+                },2000)
+            }, 15000);
             runtime.event(product2, "mousedown", {pageX: 400, pageY: 380 + decalHeader});
             runtime.advanceAll();
             let drawing8 = retrieve(market.component, "[draw Costume]");

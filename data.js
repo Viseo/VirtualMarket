@@ -91,7 +91,7 @@ exports.data = function() {
                     complement: "/kg",
                 },
                 "Haricot Vert": {
-                    image: "img/produits/Legumes/Haricot vert.jpg",
+                    image: "img/produits/Legumes/haricot vert.jpg",
                     prix: 1,
                     nom: "Haricot Vert",
                     complement: "/kg",
@@ -103,13 +103,13 @@ exports.data = function() {
                     complement: "/kg",
                 },
                 "Pomme de terre": {
-                    image: "img/produits/Legumes/Pomme de terre.jpg",
+                    image: "img/produits/Legumes/pomme de terre.jpg",
                     prix: 1,
                     nom: "Pomme de terre",
                     complement: "/kg",
                 },
                 "Tomate": {
-                    image: "img/produits/Legumes/Tomates.jpg",
+                    image: "img/produits/Legumes/tomates.jpg",
                     prix: 1,
                     nom: "Tomate",
                     complement: "/kg",
@@ -130,55 +130,55 @@ exports.data = function() {
 
             "Fruits": {
                 "Banane": {
-                    image: "img/produits/Fruits/Bananes.jpg",
+                    image: "img/produits/Fruits/bananes.jpg",
                     prix: 1.1,
                     nom: "Banane",
                     complement: "/kg",
                 },
                 "Citron vert": {
-                    image: "img/produits/Fruits/Citron vert.jpg",
+                    image: "img/produits/Fruits/citron vert.jpg",
                     prix: 1,
                     nom: "Citron vert",
                     complement: "/kg",
                 },
                 "Clementine": {
-                    image: "img/produits/Fruits/Clementines.jpg",
+                    image: "img/produits/Fruits/clementines.jpg",
                     prix: 1,
                     nom: "Clementine",
                     complement: "/kg",
                 },
                 "Fraise": {
-                    image: "img/produits/Fruits/Fraises.jpg",
+                    image: "img/produits/Fruits/fraises.jpg",
                     prix: 1,
                     nom: "Fraise",
                     complement: "/kg",
                 },
                 "Framboise": {
-                    image: "img/produits/Fruits/Framboises.jpg",
+                    image: "img/produits/Fruits/framboises.jpg",
                     prix: 1,
                     nom: "Framboise",
                     complement: "/kg",
                 },
                 "Kiwi": {
-                    image: "img/produits/Fruits/Kiwi.jpg",
+                    image: "img/produits/Fruits/kiwi.jpg",
                     prix: 1,
                     nom: "Kiwi",
                     complement: "/kg",
                 },
                 "Mangue": {
-                    image: "img/produits/Fruits/Mangue.jpg",
+                    image: "img/produits/Fruits/mangue.jpg",
                     prix: 1,
                     nom: "Mangue",
                     complement: "/kg",
                 },
                 "Orange": {
-                    image: "img/produits/Fruits/Orange.jpg",
+                    image: "img/produits/Fruits/orange.jpg",
                     prix: 1,
                     nom: "Orange",
                     complement: "/kg",
                 },
                 "Poire": {
-                    image: "img/produits/Fruits/Poires.jpg",
+                    image: "img/produits/Fruits/poires.jpg",
                     prix: 1,
                     nom: "Poire",
                     complement: "/kg",
@@ -196,7 +196,7 @@ exports.data = function() {
                     complement: "/kg",
                 },
                 "Cerise": {
-                    image: "img/produits/Fruits/Cerise.jpg",
+                    image: "img/produits/Fruits/cerise.jpg",
                     prix: 1,
                     nom: "Cerise",
                     complement: "/kg",
@@ -208,7 +208,7 @@ exports.data = function() {
                     complement: "/kg",
                 },
                 "Litchi": {
-                    image: "img/produits/Fruits/Litchi.jpg",
+                    image: "img/produits/Fruits/litchi.jpg",
                     prix: 1,
                     nom: "Litchi",
                     complement: "/kg",
@@ -392,7 +392,7 @@ exports.data = function() {
 
             "HighTech": {
                 "Casque": {
-                    image: "img/produits/HighTech/Casque.jpg",
+                    image: "img/produits/HighTech/casque.jpg",
                     prix: 200,
                     nom: "Casque",
                     complement: "",
@@ -649,7 +649,7 @@ exports.data = function() {
                     complement: "",
                 },
                 "Sandales": {
-                    image: "img/produits/Mode/Sandales-a-talon.jpg",
+                    image: "img/produits/Mode/sandales-a-talon.jpg",
                     prix: 100,
                     nom: "Sandales",
                     complement: "",
