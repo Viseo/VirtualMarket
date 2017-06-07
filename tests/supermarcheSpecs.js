@@ -593,17 +593,6 @@ describe("Test",function (){
         runtime.event(titlebasket,"mouseenter");
         runtime.advanceAll();
 
-        // runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
-        // runtime.advanceAll();
-        //
-        // runtime.advanceAll();
-        // runtime.event(compbasket,"mouseout");
-        // runtime.advanceAll();
-        // runtime.event(fondbasket,"mousemove",{ pageX:25, pageY:5});
-        // runtime.advanceAll();
-        // runtime.event(fondbasket,"mousemove",{ pageX:50, pageY:5});
-        // runtime.advanceAll();
-
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
         runtime.event(compbasket,"mousemove",{ pageX:50, pageY:5});
@@ -635,7 +624,6 @@ describe("Test",function (){
         runtime.event(fondbasket,"mousemove",{ pageX:50, pageY:5});
         runtime.advanceAll();
 
-
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
         runtime.event(compbasket,"mousemove",{ pageX:5, pageY:50});
@@ -644,10 +632,9 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(compbasket,"mouseup",{ pageX:100, pageY:5});
         runtime.advanceAll();
-        console.log('cest la')
-        runtime.event(compbasket,"mouseout");
+        market.basket.direction=null;
+        runtime.event(basket,"mouseout");
         runtime.advanceAll();
-
 
         runtime.event(compbasket,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
         runtime.advanceAll();
@@ -659,7 +646,6 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(compbasket,"mouseout");
         runtime.advanceAll();
-
 
         let compbasket2 = retrieve(market.component,"[basket].[listBasket].[Product basket Mangue]");
         runtime.event(compbasket2,"mousedown",{ type:"mousedown",pageX:5, pageY:5});
@@ -1254,6 +1240,14 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
+        let roundE0 = retrieve(market.component,"[calendar].[round 6]");
+
+        runtime.event(roundE0, "click", {});
+        runtime.advanceAll();
+        runtime.event(chevronWest,"click", {});
+        runtime.advanceAll();
+        runtime.event(chevronEast,"click", {});
+        runtime.advanceAll();
 
         let column = retrieve(market.component,"[calendar].[column]");
         assert(column);
@@ -1742,7 +1736,7 @@ describe("Test",function (){
 
     it('ensure that cookie for page 0 is working',function(done){
         fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
-        fakeTimer = new timer().setNow(new Date(2017,11,1,8,0));
+        fakeTimer = new timer().setNow(new Date(2017,11,25,8,0));
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
         setTimeout(function () {
             let chevronEast=retrieve(market.component,"[calendar].[monthChoice].[chevronECalendar]");

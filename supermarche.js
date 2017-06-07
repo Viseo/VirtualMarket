@@ -1383,57 +1383,56 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             }
             this.address=market.calendar.address;
 
-            if(timer.getDate()!=0){
-                var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
-                var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
-                var dayTest = timer.getDate(1496268000000 + 24 * 60 * 60 * 1000);
-                var dayTest2 = timer.getDate(1496268000000 + 2 * 24 * 60 * 60 * 1000);
-                var dayTest3 = timer.getDate(1497045600000);
-                var nextMonth = timer.getDate(timer.getTime() + 31 * 24 * 60 * 60 * 1000);
-                var nextMonthAndOne = timer.getDate(timer.getTime() + 32 * 24 * 60 * 60 * 1000);
-                let modul = "";
-                let modulDay = "";
-                let modulTest = "";
-                let modulTest2 = "";
-                let modulTest3 = "";
-                if (timer.getMonth() + 1 < 10) modul = "0";
-                if (timer.getDayInMonth()< 10 ) modulDay = "0";
-                if (dayTest3.getDate()< 10 ) modulTest3 = "0";
-                if (dayTest2.getDate()< 10 ) modulTest2 = "0";
-                if (dayTest.getDate()< 10 ) modulTest = "0";
-                tab.push({
-                    dayP: modulDay+timer.getDayInMonth() + "/" + modul + (timer.getMonth() + 1) + "/" + timer.getYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 2, TPH: 2, address: this.address
-                });
-                tab.push({
-                    dayP: modulDay+tomorrow.getDate() + "/" + modul + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 3, TPH: 2, address: this.address
-                });
-                tab.push({
-                    dayP: modulDay+afterTomorrow.getDate() + "/" + modul + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2.5, address : this.address
-                });
-                tab.push({
-                    dayP: modulTest+dayTest.getDate() + "/" + modul + (dayTest.getMonth() + 1) + "/" + dayTest.getFullYear(),
-                    hourDL: "13", hourAL: "17", nbT: 4, left: 3, TPH: 1.5, address: this.address
-                });
-                tab.push({
-                    dayP: modulTest2+dayTest2.getDate() + "/" + modul + (dayTest2.getMonth() + 1) + "/" + dayTest2.getFullYear(),
-                    hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
-                });
-                tab.push({
-                    dayP: modulTest3+dayTest3.getDate() + "/" + modul + (dayTest3.getMonth() + 1) + "/" + dayTest3.getFullYear(),
-                    hourDL: "16", hourAL: "18", nbT: 2, left: 2, TPH: 2, address: this.address
-                });
-                tab.push({
-                    dayP: modul+nextMonth.getDate() + "/" + modul + (nextMonth.getMonth() + 1) + "/" + nextMonth.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
-                });
-                tab.push({
-                    dayP: modul+nextMonthAndOne.getDate() + "/" + modul + (nextMonthAndOne.getMonth() + 1) + "/" + nextMonthAndOne.getFullYear(),
-                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
-                });
-            }
+            var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
+            var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
+            var dayTest = timer.getDate(1496268000000 + 24 * 60 * 60 * 1000);
+            var dayTest2 = timer.getDate(1496268000000 + 2 * 24 * 60 * 60 * 1000);
+            var dayTest3 = timer.getDate(1497045600000);
+            var nextMonth = timer.getDate(timer.getTime() + 31 * 24 * 60 * 60 * 1000);
+            var nextMonthAndOne = timer.getDate(timer.getTime() + 32 * 24 * 60 * 60 * 1000);
+            let modul = "";
+            let modulDay = "";
+            let modulTest = "";
+            let modulTest2 = "";
+            let modulTest3 = "";
+            if (timer.getMonth() + 1 < 10) modul = "0";
+            if (timer.getDayInMonth()< 10 ) modulDay = "0";
+            // if (dayTest3.getDate()< 10 ) modulTest3 = "0";
+            modulTest2 = "0";
+            modulTest = "0";
+            tab.push({
+                dayP: modulDay+timer.getDayInMonth() + "/" + modul + (timer.getMonth() + 1) + "/" + timer.getYear(),
+                hourDL: "10", hourAL: "12", nbT: 2, left: 2, TPH: 2, address: this.address
+            });
+            tab.push({
+                dayP: modulDay+tomorrow.getDate() + "/" + modul + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
+                hourDL: "10", hourAL: "12", nbT: 2, left: 3, TPH: 2, address: this.address
+            });
+            tab.push({
+                dayP: modulDay+afterTomorrow.getDate() + "/" + modul + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
+                hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2.5, address : this.address
+            });
+            tab.push({
+                dayP: modulTest+dayTest.getDate() + "/" + modul + (dayTest.getMonth() + 1) + "/" + dayTest.getFullYear(),
+                hourDL: "13", hourAL: "17", nbT: 4, left: 3, TPH: 1.5, address: this.address
+            });
+            tab.push({
+                dayP: modulTest2+dayTest2.getDate() + "/" + modul + (dayTest2.getMonth() + 1) + "/" + dayTest2.getFullYear(),
+                hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
+            });
+            tab.push({
+                dayP: modulTest3+dayTest3.getDate() + "/" + modul + (dayTest3.getMonth() + 1) + "/" + dayTest3.getFullYear(),
+                hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
+            });
+            tab.push({
+                dayP: modul+nextMonth.getDate() + "/" + modul + (nextMonth.getMonth() + 1) + "/" + nextMonth.getFullYear(),
+                hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
+            });
+            tab.push({
+                dayP: modul+nextMonthAndOne.getDate() + "/" + modul + (nextMonthAndOne.getMonth() + 1) + "/" + nextMonthAndOne.getFullYear(),
+                hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
+            });
+
 
             this.rounds=[];
             let self = this;
@@ -1450,7 +1449,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             i*this.caseHeight+this.caseHeight*0.1);
 
                         newRound.roundContent.onClick(function(){
-                            self.checkPlace(self.rounds[j]);
+                            self.checkPlace(newRound);
                         });
                         for(let k = 0; k < tab[j].nbT+1;k++){
                             this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].droppable = true;
@@ -1475,7 +1474,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         printMonthContent(month,year){
             this.current=false;
             for(let i = 0; i<this.rounds.length;i++){
-                if(this.rounds[i])this.calendarContent.remove(this.rounds[i].component);
+                    this.calendarContent.remove(this.rounds[i].component);
             }
             this.component.remove(this.calendarContent);
             this.component.remove(this.calendarFirstColumn);
