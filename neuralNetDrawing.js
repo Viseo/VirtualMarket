@@ -283,6 +283,7 @@ exports.neural = function(runtime) {
     function init_draw(element,x,y,name,callback,printNumber,prod,glass,gest) {
         let drawingArea;
         let bestchar;
+        let timeout=null;
         ondraw=true;
         drawingArea = ENCOG.drawingCreate(element,x,y,name,glass);
         preload();
@@ -314,7 +315,7 @@ exports.neural = function(runtime) {
                 else {
                     if (!set) {
                         set = true;
-                        setTimeout((function () {
+                        timeout = setTimeout((function () {
                             drawingArea.ev_canvas(e, "mouseup",0,gest);
                             if (isNaN(parseInt(numToSend.num))) {
                                 numToSend.num = "";
@@ -333,6 +334,13 @@ exports.neural = function(runtime) {
                     }
                 }
             }else{
+                clearTimeout();
+                printNumber("");
+                callback(numToSend.num, prod);
+                numToSend.num = "";
+                numToSend.element = "";
+                ondraw = false;
+                set = false;
                 drawingArea.ev_canvas(e, "mouseup",0,gest);
             }
         });
@@ -364,7 +372,7 @@ exports.neural = function(runtime) {
                 else {
                     if (!set) {
                         set = true;
-                        setTimeout((function () {
+                        timeout=setTimeout((function () {
                             drawingArea.ev_canvas(e, "touchend",0,gest);
                             if (isNaN(parseInt(numToSend.num))) {
                                 numToSend.num = "";
@@ -383,6 +391,14 @@ exports.neural = function(runtime) {
                     }
                 }
             }else{
+                clearTimeout(timeout);
+                clearTimeout();
+                printNumber("");
+                callback(numToSend.num, prod);
+                numToSend.num = "";
+                numToSend.element = "";
+                ondraw = false;
+                set = false;
                 drawingArea.ev_canvas(e, "touchend",0,gest);
             }
         }, true);
