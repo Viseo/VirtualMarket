@@ -173,6 +173,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
         gesture(type, dx){
             if(type=="move"){
+                console.log('merde')
                 if(categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
                 }
