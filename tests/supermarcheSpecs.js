@@ -28,7 +28,6 @@ let retrieve = testUtil.retrieve;
 let market;
 let fakeTimer,fakeMap,fakeCookie,fakeSpeech,fakeListener,fakeWindow;
 
-
 describe("Test",function (){
     this.timeout(50000);
     beforeEach(function(){
@@ -1304,7 +1303,7 @@ describe("Test",function (){
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
 
-        let round0 = retrieve(market.component,"[calendar].[round 0]");
+        let round0 = retrieve(market.component,"[round 0]");
         runtime.event(round0, "click", {});
         runtime.advanceAll();
         runtime.event(chevronEast,"click", {});
@@ -1312,18 +1311,18 @@ describe("Test",function (){
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
 
-        let round1 = retrieve(market.component,"[calendar].[round 1]");
+        let round1 = retrieve(market.component,"[round 0]");
         runtime.event(round1, "click", {});
         runtime.advanceAll();
-        let round2 = retrieve(market.component,"[calendar].[round 2]");
+        let round2 = retrieve(market.component,"[round 2]");
         runtime.event(round2, "click", {});
         runtime.advanceAll();
         runtime.event(round0, "click", {});
         runtime.advanceAll();
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
-        let roundE0 = retrieve(market.component,"[calendar].[round 6]");
 
+        let roundE0 = retrieve(market.component,"[round 0]");
         runtime.event(roundE0, "click", {});
         runtime.advanceAll();
         runtime.event(chevronWest,"click", {});
@@ -1331,40 +1330,39 @@ describe("Test",function (){
         runtime.event(chevronEast,"click", {});
         runtime.advanceAll();
 
-        let column = retrieve(market.component,"[calendar].[column]");
-        assert(column);
+        let background = retrieve(market.component,"[calendarBackground]");
+        assert(background);
 
-        runtime.event(column,"mousedown",{pageX:100,pageY:100});
-        runtime.event(column,"mousemove",{pageX:200,pageY:-2000});
+        runtime.event(background,"mousedown",{pageX:100,pageY:100});
+        runtime.event(background,"mousemove",{pageX:200,pageY:-2000});
         runtime.advanceAll();
-        runtime.event(column,"mouseup",{pageX:200,pageY:-2000});
-        runtime.advanceAll();
-
-        runtime.event(column,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
-        runtime.event(column,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
-        runtime.advanceAll();
-        runtime.event(column,"touchend",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.event(background,"mouseup",{pageX:200,pageY:-2000});
         runtime.advanceAll();
 
-        let content = retrieve(market.component,"[contenu]");
-        runtime.event(content,"mousedown",{pageX:100,pageY:100});
-        runtime.event(content,"mousemove",{pageX:200,pageY:2000});
+        runtime.event(background,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.event(background,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
         runtime.advanceAll();
-        runtime.event(content,"mouseup",{pageX:200,pageY:2000});
+        runtime.event(background,"touchend",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.advanceAll();
+
+        runtime.event(background,"mousedown",{pageX:100,pageY:100});
+        runtime.event(background,"mousemove",{pageX:200,pageY:2000});
+        runtime.advanceAll();
+        runtime.event(background,"mouseup",{pageX:200,pageY:2000});
         runtime.advanceAll();
 
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
 
-        runtime.event(content,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
-        runtime.event(content,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
+        runtime.event(background,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.event(background,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
         runtime.advanceAll();
-        runtime.event(content,"touchend",{touches:{0:{clientX:200,clientY:200}}});
+        runtime.event(background,"touchend",{touches:{0:{clientX:200,clientY:200}}});
         runtime.advanceAll();
 
-        runtime.event(content,"mousemove",{pageX:100,pageY:200});
+        runtime.event(background,"mousemove",{pageX:100,pageY:200});
         runtime.advanceAll();
-        runtime.event(column,"mousemove",{pageX:100,pageY:200});
+        runtime.event(background,"mousemove",{pageX:100,pageY:200});
         runtime.advanceAll();
     });
 
