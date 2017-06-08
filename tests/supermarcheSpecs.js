@@ -365,7 +365,6 @@ describe("Test",function (){
         runtime.advanceAll();
         inspect(rayFruits,{tag:"g",transform:"translate(-746.6999999999997 0)"});
 
-
         let catHT = retrieve(market.component, "[categories].[HighTech]");
         runtime.event(catHT, "click", {});
         let rayHT = retrieve(market.component, "[ray HighTech].[listRay]");
@@ -1311,10 +1310,10 @@ describe("Test",function (){
         runtime.event(chevronWest,"click", {});
         runtime.advanceAll();
 
-        let round1 = retrieve(market.component,"[round 0]");
+        let round1 = retrieve(market.component,"[round 3]");
         runtime.event(round1, "click", {});
         runtime.advanceAll();
-        let round2 = retrieve(market.component,"[round 2]");
+        let round2 = retrieve(market.component,"[round 4]");
         runtime.event(round2, "click", {});
         runtime.advanceAll();
         runtime.event(round0, "click", {});

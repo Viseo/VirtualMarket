@@ -1691,15 +1691,34 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.toAdd=[];
             this.waitingNumber = new svg.Text("");
             this.component.add(this.waitingNumber);
+            this.anim=false;
 
-            let printNumber=(number)=>{
-                categories.ray.currentDrawn.component.remove(categories.ray.currentDrawn.waitingNumber);
-                categories.ray.currentDrawn.waitingNumber = new svg.Text(number);
-                categories.ray.currentDrawn.waitingNumber.position(this.width/2,this.height*0.65)
-                    .font("Calibri",this.width*0.5,1).opacity(0.7);
-                categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
-            };
+            this.drawNumber = null;
+            this.component.onMouseDown((e)=>{
+                this.toDraw(e.pageX);
+            });
 
+            // gestion tactile pour le dessin:
+            this.drawNumber = null;
+            svg.addEvent(this.component, "touchstart", (e)=>{
+                this.toDraw(e.touches[0].clientX)
+            });
+        }
+
+        toDraw(x){
+            if(!categories.currentRayOnDrawing) {
+                categories.currentRayOnDrawing=categories.ray.name;
+            }
+            if(categories.currentRayOnDrawing==categories.ray.name) {
+                this.drawNumber = new svg.Drawing(0, 0).mark("draw " + this.name);
+                if (!categories.ray.currentDrawn) categories.ray.currentDrawn = this;
+                neural.init_draw(this.drawNumber, x, 0, this.name, this.getNumber, this.printNumber, this, glassCanvas, categories.ray.gesture);
+                glassCanvas.add(this.drawNumber);
+                this.drawNumber.opacity(0);
+            }
+        }
+
+        getNumber(number,element){
             let getGrammaticalTransition=(element)=>{
                 if(element.complement) {
                     let letter = element.name[0].toLowerCase();
@@ -1716,65 +1735,50 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 else return "";
             };
 
-            this.anim=false;
-            let getNumber = (number,element)=>{
-                categories.ray.currentDrawn = null;
-                if(number=="click") {
-                    if(!this.anim) {
+            categories.ray.currentDrawn = null;
+            if (categories.ray.name==categories.currentRayOnDrawing){
+                if (number == "click") {
+                    if (!element.anim) {
                         element.addAnimation("1");
-                        market.basket.addProducts(this, "1");
-                        this.anim=true;
-                        market.textToSpeech("Ok, j'ajoute 1 "+ element.complement.replace("/","")
-                            +" "+getGrammaticalTransition(element)+this.name + " au panier");
-                        this.anim=true;
+                        market.basket.addProducts(element, "1");
+                        element.anim = true;
+                        market.textToSpeech("Ok, j'ajoute 1 " + element.complement.replace("/", "")
+                            + " " + getGrammaticalTransition(element) + element.name + " au panier");
+                        element.anim = true;
                     }
                 }
-                else if(number!="?") {
+                else if (number != "?") {
                     let nb = "";
-                    for(var c of number.split('')){
-                        if(c=="?"){
+                    for (var c of number.split('')) {
+                        if (c == "?") {
                             market.textToSpeech("Je n'ai pas compris");
                             return;
-                        }else if(c == "0"){
-                            if(nb != "")nb+=c;
-                        }else nb+=c;
+                        } else if (c == "0") {
+                            if (nb != "") nb += c;
+                        } else nb += c;
                     }
                     element.addAnimation(number);
 
-                    if(nb != ""){
-                        market.textToSpeech("Ok, j'ajoute "+ number+ " "+ element.complement.replace("/","")
-                            +" "+getGrammaticalTransition(element)+ element.name + " au panier");
+                    if (nb != "") {
+                        market.textToSpeech("Ok, j'ajoute " + number + " " + element.complement.replace("/", "")
+                            + " " + getGrammaticalTransition(element) + element.name + " au panier");
                         market.basket.addProducts(element, parseInt(nb));
-                    }else
-                        market.textToSpeech("Je ne peux pas ajouter 0 "+ element.name);
-                }else market.textToSpeech("Je n'ai pas compris");
-                console.log(number)
-            };
-
-            let mousePos ={};
-            this.drawNumber = null;
-            this.component.onMouseDown((e)=>{
-                mousePos = {x:e.pageX,y:e.pageY};
-                this.drawNumber = new svg.Drawing(0,0).mark("draw "+this.name);
-                if(!categories.ray.currentDrawn) categories.ray.currentDrawn=this;
-                neural.init_draw(this.drawNumber,e.pageX,0,this.name, getNumber,printNumber,this,glassCanvas,categories.ray.gesture);
-                glassCanvas.add(this.drawNumber);
-                this.drawNumber.opacity(0);
-            });
-
-            // gestion tactile pour le dessin:
-            let touchPos ={};
-            this.drawNumber = null;
-            svg.addEvent(this.component, "touchstart", (e)=>{
-                touchPos = {x:e.touches[0].clientX,y:e.touches[0].clientY};
-                this.drawNumber = new svg.Drawing(0,0).mark("draw "+this.name);
-                neural.init_draw(this.drawNumber,e.touches[0].clientX,0,this.name, getNumber,printNumber,this,glassCanvas,categories.ray.gesture);
-                if(!categories.ray.currentDrawn) categories.ray.currentDrawn=this;
-                glassCanvas.add(this.drawNumber);
-                this.drawNumber.opacity(0);
-            });
-
+                    } else
+                        market.textToSpeech("Je ne peux pas ajouter 0 " + element.name);
+                } else market.textToSpeech("Je n'ai pas compris");
+            }
+            categories.currentRayOnDrawing=null;
         }
+
+        printNumber(number){
+            if(categories.ray.currentDrawn){
+                categories.ray.currentDrawn.component.remove(categories.ray.currentDrawn.waitingNumber);
+                categories.ray.currentDrawn.waitingNumber = new svg.Text(number).color(svg.BLACK,2,svg.WHITE);
+                categories.ray.currentDrawn.waitingNumber.position(categories.ray.currentDrawn.width/2,categories.ray.currentDrawn.height*0.65)
+                    .font("Calibri",categories.ray.currentDrawn.width*0.5,1).opacity(0.7);
+                categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
+            }
+        };
 
         placeElements(place) {
             this.component.mark("Product " + this.name);
@@ -1797,13 +1801,24 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
             for(let i=0; i<number.length;i++){
                 this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5)
-                    .font("Calibri",this.height/1.5,1).color(svg.BLACK).opacity(0.7);
+                    .font("Calibri",this.height/1.5,1).color(svg.BLACK,2,svg.WHITE).opacity(0.7);
                 this.component.add(this.toAdd[i]);
             }
+
+            this.component.onMouseDown(()=>{});
+            svg.addEvent(this.component, "touchstart", (e)=>{});
 
             setTimeout(()=>{
                 removeNumber(this);
                 this.anim=false;
+
+                this.component.onMouseDown((e)=>{
+                    this.toDraw(e.pageX);
+                });
+
+                svg.addEvent(this.component, "touchstart", (e)=>{
+                    this.toDraw(e.touches[0].clientX);
+                });
             },1000);
         }
     }
