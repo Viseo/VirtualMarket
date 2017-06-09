@@ -43,7 +43,7 @@ exports.neural = function(runtime) {
         result.canvasDiv = element.component;
         result.canvasWidth = element.width;
         result.canvasHeight = element.height;
-        result.width = 1600;
+        result.width = window.innerWidth;
         result.height = 1000;
         result.glass = glass;
 
@@ -277,7 +277,7 @@ exports.neural = function(runtime) {
         element: "",
         num:""
     };
-    var set = false;
+    var isNumSet = false;
     var ondraw=false;
 
     function init_draw(element,x,y,name,callback,printNumber,prod,glass,gest) {
@@ -297,7 +297,6 @@ exports.neural = function(runtime) {
                 if ((bestchar == "click") && (numToSend.num.length != 0)) numToSend.num += "?";
                 else {
                     numToSend.num += bestchar;
-                    console.log(numToSend)
                 }
                 if (numToSend.num.length < 3) {
                     printNumber(numToSend.num + "_");
@@ -313,8 +312,8 @@ exports.neural = function(runtime) {
                     numToSend.element = "";
                 }
                 else {
-                    if (!set) {
-                        set = true;
+                    if (!isNumSet) {
+                        isNumSet = true;
                         timeout = setTimeout((function () {
                             drawingArea.ev_canvas(e, "mouseup",0,gest);
                             if (isNaN(parseInt(numToSend.num))) {
@@ -329,18 +328,18 @@ exports.neural = function(runtime) {
                             numToSend.num = "";
                             numToSend.element = "";
                             ondraw = false;
-                            set = false;
+                            isNumSet = false;
                         }), 2500);
                     }
                 }
             }else{
                 clearTimeout();
-                printNumber("");
-                callback(numToSend.num, prod);
+                // printNumber("");
+                callback(0, prod);
                 numToSend.num = "";
                 numToSend.element = "";
                 ondraw = false;
-                set = false;
+                isNumSet = false;
                 drawingArea.ev_canvas(e, "mouseup",0,gest);
             }
         });
@@ -370,8 +369,8 @@ exports.neural = function(runtime) {
                     numToSend.element = "";
                 }
                 else {
-                    if (!set) {
-                        set = true;
+                    if (!isNumSet) {
+                        isNumSet = true;
                         timeout=setTimeout((function () {
                             drawingArea.ev_canvas(e, "touchend",0,gest);
                             if (isNaN(parseInt(numToSend.num))) {
@@ -386,7 +385,7 @@ exports.neural = function(runtime) {
                             numToSend.num = "";
                             numToSend.element = "";
                             ondraw = false;
-                            set = false;
+                            isNumSet = false;
                         }), 2500);
                     }
                 }
@@ -398,7 +397,7 @@ exports.neural = function(runtime) {
                 numToSend.num = "";
                 numToSend.element = "";
                 ondraw = false;
-                set = false;
+                isNumSet = false;
                 drawingArea.ev_canvas(e, "touchend",0,gest);
             }
         }, true);

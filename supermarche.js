@@ -173,10 +173,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
         gesture(type, dx){
             if(type=="move"){
-                console.log('merde')
                 if(categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
                 }
+                else{}
             }
             else {
                 if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
@@ -185,7 +185,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
                 }
-
             }
         }
     }
@@ -1099,7 +1098,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         this.picto.position(this.pictoPosX,this.pictoPosY);
                     }
                     else{
-                        this.component.remove(this.picto);
+                        this.header.remove(this.picto);
                         for (let round in this.rounds) {
                             if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
                                 this.checkPlace(this.rounds[round]);
@@ -1124,7 +1123,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         this.picto.position(this.pictoPosX, this.pictoPosY);
                     }
                     else {
-                        this.component.remove(this.picto);
+                        this.header.remove(this.picto);
                         for (let round in this.rounds) {
                             if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
                                 this.checkPlace(this.rounds[round]);
@@ -1414,7 +1413,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         totLeft += tab[j].left;
                         let newRound = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/4,tab[j].nbT,tab[j].left, tab[j].TPH);
                         newRound.roundContent.mark("round "+this.rounds.length);
-                        console.log("round "+this.rounds.length);
                         newRound.tabH=tab[j];
                         newRound.placeElements();
                         newRound.move((tab[j].hourDL-9)*this.caseWidth+newRound.width/2+this.caseWidth/2,
@@ -1748,11 +1746,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         element.anim = true;
                     }
                 }
+                else if(number == 0){}
                 else if (number != "?") {
                     let nb = "";
                     for (var c of number.split('')) {
                         if (c == "?") {
-                            market.textToSpeech("Je n'ai pas compris");
+                            market.textToSpeech("Je n'ai pas compris le nombre");
                             return;
                         } else if (c == "0") {
                             if (nb != "") nb += c;
@@ -1766,7 +1765,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         market.basket.addProducts(element, parseInt(nb));
                     } else
                         market.textToSpeech("Je ne peux pas ajouter 0 " + element.name);
-                } else market.textToSpeech("Je n'ai pas compris");
+                } else market.textToSpeech("point d'interrogation");
             }
             categories.currentRayOnDrawing=null;
         }
