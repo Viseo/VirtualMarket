@@ -468,6 +468,10 @@ tu vois tu peux, Mon Jun 12 2017 12:24:46 GMT+0200 (Paris, Madrid (heure d’ét
 =======
 je n'ai pas compris, Mon Jun 12 2017 10:41:56 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Mon Jun 12 2017 10:42:03 GMT+0200 (Paris, Madrid (heure d’été))
+<<<<<<< HEAD
+suite numerique, Mon Jun 12 2017 11:46:48 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Mon Jun 12 2017 14:10:31 GMT+0200 (Paris, Madrid (heure d’été))
+=======
 je n'ai pas compris, Mon Jun 12 2017 11:03:40 GMT+0200 (Paris, Madrid (heure d’été))
 >>>>>>> 8a4c237942bb08ebf1105119af939d6cde5b0e45
 je n'ai pas compris, Mon Jun 12 2017 12:26:47 GMT+0200 (Paris, Madrid (heure d’été))
@@ -483,3 +487,4 @@ je n'ai pas compris, Mon Jun 12 2017 14:02:49 GMT+0200 (Paris, Madrid (heure d�
 bon signe ou pas, Mon Jun 12 2017 14:03:05 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Mon Jun 12 2017 14:03:39 GMT+0200 (Paris, Madrid (heure d’été))
 40 rue non, Mon Jun 12 2017 14:46:12 GMT+0200 (Paris, Madrid (heure d’été))
+>>>>>>> ff38c3a3ae559c09c46fc79db6341090bd024bb0
