@@ -2525,8 +2525,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     mainPage.add(glassCanvas);
     market.add(zoneHeader);
 
-    market.textToSpeech("Bonjour, Bienvenue!","fr");
-
     let cookiePayment = cookie.getCookie("payment");
     let cookieRay=cookie.getCookie("ray");
     let cookieBasket=cookie.getCookie("basket");
@@ -2573,6 +2571,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
     else{
         cookie.createCookie("page",2,1);
+    }
+
+    if(currentIndex==2){
+        market.textToSpeech("Bonjour, bienvenue dans votre supermarché!","fr");
+    }
+    else if(currentIndex==1){
+        market.textToSpeech("La dernière fois, vous etiez en train d'indiquer votre adresse!","fr");
+    }
+    else{
+        market.textToSpeech("La dernière fois, vous etiez en train de choisir un horaire de livraison!","fr");
     }
 
 

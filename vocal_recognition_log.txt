@@ -434,3 +434,5 @@ moi je suis plus la je ne mens, Thu Jun 08 2017 15:40:30 GMT+0200 (Paris, Madrid
 non sinon je passe en france, Thu Jun 08 2017 15:43:49 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Mon Jun 12 2017 10:41:56 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Mon Jun 12 2017 10:42:03 GMT+0200 (Paris, Madrid (heure d’été))
+suite numerique, Mon Jun 12 2017 11:46:48 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Mon Jun 12 2017 14:10:31 GMT+0200 (Paris, Madrid (heure d’été))
