@@ -852,7 +852,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
         placeElements()
         {
-            this.arcTimer.move(this.width/2,this.height*0.79).color(svg.LIGHT_GREY,5,svg.RED).opacity(0)
+            this.arcTimer.move(this.width/2,this.height*0.79).color(svg.WHITE,5,svg.RED).opacity(0)
                 .arc(this.height/25,this.height/25,0,1,0,this.width/2,this.height*0.79);
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).color(svg.BLACK,1,svg.BLACK).opacity(0.9);
             this.title.position(this.width/2,this.height*0.1).font("calibri",this.height/15,1).color(svg.WHITE);
@@ -882,14 +882,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             var y=this.height*0.79 + this.height/25*Math.sin( (Math.PI / 180)*(360/10)*(7.5-(newTimer)));
             var lf=1;
             if(10-newTimer>10/2)lf=0;
-            if(newTimer==10){this.circleTimer.opacity(1).color(svg.LIGHT_GREY,5,svg.RED);}
-            else{this.circleTimer.opacity(1).color(svg.LIGHT_GREY,5,svg.LIGHT_GREY);}
+            if(newTimer==10){this.circleTimer.opacity(1).color(svg.WHITE,5,svg.RED);}
+            else{this.circleTimer.opacity(1).color(svg.WHITE,5,svg.WHITE);}
             this.component.remove(this.arcTimer);
             this.component.remove(this.timer);
             this.timer = new svg.Text(newTimer);
-            this.timer.position(this.width/2,this.height*0.79).font("Calibri",20,1).color(svg.BLACK);
+            this.timer.position(this.width/2,this.height*0.797).font("Calibri",20,1).color(svg.BLACK);
             this.arcTimer = new svg.Path(this.width/2,this.height*0.79-this.height/25);
-            this.arcTimer.arc(this.height/25,this.height/25,0,lf,0,x,y).color(svg.LIGHT_GREY,5,color);
+            this.arcTimer.arc(this.height/25,this.height/25,0,lf,0,x,y).color(svg.WHITE,5,color);
             this.component.add(this.arcTimer);
             this.component.add(this.timer);
         }
