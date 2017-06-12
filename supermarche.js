@@ -806,7 +806,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     if(this.code.length>0) {
                         let buttonBefore = this.tabButtons[parseInt(this.code.charAt(this.code.length - 1)) - 1];
                         this.lines.push(new svg.Line(buttonBefore.gapX, buttonBefore.gapY, button.gapX, button.gapY)
-                            .color(svg.BLACK, 5, svg.BLACK));
+                            .color(svg.WHITE, 5, svg.WHITE));
                         this.buttons.add(this.lines[this.lines.length - 1]);
                     }
                     if(button.value != market.payment.zoneCode.code.slice(-1)) {
@@ -820,7 +820,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     let buttonBase = this.tabButtons[parseInt(this.code.charAt(this.code.length-1))-1];
                     this.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,
                         e.touches[0].clientX,e.touches[0].clientY-header.height)
-                        .color(svg.BLACK,5,svg.BLACK);
+                        .color(svg.WHITE,5,svg.WHITE);
                     this.buttons.add(this.currentLine);
                 }
             });
