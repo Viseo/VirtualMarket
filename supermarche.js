@@ -1282,10 +1282,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         tabHours.push((i + 8) + "h");
                     }
                     else {
-                        hourCase.add(new svg.Text("Disponible").font("calibri",this.caseWidth/10,1).color(svg.DARK_BLUE).position(this.caseWidth*0.1,-this.caseHeight/6));
-                        hourCase.add(new svg.Text("Indisponible ").font("calibri",this.caseWidth/10,1).color(svg.DARK_BLUE).position(this.caseWidth*0.1,this.caseHeight/6));
-                        hourCase.add(new Switch('red', this.caseWidth/7, -this.caseHeight/4).component.move(-this.caseWidth/3,this.caseHeight/6));
-                        hourCase.add(new Switch('green', this.caseWidth/7, this.caseHeight/4).component.move(-this.caseWidth/3,-this.caseHeight/6));
+                        hourCase.add(new svg.Text("Disponible").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(-this.caseWidth/3,-this.caseHeight/7));
+                        hourCase.add(new svg.Text("Indisponible ").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(-this.caseWidth/4 ,this.caseHeight/4));
+                        hourCase.add(new Switch('red', this.caseWidth/6, -this.caseHeight/4).component.move(-this.caseWidth,this.caseHeight/6));
+                        hourCase.add(new Switch('green', this.caseWidth/6, this.caseHeight/4).component.move(-this.caseWidth,-this.caseHeight/6));
                     }
 
                     hourCase.move(i*this.caseWidth,0);
