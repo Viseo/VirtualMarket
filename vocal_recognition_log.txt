@@ -432,6 +432,7 @@ je n'ai pas compris, Thu Jun 08 2017 15:39:33 GMT+0200 (Paris, Madrid (heure d�
 je n'ai pas compris, Thu Jun 08 2017 15:39:44 GMT+0200 (Paris, Madrid (heure d’été))
 moi je suis plus la je ne mens, Thu Jun 08 2017 15:40:30 GMT+0200 (Paris, Madrid (heure d’été))
 non sinon je passe en france, Thu Jun 08 2017 15:43:49 GMT+0200 (Paris, Madrid (heure d’été))
+<<<<<<< HEAD
 cocoland, Mon Jun 12 2017 11:27:23 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Mon Jun 12 2017 11:27:48 GMT+0200 (Paris, Madrid (heure d’été))
 cree en moi, Mon Jun 12 2017 11:28:13 GMT+0200 (Paris, Madrid (heure d’été))
@@ -464,3 +465,8 @@ forme cherche l'amour, Mon Jun 12 2017 12:12:01 GMT+0200 (Paris, Madrid (heure d
 darty, Mon Jun 12 2017 12:12:25 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Mon Jun 12 2017 12:24:21 GMT+0200 (Paris, Madrid (heure d’été))
 tu vois tu peux, Mon Jun 12 2017 12:24:46 GMT+0200 (Paris, Madrid (heure d’été))
+=======
+je n'ai pas compris, Mon Jun 12 2017 10:41:56 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Mon Jun 12 2017 10:42:03 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Mon Jun 12 2017 11:03:40 GMT+0200 (Paris, Madrid (heure d’été))
+>>>>>>> 8a4c237942bb08ebf1105119af939d6cde5b0e45
