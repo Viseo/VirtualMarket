@@ -1199,7 +1199,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         placeElements(){
-            this.caseWidth = this.calendarWidth/14;
+            this.caseWidth = this.calendarWidth*0.87/11;
             this.caseHeight = this.calendarHeight/10;
             this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.25,this.caseHeight*0.25);
             this.title.dimension(this.calendarWidth+2,this.calendarHeight*0.1).color(svg.LIGHT_BLUE,1,svg.LIGHT_GREY).opacity(1);
@@ -1251,8 +1251,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     tabDays.push(text);
                     this.calendarFirstColumn.add(this.dayCases[j]);
                     this.dayCases[j].move(0,j*this.caseHeight);
-                    this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
-                    this.calendarFirstColumn.move(this.caseWidth/2,this.calendarPositionY);
+                    this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight*1.5;
+                    this.calendarFirstColumn.move(this.caseWidth/4,this.calendarPositionY);
 
                 }
                 this.background.add(this.calendarFirstColumn);
@@ -1277,7 +1277,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     // else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK).position(0,this.caseHeight*0.2));
                     hourCase.move(i*this.caseWidth,0);
                     this.calendarFirstRow.add(hourCase);
-                    this.calendarFirstRow.move(this.caseWidth,this.height*0.05+this.title.height*1.5);
+                    this.calendarFirstRow.move(this.caseWidth/1.5-3,this.height*0.05+this.title.height*1.75);
                 }
                 this.header.add(this.calendarFirstRow);
                 return tabHours;
@@ -1300,7 +1300,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                     line.move(this.caseWidth,this.caseHeight*i);
                     this.calendarContent.add(line);
-                    this.calendarContent.move(this.caseWidth,this.calendarPositionY)
+                    this.calendarContent.move(this.caseWidth/1.5-3,this.calendarPositionY)
                 }
                 this.background.mark("calendarBackground");
                 this.background.add(this.calendarContent);
@@ -1457,14 +1457,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
             for(let j=0;j<=this.numberDaysThisMonth-1;j++){
                 this.dayCases[j] = new svg.Translation();
-                this.dayCases[j].add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
+                this.dayCases[j].add(new svg.Rect(this.caseWidth*1.5,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
                 let text = this.getWeekDay()[(j+this.startDay)%7]+" "+(j+1);
                 this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.BLACK));
                 tabDays.push(text);
                 this.calendarFirstColumn.add(this.dayCases[j]);
                 this.dayCases[j].move(0,j*this.caseHeight);
-                this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
-                this.calendarFirstColumn.move(this.caseWidth/2,this.calendarPositionY);
+                this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight*1.5;
+                this.calendarFirstColumn.move(this.caseWidth/4,this.calendarPositionY);
             }
 
             let tabHours = [];
@@ -1484,7 +1484,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 // else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK));
                 hourCase.move(i*this.caseWidth,0);
                 this.calendarFirstRow.add(hourCase);
-                this.calendarFirstRow.move(this.caseWidth,this.height*0.05+this.title.height*1.5);
+                this.calendarFirstRow.move(this.caseWidth/1.5-3,this.height*0.05+this.title.height*1.75);
             }
 
             for(var i=0;i<=this.numberDaysThisMonth-1;i++){
@@ -1502,7 +1502,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 }
                 line.move(this.caseWidth,this.caseHeight*i);
                 this.calendarContent.add(line);
-                this.calendarContent.move(this.caseWidth,this.calendarPositionY)
+                this.calendarContent.move(this.caseWidth/1.5-3,this.calendarPositionY)
             }
 
             this.placeRounds();
