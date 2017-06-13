@@ -36,7 +36,7 @@ exports.speechToText=class {
                                 market.textToSpeech("Je n'ai pas bien compris votre demande", "fr");
                             }
                             i = 0;
-                            micro.url("img/microphone.png");
+                            micro.url("img/microphone-deactivated.png");
                             voice = [];
                             recording = false;
                             bool=false;
@@ -45,6 +45,8 @@ exports.speechToText=class {
                 }, 4000);
 
             }
+            // micro.url("img/microphone.png");
+
         };
     }
 

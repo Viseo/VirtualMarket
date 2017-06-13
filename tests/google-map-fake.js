@@ -13,6 +13,9 @@ exports.googleMap=class {
             },
             setZoom(x){
                 this.zoom=x;
+            },
+            addListener(event,func){
+
             }
         };
 
