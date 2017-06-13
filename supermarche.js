@@ -178,7 +178,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 }
                 else{}
             }
-            else if(type=="up"){
+            else{
                 if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
@@ -598,9 +598,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     if(this.card.x+this.card.width/2<this.component.width*0.90)
                         this.card.position(e.touches[0].pageX-this.component.x,this.card.y);
                     else if(this.cardIn==false){
-                        this.card.position(this.width*0.65,this.card.y);
-                        svg.event(this.card,"touchend",{});
                         this.showCode();
+                        this.card.position(this.width*0.65,this.card.y);
+                        this.cardIn=true;
+                        svg.event(this.card,"touchend",{});
                     }
                 });
             });
@@ -616,8 +617,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.80)
                             this.card.position(width * 0.1, this.card.y);
                         else{
-                            this.card.position(this.width * 0.65, this.card.y);
                             this.showCode();
+                            this.card.position(this.width * 0.65, this.card.y);
+                            this.cardIn=true;
                         }
                         draw = false;
                     }
@@ -628,8 +630,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.6)
                             this.card.position(width * 0.1, this.card.y);
                         else if (this.cardIn == false) {
-                            this.card.position(this.width * 0.65, this.card.y);
                             this.showCode();
+                            this.card.position(this.width * 0.65, this.card.y);
+                            this.cardIn=true;
                         }
                         draw = false;
 
@@ -639,19 +642,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         showCode(){
-            if(market.basket.thumbnailsProducts.length > 0) {
-                this.zoneCode = new SecurityCode(mainPageWidth, market.height - header.height, 0, header.height);
-                this.zoneCode.component.opacity(1).mark("code");
-                this.zoneCode.placeElements();
-                market.add(this.zoneCode.component);
-                market.pages[1].active = false;
-                market.pages[0].active = false;
-                this.cardIn=true;
-            }
-            else {
-                market.textToSpeech("Veuillez mettre un article dans le panier");
-                this.card.position(this.width * 0.1, this.card.y);
-}
+            this.zoneCode = new SecurityCode(mainPageWidth,market.height-header.height,0,header.height);
+            this.zoneCode.component.opacity(1).mark("code");
+            this.zoneCode.placeElements();
+            market.add(this.zoneCode.component);
+            market.pages[1].active = false;
+            market.pages[0].active = false;
         }
     }
 
@@ -1222,7 +1218,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width/2-this.caseWidth/2, this.height*0.05+this.title.height/2);
 
-            console.log(this.height*0.05,this.title.height*1.75)
             this.header.add(new svg.Text("Disponible").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(this.width*0.03,this.height*0.05+this.title.height*1.70));
             this.header.add(new svg.Text("Indisponible ").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(this.width*0.037,this.height*0.05+this.title.height*2.2));
             this.header.add(new Switch('green', this.caseWidth/6, this.caseHeight/4).component.move(-this.width*0.02,this.height*0.05+this.title.height*1.6));
@@ -1769,19 +1764,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             categories.ray.currentDrawn = null;
             if (categories.ray.name==categories.currentRayOnDrawing){
                 if (number == "click") {
-                    if (!element.anim) {
-                        element.addAnimation("1");
-                        market.basket.addProducts(element, "1");
-                        element.anim = true;
-                        market.textToSpeech("Ok, j'ajoute 1" + element.complement.replace("/", "")
-                            + " " + getGrammaticalTransition(element) + element.name + " au panier");
-                        element.anim = true;
-                    }
+                    element.addAnimation("1");
+                    market.basket.addProducts(element, "1");
+                    element.anim = true;
+                    market.textToSpeech("Ok, j'ajoute 1" + element.complement.replace("/", "")
+                        + " " + getGrammaticalTransition(element) + element.name + " au panier");
+                    element.anim = true;
                 }
                 else if (number != "?") {
                     let nb = "";
                     number=number.toString();
-                    console.log(number)
                     for (var c of number.split('')) {
                         if (c == "?") {
                             market.textToSpeech("Je n'ai pas compris le nombre");

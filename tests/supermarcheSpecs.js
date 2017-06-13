@@ -391,48 +391,6 @@ describe("Test",function (){
         },2000);
     });
 
-    it("ensure that we can mouseover and mouseout on a product and it title",function(){
-        let categories = retrieve(market.component,"[categories].[Fruits]");
-        runtime.event(categories,"click",{});
-        runtime.advanceAll();
-        let product2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine].[Image Clementine]");
-        let product3 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise].[Image Fraise]");
-        let title2 = retrieve(market.component,"[ray Fruits].[listRay].[Product Clementine].[Title Clementine]");
-        let title3 = retrieve(market.component,"[ray Fruits].[listRay].[Product Fraise].[Title Fraise]");
-
-        runtime.event(product2,"mouseenter");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-
-        runtime.event(product2,"mouseout");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-
-        runtime.event(product3,"mouseenter");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-
-        runtime.event(product3,"mouseout");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-
-        runtime.event(title2,"mouseenter");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-
-        runtime.event(title2,"mouseout");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-
-        runtime.event(title3,"mouseenter");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-
-        runtime.event(title3,"mouseout");
-        runtime.advanceAll();
-        inspect(product2,{tag:"image"});
-    });
-
     it("ensure that clicking on a product in the basket print the corresponding section",function(done){
         let categories = retrieve(market.component,"[categories].[Fruits]");
         runtime.event(categories,"click",{});
@@ -944,6 +902,39 @@ describe("Test",function (){
         },4000)
     });
 
+    it("ensure that you can't change ray while drawing",function(done){
+        let catMode = retrieve(market.component,"[categories].[Mode]");
+        runtime.event(catMode,"click",{});
+        let product = retrieve(market.component,"[ray Mode].[listRay].[Product Montre]");
+        let decalHeader = market.height / 19;
+        runtime.event(product, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+        runtime.advanceAll();
+        runtime.event(product, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+        runtime.advanceAll();
+        runtime.event(product, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 380 + decalHeader}}});
+        runtime.advanceAll();
+        runtime.event(product, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
+        runtime.advanceAll();
+        runtime.event(product, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
+        runtime.advanceAll();
+        let catBoissons = retrieve(market.component,"[categories].[Boissons]");
+        runtime.event(catBoissons,"click",{});
+        let product2= retrieve(market.component,"[ray Boissons].[listRay].[Product RedBull]");
+        setTimeout(function(){
+            runtime.event(product2, "touchstart", {type:"touchstart",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+            runtime.advanceAll();
+            runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
+            runtime.advanceAll();
+            runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 380 + decalHeader}}});
+            runtime.advanceAll();
+            runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
+            runtime.advanceAll();
+            runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 500 + decalHeader}}});
+            runtime.advanceAll();
+            done();
+        },1000);
+    });
+
     it("ensure that you can drag the card in the terminal and that it shows the payement interface",function(){
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
@@ -1387,6 +1378,7 @@ describe("Test",function (){
     });
 
     it("ensures that we can control the app by sending it command that represent the voice",function(done){
+        market.vocalRecognition("je veux payer");
         market.vocalRecognition("journaux");
         market.vocalRecognition("");
         market.vocalRecognition("je veux ajouter une poires et 4 tables et 0 ecran");
