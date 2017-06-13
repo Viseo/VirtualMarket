@@ -873,6 +873,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             market.pages[0].active = true;
             currentPage=market.map;
             currentIndex=1;
+            changeColorforTabs();
             cookie.createCookie("page",1,1);
             loadMap();
 
@@ -2398,40 +2399,40 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     //Tab:
     let tabX = market.width*0.98;
     //CALENDAR
-    let calendarOnglY = (market.height*0.57);
-    let linePathCalendar=new svg.Path(tabX,calendarOnglY);
-    linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.02).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
-    linePathCalendar.line(tabX+market.width*0.02,calendarOnglY+market.height*0.25).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
-    linePathCalendar.line(tabX,calendarOnglY+market.height*0.27).color(svg.LIGHT_BLUE,4,svg.LIGHT_BLUE);
+    let calendarOnglY =market.height*0.54;
+    let tabCalendarTrans=new svg.Translation();
+    let tabCalendar=new svg.Circle(market.width/13);
+    tabCalendarTrans.add(tabCalendar).shadow("tabCalendar",3,5,5);
+    tabCalendar.position(tabX-market.width/18,calendarOnglY+market.height*0.10).color(svg.WHITE,4,svg.WHITE).opacity(0.8);
     let calendarIcon = new svg.Image("img/calendarIcon.png").dimension(market.width*0.018,market.width*0.018)
         .position(tabX+market.width*0.0105,calendarOnglY+market.height*0.1);
     let calendarPage = new svg.Translation()
         .add(new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).color([230,230,230]))
-        .add(linePathCalendar).add(market.calendar.component).add(calendarIcon);
+        .add(tabCalendarTrans).add(market.calendar.component).add(calendarIcon);
 
     //MAP
-    let mapOnglY = Math.round(market.height*0.31);
-    let linePathMap=new svg.Path(tabX,mapOnglY);
-    linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.02).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
-    linePathMap.line(tabX+market.width*0.02,mapOnglY+market.height*0.25).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
-    linePathMap.line(tabX,mapOnglY+market.height*0.27).color(svg.LIGHT_RED,4,svg.LIGHT_RED);
+    let mapOnglY = Math.round(market.height*0.30);
+    let tabMapTrans=new svg.Translation();
+    let tabMap=new svg.Circle(market.width/13);
+    tabMapTrans.add(tabMap).shadow("tabMap",3,5,5);
+    tabMap.position(tabX-market.width/18,mapOnglY+market.height*0.10).color(svg.WHITE,4,svg.WHITE).opacity(0.8);
     let mapIcon = new svg.Image("img/mapIcon.png").dimension(market.width*0.018,market.width*0.018)
         .position(tabX+market.width*0.0105,mapOnglY+market.height*0.1);
 
     //MAINPAGE
-    let mainOnglY = Math.round(market.height*0.05);
-    let linePathMain=new svg.Path(tabX,mainOnglY);
-    linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.02).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
-    linePathMain.line(tabX+market.width*0.02,mainOnglY+market.height*0.25).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
-    linePathMain.line(tabX,mainOnglY+market.height*0.27).color(svg.LIGHT_GREEN,4,svg.LIGHT_GREEN);
+    let mainOnglY = Math.round(market.height*0.06);
+    let tabmainTrans=new svg.Translation();
+    let tabMain=new svg.Circle(market.width/13);
+    tabmainTrans.add(tabMain).shadow("tabMain",3,5,5);
+    tabMain.position(tabX-market.width/18,mainOnglY+market.height*0.10).color(svg.WHITE,4,svg.WHITE).opacity(0.8);
     let mainIcon = new svg.Image("img/panier.png").dimension(market.width*0.018,market.width*0.018)
         .position(tabX+market.width*0.0105,mainOnglY+market.height*0.1);
-    mainPage.add(linePathMain).add(mainIcon);
+    mainPage.add(tabmainTrans).add(mainIcon);
 
     let mapPage = new svg.Translation().mark("map");
     let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
         .position(market.width/2,market.height/2+header.height/2).color(svg.WHITE,1,svg.BLACK);
-    mapPage.add(linePathMap).add(background).add(mapIcon);
+    mapPage.add(tabMapTrans).add(background).add(mapIcon);
     market.map = null;
 
     function loadMap(){
@@ -2461,6 +2462,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         setTimeout(()=>{
             currentPage = market.pages[0].obj;
             currentIndex = 0;
+            changeColorforTabs();
         },200);
 
         cookie.createCookie("page",0,1);
@@ -2473,6 +2475,25 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     let currentIndex=2;
     market.pages=[];
     market.pages.push({obj:calendarPage,active:false},{obj:mapPage,active:false},{obj:mainPage,active:true});
+
+    function changeColorforTabs(){
+        if (currentIndex==0){
+            tabCalendar.color([210,210,210]);
+            tabMap.color(svg.WHITE);
+            tabMain.color(svg.WHITE);
+        }
+        else if (currentIndex==1){
+            tabCalendar.color(svg.WHITE);
+            tabMap.color([210,210,210]);
+            tabMain.color(svg.WHITE);
+
+        }
+        else {
+            tabCalendar.color(svg.WHITE);
+            tabMap.color(svg.WHITE);
+            tabMain.color([210,210,210]);
+        }
+    }
 
     for(var i =0;i<market.pages.length;i++){
         let index = i;
@@ -2504,6 +2525,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                     currentPage = market.pages[index].obj;
                     currentIndex = index;
+                    console.log(market.pages[0].active,market.pages[1].active,market.pages[2].active);
+                    changeColorforTabs();
 
                     if (currentIndex == 0) {
                         market.calendar.calendarOn = true;
@@ -2518,6 +2541,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         });
         market.add(market.pages[i].obj);
     }
+
+
 
     market.add(mainPage);
     mainPage.add(zoneCategories).add(zoneBasket).add(zonePayment);
@@ -2563,6 +2588,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
         currentPage = market.pages[index].obj;
         currentIndex = index;
+        changeColorforTabs();
 
         if (currentIndex == 0) {
             market.calendar.calendarOn = true;
