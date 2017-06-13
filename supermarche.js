@@ -598,10 +598,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     if(this.card.x+this.card.width/2<this.component.width*0.90)
                         this.card.position(e.touches[0].pageX-this.component.x,this.card.y);
                     else if(this.cardIn==false){
-                        this.showCode();
                         this.card.position(this.width*0.65,this.card.y);
-                        this.cardIn=true;
                         svg.event(this.card,"touchend",{});
+                        this.showCode();
                     }
                 });
             });
@@ -617,9 +616,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.80)
                             this.card.position(width * 0.1, this.card.y);
                         else{
-                            this.showCode();
                             this.card.position(this.width * 0.65, this.card.y);
-                            this.cardIn=true;
+                            this.showCode();
                         }
                         draw = false;
                     }
@@ -630,9 +628,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.6)
                             this.card.position(width * 0.1, this.card.y);
                         else if (this.cardIn == false) {
-                            this.showCode();
                             this.card.position(this.width * 0.65, this.card.y);
-                            this.cardIn=true;
+                            this.showCode();
                         }
                         draw = false;
 
@@ -642,12 +639,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         showCode(){
-            this.zoneCode = new SecurityCode(mainPageWidth,market.height-header.height,0,header.height);
-            this.zoneCode.component.opacity(1).mark("code");
-            this.zoneCode.placeElements();
-            market.add(this.zoneCode.component);
-            market.pages[1].active = false;
-            market.pages[0].active = false;
+            if(market.basket.thumbnailsProducts.length > 0) {
+                this.zoneCode = new SecurityCode(mainPageWidth, market.height - header.height, 0, header.height);
+                this.zoneCode.component.opacity(1).mark("code");
+                this.zoneCode.placeElements();
+                market.add(this.zoneCode.component);
+                market.pages[1].active = false;
+                market.pages[0].active = false;
+                this.cardIn=true;
+            }
+            else {
+                market.textToSpeech("Veuillez mettre un article dans le panier");
+                this.card.position(this.width * 0.1, this.card.y);
+}
         }
     }
 
@@ -2264,11 +2268,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         messageProcessed = true;
                     }
                     else if (order.includes("paye") || order.includes("paie")) {
-                        market.textToSpeech("Ok, passons au payement")
-                        market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
-                        market.payment.cardIn = true;
-                        market.payment.showCode();
-                        messageProcessed = true;
+                        if(market.basket.thumbnailsProducts.length > 0) {
+                            market.textToSpeech("Ok, passons au payement")
+                            market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
+                            market.payment.cardIn = true;
+                            market.payment.showCode();
+                            messageProcessed = true;
+                        } else {
+                            market.textToSpeech("Veuillez mettre un article dans le panier");
+                        }
+
                     }
                 }
             }
