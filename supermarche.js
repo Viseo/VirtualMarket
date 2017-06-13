@@ -1001,7 +1001,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             this.jauge.position(-this.width/2+this.x+(this.width/(2*this.place)),this.y).color(svg.GREEN,2,svg.GREEN).corners(10,10);
             this.roundContent.add(this.jauge);
-
         }
 
         changeColor(bool){
@@ -1330,129 +1329,137 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         placeRounds(){
-            let dayMonth = [];
-
-            if(this.current===true){
-                for(let i = 0; i<this.numberDaysThisMonth-timer.getDayInMonth()+1;i++){
-                    let str = "";
-                    if(timer.getDayInMonth()+i>=10)
-                        str += Number(timer.getDayInMonth() + i)+ "/";
-                    else
-                        str +="0"+Number(timer.getDayInMonth() + i) +"/";
-                    if(timer.getMonth()<10)
-                        str += "0"+(timer.getMonth()+1) +"/"+timer.getYear();
-                    else
-                        str += (timer.getMonth()+1) +"/"+timer.getYear();
-                    dayMonth.push(str);
-                }
-            }
-            else{
-                for(let i = 0; i<this.numberDaysThisMonth;i++){
-                    let str = "";
-                    if(i>=10)
-                        str += i+ "/";
-                    else
-                        str +="0"+i +"/";
-                    if(this.monthNumber<10)
-                        str += "0"+(this.monthNumber+1) +"/"+this.year;
-                    else
-                        str += (this.monthNumber+1) +"/"+this.year;
-                    dayMonth.push(str);
-                }
-            }
-
-
-            let tab = [];
-            for(let j = 0; j<dayMonth.length;j++){
-                tab = placePerDay(dayMonth[j],tab);
-            }
-            this.address=market.calendar.address;
-
-            var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
-            var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
-            var dayTest = timer.getDate(1496268000000 + 24 * 60 * 60 * 1000);
-            var dayTest2 = timer.getDate(1496268000000 + 2 * 24 * 60 * 60 * 1000);
-            var dayTest3 = timer.getDate(1497045600000);
-            var nextMonth = timer.getDate(timer.getTime() + 31 * 24 * 60 * 60 * 1000);
-            var nextMonthAndOne = timer.getDate(timer.getTime() + 32 * 24 * 60 * 60 * 1000);
-            let modul = timer.getDayInMonth()<=9?"0":"";
-            let modulTomorrow = tomorrow.getDate()<=9?"0":"";
-            let modulAfterTomorrow = afterTomorrow.getDate()<=9?"0":"";
-            let modulTest = "0";
-            let modulTest2 = "0";
-            let modulTest3 = "";
-            let modulDayNextMonth = nextMonth.getDate()<=9?"0":"";
-            let modulDayNextMonthAndOne = nextMonthAndOne.getDate()<=9?"0":"";
-            let modulMonth = timer.getMonth()<=9?"0":"";
-            let modulNextMonth = nextMonth.getMonth()<=9?"0":"";
-            tab.push({
-                dayP: modul+timer.getDayInMonth() + "/" + modulMonth + (timer.getMonth() + 1) + "/" + timer.getYear(),
-                hourDL: "10", hourAL: "12", nbT: 2, left: 2, TPH: 2, address: this.address
-            });
-            tab.push({
-                dayP: modulTomorrow+tomorrow.getDate() + "/" + modulMonth + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
-                hourDL: "10", hourAL: "12", nbT: 2, left: 3, TPH: 2, address: this.address
-            });
-            tab.push({
-                dayP: modulAfterTomorrow+afterTomorrow.getDate() + "/" + modulMonth + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
-                hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2.5, address : this.address
-            });
-            tab.push({
-                dayP: modulTest+dayTest.getDate() + "/" + modulMonth + (dayTest.getMonth() + 1) + "/" + dayTest.getFullYear(),
-                hourDL: "13", hourAL: "17", nbT: 4, left: 3, TPH: 1.5, address: this.address
-            });
-            tab.push({
-                dayP: modulTest2+dayTest2.getDate() + "/" + modulMonth + (dayTest2.getMonth() + 1) + "/" + dayTest2.getFullYear(),
-                hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
-            });
-            tab.push({
-                dayP: modulTest3+dayTest3.getDate() + "/" + modulMonth + (dayTest3.getMonth() + 1) + "/" + dayTest3.getFullYear(),
-                hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
-            });
-            tab.push({
-                dayP: modulDayNextMonth+nextMonth.getDate() + "/" + modulNextMonth + (nextMonth.getMonth() + 1) + "/" + nextMonth.getFullYear(),
-                hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
-            });
-            tab.push({
-                dayP: modulDayNextMonthAndOne+nextMonthAndOne.getDate() + "/" + modulNextMonth + (nextMonthAndOne.getMonth() + 1) + "/" + nextMonthAndOne.getFullYear(),
-                hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
-            });
-
-            this.rounds=[];
-            for(let i = 0; i<dayMonth.length;i++){
-                let totLeft = 0;
-                for(let j = 0; j < tab.length; j++){
-                    if(dayMonth[i]==tab[j].dayP){
-                        totLeft += tab[j].left;
-                        let newRound = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/4,tab[j].nbT,tab[j].left, tab[j].TPH);
-                        newRound.roundContent.mark("round "+this.rounds.length);
-                        newRound.tabH=tab[j];
-                        newRound.placeElements();
-                        newRound.move((tab[j].hourDL-9)*this.caseWidth+newRound.width/2+this.caseWidth/2,
-                            i*this.caseHeight+this.caseHeight*0.1);
-
-                        newRound.roundContent.onClick(()=>{
-                            this.checkPlace(newRound);
-                        });
-
-                        for(let k = 0; k < tab[j].nbT+1;k++){
-                            this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].droppable = true;
-                            this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].available = true;
-                        }
-                        this.calendarContent.add(newRound.component);
-                        this.background.add(this.calendarContent);
-                        newRound.changeColor(3);
-                        this.rounds.push(newRound);
+            let dateInMonth = () => {
+                let dayMonth = [];
+                if(this.current===true){
+                    for(let i = 0; i<this.numberDaysThisMonth-timer.getDayInMonth()+1;i++){
+                        let str = "";
+                        if(timer.getDayInMonth()+i>=10)
+                            str += Number(timer.getDayInMonth() + i)+ "/";
+                        else
+                            str +="0"+Number(timer.getDayInMonth() + i) +"/";
+                        if(timer.getMonth()<10)
+                            str += "0"+(timer.getMonth()+1) +"/"+timer.getYear();
+                        else
+                            str += (timer.getMonth()+1) +"/"+timer.getYear();
+                        dayMonth.push(str);
                     }
                 }
-
-                if(totLeft == 0) {
-                    this.dayCases[i].add(new Switch("unavailable",this.caseWidth*1.5,this.caseHeight).component)
-
-                }else {
-                    this.dayCases[i].add(new Switch("available",this.caseWidth*1.5,this.caseHeight).component)
+                else{
+                    for(let i = 0; i<this.numberDaysThisMonth;i++){
+                        let str = "";
+                        if(i>=10)
+                            str += i+ "/";
+                        else
+                            str +="0"+i +"/";
+                        if(this.monthNumber<10)
+                            str += "0"+(this.monthNumber+1) +"/"+this.year;
+                        else
+                            str += (this.monthNumber+1) +"/"+this.year;
+                        dayMonth.push(str);
+                    }
                 }
-            }
+                return dayMonth;
+            };
+            let roundsToPlace = () => {
+                let tab = [];
+                for(let j = 0; j<dayMonth.length;j++){
+                    tab = placePerDay(dayMonth[j],tab);
+                }
+
+                this.address=market.calendar.address;
+
+                var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
+                var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
+                var dayTest = timer.getDate(1496268000000 + 24 * 60 * 60 * 1000);
+                var dayTest2 = timer.getDate(1496268000000 + 2 * 24 * 60 * 60 * 1000);
+                var dayTest3 = timer.getDate(1497045600000);
+                var nextMonth = timer.getDate(timer.getTime() + 31 * 24 * 60 * 60 * 1000);
+                var nextMonthAndOne = timer.getDate(timer.getTime() + 32 * 24 * 60 * 60 * 1000);
+                let modul = timer.getDayInMonth()<=9?"0":"";
+                let modulTomorrow = tomorrow.getDate()<=9?"0":"";
+                let modulAfterTomorrow = afterTomorrow.getDate()<=9?"0":"";
+                let modulTest = "0";
+                let modulTest2 = "0";
+                let modulTest3 = "";
+                let modulDayNextMonth = nextMonth.getDate()<=9?"0":"";
+                let modulDayNextMonthAndOne = nextMonthAndOne.getDate()<=9?"0":"";
+                let modulMonth = timer.getMonth()<=9?"0":"";
+                let modulNextMonth = nextMonth.getMonth()<=9?"0":"";
+                tab.push({
+                    dayP: modul+timer.getDayInMonth() + "/" + modulMonth + (timer.getMonth() + 1) + "/" + timer.getYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 2, TPH: 2, address: this.address
+                });
+                tab.push({
+                    dayP: modulTomorrow+tomorrow.getDate() + "/" + modulMonth + (tomorrow.getMonth() + 1) + "/" + tomorrow.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 3, TPH: 2, address: this.address
+                });
+                tab.push({
+                    dayP: modulAfterTomorrow+afterTomorrow.getDate() + "/" + modulMonth + (afterTomorrow.getMonth() + 1) + "/" + afterTomorrow.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2.5, address : this.address
+                });
+                tab.push({
+                    dayP: modulTest+dayTest.getDate() + "/" + modulMonth + (dayTest.getMonth() + 1) + "/" + dayTest.getFullYear(),
+                    hourDL: "13", hourAL: "17", nbT: 4, left: 3, TPH: 1.5, address: this.address
+                });
+                tab.push({
+                    dayP: modulTest2+dayTest2.getDate() + "/" + modulMonth + (dayTest2.getMonth() + 1) + "/" + dayTest2.getFullYear(),
+                    hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
+                });
+                tab.push({
+                    dayP: modulTest3+dayTest3.getDate() + "/" + modulMonth + (dayTest3.getMonth() + 1) + "/" + dayTest3.getFullYear(),
+                    hourDL: "16", hourAL: "18", nbT: 2, left: 1, TPH: 2, address: this.address
+                });
+                tab.push({
+                    dayP: modulDayNextMonth+nextMonth.getDate() + "/" + modulNextMonth + (nextMonth.getMonth() + 1) + "/" + nextMonth.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 4, TPH: 2, address: this.address
+                });
+                tab.push({
+                    dayP: modulDayNextMonthAndOne+nextMonthAndOne.getDate() + "/" + modulNextMonth + (nextMonthAndOne.getMonth() + 1) + "/" + nextMonthAndOne.getFullYear(),
+                    hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
+                });
+                return tab;
+            };
+            let drawAllRoundsInEachDay = (dayMonth,tab) => {
+                this.rounds=[];
+                for(let i = 0; i<dayMonth.length;i++){
+                    let totLeft = 0;
+                    for(let j = 0; j < tab.length; j++){
+                        if(dayMonth[i]==tab[j].dayP){
+                            totLeft += tab[j].left;
+                            let newRound = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/4,tab[j].nbT,tab[j].left, tab[j].TPH);
+                            newRound.roundContent.mark("round "+this.rounds.length);
+                            newRound.tabH=tab[j];
+                            newRound.placeElements();
+                            newRound.move((tab[j].hourDL-9)*this.caseWidth+newRound.width/2+this.caseWidth/2,
+                                i*this.caseHeight+this.caseHeight*0.1);
+                            newRound.roundContent.onClick(()=>{
+                                this.checkPlace(newRound);
+                            });
+
+                            for(let k = 0; k < tab[j].nbT+1;k++){
+                                this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].droppable = true;
+                                this.calendarCases[(i*11+Number(tab[j].hourDL-9))+k].available = true;
+                            }
+                            this.calendarContent.add(newRound.component);
+                            this.background.add(this.calendarContent);
+                            newRound.changeColor(3);
+                            this.rounds.push(newRound);
+                        }
+                    }
+
+                    if(totLeft == 0) {
+                        this.dayCases[i].add(new Switch("unavailable",this.caseWidth*1.5,this.caseHeight).component)
+
+                    }else {
+                        this.dayCases[i].add(new Switch("available",this.caseWidth*1.5,this.caseHeight).component)
+                    }
+                }
+            };
+
+            let dayMonth = dateInMonth();
+            let tab = roundsToPlace();
+            drawAllRoundsInEachDay(dayMonth,tab);
         }
 
         printMonthContent(month,year){
@@ -1536,7 +1543,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.calendarContent.mark("content");
                 this.component.add(this.background).add(this.header);
             };
-
 
             removeOldDisplay();
             let tabDays = showDaysColumn();
@@ -1765,14 +1771,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             categories.ray.currentDrawn = null;
             if (categories.ray.name==categories.currentRayOnDrawing){
                 if (number == "click") {
-                    if (!element.anim) {
                         element.addAnimation("1");
                         market.basket.addProducts(element, "1");
                         element.anim = true;
                         market.textToSpeech("Ok, j'ajoute 1" + element.complement.replace("/", "")
                             + " " + getGrammaticalTransition(element) + element.name + " au panier");
                         element.anim = true;
-                    }
+
                 }
                 else if (number != "?") {
                     let nb = "";
@@ -1929,45 +1934,58 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         updateMarkersSide(){
-            market.map.component.remove(market.map.listMarkers);
-            market.map.listMarkers=new svg.Translation();
-            let width = market.width*0.2;
-            let height = market.height*0.05;
-            let tab=market.mapsfunction.getMarkers();
+            let removeOldMarkers = () => {
+                market.map.component.remove(market.map.listMarkers);
+            };
+            let initMarkers = () => {
+                market.map.listMarkers=new svg.Translation();
+                let width = market.width*0.2;
+                let height = market.height*0.05;
+                let tab=market.mapsfunction.getMarkers();
 
-            let meImageMarker = new svg.Image("img/map-marker-blue.png")
-                .position(width*0.05,height/2).dimension(height*1.2,height*1.2);
-            let meTitle = [currentMapSearch==""?"Ma Position":"Mon Adresse :"," "+currentMapSearch];
-            let meTitleMarker = new svg.Translation()
-                .add(new svg.Text(" "+meTitle[0]).font("Calibri",height*0.5,1).position(width*0.15,height*0.3).anchor("left"))
-                .add(new svg.Text(""+meTitle[1].split(",")[0]).font("Calibri",height*0.45,1).position(width*0.15,height*0.70).anchor("left"));
-            if(meTitle[1].split(",").length>1){
-                meTitleMarker.add(new svg.Text(""+meTitle[1].split(",")[1]+meTitle[1].split(",")[2]).font("Calibri",height*0.45,1)
-                    .position(width*0.15,height*1.1).anchor("left"));
-            }
-            let meNewMarker = new svg.Translation().add(meImageMarker).add(meTitleMarker);
-            meNewMarker.move(0,0);
-            market.map.listMarkers.add(meNewMarker);
-            let place = 1;
-            for(let i in tab) {
-                if (tab[i].map){
-                    let imageMarker = new svg.Image("img/" + (tab[i].animating ? "map-marker-green.png" : "map-marker-red.png"))
-                        .position(width * 0.05, height / 2).dimension(height * 1.2, height * 1.2);
-                    let title = tab[i].title.split(",");
-                    let titleMarker = new svg.Translation()
-                        .add(new svg.Text(" " + title[0]).font("Calibri", title[0].length < 25 ? height * 0.45 : height * 0.4, 1)
-                            .position(width * 0.15, height * 0.3).anchor("left"))
-                        .add(new svg.Text(title[1]).font("Calibri", height * 0.45, 1).position(width * 0.15, height * 0.70).anchor("left"))
-                        .add(new svg.Text(title[2]).font("Calibri", height * 0.45, 1).position(width * 0.15, height * 1.10).anchor("left"));
-                    let numMarker = new svg.Text(i).position(width * 0.05, height * 0.40).anchor("middle").font("Calibri", height * 0.4, 1);
-                    let newMarker = new svg.Translation().add(imageMarker).add(titleMarker).add(numMarker);
-                    newMarker.move(0, (place) * height * 2);
-                    place++;
-                    market.map.listMarkers.add(newMarker);
+                let meImageMarker = new svg.Image("img/map-marker-blue.png")
+                    .position(width*0.05,height/2).dimension(height*1.2,height*1.2);
+                let meTitle = [currentMapSearch==""?"Ma Position":"Mon Adresse :"," "+currentMapSearch];
+                let meTitleMarker = new svg.Translation()
+                    .add(new svg.Text(" "+meTitle[0]).font("Calibri",height*0.5,1).position(width*0.15,height*0.3).anchor("left"))
+                    .add(new svg.Text(""+meTitle[1].split(",")[0]).font("Calibri",height*0.45,1).position(width*0.15,height*0.70).anchor("left"));
+                if(meTitle[1].split(",").length>1){
+                    meTitleMarker.add(new svg.Text(""+meTitle[1].split(",")[1]+meTitle[1].split(",")[2]).font("Calibri",height*0.45,1)
+                        .position(width*0.15,height*1.1).anchor("left"));
                 }
-            }
-            market.map.component.add(market.map.listMarkers);
-            market.map.listMarkers.move(market.width*0.75,market.height*0.08);
+                let meNewMarker = new svg.Translation().add(meImageMarker).add(meTitleMarker);
+                meNewMarker.move(0,0);
+                market.map.listMarkers.add(meNewMarker);
+                return tab;
+            };
+            let placeAllMarkers = (tab) => {
+                let width = market.width*0.2;
+                let height = market.height*0.05;
+                let place = 1;
+                for(let i in tab) {
+                    if (tab[i].map){
+                        let imageMarker = new svg.Image("img/" + (tab[i].animating ? "map-marker-green.png" : "map-marker-red.png"))
+                            .position(width * 0.05, height / 2).dimension(height * 1.2, height * 1.2);
+                        let title = tab[i].title.split(",");
+                        let titleMarker = new svg.Translation()
+                            .add(new svg.Text(" " + title[0]).font("Calibri", title[0].length < 25 ? height * 0.45 : height * 0.4, 1)
+                                .position(width * 0.15, height * 0.3).anchor("left"))
+                            .add(new svg.Text(title[1]).font("Calibri", height * 0.45, 1).position(width * 0.15, height * 0.70).anchor("left"))
+                            .add(new svg.Text(title[2]).font("Calibri", height * 0.45, 1).position(width * 0.15, height * 1.10).anchor("left"));
+                        let numMarker = new svg.Text(i).position(width * 0.05, height * 0.40).anchor("middle").font("Calibri", height * 0.4, 1);
+                        let newMarker = new svg.Translation().add(imageMarker).add(titleMarker).add(numMarker);
+                        newMarker.move(0, (place) * height * 2);
+                        place++;
+                        market.map.listMarkers.add(newMarker);
+                    }
+                }
+                market.map.component.add(market.map.listMarkers);
+                market.map.listMarkers.move(market.width*0.75,market.height*0.08);
+            };
+
+            removeOldMarkers();
+            let tab = initMarkers();
+            placeAllMarkers(tab);
         }
     }
 
@@ -2369,7 +2387,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
     function getDelivery(address){
         let relay = param.data.getMarker();
-
         let obj = [];
         for(let point in relay){
             if(relay[point].address == address){
