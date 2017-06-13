@@ -178,7 +178,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 }
                 else{}
             }
-            else {
+            else if(type=="up"){
                 if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
@@ -598,10 +598,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     if(this.card.x+this.card.width/2<this.component.width*0.90)
                         this.card.position(e.touches[0].pageX-this.component.x,this.card.y);
                     else if(this.cardIn==false){
-                        this.showCode();
                         this.card.position(this.width*0.65,this.card.y);
-                        this.cardIn=true;
                         svg.event(this.card,"touchend",{});
+                        this.showCode();
                     }
                 });
             });
@@ -617,9 +616,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.80)
                             this.card.position(width * 0.1, this.card.y);
                         else{
-                            this.showCode();
                             this.card.position(this.width * 0.65, this.card.y);
-                            this.cardIn=true;
+                            this.showCode();
                         }
                         draw = false;
                     }
@@ -630,9 +628,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.6)
                             this.card.position(width * 0.1, this.card.y);
                         else if (this.cardIn == false) {
-                            this.showCode();
                             this.card.position(this.width * 0.65, this.card.y);
-                            this.cardIn=true;
+                            this.showCode();
                         }
                         draw = false;
 
@@ -642,12 +639,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         showCode(){
-            this.zoneCode = new SecurityCode(mainPageWidth,market.height-header.height,0,header.height);
-            this.zoneCode.component.opacity(1).mark("code");
-            this.zoneCode.placeElements();
-            market.add(this.zoneCode.component);
-            market.pages[1].active = false;
-            market.pages[0].active = false;
+            if(market.basket.thumbnailsProducts.length > 0) {
+                this.zoneCode = new SecurityCode(mainPageWidth, market.height - header.height, 0, header.height);
+                this.zoneCode.component.opacity(1).mark("code");
+                this.zoneCode.placeElements();
+                market.add(this.zoneCode.component);
+                market.pages[1].active = false;
+                market.pages[0].active = false;
+                this.cardIn=true;
+            }
+            else {
+                market.textToSpeech("Veuillez mettre un article dans le panier");
+                this.card.position(this.width * 0.1, this.card.y);
+}
         }
     }
 
@@ -961,7 +965,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     this.bar.dimension(width,width/30).color(svg.RED, 1, svg.RED);
                     this.component.move(0,height/2-width/60);
                 }
-
             }
         }
     }
@@ -1063,6 +1066,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.header.add(this.hideBehind);
             this.background.add(this.calendarFirstColumn);
             this.background.add(this.calendarContent);
+
 
             this.x = x;
             this.y = y;
@@ -1177,7 +1181,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.calendarFirstColumn.steppy(1, 1).onChannel("calendarColumn")
                     .moveTo(this.caseWidth/4, this.calendarContent.y - (mouse - y));
                 this.calendarContent.steppy(1, 1).onChannel("calendarContent")
-                    .moveTo(this.caseWidth/1.5-3, this.calendarContent.y - (mouse - y));
+                    .moveTo(this.caseWidth/1.65, this.calendarContent.y - (mouse - y));
             };
 
             let toEndMove=()=>{
@@ -1190,13 +1194,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 var height = this.caseHeight * (nbdays);
                 if ((this.calendarContent.y + height + this.caseHeight / 2 < market.height)&&(nbdays>10)) {
                     this.calendarContent.smoothy(10, 10).onChannel("calendarContent")
-                        .moveTo(this.caseWidth/1.5-3,this.height*0.05+this.title.height*1.5+this.caseHeight*1.5);
+                        .moveTo(this.caseWidth/1.65,market.height-height-this.caseHeight/2);
                     this.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
-                        .moveTo(this.caseWidth/4, this.height*0.05+this.title.height*1.5+this.caseHeight*1.5);
+                        .moveTo(this.caseWidth/4,market.height-height-this.caseHeight/2);
                 }
                 else if((this.calendarContent.y>header.height+this.caseHeight*2)||(nbdays<=10)){
                     this.calendarContent.smoothy(10, 10).onChannel("calendarContent")
-                        .moveTo(this.caseWidth/1.5-3, this.height*0.05+this.title.height*1.5+this.caseHeight*1.5);
+                        .moveTo(this.caseWidth/1.65, this.height*0.05+this.title.height*1.5+this.caseHeight*1.5);
                     this.calendarFirstColumn.smoothy(10, 10).onChannel("calendarColumn")
                         .moveTo(this.caseWidth/4, this.height*0.05+this.title.height*1.5+this.caseHeight*1.5);
                 }
@@ -1207,7 +1211,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.caseWidth = this.calendarWidth*0.87/11;
             this.caseHeight = this.calendarHeight/10;
             this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.25,this.caseHeight*0.25);
-            this.title.dimension(this.calendarWidth+2,this.calendarHeight*0.1).color([0, 190, 255],1,svg.LIGHT_GREY).opacity(1);
+            this.title.dimension(this.calendarWidth*0.995,this.calendarHeight*0.1).color([0, 190, 255],1,svg.LIGHT_GREY).opacity(1);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
 
             this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
@@ -1216,6 +1220,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
             this.monthChoice.move(this.width/2-this.caseWidth/2, this.height*0.05+this.title.height/2);
+
+            console.log(this.height*0.05,this.title.height*1.75)
+            this.header.add(new svg.Text("Disponible").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(this.width*0.03,this.height*0.05+this.title.height*1.70));
+            this.header.add(new svg.Text("Indisponible ").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(this.width*0.037,this.height*0.05+this.title.height*2.2));
+            this.header.add(new Switch('green', this.caseWidth/6, this.caseHeight/4).component.move(-this.width*0.02,this.height*0.05+this.title.height*1.6));
+            this.header.add(new Switch('red', this.caseWidth/6, this.caseHeight/4).component.move(-this.width*0.02,this.height*0.05+this.title.height*2.1));
             this.printCurrentMonthContent();
         }
 
@@ -1280,16 +1290,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                         tabHours.push((i + 8) + "h");
                     }
-                    else {
-                        hourCase.add(new svg.Text("Disponible").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(-this.caseWidth/3,-this.caseHeight/7));
-                        hourCase.add(new svg.Text("Indisponible ").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(-this.caseWidth/4 ,this.caseHeight/4));
-                        hourCase.add(new Switch('red', this.caseWidth/6, this.caseHeight/4).component.move(-this.caseWidth,this.caseHeight/6));
-                        hourCase.add(new Switch('green', this.caseWidth/6, this.caseHeight/4).component.move(-this.caseWidth,-this.caseHeight/6));
-                    }
 
                     hourCase.move(i*this.caseWidth,0);
                     this.calendarFirstRow.add(hourCase);
-                    this.calendarFirstRow.move(this.caseWidth/1.5-3,this.height*0.05+this.title.height*1.75);
+                    this.calendarFirstRow.move(this.caseWidth/1.65,this.height*0.05+this.title.height*1.75);
                 }
                 this.header.add(this.calendarFirstRow);
                 return tabHours;
@@ -1312,7 +1316,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                     line.move(this.caseWidth,this.caseHeight*i);
                     this.calendarContent.add(line);
-                    this.calendarContent.move(this.caseWidth/1.5-3,this.calendarPositionY)
+                    this.calendarContent.move(this.caseWidth/1.65,this.calendarPositionY)
                 }
                 this.background.mark("calendarBackground");
                 this.background.add(this.calendarContent);
@@ -1513,7 +1517,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK));
                     hourCase.move(i*this.caseWidth,0);
                     this.calendarFirstRow.add(hourCase);
-                    this.calendarFirstRow.move(this.caseWidth/1.5-3,this.height*0.05+this.title.height*1.75);
+                    this.calendarFirstRow.move(this.caseWidth/1.65-3,this.height*0.05+this.title.height*1.75);
                 }
                 this.header.add(this.calendarFirstRow);
                 return tabHours;
@@ -1535,7 +1539,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                     line.move(this.caseWidth,this.caseHeight*i);
                     this.calendarContent.add(line);
-                    this.calendarContent.move(this.caseWidth/1.5-3,this.calendarPositionY)
+                    this.calendarContent.move(this.caseWidth/1.65,this.calendarPositionY)
                 }
 
                 this.background.mark("calendarBackground");
@@ -1781,6 +1785,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 }
                 else if (number != "?") {
                     let nb = "";
+                    number=number.toString();
+                    console.log(number)
                     for (var c of number.split('')) {
                         if (c == "?") {
                             market.textToSpeech("Je n'ai pas compris le nombre");
@@ -1830,11 +1836,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     element.component.remove(this.toAdd[c]);
                 }
             };
-
-            for(let i=0; i<number.length;i++){
-                this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5)
-                    .font("Calibri",this.height/1.5,1).color(svg.BLACK,2,svg.WHITE).opacity(0.7);
-                this.component.add(this.toAdd[i]);
+            if(number!="0" || number.length!=1){
+                for(let i=0; i<number.length;i++){
+                    this.toAdd[i] = new svg.Text(n[i]).position((i+1)*(this.width/(number.length+1)),this.height/1.5)
+                        .font("Calibri",this.height/1.5,1).color(svg.BLACK,2,svg.WHITE).opacity(0.7);
+                    this.component.add(this.toAdd[i]);
+                }
             }
 
             this.component.onMouseDown(()=>{});
@@ -2309,11 +2316,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         messageProcessed = true;
                     }
                     else if (order.includes("paye") || order.includes("paie")) {
-                        market.textToSpeech("Ok, passons au payement")
-                        market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
-                        market.payment.cardIn = true;
-                        market.payment.showCode();
-                        messageProcessed = true;
+                        if(market.basket.thumbnailsProducts.length > 0) {
+                            market.textToSpeech("Ok, passons au payement")
+                            market.payment.card.position(market.payment.width * 0.6, market.payment.height / 2);
+                            market.payment.cardIn = true;
+                            market.payment.showCode();
+                            messageProcessed = true;
+                        } else {
+                            market.textToSpeech("Veuillez mettre un article dans le panier");
+                        }
+
                     }
                 }
             }
