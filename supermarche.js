@@ -4,7 +4,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
     ///////////////BANDEAUX/////////////////
-    class DrawingZone {
+    class DrawingZone{
         constructor(width,height,x,y)
         {
             this.component = new svg.Drawing(width,height).position(x,y);
@@ -12,171 +12,198 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     class ListCategorie extends DrawingZone {
-        constructor(width, height, x, y, tabCat) {
+        constructor(width, height, x, y, tabCat){
             super(width, height, x, y);
 
-            //Rebords
-            let rectangleBackground = new svg.Rect(width, height).position(width / 2, height / 2).color([230,230,230]);
-            this.component.add(rectangleBackground);
+            let init = ()=> {
+                //Rebords
+                let rectangleBackground = new svg.Rect(width, height).position(width / 2, height / 2).color([230, 230, 230]);
+                this.component.add(rectangleBackground);
 
-            //Rayon Actuellement Selectionné
-            this.ray = null;
-            this.rayTranslation = null;
-            this.currentSearch = [];
+                //Rayon Actuellement Selectionné
+                this.ray = null;
+                this.rayTranslation = null;
+                this.currentSearch = [];
 
-            this.tabCategories = tabCat;
-            let listThumbnail = new svg.Translation().mark("listeCategories");
-            for (let i = 0; i < this.tabCategories.length; i++) {
-                let current = this.tabCategories[i];
-                current.placeElements();
-                current.move(width*0.01+width*0.108 * i, height*0.05);
-                listThumbnail.add(current.component);
-            }
-            this.component.add(listThumbnail);
-            this.transRect=new svg.Translation().shadow('catrect',-5,0,5).add(new svg.Circle(1).opacity(0).position(width*0.95,market.height+header.height));
-            this.transRect.add(new svg.Rect(width*0.01,market.height-header.height).position(width*(1.005),(market.height+header.height)/2).color([230,230,230]));
-            this.component.add(this.transRect);
-            this.previousMouseX=0;
-            this.navigation=false;
-            let mouvement = false;
-            // naviguer dans les catégories avec la souris
-            svg.addEvent(this.component, "mousedown", (e)=>{
-                mouvement = true;
-                this.previousMouseX = e.pageX;
-                svg.addEvent(this.component, "mousemove", (e)=>{
-                    if (mouvement) {
-                        if(this.previousMouseX!=e.pageX) this.navigation=true;
-                        listThumbnail.steppy(1, 1).moveTo(listThumbnail.x + (e.pageX - this.previousMouseX), listThumbnail.y);
-                        this.previousMouseX = e.pageX;
-                    }
-                });
+                this.tabCategories = tabCat;
+                this.listThumbnail = new svg.Translation().mark("listeCategories");
+                for (let i = 0; i < this.tabCategories.length; i++) {
+                    let current = this.tabCategories[i];
+                    current.placeElements();
+                    current.move(width * 0.01 + width * 0.108 * i, height * 0.05);
+                    this.listThumbnail.add(current.component);
+                }
+                this.component.add(this.listThumbnail);
+                this.transRect = new svg.Translation().shadow('catrect', -5, 0, 5).add(new svg.Circle(1).opacity(0).position(width * 0.95, market.height + header.height));
+                this.transRect.add(new svg.Rect(width * 0.01, market.height - header.height).position(width * (1.005), (market.height + header.height) / 2).color([230, 230, 230]));
+                this.component.add(this.transRect);
+                this.previousMouseX = 0;
+                this.navigation = false;
+            };
+            let handleEvents = ()=> {
+                this.mouvement = false;
+                // naviguer dans les catégories avec la souris
+                svg.addEvent(this.component, "mousedown", (e) => {
+                    this.mouvement = true;
+                    this.previousMouseX = e.pageX;
+                    svg.addEvent(this.component, "mousemove", (e) => {
+                        if (this.mouvement) {
+                            if (this.previousMouseX != e.pageX) this.navigation = true;
+                            this.listThumbnail.steppy(1, 1).moveTo(this.listThumbnail.x + (e.pageX - this.previousMouseX), this.listThumbnail.y);
+                            this.previousMouseX = e.pageX;
+                        }
+                    });
 
-                svg.addEvent(this.component, "mouseup", ()=>{
-                    let widthTotal = this.tabCategories[0].width*1.04 * this.tabCategories.length;
-                    let widthView = width;
-                    let positionRight = listThumbnail.x + widthTotal;
-                    if (listThumbnail.x > 0) {
-                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
-                    }
-                    else if (positionRight <= widthView) {
-                        listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
-                    }
-                    else{}
-                    mouvement = false;
-                });
-
-                svg.addEvent(this.component, "mouseout", ()=>{
-                    if(mouvement) {
-                        let widthTotal = this.tabCategories[0].width*1.04* this.tabCategories.length;
+                    svg.addEvent(this.component, "mouseup", () => {
+                        let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
                         let widthView = width;
-                        let positionRight = listThumbnail.x + widthTotal;
-                        if (listThumbnail.x > 0) {
-                            listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                        let positionRight = this.listThumbnail.x + widthTotal;
+                        if (this.listThumbnail.x > 0) {
+                            this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
                         }
                         else if (positionRight <= widthView) {
-                            listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, listThumbnail.y);
+                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
                         }
-                        mouvement = false;
-                    }
-                });
-            });
+                        else {
+                        }
+                        this.mouvement = false;
+                    });
 
-            // Gestion tactile pour les catégories:
-            svg.addEvent(this.component, "touchstart", (e)=>{
-                mouvement = true;
-                this.previousMouseX = e.touches[0].clientX;
-
-                svg.addEvent(this.component, "touchmove", (e)=>{
-                    if (mouvement) {
-                        listThumbnail.steppy(1, 1).moveTo(listThumbnail.x + (e.touches[0].clientX - this.previousMouseX), listThumbnail.y);
-                        this.previousMouseX = e.touches[0].clientX;
-                    }
+                    svg.addEvent(this.component, "mouseout", () => {
+                        if (this.mouvement) {
+                            let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
+                            let widthView = width;
+                            let positionRight = this.listThumbnail.x + widthTotal;
+                            if (this.listThumbnail.x > 0) {
+                                this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                            }
+                            else if (positionRight <= widthView) {
+                                this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
+                            }
+                            this.mouvement = false;
+                        }
+                    });
                 });
 
-                svg.addEvent(this.component, "touchend", ()=>{
-                    let widthTotal = this.tabCategories[0].width*1.04* this.tabCategories.length;
-                    let widthView = width;
-                    let positionRight = listThumbnail.x + widthTotal;
-                    mouvement = false;
-                    if (listThumbnail.x > 0) {
-                        listThumbnail.smoothy(10, 10).moveTo(0,0);
-                    }
-                    else if (positionRight <= widthView) {
-                        listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
-                    }
+                // Gestion tactile pour les catégories:
+                svg.addEvent(this.component, "touchstart", (e) => {
+                    this.mouvement = true;
+                    this.previousMouseX = e.touches[0].clientX;
+
+                    svg.addEvent(this.component, "touchmove", (e) => {
+                        if (this.mouvement) {
+                            this.listThumbnail.steppy(1, 1).moveTo(this.listThumbnail.x + (e.touches[0].clientX - this.previousMouseX), this.listThumbnail.y);
+                            this.previousMouseX = e.touches[0].clientX;
+                        }
+                    });
+
+                    svg.addEvent(this.component, "touchend", () => {
+                        let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
+                        let widthView = width;
+                        let positionRight = this.listThumbnail.x + widthTotal;
+                        this.mouvement = false;
+                        if (this.listThumbnail.x > 0) {
+                            this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                        }
+                        else if (positionRight <= widthView) {
+                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
+                        }
+                    });
                 });
-            });
+            };
+
+            init();
+            handleEvents();
         }
     }
 
     class Ray extends DrawingZone {
         constructor(width,height,x,y,tabThumbnail,cat) {
             super(width, height, x, y);
-
-            this.width=width;
-            this.name = cat;
-            this.thumbWidth = (width / 4 * 0.94);
-            this.listWidth = Math.ceil(tabThumbnail.length / 3) * (this.thumbWidth);
-            let fond = new svg.Rect(width, height).position(width / 2, height / 2);
-            fond.color([230, 230, 230]);
-            this.component.add(fond);
-
-            this.listThumbnails = new svg.Translation().mark("listRay");
-            let col = 0;
-            for (let i = 0; i < tabThumbnail.length; i = i + 3) {
-                for (let j = 0; j < 4; j++) {
-                    if (tabThumbnail[j + i]) {
-                        tabThumbnail[j + i].placeElements(1);
-                        tabThumbnail[j + i].move(width * 0.01 + this.thumbWidth * col, width * 0.01 + (height / 3 * 0.98) * j);
-                        this.listThumbnails.add(tabThumbnail[j + i].component);
+            let init = () =>{
+                this.width = width;
+                this.name = cat;
+                this.thumbWidth = (width / 4 * 0.94);
+                this.listWidth = Math.ceil(tabThumbnail.length / 3) * (this.thumbWidth);
+                let fond = new svg.Rect(width, height).position(width / 2, height / 2);
+                fond.color([230, 230, 230]);
+                this.component.add(fond);
+                this.currentDrawn = null;
+            };
+            let initThumbnails = ()=> {
+                this.listThumbnails = new svg.Translation().mark("listRay");
+                let col = 0;
+                for (let i = 0; i < tabThumbnail.length; i = i + 3) {
+                    for (let j = 0; j < 4; j++) {
+                        if (tabThumbnail[j + i]) {
+                            tabThumbnail[j + i].placeElements(1);
+                            tabThumbnail[j + i].move(width * 0.01 + this.thumbWidth * col, width * 0.01 + (height / 3 * 0.98) * j);
+                            this.listThumbnails.add(tabThumbnail[j + i].component);
+                        }
                     }
+                    col++;
                 }
-                col++;
-            }
-            this.component.add(this.listThumbnails);
+                this.component.add(this.listThumbnails);
+            };
+            let manageChevron = ()=>{
+                if (tabThumbnail.length > 12){
+                    // let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                    // let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                    // let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    //     .position(this.thumbWidth / 4, this.component.height / 2);
+                    // let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    //     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
+                    // let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
+                    // let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
+                    //
+                    // zoneChevronWest.onClick(()=>{
+                    //     if (this.listWidth != 0 && this.listThumbnails.x + this.thumbWidth * 1.5 < 0) {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x + this.thumbWidth * 1.5, 0);
+                    //         zoneChevronEast.opacity(0.3);
+                    //     } else {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                    //         zoneChevronWest.opacity(0);
+                    //         zoneChevronEast.opacity(0.3);
+                    //     }
+                    // });
+                    //
+                    // zoneChevronEast.onClick(()=>{
+                    //     if (this.listWidth != 0 && this.listThumbnails.x + this.listWidth - this.thumbWidth * 1.5 >= width) {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x - this.thumbWidth * 1.5, 0);
+                    //         zoneChevronWest.opacity(0.3);
+                    //     } else {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - this.listWidth - width * 0.01, 0);
+                    //         zoneChevronWest.opacity(0.3);
+                    //         zoneChevronEast.opacity(0);
+                    //     }
+                    // });
+                    // this.component.add(zoneChevronEast).add(zoneChevronWest);
+                }
+            };
 
-            this.currentDrawn = null;
-            if (tabThumbnail.length > 12){
-                // let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                // let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                // let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                //     .position(this.thumbWidth / 4, this.component.height / 2);
-                // let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                //     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
-                // let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
-                // let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
-                //
-                // zoneChevronWest.onClick(()=>{
-                //     if (this.listWidth != 0 && this.listThumbnails.x + this.thumbWidth * 1.5 < 0) {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x + this.thumbWidth * 1.5, 0);
-                //         zoneChevronEast.opacity(0.3);
-                //     } else {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
-                //         zoneChevronWest.opacity(0);
-                //         zoneChevronEast.opacity(0.3);
-                //     }
-                // });
-                //
-                // zoneChevronEast.onClick(()=>{
-                //     if (this.listWidth != 0 && this.listThumbnails.x + this.listWidth - this.thumbWidth * 1.5 >= width) {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x - this.thumbWidth * 1.5, 0);
-                //         zoneChevronWest.opacity(0.3);
-                //     } else {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - this.listWidth - width * 0.01, 0);
-                //         zoneChevronWest.opacity(0.3);
-                //         zoneChevronEast.opacity(0);
-                //     }
-                // });
-                // this.component.add(zoneChevronEast).add(zoneChevronWest);
-            }
+            init();
+            initThumbnails();
+            manageChevron();
         }
-
         gesture(type, dx){
+            let handleMovement = (dx)=>{
+                if(categories.ray.listWidth>market.width*0.76){
+                    categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
+                }
+            };
+            let handleEndMovement = ()=>{
+                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
+                    categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                }
+                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width && categories.ray.listWidth>market.width*0.76){
+                    categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
+                }
+            };
+
             if(type=="move"){
                 if(categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
                 }
-                else{}
             }
             else {
                 if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
@@ -192,40 +219,41 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     class Basket extends DrawingZone {
         constructor(width, height, x, y) {
             super(width, height, x, y);
-            this.component.mark("basket");
+            let init = ()=> {
+                this.component.mark("basket");
+                let background = new svg.Rect(width, height).position(width / 2, height / 2);
+                background.color(svg.WHITE);
+                this.component.add(background);
+                this.listProducts = new svg.Translation().mark("listBasket");
+                this.component.add(this.listProducts);
+                this.thumbnailsProducts = [];
 
-            let background = new svg.Rect(width, height).position(width / 2, height / 2);
-            background.color(svg.WHITE);
-            this.component.add(background);
+                this.stringPanier = "";
+                this.titleBasket = new svg.Text("PANIER").font("Calibri", this.component.height * 0.05, 1).color([0, 195, 235])
+                    .position(this.component.width / 2, this.component.height * 0.07);
+                runtime.attr(this.titleBasket.component, "font-weight", "bold");
+                this.titleBack = new svg.Rect(this.component.width, this.component.height * 0.1)
+                    .position(this.component.width / 2, this.component.height * 0.05).color(svg.WHITE);
+                this.component.add(this.titleBack);
+                this.component.add(this.titleBasket);
+                this.originY = this.component.height * 0.1;
 
-            this.listProducts = new svg.Translation().mark("listBasket");
-            this.component.add(this.listProducts);
-            this.thumbnailsProducts = [];
+                this.component.add(new svg.Line(0,this.component.height*0.98,this.component.width+10,this.component.height*0.98)
+                    .color(svg.BLACK,5,[230,230,230]));
+                this.component.add(new svg.Line(this.component.width*0.2,this.component.height*0.1,this.component.width*0.8,this.component.height*0.1)
+                    .color(svg.BLACK,1,[210,210,210]));
+            };
 
-            this.backgroundTotal= new svg.Rect(this.component.width,this.component.height*0.16)
-                .position(this.component.width/2,this.component.height*0.93).color(svg.WHITE);
-            this.component.add(this.backgroundTotal);
-            this.stringPanier="";
+            let initPrice=()=>{
+                this.backgroundTotal = new svg.Rect(this.component.width, this.component.height * 0.16)
+                    .position(this.component.width / 2, this.component.height * 0.93).color(svg.WHITE);
+                this.component.add(this.backgroundTotal);
+                this.totalPrice = 0;
+                this.calculatePrice(0);
+            };
 
-            this.titleBasket = new svg.Text("PANIER").font("Calibri",this.component.height*0.05,1).color([0,195,235])
-                .position(this.component.width/2,this.component.height*0.07);
-            runtime.attr(this.titleBasket.component,"font-weight","bold");
-            this.titleBack = new svg.Rect(this.component.width,this.component.height*0.1)
-                .position(this.component.width/2,this.component.height*0.05).color(svg.WHITE);
-            this.component.add(this.titleBack);
-            this.component.add(this.titleBasket);
-
-
-            this.originY = this.component.height*0.1;
-            this.totalPrice=0;
-            this.calculatePrice(0);
-
-            this.component.add(new svg.Line(0,this.component.height*0.98,this.component.width+10,this.component.height*0.98)
-                .color(svg.BLACK,5,[230,230,230]));
-
-            this.component.add(new svg.Line(this.component.width*0.2,this.component.height*0.1,this.component.width*0.8,this.component.height*0.1)
-                .color(svg.BLACK,1,[210,210,210]));
-
+            init();
+            initPrice();
         }
 
         calculatePrice(price) {

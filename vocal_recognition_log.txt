@@ -488,3 +488,6 @@ bon signe ou pas, Mon Jun 12 2017 14:03:05 GMT+0200 (Paris, Madrid (heure d’é
 je n'ai pas compris, Mon Jun 12 2017 14:03:39 GMT+0200 (Paris, Madrid (heure d’été))
 40 rue non, Mon Jun 12 2017 14:46:12 GMT+0200 (Paris, Madrid (heure d’été))
 >>>>>>> ff38c3a3ae559c09c46fc79db6341090bd024bb0
+je n'ai pas compris, Tue Jun 13 2017 14:32:20 GMT+0200 (Paris, Madrid (heure d’été))
+11 bis avenue, Tue Jun 13 2017 14:32:24 GMT+0200 (Paris, Madrid (heure d’été))
+je pars m, Tue Jun 13 2017 14:33:00 GMT+0200 (Paris, Madrid (heure d’été))
