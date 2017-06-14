@@ -1951,7 +1951,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.component.mark("Product basket " + this.name);
             this.image.position(this.width*0.8,this.height*0.4).dimension(this.height*0.90,this.height*0.90).mark(this.name);
             this.printPrice.position(this.width*0.05,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+
+
             this.title.position(this.width*0.30,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
+
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).mark("background "+this.name);
             this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
         }
@@ -2624,7 +2627,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                     currentPage = market.pages[index].obj;
                     currentIndex = index;
-                    console.log(market.pages[0].active,market.pages[1].active,market.pages[2].active);
                     changeColorforTabs();
 
                     if (currentIndex == 0) {
@@ -2657,12 +2659,27 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         market.changeRay("HighTech");
     }
 
+    let searchForCookieBasket=(name)=>{
+        let database = param.data.getJson();
+        for(var i in database){
+            for(var j in database[i]){
+                if(name==database[i][j].nom){
+                    return {
+                        produit:database[i][j],
+                        categorie:database[i]
+                    };
+                }
+            }
+        }
+    };
+
     if(cookieBasket) {
         let stringBasket = cookieBasket.split(",");
         for (let i in stringBasket) {
             let tabProd = stringBasket[i].split(":");
-            let prod = search(tabProd[0]);
-            market.basket.addProducts(prod[0], tabProd[1]);
+            let prod = searchForCookieBasket(tabProd[0]);
+            let thumbnail = new ThumbnailRayon(prod.produit.image,prod.produit.nom,prod.produit.prix,prod.produit.complement,prod.categorie);
+            market.basket.addProducts(thumbnail, tabProd[1]);
         }
     }
     if(cookiePayment=="done"){
