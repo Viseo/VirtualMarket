@@ -550,6 +550,22 @@ je n'ai pas compris, Tue Jun 13 2017 15:26:02 GMT+0200 (Paris, Madrid (heure d�
 pour chaque truc dans le python avec un cendrier, Tue Jun 13 2017 15:29:35 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Tue Jun 13 2017 15:34:53 GMT+0200 (Paris, Madrid (heure d’été))
 je n'ai pas compris, Tue Jun 13 2017 15:35:09 GMT+0200 (Paris, Madrid (heure d’été))
+<<<<<<< HEAD
+je n'ai pas compris, Wed Jun 14 2017 10:07:51 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:09:36 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:13:25 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:13:44 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:14:47 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:15:07 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:15:33 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:16:36 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:33:19 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:34:16 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 10:58:00 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 11:11:05 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 11:46:16 GMT+0200 (Paris, Madrid (heure d’été))
+je n'ai pas compris, Wed Jun 14 2017 11:55:00 GMT+0200 (Paris, Madrid (heure d’été))
+=======
 >>>>>>> 35d14e14d4f396e2887a1fd14d2194e155183103
 je n'ai pas compris, Wed Jun 14 2017 10:46:58 GMT+0200 (Paris, Madrid (heure d’été))
 travailler sur un, Wed Jun 14 2017 10:47:09 GMT+0200 (Paris, Madrid (heure d’été))
@@ -558,6 +574,7 @@ envoie un s, Wed Jun 14 2017 10:49:32 GMT+0200 (Paris, Madrid (heure d’été))
 photos de yorkshire, Wed Jun 14 2017 10:49:48 GMT+0200 (Paris, Madrid (heure d’été))
 infection dans une carte de, Wed Jun 14 2017 10:51:32 GMT+0200 (Paris, Madrid (heure d’été))
 universel, Wed Jun 14 2017 10:51:44 GMT+0200 (Paris, Madrid (heure d’été))
+<<<<<<< HEAD
 je n'ai pas compris, Wed Jun 14 2017 10:56:07 GMT+0200 (Paris, Madrid (heure d’été))
 conjuguer, Wed Jun 14 2017 10:56:17 GMT+0200 (Paris, Madrid (heure d’été))
 et l'avion, Wed Jun 14 2017 10:56:32 GMT+0200 (Paris, Madrid (heure d’été))
@@ -572,3 +589,6 @@ je suis un petit truc pour mettre le truc, Wed Jun 14 2017 11:05:31 GMT+0200 (Pa
 oasis, Wed Jun 14 2017 11:06:07 GMT+0200 (Paris, Madrid (heure d’été))
 campanile auch, Wed Jun 14 2017 11:06:50 GMT+0200 (Paris, Madrid (heure d’été))
 pour le mazout parce qu'en fait sinon, Wed Jun 14 2017 11:07:08 GMT+0200 (Paris, Madrid (heure d’été))
+=======
+>>>>>>> 4d5949bccf5a39fb7bff7f77654082ecf3d54c7e
+>>>>>>> 5b517c492527cf3625680bd01f6736c5be951e28

@@ -1842,7 +1842,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     element.addAnimation(number);
 
                     if (nb != "") {
-                        market.textToSpeech("Ok, j'ajoute " + nb + element.complement.replace("/", "")
+                        market.textToSpeech("Ok, j'ajoute " + nb + element.complement.replace("/kg", "kilogramme")
                             + " " + getGrammaticalTransition(element) + element.name + " au panier");
                         market.basket.addProducts(element, parseInt(nb));
                     } else
