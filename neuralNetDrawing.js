@@ -128,7 +128,7 @@ exports.neural = function(runtime) {
                     this.currentX=ev._x;
                     this.currentY=ev._y;
                 }
-                else if (ev.type === 'touchmove'||control=="touchmove") {
+                else if(ev.type === 'touchmove'||control=="touchmove") {
                     ev.touchX=Math.round(ev.touches[0].clientX*1.25);
                     ev.touchY=Math.round(ev.touches[0].clientY*1.25);
                     if(this.currentX!=0||this.currentY!=0) {

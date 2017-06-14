@@ -4,7 +4,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
     ///////////////BANDEAUX/////////////////
-    class DrawingZone {
+    class DrawingZone{
         constructor(width,height,x,y)
         {
             this.component = new svg.Drawing(width,height).position(x,y);
@@ -12,179 +12,199 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     class ListCategorie extends DrawingZone {
-        constructor(width, height, x, y, tabCat) {
+        constructor(width, height, x, y, tabCat){
             super(width, height, x, y);
 
-            //Rebords
-            let rectangleBackground = new svg.Rect(width, height).position(width / 2, height / 2).color([230,230,230]);
-            this.component.add(rectangleBackground);
+            let init = ()=> {
+                //Rebords
+                let rectangleBackground = new svg.Rect(width, height).position(width / 2, height / 2).color([230, 230, 230]);
+                this.component.add(rectangleBackground);
 
-            //Rayon Actuellement Selectionné
-            this.ray = null;
-            this.rayTranslation = null;
-            this.currentSearch = [];
+                //Rayon Actuellement Selectionné
+                this.ray = null;
+                this.rayTranslation = null;
+                this.currentSearch = [];
 
-            this.tabCategories = tabCat;
-            let listThumbnail = new svg.Translation().mark("listeCategories");
-            for (let i = 0; i < this.tabCategories.length; i++) {
-                let current = this.tabCategories[i];
-                current.placeElements();
-                current.move(width*0.01+width*0.108 * i, height*0.05);
-                listThumbnail.add(current.component);
-            }
-            this.component.add(listThumbnail);
-            this.transRect=new svg.Translation().shadow('catrect',-5,0,5).add(new svg.Circle(1).opacity(0).position(width*0.95,market.height+header.height));
-            this.transRect.add(new svg.Rect(width*0.01,market.height-header.height).position(width*(1.005),(market.height+header.height)/2).color([230,230,230]));
-            this.component.add(this.transRect);
-            this.previousMouseX=0;
-            this.navigation=false;
-            let mouvement = false;
-            // naviguer dans les catégories avec la souris
-            svg.addEvent(this.component, "mousedown", (e)=>{
-                mouvement = true;
-                this.previousMouseX = e.pageX;
-                svg.addEvent(this.component, "mousemove", (e)=>{
-                    if (mouvement) {
-                        if(this.previousMouseX!=e.pageX) this.navigation=true;
-                        listThumbnail.steppy(1, 1).moveTo(listThumbnail.x + (e.pageX - this.previousMouseX), listThumbnail.y);
-                        this.previousMouseX = e.pageX;
-                    }
-                });
+                this.tabCategories = tabCat;
+                this.listThumbnail = new svg.Translation().mark("listeCategories");
+                for (let i = 0; i < this.tabCategories.length; i++) {
+                    let current = this.tabCategories[i];
+                    current.placeElements();
+                    current.move(width * 0.01 + width * 0.108 * i, height * 0.05);
+                    this.listThumbnail.add(current.component);
+                }
+                this.component.add(this.listThumbnail);
+                this.transRect = new svg.Translation().shadow('catrect', -5, 0, 5).add(new svg.Circle(1).opacity(0).position(width * 0.95, market.height + header.height));
+                this.transRect.add(new svg.Rect(width * 0.01, market.height - header.height).position(width * (1.005), (market.height + header.height) / 2).color([230, 230, 230]));
+                this.component.add(this.transRect);
+                this.previousMouseX = 0;
+                this.navigation = false;
+            };
+            let handleEvents = ()=> {
+                this.mouvement = false;
+                // naviguer dans les catégories avec la souris
+                svg.addEvent(this.component, "mousedown", (e) => {
+                    this.mouvement = true;
+                    this.previousMouseX = e.pageX;
+                    svg.addEvent(this.component, "mousemove", (e) => {
+                        if (this.mouvement) {
+                            if (this.previousMouseX != e.pageX) this.navigation = true;
+                            this.listThumbnail.steppy(1, 1).moveTo(this.listThumbnail.x + (e.pageX - this.previousMouseX), this.listThumbnail.y);
+                            this.previousMouseX = e.pageX;
+                        }
+                    });
 
-                svg.addEvent(this.component, "mouseup", ()=>{
-                    let widthTotal = this.tabCategories[0].width*1.04 * this.tabCategories.length;
-                    let widthView = width;
-                    let positionRight = listThumbnail.x + widthTotal;
-                    if (listThumbnail.x > 0) {
-                        listThumbnail.smoothy(10, 10).moveTo(0, 0);
-                    }
-                    else if (positionRight <= widthView) {
-                        listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
-                    }
-                    else{}
-                    mouvement = false;
-                });
-
-                svg.addEvent(this.component, "mouseout", ()=>{
-                    if(mouvement) {
-                        let widthTotal = this.tabCategories[0].width*1.04* this.tabCategories.length;
+                    svg.addEvent(this.component, "mouseup", () => {
+                        let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
                         let widthView = width;
-                        let positionRight = listThumbnail.x + widthTotal;
-                        if (listThumbnail.x > 0) {
-                            listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                        let positionRight = this.listThumbnail.x + widthTotal;
+                        if (this.listThumbnail.x > 0) {
+                            this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
                         }
                         else if (positionRight <= widthView) {
-                            listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, listThumbnail.y);
+                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
                         }
-                        mouvement = false;
-                    }
-                });
-            });
+                        else {
+                        }
+                        this.mouvement = false;
+                    });
 
-            // Gestion tactile pour les catégories:
-            svg.addEvent(this.component, "touchstart", (e)=>{
-                mouvement = true;
-                this.previousMouseX = e.touches[0].clientX;
-
-                svg.addEvent(this.component, "touchmove", (e)=>{
-                    if (mouvement) {
-                        listThumbnail.steppy(1, 1).moveTo(listThumbnail.x + (e.touches[0].clientX - this.previousMouseX), listThumbnail.y);
-                        this.previousMouseX = e.touches[0].clientX;
-                    }
+                    svg.addEvent(this.component, "mouseout", () => {
+                        if (this.mouvement) {
+                            let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
+                            let widthView = width;
+                            let positionRight = this.listThumbnail.x + widthTotal;
+                            if (this.listThumbnail.x > 0) {
+                                this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                            }
+                            else if (positionRight <= widthView) {
+                                this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
+                            }
+                            this.mouvement = false;
+                        }
+                    });
                 });
 
-                svg.addEvent(this.component, "touchend", ()=>{
-                    let widthTotal = this.tabCategories[0].width*1.04* this.tabCategories.length;
-                    let widthView = width;
-                    let positionRight = listThumbnail.x + widthTotal;
-                    mouvement = false;
-                    if (listThumbnail.x > 0) {
-                        listThumbnail.smoothy(10, 10).moveTo(0,0);
-                    }
-                    else if (positionRight <= widthView) {
-                        listThumbnail.smoothy(10,10).moveTo(widthView - widthTotal, listThumbnail.y);
-                    }
+                // Gestion tactile pour les catégories:
+                svg.addEvent(this.component, "touchstart", (e) => {
+                    this.mouvement = true;
+                    this.previousMouseX = e.touches[0].clientX;
+
+                    svg.addEvent(this.component, "touchmove", (e) => {
+                        if (this.mouvement) {
+                            this.listThumbnail.steppy(1, 1).moveTo(this.listThumbnail.x + (e.touches[0].clientX - this.previousMouseX), this.listThumbnail.y);
+                            this.previousMouseX = e.touches[0].clientX;
+                        }
+                    });
+
+                    svg.addEvent(this.component, "touchend", () => {
+                        let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
+                        let widthView = width;
+                        let positionRight = this.listThumbnail.x + widthTotal;
+                        this.mouvement = false;
+                        if (this.listThumbnail.x > 0) {
+                            this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
+                        }
+                        else if (positionRight <= widthView) {
+                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
+                        }
+                    });
                 });
-            });
+            };
+
+            init();
+            handleEvents();
         }
     }
 
     class Ray extends DrawingZone {
         constructor(width,height,x,y,tabThumbnail,cat) {
             super(width, height, x, y);
-
-            this.width=width;
-            this.name = cat;
-            this.thumbWidth = (width / 4 * 0.94);
-            this.listWidth = Math.ceil(tabThumbnail.length / 3) * (this.thumbWidth);
-            let fond = new svg.Rect(width, height).position(width / 2, height / 2);
-            fond.color([230, 230, 230]);
-            this.component.add(fond);
-
-            this.listThumbnails = new svg.Translation().mark("listRay");
-            let col = 0;
-            for (let i = 0; i < tabThumbnail.length; i = i + 3) {
-                for (let j = 0; j < 4; j++) {
-                    if (tabThumbnail[j + i]) {
-                        tabThumbnail[j + i].placeElements(1);
-                        tabThumbnail[j + i].move(width * 0.01 + this.thumbWidth * col, width * 0.01 + (height / 3 * 0.98) * j);
-                        this.listThumbnails.add(tabThumbnail[j + i].component);
+            let init = () =>{
+                this.width = width;
+                this.name = cat;
+                this.thumbWidth = (width / 4 * 0.94);
+                this.listWidth = Math.ceil(tabThumbnail.length / 3) * (this.thumbWidth);
+                let fond = new svg.Rect(width, height).position(width / 2, height / 2);
+                fond.color([230, 230, 230]);
+                this.component.add(fond);
+                this.currentDrawn = null;
+            };
+            let initThumbnails = ()=> {
+                this.listThumbnails = new svg.Translation().mark("listRay");
+                let col = 0;
+                for (let i = 0; i < tabThumbnail.length; i = i + 3) {
+                    for (let j = 0; j < 4; j++) {
+                        if (tabThumbnail[j + i]) {
+                            tabThumbnail[j + i].placeElements(1);
+                            tabThumbnail[j + i].move(width * 0.01 + this.thumbWidth * col, width * 0.01 + (height / 3 * 0.98) * j);
+                            this.listThumbnails.add(tabThumbnail[j + i].component);
+                        }
                     }
+                    col++;
                 }
-                col++;
-            }
-            this.component.add(this.listThumbnails);
+                this.component.add(this.listThumbnails);
+            };
+            let manageChevron = ()=>{
+                if (tabThumbnail.length > 12){
+                    // let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                    // let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
+                    // let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    //     .position(this.thumbWidth / 4, this.component.height / 2);
+                    // let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                    //     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
+                    // let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
+                    // let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
+                    //
+                    // zoneChevronWest.onClick(()=>{
+                    //     if (this.listWidth != 0 && this.listThumbnails.x + this.thumbWidth * 1.5 < 0) {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x + this.thumbWidth * 1.5, 0);
+                    //         zoneChevronEast.opacity(0.3);
+                    //     } else {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                    //         zoneChevronWest.opacity(0);
+                    //         zoneChevronEast.opacity(0.3);
+                    //     }
+                    // });
+                    //
+                    // zoneChevronEast.onClick(()=>{
+                    //     if (this.listWidth != 0 && this.listThumbnails.x + this.listWidth - this.thumbWidth * 1.5 >= width) {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x - this.thumbWidth * 1.5, 0);
+                    //         zoneChevronWest.opacity(0.3);
+                    //     } else {
+                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - this.listWidth - width * 0.01, 0);
+                    //         zoneChevronWest.opacity(0.3);
+                    //         zoneChevronEast.opacity(0);
+                    //     }
+                    // });
+                    // this.component.add(zoneChevronEast).add(zoneChevronWest);
+                }
+            };
 
-            this.currentDrawn = null;
-            if (tabThumbnail.length > 12){
-                // let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                // let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                // let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                //     .position(this.thumbWidth / 4, this.component.height / 2);
-                // let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                //     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
-                // let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
-                // let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
-                //
-                // zoneChevronWest.onClick(()=>{
-                //     if (this.listWidth != 0 && this.listThumbnails.x + this.thumbWidth * 1.5 < 0) {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x + this.thumbWidth * 1.5, 0);
-                //         zoneChevronEast.opacity(0.3);
-                //     } else {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
-                //         zoneChevronWest.opacity(0);
-                //         zoneChevronEast.opacity(0.3);
-                //     }
-                // });
-                //
-                // zoneChevronEast.onClick(()=>{
-                //     if (this.listWidth != 0 && this.listThumbnails.x + this.listWidth - this.thumbWidth * 1.5 >= width) {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x - this.thumbWidth * 1.5, 0);
-                //         zoneChevronWest.opacity(0.3);
-                //     } else {
-                //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - this.listWidth - width * 0.01, 0);
-                //         zoneChevronWest.opacity(0.3);
-                //         zoneChevronEast.opacity(0);
-                //     }
-                // });
-                // this.component.add(zoneChevronEast).add(zoneChevronWest);
-            }
+            init();
+            initThumbnails();
+            manageChevron();
         }
-
         gesture(type, dx){
-            if(type=="move"){
+            let handleMovement = (dx)=>{
                 if(categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
                 }
-                else{}
-            }
-            else{
+            };
+            let handleEndMovement = ()=>{
                 if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
                 else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width && categories.ray.listWidth>market.width*0.76){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
                 }
+            };
+
+            if(type=="move"){
+                handleMovement(dx);
+            }
+            else{
+                handleEndMovement();
             }
         }
     }
@@ -192,80 +212,93 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     class Basket extends DrawingZone {
         constructor(width, height, x, y) {
             super(width, height, x, y);
-            this.component.mark("basket");
+            let init = ()=> {
+                this.component.mark("basket");
+                let background = new svg.Rect(width, height).position(width / 2, height / 2);
+                background.color(svg.WHITE);
+                this.component.add(background);
+                this.listProducts = new svg.Translation().mark("listBasket");
+                this.component.add(this.listProducts);
+                this.thumbnailsProducts = [];
 
-            let background = new svg.Rect(width, height).position(width / 2, height / 2);
-            background.color(svg.WHITE);
-            this.component.add(background);
+                this.stringPanier = "";
+                this.titleBasket = new svg.Text("PANIER").font("Calibri", this.component.height * 0.05, 1).color([0, 195, 235])
+                    .position(this.component.width / 2, this.component.height * 0.07);
+                runtime.attr(this.titleBasket.component, "font-weight", "bold");
+                this.titleBack = new svg.Rect(this.component.width, this.component.height * 0.1)
+                    .position(this.component.width / 2, this.component.height * 0.05).color(svg.WHITE);
+                this.component.add(this.titleBack);
+                this.component.add(this.titleBasket);
+                this.originY = this.component.height * 0.1;
 
-            this.listProducts = new svg.Translation().mark("listBasket");
-            this.component.add(this.listProducts);
-            this.thumbnailsProducts = [];
+                this.component.add(new svg.Line(0,this.component.height*0.98,this.component.width+10,this.component.height*0.98)
+                    .color(svg.BLACK,5,[230,230,230]));
+                this.component.add(new svg.Line(this.component.width*0.2,this.component.height*0.1,this.component.width*0.8,this.component.height*0.1)
+                    .color(svg.BLACK,1,[210,210,210]));
+            };
 
-            this.backgroundTotal= new svg.Rect(this.component.width,this.component.height*0.16)
-                .position(this.component.width/2,this.component.height*0.93).color(svg.WHITE);
-            this.component.add(this.backgroundTotal);
-            this.stringPanier="";
+            let initPrice=()=>{
+                this.backgroundTotal = new svg.Rect(this.component.width, this.component.height * 0.16)
+                    .position(this.component.width / 2, this.component.height * 0.93).color(svg.WHITE);
+                this.component.add(this.backgroundTotal);
+                this.totalPrice = 0;
+                this.calculatePrice(0);
+            };
 
-            this.titleBasket = new svg.Text("PANIER").font("Calibri",this.component.height*0.05,1).color([0,195,235])
-                .position(this.component.width/2,this.component.height*0.07);
-            runtime.attr(this.titleBasket.component,"font-weight","bold");
-            this.titleBack = new svg.Rect(this.component.width,this.component.height*0.1)
-                .position(this.component.width/2,this.component.height*0.05).color(svg.WHITE);
-            this.component.add(this.titleBack);
-            this.component.add(this.titleBasket);
-
-
-            this.originY = this.component.height*0.1;
-            this.totalPrice=0;
-            this.calculatePrice(0);
-
-            this.component.add(new svg.Line(0,this.component.height*0.98,this.component.width+10,this.component.height*0.98)
-                .color(svg.BLACK,5,[230,230,230]));
-
-            this.component.add(new svg.Line(this.component.width*0.2,this.component.height*0.1,this.component.width*0.8,this.component.height*0.1)
-                .color(svg.BLACK,1,[210,210,210]));
-
+            init();
+            initPrice();
         }
 
         calculatePrice(price) {
-            this.totalPrice+=price;
-            if(this.printPrice){
-                this.component.remove(this.printPrice);
-                this.component.remove(this.total);
-            }
+            let addToPrice= ()=>{
+                this.totalPrice+=price;
+            };
+            let removeOldPriceDisplay=()=>{
+                if(this.printPrice){
+                    this.component.remove(this.printPrice);
+                    this.component.remove(this.total);
+                }
+            };
+            let createAndDisplayNewPrice=()=>{
+                this.printPrice = new svg.Text(this.totalPrice.toFixed(2) + " €")
+                    .position(this.component.width*0.90, this.component.height*0.935).anchor("end")
+                    .font("calibri", this.component.height*0.05, 1).color([255, 110, 0]).mark("price");
+                this.total = new svg.Text("TOTAL").position(this.component.width *0.1, this.component.height*0.935)
+                    .font("calibri", this.component.height*0.06, 1).color([255, 110, 0]).anchor("left");
 
-            this.printPrice = new svg.Text(this.totalPrice.toFixed(2) + " €")
-                .position(this.component.width*0.90, this.component.height*0.935).anchor("end")
-                .font("calibri", this.component.height*0.05, 1).color([255, 110, 0]).mark("price");
-            this.total = new svg.Text("TOTAL").position(this.component.width *0.1, this.component.height*0.935)
-                .font("calibri", this.component.height*0.06, 1).color([255, 110, 0]).anchor("left");
+                runtime.attr(this.total.component, "font-weight", "bold");
+                this.component.add(this.total);
+                this.component.add(this.printPrice);
+            };
 
-            runtime.attr(this.total.component, "font-weight", "bold");
-            this.component.add(this.total);
-            this.component.add(this.printPrice);
+            addToPrice();
+            removeOldPriceDisplay();
+            createAndDisplayNewPrice();
         }
 
         addProducts(thumbnail,quantity) {
-            if(quantity != 0){
-                let newProd = new ThumbnailBasket(thumbnail.image.src, thumbnail.name, thumbnail.price, thumbnail.complement, thumbnail.categorie);
-                let occur=0;
+            let manageQuantities=()=>{
+                let newProd = new ThumbnailBasket(thumbnail.image.src, thumbnail.name, thumbnail.price,
+                    thumbnail.complement, thumbnail.categorie);
+                this.occur=0;
                 for (let product of this.thumbnailsProducts) {
                     if (product.name == thumbnail.name) {
                         product.addQuantity(quantity);
                         let newText=product.quantity;
                         product.changeText(newText);
-                        occur=1;
+                        this.occur=1;
                     }
                 }
-                if (occur==0){
+                if (this.occur==0){
                     newProd.addQuantity(quantity);
                     this.listProducts.add(newProd.component);
                     this.thumbnailsProducts.push(newProd);
                     let newText=newProd.quantity;
                     newProd.changeText(newText);
                 }
-
+                return newProd;
+            };
+            let handleEvents=(newProd)=>{
                 newProd.component.onMouseDown((e)=>{
                     if(market.pages[2].obj==currentPage) this.dragBasket(newProd,e);
                 });
@@ -273,43 +306,51 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 svg.addEvent(newProd.component, "touchstart",(e)=>{
                     this.dragBasket(newProd,e);
                 });
-
-                this.calculatePrice(newProd.price*quantity);
-
-                if (this.thumbnailsProducts.length < 2 && occur==0) {
+            };
+            let replaceElements=(newProd)=>{
+                if (this.thumbnailsProducts.length < 2 && this.occur==0) {
                     newProd.placeElements();
                     newProd.move(0,this.originY);
-
                 }
                 else {
-                    if(occur==0){
+                    if(this.occur==0){
                         let ref = this.thumbnailsProducts[this.thumbnailsProducts.length-2];
                         newProd.placeElements();
                         newProd.move(0,ref.y+ref.height);
                     }
                 }
+            };
 
+            if(quantity != 0){
+                let newProd = manageQuantities();
+                handleEvents(newProd);
+                this.calculatePrice(newProd.price*quantity);
+                replaceElements(newProd);
                 this.basketCookie();
             }
         }
 
         deleteProducts(vignette,numberProduct){
-            vignette.minusQuantity(numberProduct);
-            let newText = vignette.quantity;
-            vignette.changeText(newText);
-
-            if(vignette.quantity ==0){
+            let manageQuantity=()=>{
+                vignette.minusQuantity(numberProduct);
+                let newText = vignette.quantity;
+                vignette.changeText(newText);
+            };
+            let managePosition=()=>{
                 this.listProducts.remove(vignette.component);
                 this.thumbnailsProducts.splice(this.thumbnailsProducts.indexOf(vignette), 1);
-                this.calculatePrice(-((vignette.price)*numberProduct));
                 for (let product of this.thumbnailsProducts) {
                     product.placeElements();
                     product.move(0,this.thumbnailsProducts.indexOf(product)*(product.height)+this.component.height*0.1);
                 }
                 if(this.thumbnailsProducts.length<=7) this.listProducts.smoothy(10,10).moveTo(0,0);
-            }else {
-                this.calculatePrice(-((vignette.price)*numberProduct));
+            };
+
+            manageQuantity();
+            if(vignette.quantity ==0){
+                managePosition();
             }
+            this.calculatePrice(-((vignette.price)*numberProduct));
             this.basketCookie();
         }
 
@@ -337,12 +378,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.stringPanier+=product.name+":"+product.quantity+",";
             }
             cookie.createCookie("basket",this.stringPanier.substring(0,this.stringPanier.length-1), 1);
-
-
         };
 
         dragBasket(current,e) {
-            if(e.type=="mousedown"){
+            let manageDndForMouse = ()=>{
                 let mouseInitial = {x:e.pageX,y:e.pageY};
                 let lookingForDir=true;
                 current.component.onMouseMove((e)=>{
@@ -446,8 +485,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                     lookingForDir=false;
                 });
-            }
-            else {
+            };
+            let manageDndForTouch = ()=>{
                 let touchInitial = {x:e.touches[0].clientX,y:e.touches[0].clientY};
                 //// gestion tactile du panier vers le rayon:
                 this.previousTouchY = e.touches[0].clientY;
@@ -520,6 +559,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                     this.direction=null;
                 });
+            };
+
+            if(e.type=="mousedown"){
+                manageDndForMouse();
+            }
+            else {
+                manageDndForTouch();
             }
         }
 
@@ -535,42 +581,45 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         constructor(width,height,x,y)
         {
             super(width,height,x,y);
-            this.component.add(new svg.Rect(width,height).position(width/2,height/2).color([0,58,112]));
-            this.logoComp=new svg.Translation().mark("logo");
-            let digi=new svg.Text("Digi").position(width*0.05,height*0.75).font("Tahoma",this.component.height*0.75,1)
-                .color(svg.LIGHT_BLUE);
-            this.logoComp.add(digi);
-            this.logoComp.add(new svg.Text("Market").position(width*0.09,height*0.75).font("Tahoma",this.component.height*0.75,1)
-                .color(svg.WHITE));
-            runtime.attr(digi.component, "font-style", "italic");
-            this.logo=new svg.Image("img/picto.png").position(width*0.025,height*0.5).dimension(height,height);
-            this.logoComp.add(this.logo);
-            this.micro = new svg.Image("img/microphone-deactivated.png").mark('micro');
-            this.component.add(this.micro);
-            this.component.add(this.logoComp);
-            this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
-            this.height = height;
-            this.width=width;
-            let micro=this.micro;
 
+            let init=()=>{
+                this.component.add(new svg.Rect(width,height).position(width/2,height/2).color([0,58,112]));
+                this.logoComp=new svg.Translation().mark("logo");
+                let digi=new svg.Text("Digi").position(width*0.05,height*0.75).font("Tahoma",this.component.height*0.75,1)
+                    .color(svg.LIGHT_BLUE);
+                this.logoComp.add(digi);
+                this.logoComp.add(new svg.Text("Market").position(width*0.09,height*0.75).font("Tahoma",this.component.height*0.75,1)
+                    .color(svg.WHITE));
+                runtime.attr(digi.component, "font-style", "italic");
+                this.logo=new svg.Image("img/picto.png").position(width*0.025,height*0.5).dimension(height,height);
+                this.logoComp.add(this.logo);
+                this.micro = new svg.Image("img/microphone-deactivated.png").mark('micro');
+                this.component.add(this.micro);
+                this.component.add(this.logoComp);
+                this.micro.position(width*0.95,height/2).dimension(height*0.9,height*0.9);
+                this.height = height;
+                this.width=width;
+            };
+            let manageBackToHome=()=>{
+                this.logoComp.onClick(()=>{
+                    if(market.map!=null){
+                        currentMapSearch= market.map.input.value;
+                        mapPage.remove(market.map.component);
+                        market.map=null;
+                    }
+                    currentPage=mainPage;
+                    currentIndex=2;
+                    market.pages[2].obj.smoothy(10, 40).onChannel(2).moveTo(0, 0);
+                    market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(0, 0);
+                    market.pages[0].obj.smoothy(10, 40).onChannel(0).moveTo(0, 0);
+                    market.calendar.calendarOn = false;
+                    market.calendar.mapOn = false;
+                });
+            };
 
-            this.logoComp.onClick(()=>{
-                if(market.map!=null){
-                    currentMapSearch= market.map.input.value;
-                    mapPage.remove(market.map.component);
-                    market.map=null;
-                }
-                currentPage=mainPage;
-                currentIndex=2;
-                market.pages[2].obj.smoothy(10, 40).onChannel(2).moveTo(0, 0);
-                market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(0, 0);
-                market.pages[0].obj.smoothy(10, 40).onChannel(0).moveTo(0, 0);
-                market.calendar.calendarOn = false;
-                market.calendar.mapOn = false;
-            });
-
-            listener.listen(micro,market);
-
+            init();
+            manageBackToHome();
+            listener.listen(this.micro,market);
         }
     }
 
@@ -2591,8 +2640,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         });
         market.add(market.pages[i].obj);
     }
-
-
 
     market.add(mainPage);
     mainPage.add(zoneCategories).add(zoneBasket).add(zonePayment);
