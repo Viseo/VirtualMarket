@@ -66,7 +66,6 @@ describe("Test",function (){
         assert.ok(payment_zone);
         let card = retrieve(market.component,"[payment].[shadowCard].[card]");
         assert.ok(card);
-        console.log(card)
         runtime.event(card,"mousedown",{pageX:5,pageY:5});
         runtime.advanceAll();
         runtime.event(card,"mousemove",{pageX:market.width*0.80+10000,pageY:market.height*0.90});
