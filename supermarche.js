@@ -30,7 +30,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 for (let i = 0; i < this.tabCategories.length; i++) {
                     let current = this.tabCategories[i];
                     current.placeElements();
-                    current.move(width * 0.01 + width * 0.108 * i, height * 0.05);
+                    current.move(market.width * 0.01 + market.width * 0.085 * i, height * 0.05);
                     this.listThumbnail.add(current.component);
                 }
                 this.component.add(this.listThumbnail);
@@ -588,7 +588,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 let digi=new svg.Text("Digi").position(width*0.05,height*0.75).font("Tahoma",this.component.height*0.75,1)
                     .color(svg.LIGHT_BLUE);
                 this.logoComp.add(digi);
-                this.logoComp.add(new svg.Text("Market").position(width*0.09,height*0.75).font("Tahoma",this.component.height*0.75,1)
+                this.logoComp.add(new svg.Text("Market").position(width*0.10,height*0.75).font("Tahoma",this.component.height*0.75,1)
                     .color(svg.WHITE));
                 runtime.attr(digi.component, "font-style", "italic");
                 this.logo=new svg.Image("img/picto.png").position(width*0.025,height*0.5).dimension(height,height);
@@ -691,7 +691,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         showCode(){
-            this.zoneCode = new SecurityCode(mainPageWidth,market.height-header.height,0,header.height);
+            this.zoneCode = new SecurityCode(pageWidth,market.height-header.height,0,header.height);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -1101,7 +1101,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.choice=null;
             this.address="";
             this.current=true;
-            this.hideBehind = new svg.Rect(width*1.1,height*0.5).position(width/2-width/24,0).color([230,230,230]);
+            this.hideBehind = new svg.Rect(width,height*0.5).position(width/2-width/24,0).color([230,230,230]);
 
             this.dayCases = [];
             this.component.add(this.background).add(this.header);
@@ -1112,7 +1112,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.header.add(this.hideBehind);
             this.background.add(this.calendarFirstColumn);
             this.background.add(this.calendarContent);
-
 
             this.x = x;
             this.y = y;
@@ -1191,7 +1190,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         setEventsForScroll() {
-
             this.background.onMouseDown((e)=>{
                 beginMove(e.pageY, "mousemove", "mouseup");
             });
@@ -1217,7 +1215,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                 });
 
-                svg.addEvent(this.background, eventTypeUp, ()=>{
+
+                svg.addGlobalEvent(eventTypeUp, ()=>{
                     this.onMove = false;
                     toEndMove();
                 });
@@ -1254,23 +1253,28 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         placeElements(){
-            this.caseWidth = this.calendarWidth*0.87/11;
+            this.caseWidth = this.calendarWidth/13;
             this.caseHeight = this.calendarHeight/10;
-            this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.25,this.caseHeight*0.25);
-            this.title.dimension(this.calendarWidth*0.995,this.calendarHeight*0.1).color([0, 190, 255],1,svg.LIGHT_GREY).opacity(1);
+            this.picto.position(this.pictoPosX,this.pictoPosY).dimension(this.caseWidth*0.30,this.caseHeight*0.30);
+            this.title.dimension(this.calendarWidth*0.96,this.calendarHeight*0.1).color([0, 190, 255],1,svg.LIGHT_GREY).opacity(1)
+                .position(-this.calendarWidth*0.02,0);
             this.titleText.font("calibri",this.width/45,1).position(0,this.title.height*0.25).color(svg.BLACK);
 
-            this.chevronWest.position(-this.calendarWidth/2.1,0).mark("chevronWest");
-            this.chevronEast.position(this.calendarWidth/2.1,0).mark("chevronEast");
-            this.ellipseChevronWest.position(-this.calendarWidth/2.1,0).mark("ellipseChevronWest");
-            this.ellipseChevronEast.position(this.calendarWidth/2.1,0).mark("ellipseChevronEast");
+            this.chevronWest.position(-this.calendarWidth/2.4,0).mark("chevronWest");
+            this.chevronEast.position(this.calendarWidth/2.4,0).mark("chevronEast");
+            this.ellipseChevronWest.position(-this.calendarWidth/2.4,0).mark("ellipseChevronWest");
+            this.ellipseChevronEast.position(this.calendarWidth/2.4,0).mark("ellipseChevronEast");
             this.monthChoice.add(this.title).add(this.titleText).add(this.zoneChevronEast).add(this.zoneChevronWest);
-            this.monthChoice.move(this.width/2-this.caseWidth/2, this.height*0.05+this.title.height/2);
+            this.monthChoice.move(this.width/2-this.caseWidth/2+this.calendarWidth*0.01, this.height*0.05+this.title.height/2);
 
-            this.header.add(new svg.Text("Disponible").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(this.width*0.03,this.height*0.05+this.title.height*1.70));
-            this.header.add(new svg.Text("Indisponible ").font("calibri",this.caseWidth/5,1).color(svg.DARK_BLUE).position(this.width*0.037,this.height*0.05+this.title.height*2.2));
-            this.header.add(new Switch('green', this.caseWidth/6, this.caseHeight/4).component.move(-this.width*0.02,this.height*0.05+this.title.height*1.6));
-            this.header.add(new Switch('red', this.caseWidth/6, this.caseHeight/4).component.move(-this.width*0.02,this.height*0.05+this.title.height*2.1));
+            this.header.add(new svg.Text("Disponible").font("calibri",this.caseWidth/5,1).anchor("left")
+                .color(svg.DARK_BLUE).position(0,this.height*0.05+this.title.height*1.70));
+            this.header.add(new svg.Text("Indisponible ").font("calibri",this.caseWidth/5,1).anchor("left")
+                .color(svg.DARK_BLUE).position(0,this.height*0.05+this.title.height*2.2));
+            this.header.add(new Switch('green', this.caseWidth/6, this.caseHeight/4).component
+                .move(-this.calendarWidth*0.01,this.height*0.05+this.title.height*1.6));
+            this.header.add(new Switch('red', this.caseWidth/6, this.caseHeight/4).component
+                .move(-this.calendarWidth*0.01,this.height*0.05+this.title.height*2.1));
             this.printCurrentMonthContent();
         }
 
@@ -1296,7 +1300,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 let tabDays = [];
                 for(let j=0;j<this.numberDaysThisMonth-timer.getDayInMonth()+1;j++){
                     this.dayCases[j] = new svg.Translation();
-                    this.dayCases[j].add(new svg.Rect(this.caseWidth*1.5,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
+                    this.dayCases[j].add(new svg.Rect(this.caseWidth*1.2,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
                     let text = "";
                     if (j ==0){
                         text = "Aujourd'hui";
@@ -1323,7 +1327,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 let tabHours = [];
                 for (var i=0;i<12;i++){
                     let hourCase = new svg.Translation();
-                    // hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
                     if(i!=0) {
                         hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
                         let t=new svg.Text((i + 8) + "H").font("calibri", this.width / 55, 1).color(svg.BLACK).position(0,this.caseHeight*0.2);
@@ -1530,13 +1533,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                 for(let j=0;j<=this.numberDaysThisMonth-1;j++){
                     this.dayCases[j] = new svg.Translation();
-                    this.dayCases[j].add(new svg.Rect(this.caseWidth*1.5,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
+                    this.dayCases[j].add(new svg.Rect(this.caseWidth*1.2,this.caseHeight).color(svg.ALMOST_WHITE,1,svg.WHITE));
                     let text = this.getWeekDay()[(j+this.startDay)%7]+" "+(j+1);
                     this.dayCases[j].add(new svg.Text(text).font("calibri", this.calendarWidth /70, 1).color(svg.DARK_BLUE));
                     tabDays.push(text);
                     this.calendarFirstColumn.add(this.dayCases[j]);
                     this.dayCases[j].move(0,j*this.caseHeight);
-                    this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight;
+                    this.calendarPositionY = this.height*0.05+this.title.height*1.5+this.caseHeight*1.5;
                     this.calendarFirstColumn.move(this.caseWidth/4,this.calendarPositionY);
                 }
                 this.background.add(this.calendarFirstColumn);
@@ -1562,7 +1565,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     else hourCase.add(new svg.Text("").font("calibri", this.width / 55, 1).color(svg.BLACK));
                     hourCase.move(i*this.caseWidth,0);
                     this.calendarFirstRow.add(hourCase);
-                    this.calendarFirstRow.move(this.caseWidth/1.65-3,this.height*0.05+this.title.height*1.75);
+                    this.calendarFirstRow.move(this.caseWidth/1.65,this.height*0.05+this.title.height*1.75);
                 }
                 this.header.add(this.calendarFirstRow);
                 return tabHours;
@@ -1952,7 +1955,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.image.position(this.width*0.8,this.height*0.4).dimension(this.height*0.90,this.height*0.90).mark(this.name);
             this.printPrice.position(this.width*0.05,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
 
-
+            if(this.title.component.textLength.baseVal.value>this.image.x-this.image.width*2){
+                this.title.message(this.name.substring(0,this.name.length/2)+"...");
+            }
             this.title.position(this.width*0.30,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
 
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).mark("background "+this.name);
@@ -2040,6 +2045,26 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             removeOldMarkers();
             let tab = initMarkers();
             placeAllMarkers(tab);
+        }
+    }
+
+    class Tab{
+        constructor(x,y,icon){
+            this.y=y;
+            this.x=x;
+            this.height=(market.width-pageWidth)*2;
+            this.component=new svg.Translation();
+            this.circle=new svg.Circle(this.height*0.68);
+            this.circleShadow=new svg.Translation().add(this.circle).shadow("tabCalendar",3,5,5);
+            this.hideTab = new svg.Rect(this.height,this.height*2);
+            this.icon = new svg.Image(icon);
+
+            this.circle.position(this.height/2,this.height/2).color(svg.WHITE,4,svg.WHITE).opacity(0.8);
+            this.icon.dimension(this.height*0.2,this.height*0.2).position(this.height*0.95,this.height/2);
+            this.hideTab.position(this.height*0.17,this.height*0.5).color([230,230,230]);
+
+            this.component.add(this.circleShadow).add(this.hideTab).add(this.icon);
+            this.component.move(this.x,this.y);
         }
     }
 
@@ -2478,18 +2503,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     /////Déclaration Interface////
     let mainPage=new svg.Translation().mark("mainPage");
     let pageWidth=market.width*0.96;
-    let mainPageWidth=market.width*0.98;
 
     let glassTimer = new svg.Translation();
     let header = new Header(market.width,market.height*0.04);
     let zoneHeader = new svg.Translation().add(header.component).mark("header");
     let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
 
-    let categories = new ListCategorie(market.width*0.76,market.height*0.22,0,market.height*0.04,tabDefaultCategories);
+    let categories = new ListCategorie(pageWidth*0.75,market.height*0.22,0,market.height*0.04,tabDefaultCategories);
     let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    market.basket = new Basket(market.width*0.221,market.height*0.75,market.width*0.76,header.height);
+    market.basket = new Basket(pageWidth*0.25,market.height*0.75,categories.component.width,header.height);
     let zoneBasket = new svg.Translation().add(market.basket.component);
-    market.payment = new Payment(market.width*0.221,market.height*0.21,market.width*0.76,market.height*0.75+header.height);
+    market.payment = new Payment(pageWidth*0.25,market.height*0.21,categories.component.width,market.height*0.75+header.height);
     let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
     let glassCanvas= new svg.Translation().mark("glassCanvas");
     let glassDnD = new svg.Translation().mark("Glass");
@@ -2498,44 +2522,24 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     market.calendar = new Calendar(pageWidth,market.height,0,0);
     market.calendar.placeElements();
     market.calendar.component.move(market.width*0.06,0);
-    //Tab:
-    let tabX = market.width*0.98;
-    //CALENDAR
-    let calendarOnglY =market.height*0.54;
-    let tabCalendarTrans=new svg.Translation();
-    let tabCalendar=new svg.Circle(market.width/13);
-    tabCalendarTrans.add(tabCalendar).shadow("tabCalendar",3,5,5);
-    tabCalendar.position(tabX-market.width/18,calendarOnglY+market.height*0.10).color(svg.WHITE,4,svg.WHITE).opacity(0.8);
-    let calendarIcon = new svg.Image("img/calendarIcon.png").dimension(market.width*0.018,market.width*0.018)
-        .position(tabX+market.width*0.0105,calendarOnglY+market.height*0.1);
+
+    let tabX=pageWidth*0.94;
+    //Tab CALENDAR
+    let tabCalendar = new Tab(tabX,(market.width-pageWidth)*5,"img/calendarIcon.png");
     let calendarPage = new svg.Translation()
         .add(new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).color([230,230,230]))
-        .add(tabCalendarTrans).add(market.calendar.component).add(calendarIcon);
-
+        .add(tabCalendar.component)
+        .add(market.calendar.component);
     //MAP
-    let mapOnglY = Math.round(market.height*0.30);
-    let tabMapTrans=new svg.Translation();
-    let tabMap=new svg.Circle(market.width/13);
-    tabMapTrans.add(tabMap).shadow("tabMap",3,5,5);
-    tabMap.position(tabX-market.width/18,mapOnglY+market.height*0.10).color(svg.WHITE,4,svg.WHITE).opacity(0.8);
-    let mapIcon = new svg.Image("img/mapIcon.png").dimension(market.width*0.018,market.width*0.018)
-        .position(tabX+market.width*0.0105,mapOnglY+market.height*0.1);
-
-    //MAINPAGE
-    let mainOnglY = Math.round(market.height*0.06);
-    let tabmainTrans=new svg.Translation();
-    let tabMain=new svg.Circle(market.width/13);
-    tabmainTrans.add(tabMain).shadow("tabMain",3,5,5);
-    tabMain.position(tabX-market.width/18,mainOnglY+market.height*0.10).color(svg.WHITE,4,svg.WHITE).opacity(0.8);
-    let mainIcon = new svg.Image("img/panier.png").dimension(market.width*0.018,market.width*0.018)
-        .position(tabX+market.width*0.0105,mainOnglY+market.height*0.1);
-    mainPage.add(tabmainTrans).add(mainIcon);
-
+    let tabMap=new Tab(tabX,(market.width-pageWidth)*3,"img/mapIcon.png");
     let mapPage = new svg.Translation().mark("map");
     let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
-        .position(market.width/2,market.height/2+header.height/2).color(svg.WHITE,1,svg.BLACK);
-    mapPage.add(tabMapTrans).add(background).add(mapIcon);
+        .position(market.width/2-(market.width-pageWidth)/2-2,market.height/2+header.height/2).color(svg.WHITE,1,svg.BLACK);
+    mapPage.add(tabMap.component).add(background);
     market.map = null;
+    //MAINPAGE
+    let tabMain = new Tab(tabX,(market.width-pageWidth),"img/panier.png");
+    mainPage.add(tabMain.component);
 
     function loadMap(){
         market.map = new Map(pageWidth,market.height-header.height*1.5,market.width*0.04,header.height*2);
@@ -2580,68 +2584,71 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
     function changeColorforTabs(){
         if (currentIndex==0){
-            tabCalendar.color([210,210,210]);
-            tabMap.color(svg.WHITE);
-            tabMain.color(svg.WHITE);
+            tabCalendar.circle.color([210,210,210]);
+            tabMap.circle.color(svg.WHITE);
+            tabMain.circle.color(svg.WHITE);
         }
         else if (currentIndex==1){
-            tabCalendar.color(svg.WHITE);
-            tabMap.color([210,210,210]);
-            tabMain.color(svg.WHITE);
+            tabCalendar.circle.color(svg.WHITE);
+            tabMap.circle.color([210,210,210]);
+            tabMain.circle.color(svg.WHITE);
 
         }
         else {
-            tabCalendar.color(svg.WHITE);
-            tabMap.color(svg.WHITE);
-            tabMain.color([210,210,210]);
+            tabCalendar.circle.color(svg.WHITE);
+            tabMap.circle.color(svg.WHITE);
+            tabMain.circle.color([210,210,210]);
         }
     }
 
-    for(var i =0;i<market.pages.length;i++){
-        let index = i;
-        market.pages[i].obj.onClick(()=>{
-            if(market.pages[index].active) {
-                if (index != currentIndex) {
-                    if (index != 1) {
-                        if(market.map!=null){
-                            currentMapSearch= market.map.input.value;
-                            mapPage.remove(market.map.component);
-                            market.map=null;
+    let setOnClickNavigationWithTabs=()=>{
+        for(var i =0;i<market.pages.length;i++){
+            let index = i;
+            market.pages[i].obj.onClick(()=>{
+                if(market.pages[index].active) {
+                    if (index != currentIndex) {
+                        if (index != 1) {
+                            if(market.map!=null){
+                                currentMapSearch= market.map.input.value;
+                                mapPage.remove(market.map.component);
+                                market.map=null;
+                            }
                         }
-                    }
-                    else{
-                        loadMap();
-                        setTimeout(()=>{
-                            market.map.updateMarkersSide();
-                        },3500);
-                    }
-                    if (currentIndex > index) {
-                        for (let j = currentIndex; j > index; j--) {
-                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth)-market.width*0.0215, 0);
+                        else{
+                            loadMap();
+                            setTimeout(()=>{
+                                if(market.map!=null)market.map.updateMarkersSide();
+                            },3500);
                         }
-                    }
-                    else {
-                        for (let j = currentIndex; j <= index; j++) {
-                            market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                        if (currentIndex > index) {
+                            for (let j = currentIndex; j > index; j--) {
+                                market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth), 0);
+                            }
                         }
-                    }
-                    currentPage = market.pages[index].obj;
-                    currentIndex = index;
-                    changeColorforTabs();
+                        else {
+                            for (let j = currentIndex; j <= index; j++) {
+                                market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                            }
+                        }
+                        currentPage = market.pages[index].obj;
+                        currentIndex = index;
+                        changeColorforTabs();
 
-                    if (currentIndex == 0) {
-                        market.calendar.calendarOn = true;
-                    }
-                    else if (currentIndex==1){
-                        market.calendar.calendarOn = false;
-                    }
+                        if (currentIndex == 0) {
+                            market.calendar.calendarOn = true;
+                        }
+                        else if (currentIndex==1){
+                            market.calendar.calendarOn = false;
+                        }
 
-                    cookie.createCookie("page",index,1);
+                        cookie.createCookie("page",index,1);
+                    }
                 }
-            }
-        });
-        market.add(market.pages[i].obj);
-    }
+            });
+            market.add(market.pages[i].obj);
+        }
+    };
+    setOnClickNavigationWithTabs();
 
     market.add(mainPage);
     mainPage.add(zoneCategories).add(zoneBasket).add(zonePayment);
@@ -2673,9 +2680,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
     };
 
-    if(cookieBasket) {
+    if(cookieBasket){
         let stringBasket = cookieBasket.split(",");
-        for (let i in stringBasket) {
+        for (let i in stringBasket){
             let tabProd = stringBasket[i].split(":");
             let prod = searchForCookieBasket(tabProd[0]);
             let thumbnail = new ThumbnailRayon(prod.produit.image,prod.produit.nom,prod.produit.prix,prod.produit.complement,prod.categorie);
@@ -2690,12 +2697,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         if(index==1){
             loadMap();
             setTimeout(()=>{
-                market.map.updateMarkersSide();
+                if(market.map!=null)market.map.updateMarkersSide();
             },3500);
         }
         if (2 > index) {
             for (let j = 2; j > index; j--) {
-                market.pages[j].obj.move(Math.round(-pageWidth)-market.width*0.0215, 0);
+                market.pages[j].obj.move(Math.round(-pageWidth), 0);
             }
         }
         currentPage = market.pages[index].obj;
@@ -2713,15 +2720,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         cookie.createCookie("page",2,1);
     }
 
-    if(currentIndex==2){
-        market.textToSpeech("Bonjour, bienvenue dans votre supermarché!","fr");
-    }
-    else if(currentIndex==1){
-        market.textToSpeech("La dernière fois, vous etiez en train d'indiquer votre adresse!","fr");
-    }
-    else{
-        market.textToSpeech("La dernière fois, vous etiez en train de choisir un horaire de livraison!","fr");
-    }
+    let welcomeMessage=()=>{
+        if(currentIndex==2){
+            market.textToSpeech("Bonjour, bienvenue dans votre supermarché!","fr");
+        }
+        else if(currentIndex==1){
+            market.textToSpeech("La dernière fois, vous etiez en train d'indiquer votre adresse!","fr");
+        }
+        else{
+            market.textToSpeech("La dernière fois, vous etiez en train de choisir un horaire de livraison!","fr");
+        }
+    };
+    welcomeMessage();
+
 
 
     return market;
