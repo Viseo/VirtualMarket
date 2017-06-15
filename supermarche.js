@@ -407,6 +407,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                         && (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
                                         market.basket.deleteProducts(current, 1);
                                         market.changeRay(current.categorie);
+                                        console.log("deleteeeeeeeeee")
                                     }
                                     glassDnD.remove(this.dragged.component);
                                     this.direction=null;
@@ -535,6 +536,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
                             market.basket.deleteProducts(current, 1);
                             market.changeRay(current.categorie);
+                            console.log(current.categorie);
                         }
                         glassDnD.remove(this.dragged.component);
 
@@ -2671,7 +2673,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 if(name==database[i][j].nom){
                     return {
                         produit:database[i][j],
-                        categorie:database[i]
+                        categorie:""+i
                     };
                 }
             }
