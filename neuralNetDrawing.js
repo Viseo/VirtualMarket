@@ -428,7 +428,7 @@ exports.neural = function(runtime) {
                     }
                 }
             }
-            console.log(dessinpropre)
+            //console.log(dessinpropre);
 
             var bestChar = '?';
             var bestScore = 0;
