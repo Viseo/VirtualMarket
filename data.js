@@ -552,7 +552,7 @@ exports.data = function() {
                 "Masque": {
                     image: "img/produits/Soins/masque.jpg",
                     prix: 2,
-                    nom: "Masque Cheveux",
+                    nom: "Masque-Cheveux",
                     complement: "",
                 },
                 "Deodorant": {
@@ -570,7 +570,7 @@ exports.data = function() {
                 "ApresShampoing": {
                     image: "img/produits/Soins/apresShampoing.jpg",
                     prix: 2,
-                    nom: "Après shampoing",
+                    nom: "Après-Shampoing",
                     complement: "",
                 },
                 "CotonTige": {
