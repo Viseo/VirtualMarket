@@ -925,7 +925,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             market.payment.cardIn=false;
             market.payment.iteration=0;
             market.remove(market.payment.zoneCode.component);
-            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth - market.width*0.02),0);
+            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth),0);
             market.pages[1].active = true;
             market.pages[0].active = true;
             currentPage=market.map;
@@ -2569,7 +2569,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         currentMapSearch= market.map.input.value;
         mapPage.remove(market.map.component);
         market.map=null;
-        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth - market.width * 0.02), 0);
+        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth), 0);
         market.calendar.address=message;
         market.calendar.calendarOn=true;
         setTimeout(()=>{
