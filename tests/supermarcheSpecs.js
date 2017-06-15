@@ -64,14 +64,18 @@ describe("Test",function (){
 
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
-        let card = retrieve(market.component,"[payment].[card]");
+        let card = retrieve(market.component,"[payment].[shadowCard].[card]");
         assert.ok(card);
-        runtime.event(card,"mousedown",{pageX:market.width*0.80+5,pageY:market.height*0.90});
+        console.log(card)
+        runtime.event(card,"mousedown",{pageX:5,pageY:5});
         runtime.advanceAll();
-        runtime.event(card,"mousemove",{pageX:market.width*0.80+500,pageY:market.height*0.90});
+        runtime.event(card,"mousemove",{pageX:market.width*0.80+10000,pageY:market.height*0.90});
         runtime.advanceAll();
-        runtime.event(card,"mouseup",{ pageX:market.width*0.80+500,pageY:market.height*0.90});
+        runtime.event(card,"mouseout",{pageX:market.width*0.80+10000,pageY:market.height*0.90});
         runtime.advanceAll();
+        runtime.event(card,"mouseup",{ pageX:market.width*0.80+10000,pageY:market.height*0.90});
+        runtime.advanceAll();
+
 
         let code = retrieve(market.component,"[code]");
         assert.ok(code);
@@ -125,6 +129,7 @@ describe("Test",function (){
         runtime.advanceAll();
 
         runtime.event(logo,"click",{});
+
 
     });
 
@@ -343,7 +348,8 @@ describe("Test",function (){
         let canv = retrieve(market.component, "[glassCanvas]");
         assert(canv);
         let product = retrieve(market.component, "[ray Fruits].[listRay].[Product Banane]");
-        assert(product);
+        let product1 = retrieve(market.component, "[ray Fruits].[listRay].[Product Cerise]");
+        assert(product,product1);
         runtime.event(product,"mousedown",{type:"mousedown",pageX:0,pageY:0});
         runtime.advanceAll();
         let drawing = retrieve(market.component,"[glassCanvas].[draw Banane]");
@@ -358,36 +364,55 @@ describe("Test",function (){
         inspect(rayFruits,{tag:"g",transform:"translate(0 0)"});
 
         setTimeout(function (){
-            runtime.event(product,"mousedown",{type:"mousedown",pageX:0,pageY:0});
+            runtime.event(product1,"mousedown",{type:"mousedown",pageX:0,pageY:0});
             runtime.advanceAll();
-            let drawing2 = retrieve(market.component,"[glassCanvas].[draw Banane]");
-            assert(drawing2);
+            let drawing1 = retrieve(market.component,"[glassCanvas].[draw Cerise]");
+            assert(drawing1);
 
-            runtime.event(drawing2,"mousemove",{pageX:-1500,pageY:5});
+            runtime.event(drawing1,"mousemove",{pageX:-40,pageY:5});
             runtime.advanceAll();
-            runtime.event(drawing2,"mousemove",{pageX:-15000,pageY:5});
+            runtime.event(drawing1,"mousemove",{pageX:-400,pageY:5});
             runtime.advanceAll();
-            inspect(rayFruits,{tag:"g",transform:"translate(-16875 0)"});
-            runtime.event(drawing2,"mouseup",{pageX:15000,pageY:5});
+            inspect(rayFruits,{tag:"g",transform:"translate(-450 0)"});
+            runtime.event(drawing1,"mouseup",{pageX:-400,pageY:5});
             runtime.advanceAll();
-            inspect(rayFruits,{tag:"g",transform:"translate(-746.6999999999997 0)"});
+            inspect(rayFruits,{tag:"g",transform:"translate(-450 0)"});
 
-            let catHT = retrieve(market.component, "[categories].[HighTech]");
-            runtime.event(catHT, "click", {});
-            let rayHT = retrieve(market.component, "[ray HighTech].[listRay]");
-            let canv2 = retrieve(market.component, "[glassCanvas]");
-            assert(canv2);
-            let product2 = retrieve(market.component, "[ray HighTech].[listRay].[Product Clavier]");
-            runtime.event(product2,"mousedown",{type:"mousedown",pageX:0,pageY:0});
-            runtime.advanceAll();
-            let drawing3 = retrieve(market.component,"[glassCanvas].[draw Clavier]");
-            runtime.event(drawing3,"mousemove",{pageX:1500,pageY:5});
-            runtime.advanceAll();
-            runtime.event(drawing3,"mousemove",{pageX:15000,pageY:5});
-            runtime.advanceAll();
-            inspect(rayHT,{tag:"g",transform:"translate(0 0)"});
+            setTimeout(function(){
+                runtime.event(product,"mousedown",{type:"mousedown",pageX:0,pageY:0});
+                runtime.advanceAll();
+                let drawing2 = retrieve(market.component,"[glassCanvas].[draw Banane]");
+                assert(drawing2);
 
-            done();
+                runtime.event(drawing2,"mousemove",{pageX:-1500,pageY:5});
+                runtime.advanceAll();
+                runtime.event(drawing2,"mousemove",{pageX:-15000,pageY:5});
+                runtime.advanceAll();
+                inspect(rayFruits,{tag:"g",transform:"translate(-17325 0)"});
+                runtime.event(drawing2,"mouseup",{pageX:15000,pageY:5});
+                runtime.advanceAll();
+                inspect(rayFruits,{tag:"g",transform:"translate(-746.6999999999997 0)"});
+
+                let catHT = retrieve(market.component, "[categories].[HighTech]");
+                runtime.event(catHT, "click", {});
+                let rayHT = retrieve(market.component, "[ray HighTech].[listRay]");
+                let canv2 = retrieve(market.component, "[glassCanvas]");
+                assert(canv2);
+                let product2 = retrieve(market.component, "[ray HighTech].[listRay].[Product Clavier]");
+                runtime.event(product2,"mousedown",{type:"mousedown",pageX:0,pageY:0});
+                runtime.advanceAll();
+                let drawing3 = retrieve(market.component,"[glassCanvas].[draw Clavier]");
+                runtime.event(drawing3,"mousemove",{pageX:-1500,pageY:5});
+                runtime.advanceAll();
+                runtime.event(drawing3,"mousemove",{pageX:-15000,pageY:5});
+                runtime.advanceAll();
+                inspect(rayHT,{tag:"g",transform:"translate(-16875 0)"});
+                runtime.event(drawing3,"mouseup",{pageX:-15000,pageY:5});
+                runtime.advanceAll();
+                setTimeout(function () {
+                    done();
+                },200)
+            },2000)
         },2000);
     });
 
