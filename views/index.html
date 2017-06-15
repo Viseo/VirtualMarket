@@ -29,6 +29,7 @@
     <script src="window-impl.js"></script>
 
     <script>
+        screen.orientation.lock('landscape');
         document.documentElement.style.overflow = 'hidden';
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;

@@ -629,8 +629,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         constructor(width,height,x,y){
             super(width,height,x,y);
             this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE);
-            this.shadowCard = new svg.Translation().shadow('shadowcard',5,0,5).mark('shadowCard');
-            this.shadowTpe = new svg.Translation().shadow('tpe',5,0,5).mark('TPE');
+            this.shadowCard = new svg.Translation().shadow('shadowcard',3,3,3).mark('shadowCard');
+            this.shadowTpe = new svg.Translation().shadow('tpe',3,3,3).mark('TPE');
             this.card = new svg.Image("img/carte.png").dimension(width*0.60,height*0.75).position(width*0.1,height/2).mark("card");
             this.tpeBack = new svg.Image("img/tpeFond.png").dimension(width,height*0.9).position(width*0.99,height/2);
             this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
@@ -1114,13 +1114,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
             this.dayCases = [];
             this.component.add(this.background).add(this.header);
-            this.header.add(this.title);
-            this.header.add(this.titleText);
-            this.header.add(this.calendarFirstRow);
-            this.header.add(this.monthChoice);
-            this.header.add(this.hideBehind);
-            this.background.add(this.calendarFirstColumn);
-            this.background.add(this.calendarContent);
+            this.header.add(this.title).add(this.titleText).add(this.calendarFirstRow).add(this.monthChoice).add(this.hideBehind);
+            this.background.add(this.calendarFirstColumn).add(this.calendarContent);
 
 
             this.x = x;
@@ -1695,9 +1690,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.name = title;
             this.title = new svg.Text(title);
             this.background = new svg.Rect().color(svg.WHITE);
-            this.component.add(this.background);
-            this.component.add(this.image);
-            this.component.add(this.title);
+            this.component.add(this.background).add(this.image).add(this.title);
 
             this.x = 0;
             this.y = 0;
@@ -1729,9 +1722,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.width = market.width*0.08;
             this.height = market.height*0.2;
             this.background= new svg.Rect(this.width,this.height).color(svg.WHITE);
-            this.component.add(this.background);
-            this.component.add(this.image);
-            this.component.add(this.title);
+            this.component.add(this.background).add(this.image).add(this.title);
 
             this.responsivName = this.name.split(" ");
             if(this.responsivName.length>1){
@@ -1861,7 +1852,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             + " " + getGrammaticalTransition(element) + element.name + " au panier");
                         market.basket.addProducts(element, parseInt(nb));
                     } else{}
-                } else market.textToSpeech("point d'interrogation");
+                } else market.textToSpeech("Je n'ai pas compris");
             }
             categories.currentRayOnDrawing=null;
         }
