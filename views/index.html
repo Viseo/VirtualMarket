@@ -31,7 +31,10 @@
     <script>
 //        Screen.lockOrientation('landscape');
 //        window.screen.orientation.lock('landscape');
-        console.log("Orientation type is " + screen.orientation.type);
+        if(screen.orientation.type=='portrait-primary'){
+            screen.orientation.lock('landscape');
+        }
+        console.log(screen.orientation);
         console.log("Orientation angle is " + screen.orientation.angle);
         document.documentElement.style.overflow = 'hidden';
         let targetRuntime = require("lib/targetruntime").targetRuntime;
@@ -57,27 +60,36 @@
     </script>
 
     <style>
-        @media only screen and (orientation:portrait){
-            #content {
-                /*height: 100%;*/
-                width: 100vh;
-                height:100vw;
-                -webkit-transform: rotate(90deg);
-                -moz-transform: rotate(90deg);
-                -o-transform: rotate(90deg);
-                -ms-transform: rotate(90deg);
-                transform: rotate(90deg);
-            }
-        }
-        @media only screen and (orientation:landscape){
-            #content {
-                -webkit-transform: rotate(0deg);
-                -moz-transform: rotate(0deg);
-                -o-transform: rotate(0deg);
-                -ms-transform: rotate(0deg);
-                transform: rotate(0deg);
-            }
-        }
+        /*@media only screen and (orientation:portrait){*/
+            /*#content {*/
+                /*!*height: 100%;*!*/
+                /*width: 100vh;*/
+                /*height:100vw;*/
+                /*-webkit-transform: rotate(90deg);*/
+                /*-moz-transform: rotate(90deg);*/
+                /*-o-transform: rotate(90deg);*/
+                /*-ms-transform: rotate(90deg);*/
+                /*transform: rotate(90deg);*/
+            /*}*/
+        /*}*/
+        /*@media only screen and (orientation:landscape){*/
+            /*#content {*/
+                /*-webkit-transform: rotate(0deg);*/
+                /*-moz-transform: rotate(0deg);*/
+                /*-o-transform: rotate(0deg);*/
+                /*-ms-transform: rotate(0deg);*/
+                /*transform: rotate(0deg);*/
+            /*}*/
+        /*}*/
+        /*@media only screen and (orientation: portrait){*/
+            /*#content{*/
+                /*transform: rotate(90deg);*/
+            /*}*/
+
+        /*}*/
+        /*@viewport {*/
+            /*orientation: landscape;*/
+        /*}*/
         #divMap{
             width: 125%;
             height: 125%;
