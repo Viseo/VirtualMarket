@@ -187,17 +187,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
         gesture(type, dx){
             let handleMovement = (dx)=>{
-                if(categories.ray.listWidth>market.width*0.76){
-                    categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
-                }
+                categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
             };
             let handleEndMovement = ()=>{
-                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>0 && categories.ray.listWidth>market.width*0.76){
+                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>=0 ){
                     categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
-                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width && categories.ray.listWidth>market.width*0.76){
-                    categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
-                }
+                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width){
+                    if(categories.ray.listWidth>market.width*0.76){
+                        categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
+                    }else{
+                        categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                    }
+                }else{}
             };
 
             if(type=="move"){
@@ -405,6 +407,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                         && (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
                                         market.basket.deleteProducts(current, 1);
                                         market.changeRay(current.categorie);
+                                        console.log("deleteeeeeeeeee")
                                     }
                                     glassDnD.remove(this.dragged.component);
                                     this.direction=null;
@@ -533,6 +536,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
                             market.basket.deleteProducts(current, 1);
                             market.changeRay(current.categorie);
+                            console.log(current.categorie);
                         }
                         glassDnD.remove(this.dragged.component);
 
@@ -627,7 +631,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         constructor(width,height,x,y){
             super(width,height,x,y);
             this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE);
-            this.card = new svg.Image("img/credit-card.png").dimension(width*0.60,height*0.65).position(width*0.1,height/2).mark("card");
+            this.shadowCard = new svg.Translation().shadow('shadowcard',3,3,3).mark('shadowCard');
+            this.shadowTpe = new svg.Translation().shadow('tpe',3,3,3).mark('TPE');
+            this.card = new svg.Image("img/carte.png").dimension(width*0.60,height*0.75).position(width*0.1,height/2).mark("card");
             this.tpeBack = new svg.Image("img/tpeFond.png").dimension(width,height*0.9).position(width*0.99,height/2);
             this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
 
@@ -636,10 +642,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.height = height;
             this.cardIn = false;
 
+            this.shadowCard.add(this.tpeBack);
+            this.shadowCard.add(this.card);
+            this.shadowTpe.add(this.tpe);
             this.component.add(this.background);
-            this.component.add(this.tpeBack);
-            this.component.add(this.card);
-            this.component.add(this.tpe);
+            this.component.add(this.shadowCard);
+            this.component.add(this.shadowTpe);
+
             this.zoneCode = new SecurityCode(pageWidth,market.height-market.height/19,0,market.height/19);
 
             svg.addEvent(this.card,"touchstart",()=>{
@@ -655,13 +664,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 });
             });
 
-            svg.addEvent(this.card,"mousedown",()=>{
+            this.card.onMouseDown(()=>{
                 let draw = true;
                 svg.addEvent(this.card,"mousemove",(e)=>{
                     if(draw)this.card.position(e.pageX-this.component.x,this.card.y);
                 });
 
-                svg.addEvent(this.card,"mouseup",()=>{
+                this.card.onMouseUp(()=>{
                     if(draw) {
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.80)
                             this.card.position(width * 0.1, this.card.y);
@@ -674,7 +683,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                 });
 
-                svg.addEvent(this.card,"mouseout",()=>{
+                this.card.onMouseOut(()=>{
                     if(draw) {
                         if (this.card.x + this.card.width / 2 < this.component.width * 0.6)
                             this.card.position(width * 0.1, this.card.y);
@@ -1018,6 +1027,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     class Round{
         constructor(x,y,width,height,place,left,TPH){
             this.component = new svg.Translation();
+            this.barShadow = new svg.Translation();
             this.titleText = new svg.Text();
             this.roundContent = new svg.Translation();
             this.deliveryRect = new svg.Rect();
@@ -1029,7 +1039,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
             this.component.add(this.roundContent);
             this.roundContent.add(this.titleText);
-            this.roundContent.add(this.deliveryRect);
+            this.roundContent.add(this.barShadow);
+            this.barShadow.add(this.deliveryRect).shadow('round',3,3,3);
 
             this.x = x;
             this.y = y;
@@ -1049,7 +1060,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.deliveryRect.dimension(this.width,this.height).corners(10,10);
             this.deliveryRect.color(svg.WHITE,1,svg.GREEN);
             this.jauge.position(-this.width/2+this.x+(this.width/(2*this.place)),this.y).color(svg.GREEN,2,svg.GREEN).corners(10,10);
-            this.roundContent.add(this.jauge);
+            this.barShadow.add(this.jauge);
         }
 
         changeColor(bool){
@@ -1105,13 +1116,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
             this.dayCases = [];
             this.component.add(this.background).add(this.header);
-            this.header.add(this.title);
-            this.header.add(this.titleText);
-            this.header.add(this.calendarFirstRow);
-            this.header.add(this.monthChoice);
-            this.header.add(this.hideBehind);
-            this.background.add(this.calendarFirstColumn);
-            this.background.add(this.calendarContent);
+            this.header.add(this.title).add(this.titleText).add(this.calendarFirstRow).add(this.monthChoice).add(this.hideBehind);
+            this.background.add(this.calendarFirstColumn).add(this.calendarContent);
 
             this.x = x;
             this.y = y;
@@ -1329,9 +1335,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     let hourCase = new svg.Translation();
                     if(i!=0) {
                         hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
-                        let t=new svg.Text((i + 8) + "H").font("calibri", this.width / 55, 1).color(svg.BLACK).position(0,this.caseHeight*0.2);
+                        let t={};
+                        if(i+8!=9){
+                            t=new svg.Text((i + 8) + "H").font("calibri", this.width / 55, 1).color(svg.DARK_BLUE).position(-this.caseWidth/2,this.caseHeight*0.2);
+                            hourCase.add(t);
+                        }
 
-                        hourCase.add(t);
+
                         if(i==4){
                             hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
                         }
@@ -1552,9 +1562,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     let hourCase = new svg.Translation();
                     if(i!=0){
                         hourCase.add(new svg.Rect(this.caseWidth,this.caseHeight).color(svg.LIGHT_GREY,1,svg.LIGHT_GREY));
-
-                        let t=new svg.Text((i + 8) + "H").font("calibri", this.width / 55, 1).color(svg.DARK_BLUE).position(0,this.caseHeight*0.2);
-                        hourCase.add(t);
+                        let t={};
+                        if(i+8!=9){
+                            t=new svg.Text((i + 8) + "H").font("calibri", this.width / 55, 1).color(svg.DARK_BLUE).position(-this.caseWidth/2,this.caseHeight*0.2);
+                            hourCase.add(t);
+                        }
                         if(i==4){
                             hourCase.add(new Switch('midday',this.caseWidth,this.caseHeight).component);
                         }
@@ -1683,9 +1695,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.name = title;
             this.title = new svg.Text(title);
             this.background = new svg.Rect().color(svg.WHITE);
-            this.component.add(this.background);
-            this.component.add(this.image);
-            this.component.add(this.title);
+            this.component.add(this.background).add(this.image).add(this.title);
 
             this.x = 0;
             this.y = 0;
@@ -1717,9 +1727,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.width = market.width*0.08;
             this.height = market.height*0.2;
             this.background= new svg.Rect(this.width,this.height).color(svg.WHITE);
-            this.component.add(this.background);
-            this.component.add(this.image);
-            this.component.add(this.title);
+            this.component.add(this.background).add(this.image).add(this.title);
 
             this.responsivName = this.name.split(" ");
             if(this.responsivName.length>1){
@@ -1848,9 +1856,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         market.textToSpeech("Ok, j'ajoute " + nb + element.complement.replace("/kg", "kilogramme")
                             + " " + getGrammaticalTransition(element) + element.name + " au panier");
                         market.basket.addProducts(element, parseInt(nb));
-                    } else
-                        market.textToSpeech("Je ne peux pas ajouter 0 " + element.name);
-                } else market.textToSpeech("point d'interrogation");
+                    } else{}
+                } else market.textToSpeech("Je n'ai pas compris");
             }
             categories.currentRayOnDrawing=null;
         }
@@ -2673,7 +2680,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 if(name==database[i][j].nom){
                     return {
                         produit:database[i][j],
-                        categorie:database[i]
+                        categorie:""+i
                     };
                 }
             }
