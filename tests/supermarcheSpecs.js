@@ -1497,8 +1497,8 @@ describe("Test",function (){
 
     it("ensures that you can change the page",function(){
         let mainPage = retrieve(market.component,"[mainPage]");
-        let map = retrieve(market.component,"[map]");
-        let calendar = retrieve(market.component,"[calendar]");
+        let map = retrieve(market.component,"[mapPage]");
+        let calendar = retrieve(market.component,"[calendarPage]");
         assert(mainPage&&map&&calendar);
         runtime.event(calendar,"click",{});
 

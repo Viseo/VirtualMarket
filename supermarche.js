@@ -1,7 +1,4 @@
 exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,cookie,speech,listener,windowFunc){
-
-    let screenSize = svg.runtime.screenSize();
-    let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
     let runtime=targetruntime;
     ///////////////BANDEAUX/////////////////
     class DrawingZone{
@@ -187,17 +184,19 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
         gesture(type, dx){
             let handleMovement = (dx)=>{
-                categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(categories.ray.listThumbnails.x + dx, 0);
+                market.categories.ray.listThumbnails.steppy(1, 1).onChannel("rayon").moveTo(market.categories.ray.listThumbnails.x + dx, 0);
             };
             let handleEndMovement = ()=>{
-                if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x>=0 ){
-                    categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                if(market.categories.ray.listWidth != 0 && market.categories.ray.listThumbnails.x>=0 ){
+                    market.categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                 }
-                else if(categories.ray.listWidth != 0 && categories.ray.listThumbnails.x+categories.ray.listWidth<categories.ray.width){
-                    if(categories.ray.listWidth>market.width*0.76){
-                        categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(categories.ray.width - categories.ray.listWidth - categories.ray.width * 0.01, 0);
+                else if(market.categories.ray.listWidth != 0
+                    && market.categories.ray.listThumbnails.x+market.categories.ray.listWidth<market.categories.ray.width){
+                    if(market.categories.ray.listWidth>market.width*0.76){
+                        market.categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon")
+                            .moveTo(market.categories.ray.width - market.categories.ray.listWidth - market.categories.ray.width * 0.01, 0);
                     }else{
-                        categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                        market.categories.ray.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
                     }
                 }else{}
             };
@@ -302,7 +301,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             };
             let handleEvents=(newProd)=>{
                 newProd.component.onMouseDown((e)=>{
-                    if(market.pages[2].obj==currentPage) this.dragBasket(newProd,e);
+                    console.log(market.pages[2].obj+" "+market.currentPage);
+                    if(market.pages[2].obj==market.currentPage) this.dragBasket(newProd,e);
                 });
 
                 svg.addEvent(newProd.component, "touchstart",(e)=>{
@@ -392,10 +392,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             if(e.pageX<mouseInitial.x){
                                 this.dragged = new Thumbnail(current.image.src, current.name);
                                 this.dragged.placeElementsDnD(current);
-                                this.dragged.move(current.x + pageWidth * 0.85, current.y + this.listProducts.y + header.height);
+                                this.dragged.move(current.x + market.mainPage.pageWidth * 0.85, current.y + this.listProducts.y + header.height);
+                                console.log("sqdqs");
                                 this.dragged.component.opacity(0.9).mark("dragged");
-                                glassDnD.add(this.dragged.component);
-                                market.add(glassDnD);
+                                market.glassDnD.add(this.dragged.component);
+                                market.add(market.glassDnD);
 
                                 let anchorPoint = {x:e.pageX-this.dragged.x,y:e.pageY-this.dragged.y};
                                 this.dragged.component.onMouseMove((e)=>{
@@ -403,13 +404,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 });
 
                                 this.dragged.component.onMouseUp(()=>{
-                                    if ((this.dragged.x + this.dragged.width / 2 < pageWidth * 0.85)
+                                    if ((this.dragged.x + this.dragged.width / 2 < market.mainPage.pageWidth * 0.85)
                                         && (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
                                         market.basket.deleteProducts(current, 1);
                                         market.changeRay(current.categorie);
-                                        console.log("deleteeeeeeeeee")
                                     }
-                                    glassDnD.remove(this.dragged.component);
+                                    market.glassDnD.remove(this.dragged.component);
                                     this.direction=null;
                                 });
                                 this.direction = "LEFT";
@@ -500,9 +500,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             if(e.touches[0].clientX<touchInitial.x) {
                                 this.dragged = new Thumbnail(current.image.src, current.name);
                                 this.dragged.placeElementsDnD(current);
-                                this.dragged.move(current.x + pageWidth * 0.85, current.y + this.listProducts.y + header.height);
+                                this.dragged.move(current.x + market.mainPage.pageWidth * 0.85, current.y + this.listProducts.y + header.height);
                                 this.dragged.component.opacity(0.9).mark("dragged");
-                                glassDnD.add(this.dragged.component);
+                                market.glassDnD.add(this.dragged.component);
+                                market.add(market.glassDnD);
                                 this.direction="LEFT";
                             }
                             else{
@@ -532,13 +533,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                 svg.addEvent(current.component, "touchend", ()=>{
                     if(this.direction=="LEFT") {
-                        if ((this.dragged.x + this.dragged.width / 2 < pageWidth * 0.85) &&
+                        if ((this.dragged.x + this.dragged.width / 2 < market.mainPage.pageWidth * 0.85) &&
                             (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
                             market.basket.deleteProducts(current, 1);
                             market.changeRay(current.categorie);
-                            console.log(current.categorie);
                         }
-                        glassDnD.remove(this.dragged.component);
+                        market.glassDnD.remove(this.dragged.component);
 
                     }
                     else if(this.direction=="VERTICAL"){
@@ -604,15 +604,16 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.height = height;
                 this.width=width;
             };
+
             let manageBackToHome=()=>{
                 this.logoComp.onClick(()=>{
                     if(market.map!=null){
-                        currentMapSearch= market.map.input.value;
-                        mapPage.remove(market.map.component);
+                        market.currentMapSearch= market.map.input.value;
+                        market.mapPage.component.remove(market.map.component);
                         market.map=null;
                     }
-                    currentPage=mainPage;
-                    currentIndex=2;
+                    market.currentPage=market.mainPage;
+                    market.currentIndex=2;
                     market.pages[2].obj.smoothy(10, 40).onChannel(2).moveTo(0, 0);
                     market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(0, 0);
                     market.pages[0].obj.smoothy(10, 40).onChannel(0).moveTo(0, 0);
@@ -649,7 +650,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.component.add(this.shadowCard);
             this.component.add(this.shadowTpe);
 
-            this.zoneCode = new SecurityCode(pageWidth,market.height-market.height/19,0,market.height/19);
+            this.zoneCode = new SecurityCode(market.mainPage.pageWidth,market.height-market.height/19,0,market.height/19);
 
             svg.addEvent(this.card,"touchstart",()=>{
                 svg.addEvent(this.card,"touchmove",(e)=>{
@@ -700,7 +701,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         showCode(){
-            this.zoneCode = new SecurityCode(pageWidth,market.height-header.height,0,header.height);
+            this.zoneCode = new SecurityCode(market.mainPage.pageWidth,market.height-header.height,0,header.height);
             this.zoneCode.component.opacity(1).mark("code");
             this.zoneCode.placeElements();
             market.add(this.zoneCode.component);
@@ -782,12 +783,12 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             market.textToSpeech("Code erroné.");
                             if (market.payment.iteration >3) {
                                 market.textToSpeech("Veuillez patienter"+10+"secondes");
-                                this.launchTimer(10, false);
+                                this.launchTimer(10);
                             }
                         }
                     }else{
-                        currentIndex=1;
-                        currentPage=market.map;
+                        market.currentIndex=1;
+                        market.currentPage=market.mapPage.component;
                         this.moveMainpage();
                         this.paymentCookie();
                     }
@@ -807,14 +808,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         if(this.code.length>1){
                             market.payment.iteration++;
                             if (market.payment.iteration >3) {
-                                this.launchTimer(10, false);
+                                this.launchTimer(10);
                             }
                         }
                     }
                     else{
                         this.moveMainpage();
-                        currentIndex=1;
-                        currentPage=market.map;
+                        market.currentIndex=1;
+                        market.currentPage=market.mapPage.component;
                         this.paymentCookie();
                     }
                     for(let i=0;i<this.lines.length;i++) this.buttons.remove(this.lines[i]);
@@ -925,11 +926,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             market.payment.cardIn=false;
             market.payment.iteration=0;
             market.remove(market.payment.zoneCode.component);
-            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-pageWidth),0);
+            market.pages[2].obj.smoothy(10, 40).moveTo(Math.round(-(market.mainPage.pageWidth)),0);
             market.pages[1].active = true;
             market.pages[0].active = true;
-            currentPage=market.map;
-            currentIndex=1;
+            market.currentPage=market.mapPage.component;
+            market.currentIndex=1;
             changeColorforTabs();
             cookie.createCookie("page",1,1);
             loadMap();
@@ -966,10 +967,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.arcTimer.opacity(0);
         }
 
-        launchTimer(seconds,state){
+        launchTimer(seconds){
             let fillGlass=new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).opacity(0);
-            glassTimer.add(fillGlass);
-            market.add(glassTimer);
+            market.glassTimer.add(fillGlass);
+            market.add(market.glassTimer);
             market.payment.zoneCode.changeTimer(seconds,svg.RED);
             for(let i =0;i<=seconds+1;i++){
                 setTimeout(function(i){
@@ -983,7 +984,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             market.payment.zoneCode.changeTimer(seconds-i,svg.GREEN);
                         }
                         else if (i===seconds+1){
-                            market.remove(glassTimer);
+                            market.remove(market.glassTimer);
                             market.payment.zoneCode.changeText("");
                             market.payment.zoneCode.hideCircle();
                         }
@@ -1747,8 +1748,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             //GESTION SELECTION//
             let current = this;
             this.component.onClick(()=>{
-                if(!categories.navigation) market.changeRay(current.name);
-                else categories.navigation=false;
+                if(!market.categories.navigation) market.changeRay(current.name);
+                else market.categories.navigation=false;
             });
         }
 
@@ -1799,14 +1800,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
 
         toDraw(x){
-            if(!categories.currentRayOnDrawing) {
-                categories.currentRayOnDrawing=categories.ray.name;
+            if(!market.categories.currentRayOnDrawing) {
+                market.categories.currentRayOnDrawing=market.categories.ray.name;
             }
-            if(categories.currentRayOnDrawing==categories.ray.name) {
+            if(market.categories.currentRayOnDrawing==market.categories.ray.name) {
                 this.drawNumber = new svg.Drawing(0, 0).mark("draw " + this.name);
-                if (!categories.ray.currentDrawn) categories.ray.currentDrawn = this;
-                neural.init_draw(this.drawNumber, x, 0, this.name, this.getNumber, this.printNumber, this, glassCanvas, categories.ray.gesture);
-                glassCanvas.add(this.drawNumber);
+                if (!market.categories.ray.currentDrawn) market.categories.ray.currentDrawn = this;
+                neural.init_draw(this.drawNumber, x, 0, this.name, this.getNumber, this.printNumber,
+                    this, market.glassCanvas, market.categories.ray.gesture);
+                market.glassCanvas.add(this.drawNumber);
                 this.drawNumber.opacity(0);
             }
         }
@@ -1828,8 +1830,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 else return "";
             };
 
-            categories.ray.currentDrawn = null;
-            if (categories.ray.name==categories.currentRayOnDrawing){
+            market.categories.ray.currentDrawn = null;
+            if (market.categories.ray.name==market.categories.currentRayOnDrawing){
                 if (number == "click") {
                     element.addAnimation("1");
                     market.basket.addProducts(element, "1");
@@ -1859,16 +1861,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     } else{}
                 } else market.textToSpeech("Je n'ai pas compris");
             }
-            categories.currentRayOnDrawing=null;
+            market.categories.currentRayOnDrawing=null;
         }
 
         printNumber(number){
-            if(categories.ray.currentDrawn){
-                categories.ray.currentDrawn.component.remove(categories.ray.currentDrawn.waitingNumber);
-                categories.ray.currentDrawn.waitingNumber = new svg.Text(number).color(svg.BLACK,2,svg.WHITE);
-                categories.ray.currentDrawn.waitingNumber.position(categories.ray.currentDrawn.width/2,categories.ray.currentDrawn.height*0.65)
-                    .font("Calibri",categories.ray.currentDrawn.width*0.5,1).opacity(0.7);
-                categories.ray.currentDrawn.component.add(categories.ray.currentDrawn.waitingNumber);
+            if(market.categories.ray.currentDrawn){
+                market.categories.ray.currentDrawn.component.remove(market.categories.ray.currentDrawn.waitingNumber);
+                market.categories.ray.currentDrawn.waitingNumber = new svg.Text(number).color(svg.BLACK,2,svg.WHITE);
+                market.categories.ray.currentDrawn.waitingNumber
+                    .position(market.categories.ray.currentDrawn.width/2,market.categories.ray.currentDrawn.height*0.65)
+                    .font("Calibri",market.categories.ray.currentDrawn.width*0.5,1).opacity(0.7);
+                market.categories.ray.currentDrawn.component.add(market.categories.ray.currentDrawn.waitingNumber);
             }
         };
 
@@ -1961,8 +1964,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.component.mark("Product basket " + this.name);
             this.image.position(this.width*0.8,this.height*0.4).dimension(this.height*0.90,this.height*0.90).mark(this.name);
             this.printPrice.position(this.width*0.05,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
-
-            if(this.title.component.textLength.baseVal.value>this.image.x-this.image.width*2){
+            if(windowFunc.getSizeText(this.title.component)>this.image.x-this.image.width*2){
                 this.title.message(this.name.substring(0,this.name.length/2)+"...");
             }
             this.title.position(this.width*0.30,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
@@ -2011,7 +2013,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                 let meImageMarker = new svg.Image("img/map-marker-blue.png")
                     .position(width*0.05,height/2).dimension(height*1.2,height*1.2);
-                let meTitle = [currentMapSearch==""?"Ma Position":"Mon Adresse :"," "+currentMapSearch];
+                let meTitle = [market.currentMapSearch==""?"Ma Position":"Mon Adresse :"," "+market.currentMapSearch];
                 let meTitleMarker = new svg.Translation()
                     .add(new svg.Text(" "+meTitle[0]).font("Calibri",height*0.5,1).position(width*0.15,height*0.3).anchor("left"))
                     .add(new svg.Text(""+meTitle[1].split(",")[0]).font("Calibri",height*0.45,1).position(width*0.15,height*0.70).anchor("left"));
@@ -2056,10 +2058,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     class Tab{
-        constructor(x,y,icon){
+        constructor(x,y,icon,width){
             this.y=y;
             this.x=x;
-            this.height=(market.width-pageWidth)*2;
+            this.height=width;
             this.component=new svg.Translation();
             this.circle=new svg.Circle(this.height*0.68);
             this.circleShadow=new svg.Translation().add(this.circle).shadow("tabCalendar",3,5,5);
@@ -2075,94 +2077,123 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
     }
 
-    market.changeRay=function(name){
-        let tab=[];
-        if(name=="Recherche"){
-            tab=categories.currentSearch;
+    class Page{
+        constructor(name,index,width) {
+            this.pageWidth=width*0.96;
+            this.tabX=this.pageWidth*0.94;
+            this.name=name;
+            this.component = new svg.Translation().mark(name+"Page");
+            this.tab = new Tab(this.tabX,(width-this.pageWidth)*(1+2*(Math.abs(index-2))),"img/"+name+"Icon.png",(width-this.pageWidth)*2);
+            this.index=index;
+            this.component.add(this.tab.component);
         }
-        else tab = param.data.makeVignettesForRay(name,ThumbnailRayon);
-        for(i of categories.tabCategories){
-            if(i.name==name){
-                i.background.color([210,210,210]);
-                i.active=true;
-            }
-            else{
-                i.background.color(svg.WHITE);
-                i.active=false;
-            }
+    }
+
+    windowFunc.setResize();
+
+    let screenSize = svg.runtime.screenSize();
+    let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
+    let header = new Header(market.width,market.height*0.04);
+    let zoneHeader = new svg.Translation().add(header.component).mark("header");
+
+    let setOnClickNavigationWithTabs=()=>{
+        for(var i =0;i<market.pages.length;i++){
+            let index = i;
+            market.pages[i].obj.onClick(()=>{
+                if(market.pages[index].active) {
+                    if (index != market.currentIndex) {
+                        if (index != 1) {
+                            if(market.map!=null){
+                                market.currentMapSearch= market.map.input.value;
+                                market.mapPage.component.remove(market.map.component);
+                                market.map=null;
+                            }
+                        }
+                        else{
+                            loadMap();
+                            setTimeout(()=>{
+                                if(market.map!=null)market.map.updateMarkersSide();
+                            },3500);
+                        }
+                        if (market.currentIndex > index) {
+                            for (let j = market.currentIndex; j > index; j--) {
+                                market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-(market.mainPage.pageWidth)), 0);
+                            }
+                        }
+                        else {
+                            for (let j = market.currentIndex; j <= index; j++) {
+                                market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
+                            }
+                        }
+                        market.currentPage = market.pages[index].obj;
+                        market.currentIndex = index;
+                        changeColorforTabs();
+
+                        if (market.currentIndex == 0) {
+                            market.calendar.calendarOn = true;
+                        }
+                        else if (market.currentIndex==1){
+                            market.calendar.calendarOn = false;
+                        }
+
+                        cookie.createCookie("page",index,1);
+                    }
+                }
+            });
+            market.add(market.pages[i].obj);
         }
-
-        if(categories.rayTranslation!=null){
-            mainPage.remove(categories.rayTranslation).remove(categories.transRect).remove(zoneBasket).remove(zonePayment);
-        }
-
-        categories.ray=new Ray(market.width*0.76, market.height * 0.75, 0, market.height / 4, tab, name);
-        categories.rayTranslation = new svg.Translation().add(categories.ray.component).mark("ray " + name);
-        mainPage.add(categories.rayTranslation).add(categories.transRect).add(zoneBasket).add(zonePayment);
-
-
-        let cookies = cookie.getCookie("ray");
-        if(cookies){
-            cookie.deleteCookie("ray");
-        }
-        cookie.createCookie("ray", categories.ray.name, 1);
-
     };
 
-    function search(sentence,config){
-        sentence=prepareVocalMessage(sentence);
-        let jsonFile = param.data.getJson();
-        let words = sentence.split(" ");
-        var tabProduct = [];
-        var tabTotalCat = [];
-        let catDone= [];
-        let prodDone = [];
-        for (var i=0; i<words.length;i++){
-            for (var cat in jsonFile){
-                if(config=="all"){
-                    if (words[i].toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
-                        || (words[i] + " " + words[i + 1]).toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
-                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
-                        || (words[i] + "s").toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())) {
-                        if(catDone.indexOf(cat)==-1){
-                            catDone.push(cat);
-                            var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
-                            tabTotalCat = tabTotalCat.concat(tabCat);
-                        }
-                    }
-                }
-                var products = jsonFile[cat];
-                for (var prodName in products){
-                    if (words[i].toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
-                        ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
-                        ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
-                        ||(words[i] + "s").toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())){
-                        if(prodDone.indexOf(prodName)==-1) {
-                            prodDone.push(prodName);
-                            var prod = products[prodName];
-                            var thumbnailProduct = new ThumbnailRayon(prod.image, prod.nom, prod.prix, prod.complement, cat);
-                            tabProduct.push(thumbnailProduct);
-                        }
-                    }
-                }
-            }
-        }
-        var tabThumbnailProd = tabTotalCat.concat(tabProduct);
-        return tabThumbnailProd;
-    }
+    let initMarket=(market)=>{
+        //Gestion des pages
+        //PAGE CALENDAR
+        market.calendarPage = new Page("calendar",0,market.width);
+        market.calendar = new Calendar(market.calendarPage.pageWidth,market.height,0,0);
+        market.calendar.placeElements();
+        market.calendar.component.move(market.width*0.06,0);
+        market.calendarPage.component  .add(new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).color([230,230,230]))
+            .add(market.calendarPage.tab.component)
+            .add(market.calendar.component);
+        //PAGE MAP
+        market.mapPage = new Page("map",1,market.width);
+        let background = new svg.Rect(market.mapPage.pageWidth,market.height-header.height).corners(10,10)
+            .position(market.width/2-(market.width-market.mapPage.pageWidth)/2-2,market.height/2+header.height/2).color(svg.WHITE,1,svg.BLACK);
+        market.mapPage.component.add(background);
+        market.map = null;
+        //PAGE MAIN
+        market.mainPage=new Page("main",2,market.width);
+        market.glassTimer = new svg.Translation();
+        let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
+        market.categories = new ListCategorie(market.mainPage.pageWidth*0.75,market.height*0.22,0,market.height*0.04,tabDefaultCategories);
+        market.zoneCategories = new svg.Translation().add(market.categories.component).mark("categories");
+        market.basket = new Basket(market.mainPage.pageWidth*0.25,market.height*0.75,market.categories.component.width,header.height);
+        market.zoneBasket = new svg.Translation().add(market.basket.component);
+        market.payment = new Payment(market.mainPage.pageWidth*0.25,market.height*0.21,market.categories.component.width,
+            market.height*0.75+header.height);
+        market.zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
+        market.glassCanvas= new svg.Translation().mark("glassCanvas");
+        market.glassDnD = new svg.Translation().mark("Glass");
 
-    function doSearch(search) {
-        mainPage.remove(categories.rayTranslation);
-        zoneCategories.remove(categories.component);
-        let tab = search;
-        let tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-        tabCategories.push(new ThumbnailCategorie("img/search.png","Recherche"));
-        categories=new ListCategorie(market.width*0.76,market.height*0.22,0,market.height*0.04,tabCategories);
-        categories.currentSearch=tab;
-        zoneCategories.add(categories.component);
-        mainPage.add(zoneCategories);
-        market.changeRay("Recherche");
-    }
+        market.add(market.mainPage.component);
+        market.mainPage.component.add(market.zoneCategories).add(market.zoneBasket).add(market.zonePayment);
+        market.add(market.glassDnD);
+        market.mainPage.component.add(market.glassCanvas);
+
+        market.currentMapSearch = "";
+        market.currentPage=market.mainPage.component;
+        market.currentIndex=2;
+        market.pages=[];
+        market.pages.push({obj:market.calendarPage.component,active:false},
+            {obj:market.mapPage.component,active:false},
+            {obj:market.mainPage.component,active:true});
+
+        setOnClickNavigationWithTabs();
+
+        return market;
+    };
+
+    market=initMarket(market);
+    market.add(zoneHeader);
 
     market.vocalRecognition = (message)=>{
         let chooseAddressUsingVocalMessage = () => {
@@ -2172,7 +2203,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     ((words[i] == "avenue") || (words[i] == "rue") || (words[i] == "route") || (words[i] == "boulevard") || (words[i] == "quai")
                     || (words[i] == "allée") || (words[i] == "impasse") || (words[i] == "chemin"))) {
                     message = message.substring(message.indexOf(words[i]));
-                    currentMapSearch = message;
+                    market.currentMapSearch = message;
                     i = words.length;
                     market.textToSpeech("Voici le magasin qui vous livrera à " + message, "fr");
                     market.mapsfunction.research(message);
@@ -2455,6 +2486,97 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         speech.talk(msg);
     };
 
+    market.changeRay=function(name){
+        let tab=[];
+        if(name=="Recherche"){
+            tab=market.categories.currentSearch;
+        }
+        else tab = param.data.makeVignettesForRay(name,ThumbnailRayon);
+        for(i of market.categories.tabCategories){
+            if(i.name==name){
+                i.background.color([210,210,210]);
+                i.active=true;
+            }
+            else{
+                i.background.color(svg.WHITE);
+                i.active=false;
+            }
+        }
+
+        if(market.categories.rayTranslation!=null){
+            market.mainPage.component.remove(market.categories.rayTranslation)
+                .remove(market.categories.transRect).remove(market.zoneBasket).remove(market.zonePayment);
+        }
+
+        market.categories.ray=new Ray(market.width*0.76, market.height * 0.75, 0, market.height / 4, tab, name);
+        market.categories.rayTranslation = new svg.Translation().add(market.categories.ray.component).mark("ray " + name);
+        market.mainPage.component.add(market.categories.rayTranslation).add(market.categories.transRect)
+            .add(market.zoneBasket).add(market.zonePayment);
+
+
+        let cookies = cookie.getCookie("ray");
+        if(cookies){
+            cookie.deleteCookie("ray");
+        }
+        cookie.createCookie("ray", market.categories.ray.name, 1);
+
+    };
+
+    function search(sentence,config){
+        sentence=prepareVocalMessage(sentence);
+        let jsonFile = param.data.getJson();
+        let words = sentence.split(" ");
+        var tabProduct = [];
+        var tabTotalCat = [];
+        let catDone= [];
+        let prodDone = [];
+        for (var i=0; i<words.length;i++){
+            for (var cat in jsonFile){
+                if(config=="all"){
+                    if (words[i].toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1]).toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
+                        || (words[i] + " " + words[i + 1] + " " + words[i + 2]).toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())
+                        || (words[i] + "s").toLowerCase().includes(prepareVocalMessage(cat).toLowerCase())) {
+                        if(catDone.indexOf(cat)==-1){
+                            catDone.push(cat);
+                            var tabCat = param.data.makeVignettesForRay(cat, ThumbnailRayon);
+                            tabTotalCat = tabTotalCat.concat(tabCat);
+                        }
+                    }
+                }
+                var products = jsonFile[cat];
+                for (var prodName in products){
+                    if (words[i].toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
+                        ||(words[i]+" "+words[i+1]).replace("-"," ").toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
+                        ||(words[i]+" "+words[i+1]+" "+words[i+2]).toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())
+                        ||(words[i] + "s").toLowerCase().includes(prepareVocalMessage(prodName).toLowerCase())){
+                        if(prodDone.indexOf(prodName)==-1) {
+                            prodDone.push(prodName);
+                            var prod = products[prodName];
+                            var thumbnailProduct = new ThumbnailRayon(prod.image, prod.nom, prod.prix, prod.complement, cat);
+                            tabProduct.push(thumbnailProduct);
+                        }
+                    }
+                }
+            }
+        }
+        var tabThumbnailProd = tabTotalCat.concat(tabProduct);
+        return tabThumbnailProd;
+    }
+
+    function doSearch(search) {
+        market.mainPage.component.remove(market.categories.rayTranslation);
+        market.zoneCategories.remove(market.categories.component);
+        let tab = search;
+        let tabCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
+        tabCategories.push(new ThumbnailCategorie("img/search.png","Recherche"));
+        market.categories=new ListCategorie(market.width*0.76,market.height*0.22,0,market.height*0.04,tabCategories);
+        market.categories.currentSearch=tab;
+        market.zoneCategories.add(market.categories.component);
+        market.mainPage.component.add(market.zoneCategories);
+        market.changeRay("Recherche");
+    }
+
     function prepareVocalMessage(msg){
         return msg.replace(/é/g, "e").replace(/à/g,"a").replace(/è/,"e").replace(/ê/g, "e").replace(/ù/g, "u").replace(/-/g, " ").toLowerCase();
     }
@@ -2505,57 +2627,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         windowFunc.reload();
     }
 
-    windowFunc.setResize();
-
-    /////Déclaration Interface////
-    let mainPage=new svg.Translation().mark("mainPage");
-    let pageWidth=market.width*0.96;
-
-    let glassTimer = new svg.Translation();
-    let header = new Header(market.width,market.height*0.04);
-    let zoneHeader = new svg.Translation().add(header.component).mark("header");
-    let tabDefaultCategories = param.data.makeVignettesForCategories(ThumbnailCategorie);
-
-    let categories = new ListCategorie(pageWidth*0.75,market.height*0.22,0,market.height*0.04,tabDefaultCategories);
-    let zoneCategories = new svg.Translation().add(categories.component).mark("categories");
-    market.basket = new Basket(pageWidth*0.25,market.height*0.75,categories.component.width,header.height);
-    let zoneBasket = new svg.Translation().add(market.basket.component);
-    market.payment = new Payment(pageWidth*0.25,market.height*0.21,categories.component.width,market.height*0.75+header.height);
-    let zonePayment = new svg.Translation().add(market.payment.component).mark("payment");
-    let glassCanvas= new svg.Translation().mark("glassCanvas");
-    let glassDnD = new svg.Translation().mark("Glass");
-
-    //Gestion des pages
-    market.calendar = new Calendar(pageWidth,market.height,0,0);
-    market.calendar.placeElements();
-    market.calendar.component.move(market.width*0.06,0);
-
-    let tabX=pageWidth*0.94;
-    //Tab CALENDAR
-    let tabCalendar = new Tab(tabX,(market.width-pageWidth)*5,"img/calendarIcon.png");
-    let calendarPage = new svg.Translation()
-        .add(new svg.Rect(market.width,market.height).position(market.width/2,market.height/2).color([230,230,230]))
-        .add(tabCalendar.component)
-        .add(market.calendar.component);
-    //MAP
-    let tabMap=new Tab(tabX,(market.width-pageWidth)*3,"img/mapIcon.png");
-    let mapPage = new svg.Translation().mark("map");
-    let background = new svg.Rect(pageWidth,market.height-header.height).corners(10,10)
-        .position(market.width/2-(market.width-pageWidth)/2-2,market.height/2+header.height/2).color(svg.WHITE,1,svg.BLACK);
-    mapPage.add(tabMap.component).add(background);
-    market.map = null;
-    //MAINPAGE
-    let tabMain = new Tab(tabX,(market.width-pageWidth),"img/panier.png");
-    mainPage.add(tabMain.component);
-
     function loadMap(){
-        market.map = new Map(pageWidth,market.height-header.height*1.5,market.width*0.04,header.height*2);
+        market.map = new Map(market.mapPage.pageWidth,market.height-header.height*1.5,market.width*0.04,header.height*2);
         market.map.mapOn=true;
-        mapPage.add(market.map.component);
+        market.mapPage.component.add(market.map.component);
         setTimeout(function(){
             market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap,market.map.updateMarkersSide);
-            if (currentMapSearch != ""){
-                market.mapsfunction.research(currentMapSearch);
+            if (market.currentMapSearch != ""){
+                market.mapsfunction.research(market.currentMapSearch);
             }
             setTimeout(function(){
                 if(market.map!=null) {
@@ -2566,15 +2645,15 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     market.toCalendar= (message)=>{
-        currentMapSearch= market.map.input.value;
-        mapPage.remove(market.map.component);
+        market.currentMapSearch= market.map.input.value;
+        market.mapPage.component.remove(market.map.component);
         market.map=null;
-        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-pageWidth), 0);
+        market.pages[1].obj.smoothy(10, 40).onChannel(1).moveTo(Math.round(-(market.mainPage.pageWidth)), 0);
         market.calendar.address=message;
         market.calendar.calendarOn=true;
         setTimeout(()=>{
-            currentPage = market.pages[0].obj;
-            currentIndex = 0;
+            market.currentPage = market.pages[0].obj;
+            market.currentIndex = 0;
             changeColorforTabs();
         },200);
 
@@ -2583,85 +2662,24 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         market.calendar.picto.position(market.calendar.width * 0.15, market.calendar.height * 0.09);
     };
 
-    let currentMapSearch = "";
-    let currentPage=mainPage;
-    let currentIndex=2;
-    market.pages=[];
-    market.pages.push({obj:calendarPage,active:false},{obj:mapPage,active:false},{obj:mainPage,active:true});
-
     function changeColorforTabs(){
-        if (currentIndex==0){
-            tabCalendar.circle.color([210,210,210]);
-            tabMap.circle.color(svg.WHITE);
-            tabMain.circle.color(svg.WHITE);
+        if (market.currentIndex==0){
+            market.calendarPage.tab.circle.color([210,210,210]);
+            market.mapPage.tab.circle.color(svg.WHITE);
+            market.mainPage.tab.circle.color(svg.WHITE);
         }
-        else if (currentIndex==1){
-            tabCalendar.circle.color(svg.WHITE);
-            tabMap.circle.color([210,210,210]);
-            tabMain.circle.color(svg.WHITE);
+        else if (market.currentIndex==1){
+            market.calendarPage.tab.circle.color(svg.WHITE);
+            market.mapPage.tab.circle.color([210,210,210]);
+            market.mainPage.tab.circle.color(svg.WHITE);
 
         }
         else {
-            tabCalendar.circle.color(svg.WHITE);
-            tabMap.circle.color(svg.WHITE);
-            tabMain.circle.color([210,210,210]);
+            market.calendarPage.tab.circle.color(svg.WHITE);
+            market.mapPage.tab.circle.color(svg.WHITE);
+            market.mainPage.tab.circle.color([210,210,210]);
         }
     }
-
-    let setOnClickNavigationWithTabs=()=>{
-        for(var i =0;i<market.pages.length;i++){
-            let index = i;
-            market.pages[i].obj.onClick(()=>{
-                if(market.pages[index].active) {
-                    if (index != currentIndex) {
-                        if (index != 1) {
-                            if(market.map!=null){
-                                currentMapSearch= market.map.input.value;
-                                mapPage.remove(market.map.component);
-                                market.map=null;
-                            }
-                        }
-                        else{
-                            loadMap();
-                            setTimeout(()=>{
-                                if(market.map!=null)market.map.updateMarkersSide();
-                            },3500);
-                        }
-                        if (currentIndex > index) {
-                            for (let j = currentIndex; j > index; j--) {
-                                market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(Math.round(-pageWidth), 0);
-                            }
-                        }
-                        else {
-                            for (let j = currentIndex; j <= index; j++) {
-                                market.pages[j].obj.smoothy(10, 40).onChannel(j).moveTo(0, 0);
-                            }
-                        }
-                        currentPage = market.pages[index].obj;
-                        currentIndex = index;
-                        changeColorforTabs();
-
-                        if (currentIndex == 0) {
-                            market.calendar.calendarOn = true;
-                        }
-                        else if (currentIndex==1){
-                            market.calendar.calendarOn = false;
-                        }
-
-                        cookie.createCookie("page",index,1);
-                    }
-                }
-            });
-            market.add(market.pages[i].obj);
-        }
-    };
-    setOnClickNavigationWithTabs();
-
-    market.add(mainPage);
-    mainPage.add(zoneCategories).add(zoneBasket).add(zonePayment);
-    market.add(glassDnD);
-    mainPage.add(glassCanvas);
-    market.add(zoneHeader);
 
     let cookiePayment = cookie.getCookie("payment");
     let cookieRay=cookie.getCookie("ray");
@@ -2709,17 +2727,17 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
         if (2 > index) {
             for (let j = 2; j > index; j--) {
-                market.pages[j].obj.move(Math.round(-pageWidth), 0);
+                market.pages[j].obj.move(Math.round(-(market.mainPage.pageWidth)), 0);
             }
         }
-        currentPage = market.pages[index].obj;
-        currentIndex = index;
+        market.currentPage = market.pages[index].obj;
+        market.currentIndex = index;
         changeColorforTabs();
 
-        if (currentIndex == 0) {
+        if (market.currentIndex == 0) {
             market.calendar.calendarOn = true;
         }
-        else if (currentIndex==1){
+        else if (market.currentIndex==1){
             market.calendar.calendarOn = false;
         }
     }
@@ -2728,10 +2746,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     let welcomeMessage=()=>{
-        if(currentIndex==2){
+        if(market.currentIndex==2){
             market.textToSpeech("Bonjour, bienvenue dans votre supermarché!","fr");
         }
-        else if(currentIndex==1){
+        else if(market.currentIndex==1){
             market.textToSpeech("La dernière fois, vous etiez en train d'indiquer votre adresse!","fr");
         }
         else{
@@ -2739,8 +2757,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
     };
     welcomeMessage();
-
-
 
     return market;
     //////////////////////////////

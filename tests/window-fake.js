@@ -10,4 +10,8 @@ exports.windowFunc=class {
     reload(){
 
     }
+
+    getSizeText(element){
+        return 1000;
+    }
 };

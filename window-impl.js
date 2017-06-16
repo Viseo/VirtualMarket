@@ -12,4 +12,8 @@ exports.windowFunc=class {
     reload(){
         window.location.reload();
     }
+
+    getSizeText(element){
+        return element.textLength.baseVal.value
+    }
 };
