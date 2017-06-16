@@ -54,10 +54,12 @@ exports.neural = function(runtime) {
         runtime.attrNS(result.foreign,"y",0);
         runtime.add(result.canvasDiv,result.foreign);
         result.canvas = runtime.createDOM("canvas");
+        runtime.attr(result.canvas,"id","canvas");
         runtime.attr(result.canvas,"width",result.width);
         runtime.attr(result.canvas,"height",result.height);
         runtime.mark(result.canvas,"draw "+name);
         runtime.add(result.foreign,result.canvas);
+        result.drawingContext = result.canvas.getContext('2d');
 
         result.drawing = [];
         for(var i = 0;i<result.width;i++)
@@ -102,6 +104,9 @@ exports.neural = function(runtime) {
             ev_canvas: function (ev,control,x,gest) {
                 ev._x = Math.round(ev.pageX * 1.25);
                 ev._y = Math.round(ev.pageY * 1.25);
+                this.drawingContext.beginPath();
+                this.drawingContext.moveTo(ev._x,ev._y);
+
                 if (ev.type === 'mousemove'||control=="mousemove") {
                     if(this.currentX!=0||this.currentY!=0) {
                         let dx = ev._x - this.currentX;
@@ -114,13 +119,22 @@ exports.neural = function(runtime) {
                                 for (var i = ev._x; i < this.currentX; i++) {
                                     let y = Math.round(ev._y + dy * (i - ev._x) / dx);
                                     this.drawing[i][y] = 1;
+                                    // this.drawingContext.lineTo(i,y);
+                                    // this.drawingContext.stroke();
                                 }
                             }
-                            else {
+                            else if (dx > 0){
                                 for (var i = ev._x; i > this.currentX; i--) {
                                     let y = Math.round(ev._y + dy * (i - ev._x) / dx);
                                     this.drawing[i][y] = 1;
+                                    // this.drawingContext.lineTo(i,y);
+                                    // this.drawingContext.stroke();
                                 }
+                            }
+                            else{
+                                this.drawing[ev._x][ev._y+1] = 1;
+                                // this.drawingContext.lineTo(ev._x,ev._y+1);
+                                // this.drawingContext.stroke();
                             }
                             this.drawn=true;
                         }
@@ -144,11 +158,14 @@ exports.neural = function(runtime) {
                                     this.drawing[i][y] = 1;
                                 }
                             }
-                            else {
+                            else if (dx > 0){
                                 for (var i = ev.touchX; i > this.currentX; i--) {
                                     let y = Math.round(ev.touchY+ dy * (i - ev.touchX) / dx);
                                     this.drawing[i][y] = 1;
                                 }
+                            }
+                            else{
+                                this.drawing[ev.touchX][ev.touchY+1] = 1;
                             }
                             this.drawn=true;
                         }
@@ -224,20 +241,24 @@ exports.neural = function(runtime) {
                     return result;
                 }
 
+                // this.drawingContext.lineWidth = 30;
+                this.drawingContext.beginPath();
+                this.drawingContext.strokeRect(left,bottom,right-left,bottom-top);
+                // this.drawingContext.stroke();
+
                 cellWidth = Math.round((right - left) / this.downsampleWidth);
                 cellHeight = Math.round((bottom - top) / this.downsampleHeight);
                 result = new Array();
                 resultIndex = 0;
-
                 for (row = 0; row < this.downsampleHeight; row++) {
                     for (col = 0; col < this.downsampleWidth; col++) {
                         x = (cellWidth * col) + left;
                         y = (cellHeight * row) + top;
                         // obtain pixel data for the grid square
                         let tab = [];
-                        for (var i = x; i < x + cellWidth; i++) {
+                        for (var i = x-1; i < x + cellWidth+1; i++) {
                             let col = [];
-                            for (var j = y; j < y + cellHeight; j++) {
+                            for (var j = y-1; j < y + cellHeight+1; j++) {
                                 col.push(this.drawing[i][j]);
                             }
                             tab.push(col);
@@ -260,7 +281,6 @@ exports.neural = function(runtime) {
                         }
                     }
                 }
-
                 return result;
             },
             clear:function(){
@@ -428,7 +448,7 @@ exports.neural = function(runtime) {
                     }
                 }
             }
-            //console.log(dessinpropre);
+            // console.log(dessinpropre);
 
             var bestChar = '?';
             var bestScore = 0;
@@ -448,7 +468,27 @@ exports.neural = function(runtime) {
                 }
             }
 
-            if(bestScore>6.5) bestChar="?";
+
+            for (var q in charData[bestChar]){
+                if(q%5==0){
+                    console.log("mod" +p%5);
+                    if(charData[bestChar][q]=="-1"){
+                        charchosen+="\n0 ";
+                    }else{
+                        charchosen+="\n*"+" ";
+                    }
+                }else{
+                    if(charData[bestChar][q]=="-1"){
+                        charchosen+="0 ";
+                    }else{
+                        charchosen+="* ";
+
+                    }
+                }
+            }
+            // console.log("charchosen "+charchosen);
+
+            if(bestScore>7.5) bestChar="?";
             drawingArea.clear();
             clearDownSample();
             return bestChar;
@@ -464,7 +504,8 @@ exports.neural = function(runtime) {
     {
         defineChar("click", new Array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1) );
         defineChar("0", new Array( -1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1 ) );
-        defineChar("1", new Array( -1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,1,1) );
+        // defineChar("1", new Array( -1,-1,-1,-1,1,-1,-1,-1,1,1,-1,-1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,1,1) );
+        defineChar("1", new Array( 1,1,1,-1,-1,1,1,1,-1,-1,1,1,1,-1,-1,1,1,1,1,-1,-1,1,1,1,1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,1,1,1,1) );
         defineChar("2", new Array(1,1,1,1,-1, 1,-1,-1,1,1, -1,-1,-1,-1,1, -1,-1,-1,1,1, -1,-1,1,1,-1, -1,1,1,-1,-1, 1,1,-1,-1,-1, 1,1,1,1,1) );
         // defineChar("2", new Array(1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,1,1,1,1,-1,1,-1,1,1,-1,1,1,1,1,1) );
         defineChar("3", new Array(1,1,1,1,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,1) );
