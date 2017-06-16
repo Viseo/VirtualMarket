@@ -59,7 +59,6 @@ exports.neural = function(runtime) {
         runtime.attr(result.canvas,"height",result.height);
         runtime.mark(result.canvas,"draw "+name);
         runtime.add(result.foreign,result.canvas);
-        result.drawingContext = result.canvas.getContext('2d');
 
         result.drawing = [];
         for(var i = 0;i<result.width;i++)
@@ -104,8 +103,6 @@ exports.neural = function(runtime) {
             ev_canvas: function (ev,control,x,gest) {
                 ev._x = Math.round(ev.pageX * 1.25);
                 ev._y = Math.round(ev.pageY * 1.25);
-                this.drawingContext.beginPath();
-                this.drawingContext.moveTo(ev._x,ev._y);
 
                 if (ev.type === 'mousemove'||control=="mousemove") {
                     if(this.currentX!=0||this.currentY!=0) {
@@ -119,22 +116,16 @@ exports.neural = function(runtime) {
                                 for (var i = ev._x; i < this.currentX; i++) {
                                     let y = Math.round(ev._y + dy * (i - ev._x) / dx);
                                     this.drawing[i][y] = 1;
-                                    // this.drawingContext.lineTo(i,y);
-                                    // this.drawingContext.stroke();
                                 }
                             }
                             else if (dx > 0){
                                 for (var i = ev._x; i > this.currentX; i--) {
                                     let y = Math.round(ev._y + dy * (i - ev._x) / dx);
                                     this.drawing[i][y] = 1;
-                                    // this.drawingContext.lineTo(i,y);
-                                    // this.drawingContext.stroke();
                                 }
                             }
                             else{
                                 this.drawing[ev._x][ev._y+1] = 1;
-                                // this.drawingContext.lineTo(ev._x,ev._y+1);
-                                // this.drawingContext.stroke();
                             }
                             this.drawn=true;
                         }
@@ -240,11 +231,6 @@ exports.neural = function(runtime) {
                     ENCOG.fillArray(result, 0, result.length, -1);
                     return result;
                 }
-
-                // this.drawingContext.lineWidth = 30;
-                this.drawingContext.beginPath();
-                this.drawingContext.strokeRect(left,bottom,right-left,bottom-top);
-                // this.drawingContext.stroke();
 
                 cellWidth = Math.round((right - left) / this.downsampleWidth);
                 cellHeight = Math.round((bottom - top) / this.downsampleHeight);
@@ -448,7 +434,6 @@ exports.neural = function(runtime) {
                     }
                 }
             }
-            // console.log(dessinpropre);
 
             var bestChar = '?';
             var bestScore = 0;
@@ -471,7 +456,6 @@ exports.neural = function(runtime) {
 
             for (var q in charData[bestChar]){
                 if(q%5==0){
-                    console.log("mod" +p%5);
                     if(charData[bestChar][q]=="-1"){
                         charchosen+="\n0 ";
                     }else{
@@ -486,7 +470,6 @@ exports.neural = function(runtime) {
                     }
                 }
             }
-            // console.log("charchosen "+charchosen);
 
             if(bestScore>7.5) bestChar="?";
             drawingArea.clear();

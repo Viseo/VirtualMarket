@@ -1010,6 +1010,13 @@ describe("Test",function (){
         runtime.advanceAll();
         runtime.event(card,"mouseup",{ pageX:market.width*0.90-60,pageY:market.height*0.90});
         runtime.advanceAll();
+
+        runtime.event(card,"mousedown",{pageX:5,pageY:5});
+        runtime.advanceAll();
+        runtime.event(card,"mousemove",{pageX:5,pageY:5});
+        runtime.advanceAll();
+        runtime.event(card,"mouseout",{ pageX:5,pageY:5});
+        runtime.advanceAll();
     });
 
     it("ensure that the interface to enter the code pattern is working",function(done){
@@ -1370,19 +1377,19 @@ describe("Test",function (){
         runtime.event(background,"mousedown",{pageX:100,pageY:100});
         runtime.event(background,"mousemove",{pageX:200,pageY:-2000});
         runtime.advanceAll();
-        runtime.event(background,"mouseup",{pageX:200,pageY:-2000});
+        runtime.globalEvent("mouseup",{pageX:200,pageY:-2000});
         runtime.advanceAll();
 
         runtime.event(background,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
         runtime.event(background,"touchmove",{touches:{0:{clientX:100,clientY:100}}});
         runtime.advanceAll();
-        runtime.event(background,"touchend",{touches:{0:{clientX:100,clientY:100}}});
+        runtime.globalEvent("touchend",{touches:{0:{clientX:100,clientY:100}}});
         runtime.advanceAll();
 
         runtime.event(background,"mousedown",{pageX:100,pageY:100});
         runtime.event(background,"mousemove",{pageX:200,pageY:2000});
         runtime.advanceAll();
-        runtime.event(background,"mouseup",{pageX:200,pageY:2000});
+        runtime.globalEvent("mouseup",{pageX:200,pageY:2000});
         runtime.advanceAll();
 
         runtime.event(chevronWest,"click", {});
@@ -1391,7 +1398,7 @@ describe("Test",function (){
         runtime.event(background,"touchstart",{touches:{0:{clientX:100,clientY:100}}});
         runtime.event(background,"touchmove",{touches:{0:{clientX:200,clientY:200}}});
         runtime.advanceAll();
-        runtime.event(background,"touchend",{touches:{0:{clientX:200,clientY:200}}});
+        runtime.globalEvent("touchend",{touches:{0:{clientX:200,clientY:200}}});
         runtime.advanceAll();
 
         runtime.event(background,"mousemove",{pageX:100,pageY:200});
