@@ -837,11 +837,11 @@ describe("Test",function (){
                     runtime.advanceAll();
                     runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 380 + decalHeader}}});
                     runtime.advanceAll();
-                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 100, clientY: 380 + decalHeader}}});
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 45, clientY: 300 + decalHeader}}});
                     runtime.advanceAll();
-                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
+                    runtime.event(product2, "touchmove", {type:"touchmove",touches: {0: {clientX: 90, clientY: 380 + decalHeader}}});
                     runtime.advanceAll();
-                    runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 5, clientY: 300 + decalHeader}}});
+                    runtime.event(product2, "touchend", {type:"touchend",touches: {0: {clientX: 85, clientY: 380 + decalHeader}}});
                     runtime.advanceAll();
                 }, 10000);
 
@@ -1843,6 +1843,7 @@ describe("Test",function (){
                 market.vocalRecognition("Négatif");
                 market.vocalRecognition("je veux me faire livrer le 10 juin à midi");
                 market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
+                market.vocalRecognition("je veux me faire livrer le 15 juin à 16h");
                 market.vocalRecognition("non");
                 market.vocalRecognition("je veux me faire livrer le 10 juin");
                 market.vocalRecognition("oui");

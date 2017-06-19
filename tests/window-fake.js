@@ -4,7 +4,6 @@
 
 exports.windowFunc=class {
     setResize(){
-
     }
 
     reload(){
@@ -12,6 +11,10 @@ exports.windowFunc=class {
     }
 
     getSizeText(element){
-        return 1000;
+        if(Math.ceil(Math.random()*10)%2){
+            return 10;
+        }else{
+            return 1000;
+        }
     }
 };
