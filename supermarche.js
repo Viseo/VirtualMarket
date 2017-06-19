@@ -52,7 +52,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     });
 
                     svg.addEvent(this.component, "mouseup", () => {
-                        let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
+                        let widthTotal = market.width * 0.09 * this.tabCategories.length;
                         let widthView = width;
                         let positionRight = this.listThumbnail.x + widthTotal;
                         if (this.listThumbnail.x > 0) {
@@ -68,7 +68,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                     svg.addEvent(this.component, "mouseout", () => {
                         if (this.mouvement) {
-                            let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
+                            let widthTotal = market.width * 0.09 * this.tabCategories.length;
                             let widthView = width;
                             let positionRight = this.listThumbnail.x + widthTotal;
                             if (this.listThumbnail.x > 0) {
@@ -95,7 +95,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     });
 
                     svg.addEvent(this.component, "touchend", () => {
-                        let widthTotal = this.tabCategories[0].width * 1.04 * this.tabCategories.length;
+                        let widthTotal = market.width * 0.09* this.tabCategories.length;
                         let widthView = width;
                         let positionRight = this.listThumbnail.x + widthTotal;
                         this.mouvement = false;
@@ -2030,25 +2030,30 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 let width = market.width*0.2;
                 let height = market.height*0.05;
                 let place = 1;
-                for(let i in tab) {
+                market.map.component.add(market.map.listMarkers);
+                market.map.listMarkers.move(market.width*0.75,market.height*0.08);
+                for(let i in tab){
                     if (tab[i].map){
                         let imageMarker = new svg.Image("img/" + (tab[i].animating ? "map-marker-green.png" : "map-marker-red.png"))
                             .position(width * 0.05, height / 2).dimension(height * 1.2, height * 1.2);
                         let title = tab[i].title.split(",");
+                        let address =new svg.Text(" " + title[0]).font("Calibri", title[0].length < 25 ? height * 0.45 : height * 0.4, 1)
+                            .position(width * 0.15, height * 0.3).anchor("left");
                         let titleMarker = new svg.Translation()
-                            .add(new svg.Text(" " + title[0]).font("Calibri", title[0].length < 25 ? height * 0.45 : height * 0.4, 1)
-                                .position(width * 0.15, height * 0.3).anchor("left"))
-                            .add(new svg.Text(title[1]).font("Calibri", height * 0.45, 1).position(width * 0.15, height * 0.70).anchor("left"))
-                            .add(new svg.Text(title[2]).font("Calibri", height * 0.45, 1).position(width * 0.15, height * 1.10).anchor("left"));
+                            .add(address)
+                            .add(new svg.Text(title[1]).font("Calibri", height * 0.45, 1)
+                                .position(width * 0.15, height * 0.70).anchor("left"))
+                            .add(new svg.Text(title[2]).font("Calibri", height * 0.45, 1)
+                                .position(width * 0.15, height * 1.10).anchor("left"));
                         let numMarker = new svg.Text(i).position(width * 0.05, height * 0.40).anchor("middle").font("Calibri", height * 0.4, 1);
                         let newMarker = new svg.Translation().add(imageMarker).add(titleMarker).add(numMarker);
                         newMarker.move(0, (place) * height * 2);
                         place++;
                         market.map.listMarkers.add(newMarker);
+                        if(address.x+windowFunc.getSizeText(address.component)>width)
+                            address.message(" "+title[0].substring(0,title[0].length*0.7)+"...");
                     }
                 }
-                market.map.component.add(market.map.listMarkers);
-                market.map.listMarkers.move(market.width*0.75,market.height*0.08);
             };
 
             removeOldMarkers();
@@ -2637,7 +2642,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 market.mapsfunction.research(market.currentMapSearch);
             }
             setTimeout(function(){
-                if(market.map!=null) {
+                if(market.map!=null){
                     market.map.updateMarkersSide();
                 }
             },500);
