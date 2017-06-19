@@ -2304,7 +2304,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             return messageProcessed;
         };
         let shopUsingVocalMessage = () =>{
-            let addProductsInBasket = (tab,det) =>{
+            let addProductsInBasket = (tab,det,order) =>{
                 for (var i = 0; i < tab.length; i++) {
                     let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
                     var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
@@ -2349,7 +2349,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
                 }
             };
-            let deleteProductsInBasket = (tab,det) => {
+            let deleteProductsInBasket = (tab,det,order) => {
                 for (var i = 0; i < tab.length; i++) {
                     var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
                     var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
@@ -2415,10 +2415,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 if (tab[0]) {
                     tab = search(order, "prod");
                     if (order.includes("ajoute")) {
-                        addProductsInBasket(tab,det);
+                        addProductsInBasket(tab,det,order);
                     }
                     else if (order.includes("supprime")) {
-                        deleteProductsInBasket(tab,det);
+                        deleteProductsInBasket(tab,det,order);
                     }
                     else {
                         tab = search(order, "all");
