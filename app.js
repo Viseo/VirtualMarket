@@ -22,7 +22,7 @@ app.listen(port);
 
 console.log('server open on port ' + port);
 
-binaryServer = BinaryServer({port: 3030});
+binaryServer = BinaryServer({server: app, port: 3030});
 
 binaryServer.on('connection', function(client) {
 
@@ -39,10 +39,6 @@ binaryServer.on('connection', function(client) {
                             });
                         });
                     });
-                    // fs.writeFile('./vocal_recognition_log.txt', log, (err) => {
-                    //     if (err) throw err;
-                    //     console.log('The file has been saved!');
-                    // });
                 });
                 break;
 
@@ -63,7 +59,5 @@ binaryServer.on('connection', function(client) {
                 });
                 break;
         }
-        // console.log('on a un stream serveur ');
-
     });
 });
