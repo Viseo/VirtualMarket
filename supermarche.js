@@ -1484,16 +1484,20 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 return tab;
             };
             let drawAllRoundsInEachDay = (dayMonth,tab) => {
+                let createARound = (round) => {
+                    let newRound = new Round(0,0,round.nbT*this.caseWidth,this.caseHeight/4,round.nbT,round.left, round.TPH);
+                    newRound.roundContent.mark("round "+this.rounds.length);
+                    newRound.tabH=round;
+                    newRound.placeElements();
+                    return newRound;
+                };
                 this.rounds=[];
                 for(let i = 0; i<dayMonth.length;i++){
                     let totLeft = 0;
                     for(let j = 0; j < tab.length; j++){
                         if(dayMonth[i]==tab[j].dayP){
                             totLeft += tab[j].left;
-                            let newRound = new Round(0,0,tab[j].nbT*this.caseWidth,this.caseHeight/4,tab[j].nbT,tab[j].left, tab[j].TPH);
-                            newRound.roundContent.mark("round "+this.rounds.length);
-                            newRound.tabH=tab[j];
-                            newRound.placeElements();
+                            let newRound = createARound(tab[j]);
                             newRound.move((tab[j].hourDL-9)*this.caseWidth+newRound.width/2+this.caseWidth/2,
                                 i*this.caseHeight+this.caseHeight*0.1);
                             newRound.roundContent.onClick(()=>{
@@ -1512,10 +1516,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     }
 
                     if(totLeft == 0) {
-                        this.dayCases[i].add(new Switch("unavailable",this.caseWidth*1.5,this.caseHeight).component)
+                        this.dayCases[i].add(new Switch("unavailable",this.caseWidth*1.5,this.caseHeight).component);
 
                     }else {
-                        this.dayCases[i].add(new Switch("available",this.caseWidth*1.5,this.caseHeight).component)
+                        this.dayCases[i].add(new Switch("available",this.caseWidth*1.5,this.caseHeight).component);
                     }
                 }
             };
@@ -2005,10 +2009,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             let removeOldMarkers = () => {
                 market.map.component.remove(market.map.listMarkers);
             };
-            let initMarkers = () => {
+            let initMarkers = (width,height) => {
                 market.map.listMarkers=new svg.Translation();
-                let width = market.width*0.2;
-                let height = market.height*0.05;
                 let tab=market.mapsfunction.getMarkers();
 
                 let meImageMarker = new svg.Image("img/map-marker-blue.png")
@@ -2026,9 +2028,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 market.map.listMarkers.add(meNewMarker);
                 return tab;
             };
-            let placeAllMarkers = (tab) => {
-                let width = market.width*0.2;
-                let height = market.height*0.05;
+            let placeAllMarkers = (tab,width,height) => {
                 let place = 1;
                 market.map.component.add(market.map.listMarkers);
                 market.map.listMarkers.move(market.width*0.75,market.height*0.08);
@@ -2056,9 +2056,11 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 }
             };
 
+            let width = market.width*0.2;
+            let height = market.height*0.05;
             removeOldMarkers();
-            let tab = initMarkers();
-            placeAllMarkers(tab);
+            let tab = initMarkers(width,height);
+            placeAllMarkers(tab,width,height);
         }
     }
 
@@ -2307,6 +2309,97 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             return messageProcessed;
         };
         let shopUsingVocalMessage = () =>{
+            let addProductsInBasket = (tab,det,order) =>{
+                for (var i = 0; i < tab.length; i++) {
+                    let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                    var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                    var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                    var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
+                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                    if (quantity >= "0" && quantity <= "9") {
+                        let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                        if (isNaN(bef)) {
+                            bef = "";
+                        }
+                        let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                        if (isNaN(bef2)) {
+                            bef2 = "";
+                        }
+                        market.textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
+                        market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
+                    } else if (determining.trim() == "de") {
+                        market.basket.addProducts(tab[i], 2);
+                        market.textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
+                    } else if (determining2.trim() == "cette" || determining.trim() == "cet") {
+                        market.textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
+                        market.basket.addProducts(tab[i], 7);
+                    } else if(determining.trim() == "un" || determining.trim() == "une") {
+                        market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
+                        market.basket.addProducts(tab[i], 1);
+                    } else {
+                        let tor=false;
+                        for(let k = 0; k< det.length;k++){
+                            if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
+                                tor=true;
+                                market.basket.addProducts(tab[i],k+1);
+                                market.textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
+                            }
+                        }
+                        if(tor==false){
+                            market.basket.addProducts(tab[i],1);
+                            market.textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
+                        }
+                    }
+                }
+            };
+            let deleteProductsInBasket = (tab,det,order) => {
+                for (var i = 0; i < tab.length; i++) {
+                    var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
+                    var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
+                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                    var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
+                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                    var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
+                        order.indexOf(tab[i].name.toLowerCase()) - 1);
+                    if (number >= "0" && number <= "9") {
+                        let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
+                        if (isNaN(bef)) {
+                            bef = "";
+                        }
+                        let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
+                        if (isNaN(bef2)) {
+                            bef2 = "";
+                        }
+                        market.textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
+                        market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
+                    }
+                    else if (determining == " un" || determining == "une"){
+                        market.textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
+                        market.basket.deleteFromName(tab[i].name, 1);
+                    } else if (determining.trim() == "de"){
+                        market.textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
+                        market.basket.deleteFromName(tab[i].name, 2);
+                    } else if (determining2.trim() == "cette" || determining.trim() == "cet"){
+                        market.textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
+                        market.basket.deleteFromName(tab[i].name, 7);
+                    }else {
+                        let tor = false;
+                        for(let k = 0; k< det.length;k++){
+                            if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
+                                tor = true;
+                                market.basket.deleteFromName(tab[i].name,k+1);
+                                market.textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
+                            }
+                        }
+                        if(tor == false){
+                            market.textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
+                            market.basket.deleteFromName(tab[i].name, null);
+                        }
+                    }
+                }
+            };
             let messageProcessed = false;
             let tabMessage = message.split(" ");
             let splitMessage = [];
@@ -2327,95 +2420,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 if (tab[0]) {
                     tab = search(order, "prod");
                     if (order.includes("ajoute")) {
-                        for (var i = 0; i < tab.length; i++) {
-                            let quantity = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            if (quantity >= "0" && quantity <= "9") {
-                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                if (isNaN(bef)) {
-                                    bef = "";
-                                }
-                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                if (isNaN(bef2)) {
-                                    bef2 = "";
-                                }
-                                market.textToSpeech("Ok, j'ajoute "+ quantity + " "+ tab[i].name+" au panier");
-                                market.basket.addProducts(tab[i], parseInt("" + bef2 + bef + quantity));
-                            } else if (determining.trim() == "de") {
-                                market.basket.addProducts(tab[i], 2);
-                                market.textToSpeech("Ok, j'ajoute deux "+ tab[i].name+" au panier");
-                            } else if (determining2.trim() == "cette" || determining.trim() == "cet") {
-                                market.textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
-                                market.basket.addProducts(tab[i], 7);
-                            } else if(determining.trim() == "un" || determining.trim() == "une") {
-                                market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
-                                market.basket.addProducts(tab[i], 1);
-                            } else {
-                                let tor=false;
-                                for(let k = 0; k< det.length;k++){
-                                    if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
-                                        tor=true;
-                                        market.basket.addProducts(tab[i],k+1);
-                                        market.textToSpeech("Ok, j'ajoute "+( k+1 )+" "+ tab[i].name+" au panier");
-                                    }
-                                }
-                                if(tor==false){
-                                    market.basket.addProducts(tab[i],1);
-                                    market.textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
-                                }
-                            }
-                        }
+                        addProductsInBasket(tab,det,order);
                     }
                     else if (order.includes("supprime")) {
-                        for (var i = 0; i < tab.length; i++) {
-                            var number = order[order.indexOf(tab[i].name.toLowerCase()) - 2];
-                            var determining = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 4,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            var determining2 = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 6,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            var determiningFour = order.substring(order.indexOf(tab[i].name.toLowerCase()) - 7,
-                                order.indexOf(tab[i].name.toLowerCase()) - 1);
-                            if (number >= "0" && number <= "9") {
-                                let bef = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 3]);
-                                if (isNaN(bef)) {
-                                    bef = "";
-                                }
-                                let bef2 = parseInt(order[order.indexOf(tab[i].name.toLowerCase()) - 4]);
-                                if (isNaN(bef2)) {
-                                    bef2 = "";
-                                }
-                                market.textToSpeech("Ok, je retire "+ number +" "+ tab[i].name +" du panier");
-                                market.basket.deleteFromName(tab[i].name, parseInt("" + bef2 + bef + number));
-                            }
-                            else if (determining == " un" || determining == "une"){
-                                market.textToSpeech("Ok, je retire 1 "+ tab[i].name+" du panier");
-                                market.basket.deleteFromName(tab[i].name, 1);
-                            } else if (determining.trim() == "de"){
-                                market.textToSpeech("Ok, je retire 2 "+ tab[i].name+" du panier");
-                                market.basket.deleteFromName(tab[i].name, 2);
-                            } else if (determining2.trim() == "cette" || determining.trim() == "cet"){
-                                market.textToSpeech("Ok, je retire 7 "+ tab[i].name +" du panier");
-                                market.basket.deleteFromName(tab[i].name, 7);
-                            }else {
-                                let tor = false;
-                                for(let k = 0; k< det.length;k++){
-                                    if(determining.trim() == det[k] || determining2.trim() == det[k] || determiningFour.trim() == det[k]){
-                                        tor = true;
-                                        market.basket.deleteFromName(tab[i].name,k+1);
-                                        market.textToSpeech("Ok, je retire "+( k+1 )+" "+ tab[i].name+" du panier");
-                                    }
-                                }
-                                if(tor == false){
-                                    market.textToSpeech("Ok, je retire les "+ tab[i].name+" du panier");
-                                    market.basket.deleteFromName(tab[i].name, null);
-                                }
-                            }
-                        }
+                        deleteProductsInBasket(tab,det,order);
                     }
                     else {
                         tab = search(order, "all");
