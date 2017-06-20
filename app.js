@@ -5,6 +5,7 @@
 
 var express = require('express');
 var http = require('http');
+var https = require('https');
 var BinaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
 var fs = require('fs');
@@ -21,11 +22,20 @@ app.get('/', function(req, res){
     res.render('index.html');
 });
 
-console.log('server open on port ' + port);
-server=http.createServer(app);
+var options = {
+    key: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.key'),
+    cert: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.crt'),
+};
+
+var server = https.createServer(options, app).listen(port, function(){
+    console.log("Express server listening on port " + port);
+});
+
+// console.log('server open on port ' + port);
+// server=http.createServer(app);
 
 binaryServer = BinaryServer({server: server});
-server.listen(port);
+// server.listen(port);
 
 binaryServer.on('connection', function(client) {
     console.log('new connection');
