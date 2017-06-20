@@ -2,6 +2,7 @@
  * Created by GEH3641 on 12/04/2017.
  */
 var express = require('express');
+// var http = require('http');
 var BinaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
 var fs = require('fs');
@@ -10,22 +11,61 @@ var recognize=require("./lib/recognize").recognize;
 
 var port = 5000;
 var outFile = 'demo.wav';
-var app = express();
 
+
+// var options = {
+//     key: fs.readFileSync('./ssl/privatekey.pem'),
+//     cert: fs.readFileSync('./ssl/certificate.pem'),
+// };
+
+var cfg = {
+    ssl: false,
+    port: 5000,
+    ssl_key: '../../nginx/conf/Digimarket/virtualmarket.key',
+    ssl_cert: '/../../nginx/conf/Digimarket/virtualmarket.crt'
+};
+var httpServ = ( cfg.ssl ) ? require('https') : require('http');
+
+var processRequest = function( req, res ) {
+
+    res.writeHead(200);
+    res.end("All glory to WebSockets!\n");
+};
+
+
+var app = express();
 app.engine('html', require('ejs').renderFile);
 app.use(express.static(__dirname));
 app.get('/', function(req, res){
     res.render('index.html');
 });
+if ( cfg.ssl ) {
+    console.log('ok')
+    server = httpServ.createServer({
+        // providing server with  SSL key/cert
+        key: fs.readFileSync( cfg.ssl_key ),
+        cert: fs.readFileSync( cfg.ssl_cert )
 
-app.listen(port);
+    },app).listen( cfg.port, function (e) {
+        console.log(e)
+    });
 
-console.log('server open on port ' + port);
+} else {
+    console.log('hmm')
+    server = httpServ.createServer( app ).listen( cfg.port );
+}
 
-binaryServer = BinaryServer({server: app, port: 3030});
+// var wss = new WebSocketServer( { server: server } );
+
+console.log('server open on port ' + cfg.port);
+// server=http.createServer(app);
+
+binaryServer = BinaryServer({server: server});
+// server.listen(port);
+
+
 
 binaryServer.on('connection', function(client) {
-
     console.log('new connection');
     client.on('stream', function(stream, meta) {
         console.log(meta.event);
@@ -61,3 +101,53 @@ binaryServer.on('connection', function(client) {
         }
     });
 });
+
+//
+// var WebSocketServer = require('ws').Server,
+//     fs = require('fs');
+//
+//
+// var cfg = {
+//     ssl: true,
+//     port: 3000,
+//     ssl_key: '/path/to/apache.key',
+//     ssl_cert: '/path/to/apache.crt'
+// };
+//
+// var httpServ = ( cfg.ssl ) ? require('https') : require('http');
+//
+// var app      = null;
+//
+// var processRequest = function( req, res ) {
+//
+//     res.writeHead(200);
+//     res.end("All glory to WebSockets!\n");
+// };
+//
+// if ( cfg.ssl ) {
+//
+//     app = httpServ.createServer({
+//
+//         // providing server with  SSL key/cert
+//         key: fs.readFileSync( cfg.ssl_key ),
+//         cert: fs.readFileSync( cfg.ssl_cert )
+//
+//     }, processRequest ).listen( cfg.port );
+//
+// } else {
+//
+//     app = httpServ.createServer( processRequest ).listen( cfg.port );
+// }
+//
+// var wss = new WebSocketServer( { server: app } );
+//
+// wss.on('connection', function connection(ws) {
+//     ws.on('message', function incoming(message) {
+//         console.log('received: %s', message);
+//
+//         ws.send(message);
+//
+//     });
+//
+//     ws.send('something');
+// });
