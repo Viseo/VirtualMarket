@@ -1,8 +1,10 @@
 /**
  * Created by GEH3641 on 12/04/2017.
  */
+
+
 var express = require('express');
-// var http = require('http');
+var http = require('http');
 var BinaryServer = require('binaryjs').BinaryServer;
 var wav = require('wav');
 var fs = require('fs');
@@ -11,59 +13,19 @@ var recognize=require("./lib/recognize").recognize;
 
 var port = 5000;
 var outFile = 'demo.wav';
-
-
-// var options = {
-//     key: fs.readFileSync('./ssl/privatekey.pem'),
-//     cert: fs.readFileSync('./ssl/certificate.pem'),
-// };
-
-var cfg = {
-    ssl: false,
-    port: 5000,
-    ssl_key: '../../nginx/conf/Digimarket/virtualmarket.key',
-    ssl_cert: '/../../nginx/conf/Digimarket/virtualmarket.crt'
-};
-var httpServ = ( cfg.ssl ) ? require('https') : require('http');
-
-var processRequest = function( req, res ) {
-
-    res.writeHead(200);
-    res.end("All glory to WebSockets!\n");
-};
-
-
 var app = express();
+
 app.engine('html', require('ejs').renderFile);
 app.use(express.static(__dirname));
 app.get('/', function(req, res){
     res.render('index.html');
 });
-if ( cfg.ssl ) {
-    console.log('ok')
-    server = httpServ.createServer({
-        // providing server with  SSL key/cert
-        key: fs.readFileSync( cfg.ssl_key ),
-        cert: fs.readFileSync( cfg.ssl_cert )
 
-    },app).listen( cfg.port, function (e) {
-        console.log(e)
-    });
-
-} else {
-    console.log('hmm')
-    server = httpServ.createServer( app ).listen( cfg.port );
-}
-
-// var wss = new WebSocketServer( { server: server } );
-
-console.log('server open on port ' + cfg.port);
-// server=http.createServer(app);
+console.log('server open on port ' + port);
+server=http.createServer(app);
 
 binaryServer = BinaryServer({server: server});
-// server.listen(port);
-
-
+server.listen(port);
 
 binaryServer.on('connection', function(client) {
     console.log('new connection');
