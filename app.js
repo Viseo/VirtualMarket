@@ -21,21 +21,22 @@ app.use(express.static(__dirname));
 app.get('/', function(req, res){
     res.render('index.html');
 });
+//
+// var options = {
+//     key: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.key'),
+//     cert: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.crt'),
+// };
 
-var options = {
-    key: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.key'),
-    cert: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.crt'),
-};
+// var server = https.createServer(options, app).listen(port, function(){
+//     console.log("Express server listening on port " + port);
+// });
 
-var server = https.createServer(options, app).listen(port, function(){
-    console.log("Express server listening on port " + port);
-});
 
-// console.log('server open on port ' + port);
-// server=http.createServer(app);
+console.log('server open on port ' + port);
+var server=http.createServer(app);
 
 binaryServer = BinaryServer({server: server});
-// server.listen(port);
+server.listen(port);
 
 binaryServer.on('connection', function(client) {
     console.log('new connection');
