@@ -1786,10 +1786,6 @@ describe("Test",function (){
                 },500);
             },1000);
         },1000);
-
-
-
-
     });
 
     it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
