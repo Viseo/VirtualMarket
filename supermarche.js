@@ -2650,7 +2650,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         market.map.mapOn=true;
         market.mapPage.component.add(market.map.component);
         setTimeout(function(){
-            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
+            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap,market.map.updateMarkersSide);
             if (market.currentMapSearch != ""){
                 market.mapsfunction.research(market.currentMapSearch);
             }
