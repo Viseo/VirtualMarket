@@ -52,14 +52,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     });
 
                     svg.addEvent(this.component, "mouseup", () => {
-                        let widthTotal = market.width * 0.09 * this.tabCategories.length;
+                        let widthTotal = market.width * 0.08 * (this.tabCategories.length+1);
                         let widthView = width;
                         let positionRight = this.listThumbnail.x + widthTotal;
                         if (this.listThumbnail.x > 0) {
                             this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
                         }
                         else if (positionRight <= widthView) {
-                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
+                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal+ market.width * 0.01, this.listThumbnail.y);
                         }
                         else {
                         }
@@ -68,14 +68,14 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                     svg.addEvent(this.component, "mouseout", () => {
                         if (this.mouvement) {
-                            let widthTotal = market.width * 0.09 * this.tabCategories.length;
+                            let widthTotal = market.width * 0.08 * (this.tabCategories.length+1);
                             let widthView = width;
                             let positionRight = this.listThumbnail.x + widthTotal;
                             if (this.listThumbnail.x > 0) {
                                 this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
                             }
                             else if (positionRight <= widthView) {
-                                this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
+                                this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal + market.width * 0.01, this.listThumbnail.y);
                             }
                             this.mouvement = false;
                         }
@@ -95,7 +95,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     });
 
                     svg.addEvent(this.component, "touchend", () => {
-                        let widthTotal = market.width * 0.09* this.tabCategories.length;
+                        let widthTotal = market.width * 0.08* (this.tabCategories.length+1);
                         let widthView = width;
                         let positionRight = this.listThumbnail.x + widthTotal;
                         this.mouvement = false;
@@ -103,7 +103,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             this.listThumbnail.smoothy(10, 10).moveTo(0, 0);
                         }
                         else if (positionRight <= widthView) {
-                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal, this.listThumbnail.y);
+                            this.listThumbnail.smoothy(10, 10).moveTo(widthView - widthTotal + market.width * 0.01, this.listThumbnail.y);
                         }
                     });
                 });
