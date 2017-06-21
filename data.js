@@ -50,19 +50,30 @@ exports.data = function() {
                     nom: "Gruyère",
                     complement: "",
                 },
+                "Danette Chocolat" : {
+                    image:"img/produits/ProduitsLaitiers/danettechocolat.jpg",
+                    prix: 1,
+                    nom: "Danette Chocolat",
+                    complement: "",
+                },
                 "Yop Chocolat" : {
                     image:"img/produits/ProduitsLaitiers/yopchocolat.jpg",
                     prix: 1,
                     nom: "Yop Chocolat",
                     complement: "",
                 },
-                "Danette Chocolat" : {
-                    image:"img/produits/ProduitsLaitiers/danettechocolat.jpg",
+                "Yop Vanille" : {
+                    image:"img/produits/ProduitsLaitiers/yopvanille.jpg",
                     prix: 1,
-                    nom: "Danette Chocolat",
+                    nom: "Yop Vanille",
+                    complement: "",
+                },
+                "Yop Fraise" : {
+                    image:"img/produits/ProduitsLaitiers/yopfraise.jpg",
+                    prix: 1,
+                    nom: "Yop Fraise",
                     complement: "",
                 }
-
             },
 
             "Legumes": {
@@ -82,7 +93,7 @@ exports.data = function() {
                     image: "img/produits/Legumes/concombre.jpg",
                     prix: 1,
                     nom: "Concombre",
-                    complement: "/kg",
+                    complement: "",
                 },
                 "Courgette": {
                     image: "img/produits/Legumes/courgette.jpg",
@@ -108,10 +119,10 @@ exports.data = function() {
                     nom: "Pomme de terre",
                     complement: "/kg",
                 },
-                "Tomate": {
-                    image: "img/produits/Legumes/tomates.jpg",
+                "Poireau": {
+                    image: "img/produits/Legumes/poireau.jpg",
                     prix: 1,
-                    nom: "Tomate",
+                    nom: "Poireau",
                     complement: "/kg",
                 },
                 "Aubergine": {
@@ -120,11 +131,23 @@ exports.data = function() {
                     nom: "Aubergine",
                     complement: "/kg",
                 },
-                "Poireau": {
-                    image: "img/produits/Legumes/poireau.jpg",
+                "Poivron Vert": {
+                    image: "img/produits/Legumes/poivronvert.jpg",
                     prix: 1,
-                    nom: "Poireau",
-                    complement: "/kg",
+                    nom: "Poivron Vert",
+                    complement: "",
+                },
+                "Poivron Rouge": {
+                    image: "img/produits/Legumes/poivronrouge.jpg",
+                    prix: 1,
+                    nom: "Poivron Rouge",
+                    complement: "",
+                },
+                "Poivron Jaune": {
+                    image: "img/produits/Legumes/poivronjaune.jpg",
+                    prix: 1,
+                    nom: "Poivron Jaune",
+                    complement: "",
                 },
             },
 
@@ -133,6 +156,12 @@ exports.data = function() {
                     image: "img/produits/Fruits/bananes.jpg",
                     prix: 1.1,
                     nom: "Banane",
+                    complement: "/kg",
+                },
+                "Tomates": {
+                    image: "img/produits/Fruits/tomate.jpg",
+                    prix: 1,
+                    nom: "Tomate",
                     complement: "/kg",
                 },
                 "Citron vert": {
@@ -237,7 +266,7 @@ exports.data = function() {
                     nom: "Grenade",
                     complement: "/kg",
                 },
-                "Fruit de mer": {
+                "Fruits de mer": {
                     image: "img/produits/Fruits/fruits-de-mer.jpg",
                     prix: 1,
                     nom: "Fruit de mer",
@@ -386,6 +415,12 @@ exports.data = function() {
                     prix: 1000,
                     nom: "Londres",
                     complement: "",
+                },
+                "Tatooine": {
+                    image: "img/produits/Voyages/tatooine.jpg",
+                    prix: 90000000000000,
+                    nom: "Tatooine",
+                    complement: "",
                 }
 
             },
@@ -449,6 +484,18 @@ exports.data = function() {
                     prix: 300,
                     nom: "Drone",
                     complement: "",
+                },
+                "Appareil Photo": {
+                    image: "img/produits/HighTech/appareilphoto.jpg",
+                    prix: 700,
+                    nom: "Appareil Photo",
+                    complement: "",
+                },
+                "PC Portable": {
+                    image: "img/produits/HighTech/pcportable.jpg",
+                    prix: 900,
+                    nom: "PC Portable",
+                    complement: "",
                 }
 
             },
@@ -482,6 +529,18 @@ exports.data = function() {
                     image: "img/produits/Boissons/fanta.jpg",
                     prix: 1,
                     nom: "Fanta",
+                    complement: "",
+                },
+                "Orangina": {
+                    image: "img/produits/Boissons/orangina.jpg",
+                    prix: 1,
+                    nom: "Orangina",
+                    complement: "",
+                },
+                "Ice Tea": {
+                    image: "img/produits/Boissons/icetea.jpg",
+                    prix: 1,
+                    nom: "Ice Tea",
                     complement: "",
                 },
                 "RedBull": {
@@ -577,6 +636,18 @@ exports.data = function() {
                     image: "img/produits/Soins/coton.jpg",
                     prix: 2,
                     nom: "Coton-tige",
+                    complement: "",
+                },
+                "Mousse a raser": {
+                    image: "img/produits/Soins/moussearaser.jpg",
+                    prix: 2,
+                    nom: "Mousse à raser",
+                    complement: "",
+                },
+                "Mouchoires": {
+                    image: "img/produits/Soins/mouchoires.jpg",
+                    prix: 2,
+                    nom: "Mouchoires",
                     complement: "",
                 },
             },
@@ -746,6 +817,12 @@ exports.data = function() {
                     prix: 500,
                     nom: "Tabouret",
                     complement: "",
+                },
+                "Trone de fer": {
+                    image: "img/produits/Mobilier/tronedefer.jpg",
+                    prix: 1000000,
+                    nom: "Trone de fer",
+                    complement: "",
                 }
             },
 
@@ -758,8 +835,14 @@ exports.data = function() {
                 },
                 "Flash": {
                     image: "img/produits/SuperPouvoirs/flash.png",
-                    prix: 0,
+                    prix: 50000000,
                     nom: "Flash",
+                    complement: "",
+                },
+                "Reverse Flash": {
+                    image: "img/produits/SuperPouvoirs/reverseflash.png",
+                    prix: 50000000,
+                    nom: "Reverse Flash",
                     complement: "",
                 },
                 "Green Lantern": {
@@ -809,7 +892,14 @@ exports.data = function() {
                     prix: 0,
                     nom: "Spiderman",
                     complement: ""
-                }
+                },
+                "Captain America": {
+                    image: "img/produits/SuperPouvoirs/captainamerica.png",
+                    prix: 0,
+                    nom: "Captain America",
+                    complement: ""
+                },
+
             }
         }
     }
