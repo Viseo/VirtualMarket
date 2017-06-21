@@ -1868,7 +1868,7 @@ describe("Test",function (){
                 market.vocalRecognition("Négatif");
                 market.vocalRecognition("je veux me faire livrer le 10 juin à midi");
                 market.vocalRecognition("je veux me faire livrer le 10 juin à 16h");
-                market.vocalRecognition("je veux me faire livrer le 15 juin à 16h");
+                market.vocalRecognition("je veux me faire livrer le 25 juin à 16h");
                 market.vocalRecognition("non");
                 market.vocalRecognition("je veux me faire livrer le 10 juin");
                 market.vocalRecognition("oui");
