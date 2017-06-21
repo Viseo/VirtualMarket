@@ -1922,6 +1922,20 @@ describe("Test",function (){
         }, 4000);
     });
 
+    it('ensure that map can be clicked and that it s not loading markers if you go away',function(done) {
+        fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
+        market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
+        let map = retrieve(market.component,"[mapPage]");
+        let calendar = retrieve(market.component,"[calendarPage]");
+        runtime.event(map,"click",{});
+        runtime.advanceAll();
+        runtime.event(calendar,"click",{});
+        runtime.advanceAll();
+        setTimeout(function () {
+            done();
+        }, 4000);
+    });
+
     it("ensure that we are not loading markers on a map that doesn't exist",function(done){
         fakeCookie.setCookie("Drone:1,Webcam:1", 1, "done", "HighTech", "64 boulevard garibaldi");
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
