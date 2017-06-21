@@ -144,37 +144,41 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             };
             let manageChevron = ()=>{
                 if (tabThumbnail.length > 12){
-                    // let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W").position(this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                    // let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E").position(width - this.thumbWidth / 6, this.component.height / 2).color([0, 195, 235]);
-                    // let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                    //     .position(this.thumbWidth / 4, this.component.height / 2);
-                    // let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
-                    //     .position(this.component.width - this.thumbWidth / 4, this.component.height / 2);
-                    // let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0).mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
-                    // let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3).mark("chevronERay").shadow('ChevronE', -7, 8, 8);
-                    //
-                    // zoneChevronWest.onClick(()=>{
-                    //     if (this.listWidth != 0 && this.listThumbnails.x + this.thumbWidth * 1.5 < 0) {
-                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x + this.thumbWidth * 1.5, 0);
-                    //         zoneChevronEast.opacity(0.3);
-                    //     } else {
-                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
-                    //         zoneChevronWest.opacity(0);
-                    //         zoneChevronEast.opacity(0.3);
-                    //     }
-                    // });
-                    //
-                    // zoneChevronEast.onClick(()=>{
-                    //     if (this.listWidth != 0 && this.listThumbnails.x + this.listWidth - this.thumbWidth * 1.5 >= width) {
-                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x - this.thumbWidth * 1.5, 0);
-                    //         zoneChevronWest.opacity(0.3);
-                    //     } else {
-                    //         this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - this.listWidth - width * 0.01, 0);
-                    //         zoneChevronWest.opacity(0.3);
-                    //         zoneChevronEast.opacity(0);
-                    //     }
-                    // });
-                    // this.component.add(zoneChevronEast).add(zoneChevronWest);
+                    let chevronWest = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "W")
+                        .position(this.component.width*0.05, this.component.height / 2).color([0, 195, 235]);
+                    let chevronEast = new svg.Chevron(this.thumbWidth / 4, this.thumbWidth * 0.7, 16, "E")
+                        .position(this.component.width*0.90, this.component.height / 2).color([0, 195, 235]);
+                    let ellipseChevronWest = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                        .position(this.component.width*0.05, this.component.height / 2);
+                    let ellipseChevronEast = new svg.Ellipse(50, 50).color(svg.BLACK).opacity(0)
+                        .position(this.component.width*0.90, this.component.height / 2);
+                    let zoneChevronWest = new svg.Translation().add(ellipseChevronWest).add(chevronWest).opacity(0)
+                        .mark("chevronWRay").shadow('ChevronW', 7, 8, 8);
+                    let zoneChevronEast = new svg.Translation().add(ellipseChevronEast).add(chevronEast).opacity(0.3)
+                        .mark("chevronERay").shadow('ChevronE', -7, 8, 8);
+
+                    zoneChevronWest.onClick(()=>{
+                        if (this.listWidth != 0 && this.listThumbnails.x + this.thumbWidth * 1.5 < 0) {
+                            this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x + this.thumbWidth * 1.5, 0);
+                            zoneChevronEast.opacity(0.3);
+                        } else {
+                            this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(0, 0);
+                            zoneChevronWest.opacity(0);
+                            zoneChevronEast.opacity(0.3);
+                        }
+                    });
+
+                    zoneChevronEast.onClick(()=>{
+                        if (this.listWidth != 0 && this.listThumbnails.x + this.listWidth - this.thumbWidth * 1.5 >= width) {
+                            this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(this.listThumbnails.x - this.thumbWidth * 1.5, 0);
+                            zoneChevronWest.opacity(0.3);
+                        } else {
+                            this.listThumbnails.smoothy(10, 20).onChannel("rayon").moveTo(width - this.listWidth - width * 0.07, 0);
+                            zoneChevronWest.opacity(0.3);
+                            zoneChevronEast.opacity(0);
+                        }
+                    });
+                    this.component.add(zoneChevronEast).add(zoneChevronWest);
                 }
             };
 
@@ -2120,6 +2124,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             loadMap();
                             setTimeout(()=>{
                                 if(market.map!=null)market.map.updateMarkersSide();
+                                console.log(market.map);
                             },3500);
                         }
                         if (market.currentIndex > index) {
@@ -2645,7 +2650,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         market.map.mapOn=true;
         market.mapPage.component.add(market.map.component);
         setTimeout(function(){
-            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap,market.map.updateMarkersSide);
+            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
             if (market.currentMapSearch != ""){
                 market.mapsfunction.research(market.currentMapSearch);
             }
@@ -2734,9 +2739,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         let index=cookie.getCookie("page");
         if(index==1){
             loadMap();
-            setTimeout(()=>{
-                if(market.map!=null)market.map.updateMarkersSide();
-            },3500);
         }
         if (2 > index) {
             for (let j = 2; j > index; j--) {
@@ -2759,14 +2761,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     let welcomeMessage=()=>{
-        if(market.currentIndex==2){
-            market.textToSpeech("Bonjour, bienvenue dans votre supermarché!","fr");
-        }
-        else if(market.currentIndex==1){
-            market.textToSpeech("La dernière fois, vous etiez en train d'indiquer votre adresse!","fr");
-        }
-        else{
-            market.textToSpeech("La dernière fois, vous etiez en train de choisir un horaire de livraison!","fr");
+        if(!cookieRay) {
+            market.textToSpeech("Bonjour, bienvenue dans votre supermarché!", "fr");
         }
     };
     welcomeMessage();
