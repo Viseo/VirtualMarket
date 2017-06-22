@@ -387,105 +387,102 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
         dragBasket(current,e) {
             let manageDndForMouse = ()=>{
+                let manageLeft = ()=>{
+                    this.dragged = new Thumbnail(current.image.src, current.name);
+                    this.dragged.placeElementsDnD(current);
+                    this.dragged.move(current.x + market.mainPage.pageWidth * 0.85, current.y + this.listProducts.y + header.height);
+                    this.dragged.component.opacity(0.9).mark("dragged");
+                    market.glassDnD.add(this.dragged.component);
+                    market.add(market.glassDnD);
+
+                    let anchorPoint = {x:e.pageX-this.dragged.x,y:e.pageY-this.dragged.y};
+                    this.dragged.component.onMouseMove((e)=>{
+                        this.dragged.move(e.pageX - anchorPoint.x, e.pageY - anchorPoint.y);
+                    });
+
+                    this.dragged.component.onMouseUp(()=>{
+                        if ((this.dragged.x + this.dragged.width / 2 < market.mainPage.pageWidth * 0.85)
+                            && (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
+                            market.basket.deleteProducts(current, 1);
+                            market.changeRay(current.categorie);
+                        }
+                        market.glassDnD.remove(this.dragged.component);
+                        this.direction=null;
+                    });
+                    this.direction = "LEFT";
+                };
+                let manageRight = ()=>{
+                    let handleEndMovement=()=>{
+                        if (current.component.x + current.width / 2 > this.component.width) {
+                            market.basket.deleteProducts(current, current.quantity);
+                        }
+                        else {
+                            current.component.smoothy(5, 5).moveTo(0, current.y);
+                        }
+                        this.direction=null;
+                    };
+                    this.direction = "RIGHT";
+                    this.previousMouseX = e.pageX;
+                    svg.addEvent(current.component, "mousemove", (e)=>{
+                        if(this.direction=="RIGHT") {
+                            current.component.steppy(1, 1).moveTo(current.x + (e.pageX - this.previousMouseX),
+                                current.y);
+                        }else{}
+                    });
+
+                    svg.addEvent(current.component, "mouseup", ()=>{
+                        handleEndMovement();
+                    });
+
+                    svg.addEvent(current.component, "mouseout", ()=>{
+                        handleEndMovement();
+                    });
+                };
+                let manageVertical = ()=>{
+                    let handleEndMovements=()=>{
+                        let heightTotal = this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
+                        let heightView = this.component.height*0.77;
+                        let positionDown = this.listProducts.y + heightTotal;
+                        if ((this.listProducts.y > 0)||(this.thumbnailsProducts.length<=7)) {
+                            this.listProducts.smoothy(10, 10).moveTo(0,0);
+                        }
+                        else if(positionDown < heightView) {
+                            this.listProducts.smoothy(10,10).moveTo(this.listProducts.x, heightView - heightTotal);
+                        }
+                        this.direction=null;
+                    };
+                    this.direction = "VERTICAL";
+                    this.previousMouseY = e.pageY;
+                    svg.addEvent(this.component, "mousemove", (e)=>{
+                        if(this.direction=="VERTICAL") {
+                            this.listProducts.steppy(1, 1).moveTo(this.listProducts.x,
+                                this.listProducts.y+(e.pageY - this.previousMouseY));
+                            this.previousMouseY = e.pageY;
+                        }else{}
+                    });
+
+                    svg.addEvent(this.component, "mouseup", ()=>{
+                        handleEndMovements();
+                    });
+
+                    svg.addEvent(this.component, "mouseout", ()=>{
+                        handleEndMovements();
+                    });
+                };
                 let mouseInitial = {x:e.pageX,y:e.pageY};
                 let lookingForDir=true;
                 current.component.onMouseMove((e)=>{
                     if((!this.direction)&&lookingForDir){
                         if(Math.abs(e.pageX-mouseInitial.x)*40>Math.abs(e.pageY-mouseInitial.y)){
                             if(e.pageX<mouseInitial.x){
-                                this.dragged = new Thumbnail(current.image.src, current.name);
-                                this.dragged.placeElementsDnD(current);
-                                this.dragged.move(current.x + market.mainPage.pageWidth * 0.85, current.y + this.listProducts.y + header.height);
-                                this.dragged.component.opacity(0.9).mark("dragged");
-                                market.glassDnD.add(this.dragged.component);
-                                market.add(market.glassDnD);
-
-                                let anchorPoint = {x:e.pageX-this.dragged.x,y:e.pageY-this.dragged.y};
-                                this.dragged.component.onMouseMove((e)=>{
-                                    this.dragged.move(e.pageX - anchorPoint.x, e.pageY - anchorPoint.y);
-                                });
-
-                                this.dragged.component.onMouseUp(()=>{
-                                    if ((this.dragged.x + this.dragged.width / 2 < market.mainPage.pageWidth * 0.85)
-                                        && (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
-                                        market.basket.deleteProducts(current, 1);
-                                        market.changeRay(current.categorie);
-                                    }
-                                    market.glassDnD.remove(this.dragged.component);
-                                    this.direction=null;
-                                });
-                                this.direction = "LEFT";
+                                manageLeft();
                             }
                             else{
-                                this.direction = "RIGHT";
-                                this.previousMouseX = e.pageX;
-                                svg.addEvent(current.component, "mousemove", (e)=>{
-                                    if(this.direction=="RIGHT") {
-                                        current.component.steppy(1, 1).moveTo(current.x + (e.pageX - this.previousMouseX),
-                                            current.y);
-                                    }else{}
-                                });
-
-                                svg.addEvent(current.component, "mouseup", ()=>{
-                                    if (current.component.x + current.width / 2 > this.component.width) {
-                                        market.basket.deleteProducts(current, current.quantity);
-                                    }
-                                    else {
-                                        current.component.smoothy(5, 5).moveTo(0, current.y);
-                                    }
-                                    this.direction=null;
-                                });
-
-                                svg.addEvent(current.component, "mouseout", ()=>{
-                                    if (current.component.x + current.width / 2 >= this.component.width) {
-                                        market.basket.deleteProducts(current, current.quantity);
-                                    }
-                                    else {
-                                        current.component.smoothy(5, 5).moveTo(0, current.y);
-                                    }
-                                    this.direction=null;
-                                });
+                                manageRight();
                             }
                         }
                         else{
-                            this.direction = "VERTICAL";
-                            // naviguer dans le panier avec la souris
-                            this.previousMouseY = e.pageY;
-                            svg.addEvent(this.component, "mousemove", (e)=>{
-                                if(this.direction=="VERTICAL") {
-                                    this.listProducts.steppy(1, 1).moveTo(this.listProducts.x,
-                                        this.listProducts.y+(e.pageY - this.previousMouseY));
-                                    this.previousMouseY = e.pageY;
-                                }else{}
-                            });
-
-                            svg.addEvent(this.component, "mouseup", ()=>{
-                                let heightTotal = this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
-                                let heightView = this.component.height*0.77;
-                                let positionDown = this.listProducts.y + heightTotal;
-                                if ((this.listProducts.y > 0)||(this.thumbnailsProducts.length<=7)) {
-                                    this.listProducts.smoothy(10, 10).moveTo(0,0);
-                                }
-                                else if(positionDown < heightView) {
-                                    this.listProducts.smoothy(10,10).moveTo(this.listProducts.x, heightView - heightTotal);
-                                }
-                                this.direction=null;
-                            });
-
-                            svg.addEvent(this.component, "mouseout", ()=>{
-                                if(this.direction) {
-                                    let heightTotal = this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
-                                    let heightView = this.component.height*0.77;
-                                    let positionDown = this.listProducts.y + heightTotal;
-                                    if ((this.listProducts.y > 0)||(this.thumbnailsProducts.length<=7)) {
-                                        this.listProducts.smoothy(10, 10).moveTo(0, 0);
-                                    }
-                                    else if(positionDown < heightView) {
-                                        this.listProducts.smoothy(10,10).moveTo(this.listProducts.x, heightView - heightTotal);
-                                    }
-                                    this.direction = null;
-                                }else{}
-                            });
+                            manageVertical();
                         }
                     }
                     lookingForDir=false;
@@ -493,78 +490,86 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             };
             let manageDndForTouch = ()=>{
                 let touchInitial = {x:e.touches[0].clientX,y:e.touches[0].clientY};
-                //// gestion tactile du panier vers le rayon:
-                this.previousTouchY = e.touches[0].clientY;
-                this.previousTouchX = e.touches[0].clientX;
-                svg.addEvent(current.component, "touchmove", (e)=>{
-                    if(!this.direction){
-                        if(Math.abs(e.touches[0].clientX-touchInitial.x)>Math.abs(e.touches[0].clientY-touchInitial.y)){
-                            if(e.touches[0].clientX<touchInitial.x) {
-                                this.dragged = new Thumbnail(current.image.src, current.name);
-                                this.dragged.placeElementsDnD(current);
-                                this.dragged.move(current.x + market.mainPage.pageWidth * 0.85, current.y + this.listProducts.y + header.height);
-                                this.dragged.component.opacity(0.9).mark("dragged");
-                                market.glassDnD.add(this.dragged.component);
-                                market.add(market.glassDnD);
-                                this.direction="LEFT";
+                let handleMove=()=>{
+                    this.previousTouchY = e.touches[0].clientY;
+                    this.previousTouchX = e.touches[0].clientX;
+                    let findDirection=(e)=>{
+                        if(!this.direction){
+                            if(Math.abs(e.touches[0].clientX-touchInitial.x)>Math.abs(e.touches[0].clientY-touchInitial.y)){
+                                if(e.touches[0].clientX<touchInitial.x) {
+                                    this.dragged = new Thumbnail(current.image.src, current.name);
+                                    this.dragged.placeElementsDnD(current);
+                                    this.dragged.move(current.x + market.mainPage.pageWidth * 0.85, current.y + this.listProducts.y + header.height);
+                                    this.dragged.component.opacity(0.9).mark("dragged");
+                                    market.glassDnD.add(this.dragged.component);
+                                    market.add(market.glassDnD);
+                                    this.direction="LEFT";
+                                }
+                                else{
+                                    this.direction = "RIGHT";
+                                }
                             }
                             else{
-                                this.direction = "RIGHT";
+                                this.direction = "VERTICAL";
+                            }
+                        }
+                    };
+                    svg.addEvent(current.component, "touchmove", (e)=>{
+                        findDirection(e);
+                        switch(this.direction){
+                            case "LEFT":
+                                this.dragged.move(e.touches[0].clientX - current.width / 2, e.touches[0].clientY - current.height / 2);
+                                break;
+                            case "VERTICAL":
+                                this.listProducts.steppy(1, 1).moveTo(this.listProducts.x,
+                                    this.listProducts.y+(e.touches[0].clientY - this.previousTouchY));
+                                this.previousTouchY = e.touches[0].clientY;
+                                break;
+                            case "RIGHT":
+                                current.component.steppy(1, 1).moveTo(current.x+(e.touches[0].clientX - this.previousTouchX),
+                                    current.y);
+                                break;
+                        }
+                    });
+                };
+                let handleEnd=()=>{
+                    svg.addEvent(current.component, "touchend", ()=>{
+                        if(this.direction=="LEFT") {
+                            if ((this.dragged.x + this.dragged.width / 2 < market.mainPage.pageWidth * 0.85) &&
+                                (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
+                                market.basket.deleteProducts(current, 1);
+                                market.changeRay(current.categorie);
+                            }
+                            market.glassDnD.remove(this.dragged.component);
+
+                        }
+                        else if(this.direction=="VERTICAL"){
+                            let heightTotal = this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
+                            let heightView = this.component.height*0.77;
+                            let positionDown = this.listProducts.y + heightTotal;
+                            if ((this.listProducts.y > 0)||(this.thumbnailsProducts.length<=7)) {
+                                this.listProducts.smoothy(10, 10).moveTo(0, 0);
+                            }
+                            else if(positionDown < heightView) {
+                                this.listProducts.smoothy(10,10).moveTo(this.listProducts.x, heightView - heightTotal);
                             }
                         }
                         else{
-                            this.direction = "VERTICAL";
+                            if(current.component.x+current.width/2>this.component.width){
+                                market.basket.deleteProducts(current, current.quantity);
+                            }
+                            else{
+                                current.component.smoothy(5, 5).moveTo(0, current.y);
+                            }
                         }
-                    }
 
-                    switch(this.direction){
-                        case "LEFT":
-                            this.dragged.move(e.touches[0].clientX - current.width / 2, e.touches[0].clientY - current.height / 2);
-                            break;
-                        case "VERTICAL":
-                            this.listProducts.steppy(1, 1).moveTo(this.listProducts.x,
-                                this.listProducts.y+(e.touches[0].clientY - this.previousTouchY));
-                            this.previousTouchY = e.touches[0].clientY;
-                            break;
-                        case "RIGHT":
-                            current.component.steppy(1, 1).moveTo(current.x+(e.touches[0].clientX - this.previousTouchX),
-                                current.y);
-                            break;
-                    }
-                });
+                        this.direction=null;
+                    });
+                };
 
-                svg.addEvent(current.component, "touchend", ()=>{
-                    if(this.direction=="LEFT") {
-                        if ((this.dragged.x + this.dragged.width / 2 < market.mainPage.pageWidth * 0.85) &&
-                            (this.dragged.y + this.dragged.height / 2 > market.height * 0.20)) {
-                            market.basket.deleteProducts(current, 1);
-                            market.changeRay(current.categorie);
-                        }
-                        market.glassDnD.remove(this.dragged.component);
+                handleMove();
+                handleEnd();
 
-                    }
-                    else if(this.direction=="VERTICAL"){
-                        let heightTotal = this.thumbnailsProducts.length * this.thumbnailsProducts[0].height;
-                        let heightView = this.component.height*0.77;
-                        let positionDown = this.listProducts.y + heightTotal;
-                        if ((this.listProducts.y > 0)||(this.thumbnailsProducts.length<=7)) {
-                            this.listProducts.smoothy(10, 10).moveTo(0, 0);
-                        }
-                        else if(positionDown < heightView) {
-                            this.listProducts.smoothy(10,10).moveTo(this.listProducts.x, heightView - heightTotal);
-                        }
-                    }
-                    else{
-                        if(current.component.x+current.width/2>this.component.width){
-                            market.basket.deleteProducts(current, current.quantity);
-                        }
-                        else{
-                            current.component.smoothy(5, 5).moveTo(0, current.y);
-                        }
-                    }
-
-                    this.direction=null;
-                });
             };
 
             if(e.type=="mousedown"){
@@ -606,7 +611,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.height = height;
                 this.width=width;
             };
-
             let manageBackToHome=()=>{
                 this.logoComp.onClick(()=>{
                     if(market.map!=null){
@@ -633,73 +637,75 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     class Payment extends DrawingZone {
         constructor(width,height,x,y){
             super(width,height,x,y);
-            this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE);
-            this.shadowCard = new svg.Translation().shadow('shadowcard',3,3,3).mark('shadowCard');
-            this.shadowTpe = new svg.Translation().shadow('tpe',3,3,3).mark('TPE');
-            this.card = new svg.Image("img/carte.png").dimension(width*0.60,height*0.75).position(width*0.1,height/2).mark("card");
-            this.tpeBack = new svg.Image("img/tpeFond.png").dimension(width,height*0.9).position(width*0.99,height/2);
-            this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
 
-            this.iteration = 1;
-            this.width = width;
-            this.height = height;
-            this.cardIn = false;
-
-            this.shadowCard.add(this.tpeBack);
-            this.shadowCard.add(this.card);
-            this.shadowTpe.add(this.tpe);
-            this.component.add(this.background);
-            this.component.add(this.shadowCard);
-            this.component.add(this.shadowTpe);
-
-            this.zoneCode = new SecurityCode(market.mainPage.pageWidth,market.height-market.height/19,0,market.height/19);
-
-            svg.addEvent(this.card,"touchstart",()=>{
-                svg.addEvent(this.card,"touchmove",(e)=>{
-                    if(this.card.x+this.card.width/2<this.component.width*0.90)
-                        this.card.position(e.touches[0].pageX-this.component.x,this.card.y);
-                    else if(this.cardIn==false){
-                        this.showCode();
-                        this.card.position(this.width*0.65,this.card.y);
-                        this.cardIn=true;
-                        svg.event(this.card,"touchend",{});
-                    }
+            let init=()=>{
+                this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE);
+                this.shadowCard = new svg.Translation().shadow('shadowcard',3,3,3).mark('shadowCard');
+                this.shadowTpe = new svg.Translation().shadow('tpe',3,3,3).mark('TPE');
+                this.card = new svg.Image("img/carte.png").dimension(width*0.60,height*0.75).position(width*0.1,height/2).mark("card");
+                this.tpeBack = new svg.Image("img/tpeFond.png").dimension(width,height*0.9).position(width*0.99,height/2);
+                this.tpe = new svg.Image("img/tpe.png").dimension(width,height).position(width,height/2);
+                this.iteration = 1;
+                this.width = width;
+                this.height = height;
+                this.cardIn = false;
+                this.zoneCode = new SecurityCode(market.mainPage.pageWidth,market.height-market.height/19,0,market.height/19);
+            };
+            let initEventsTouch=()=>{
+                svg.addEvent(this.card,"touchstart",()=>{
+                    svg.addEvent(this.card,"touchmove",(e)=>{
+                        if(this.card.x+this.card.width/2<this.component.width*0.90)
+                            this.card.position(e.touches[0].pageX-this.component.x,this.card.y);
+                        else if(this.cardIn==false){
+                            this.showCode();
+                            this.card.position(this.width*0.65,this.card.y);
+                            this.cardIn=true;
+                            svg.event(this.card,"touchend",{});
+                        }
+                    });
                 });
-            });
-
-            this.card.onMouseDown(()=>{
-                let draw = true;
-                svg.addEvent(this.card,"mousemove",(e)=>{
-                    if(draw)this.card.position(e.pageX-this.component.x,this.card.y);
-                });
-
-                this.card.onMouseUp(()=>{
-                    if(draw) {
-                        if (this.card.x + this.card.width / 2 < this.component.width * 0.80)
+            };
+            let initEventsMouse=()=>{
+                let endDraw=()=>{
+                    if(this.draw) {
+                        if (this.card.x + this.card.width / 2 < this.component.width * 0.60)
                             this.card.position(width * 0.1, this.card.y);
                         else{
                             this.showCode();
                             this.card.position(this.width * 0.65, this.card.y);
                             this.cardIn=true;
                         }
-                        draw = false;
+                        this.draw = false;
                     }
-                });
+                };
+                this.card.onMouseDown(()=>{
+                    this.draw = true;
+                    svg.addEvent(this.card,"mousemove",(e)=>{
+                        if(this.draw)this.card.position(e.pageX-this.component.x,this.card.y);
+                    });
 
-                this.card.onMouseOut(()=>{
-                    if(draw) {
-                        if (this.card.x + this.card.width / 2 < this.component.width * 0.6)
-                            this.card.position(width * 0.1, this.card.y);
-                        else if (this.cardIn == false) {
-                            this.showCode();
-                            this.card.position(this.width * 0.65, this.card.y);
-                            this.cardIn=true;
-                        }
-                        draw = false;
+                    this.card.onMouseUp(()=>{
+                        endDraw();
+                    });
 
-                    }
+                    this.card.onMouseOut(()=>{
+                        endDraw();
+                    });
                 });
-            });
+            };
+            let addEveryThing=()=>{
+                this.shadowCard.add(this.tpeBack);
+                this.shadowCard.add(this.card);
+                this.shadowTpe.add(this.tpe);
+                this.component.add(this.background);
+                this.component.add(this.shadowCard);
+                this.component.add(this.shadowTpe);
+            };
+
+            init();
+            initEventsMouse();
+            initEventsTouch();
+            addEveryThing();
         }
 
         showCode(){
@@ -714,38 +720,41 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
     class SecurityButton {
         constructor(value, leftWidth, upperHeight){
-            this.value = value;
-            this.unit = upperHeight*0.5;
-            this.gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * this.unit;
-            this.gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * this.unit;
-            this.ray = upperHeight*0.08;
-
-            // Dessiner les boutons
-            this.component = new svg.Circle(this.ray).position(this.gapX ,this.gapY).color(svg.WHITE).opacity(1).mark("button"+value);
-
-            this.component.onMouseOut(()=>{
-                if ((market.payment.zoneCode.onDrawing)&& (market.payment.zoneCode.code.indexOf(""+this.value)== -1))
-                {
-                    market.payment.zoneCode.code+= this.value;
-                }
-            });
-
-            this.component.onMouseEnter(()=>{
-                if (market.payment.zoneCode.onDrawing)
-                {
-                    if(market.payment.zoneCode.code.length>0){
-                        let buttonBefore = market.payment.zoneCode.tabButtons[parseInt(market.payment.zoneCode.code.charAt(market.payment.zoneCode.code.length-1))-1];
-                        market.payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,this.gapX,this.gapY)
-                            .color(svg.WHITE,5,svg.WHITE));
-                        market.payment.zoneCode.buttons.add(market.payment.zoneCode.lines[market.payment.zoneCode.lines.length-1]);
-                    }
-                    if (this.value != market.payment.zoneCode.code.slice(-1)){
+            let init = ()=>{
+                this.value = value;
+                this.unit = upperHeight*0.5;
+                this.gapX = leftWidth + ((((value - 1 ) % 3) ) - 1 ) * this.unit;
+                this.gapY = upperHeight +  ((Math.trunc((value - 1) / 3) ) - 1 ) * this.unit;
+                this.ray = upperHeight*0.08;
+                this.component = new svg.Circle(this.ray).position(this.gapX ,this.gapY).color(svg.WHITE).opacity(1).mark("button"+value);
+            };
+            let initEventsDrawingMouse = ()=>{
+                this.component.onMouseOut(()=>{
+                    if ((market.payment.zoneCode.onDrawing)&& (market.payment.zoneCode.code.indexOf(""+this.value)== -1))
+                    {
                         market.payment.zoneCode.code+= this.value;
                     }
-                }
-            });
+                });
+                this.component.onMouseEnter(()=>{
+                    if (market.payment.zoneCode.onDrawing)
+                    {
+                        if(market.payment.zoneCode.code.length>0){
+                            let buttonBefore = market.payment.zoneCode.tabButtons[parseInt(market.payment.zoneCode.code.charAt(market.payment.zoneCode.code.length-1))-1];
+                            market.payment.zoneCode.lines.push(new svg.Line(buttonBefore.gapX,buttonBefore.gapY,this.gapX,this.gapY)
+                                .color(svg.WHITE,5,svg.WHITE));
+                            market.payment.zoneCode.buttons.add(market.payment.zoneCode.lines[market.payment.zoneCode.lines.length-1]);
+                        }
+                        if (this.value != market.payment.zoneCode.code.slice(-1)){
+                            market.payment.zoneCode.code+= this.value;
+                        }
+                    }
+                });
+            };
+
+            init();
+            initEventsDrawingMouse();
         }
-        // Récupérer les boutons
+
         get(){
             return this.component;
         }
@@ -754,157 +763,158 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     class SecurityCode {
         constructor(width,height,x,y)
         {
-            this.component = new svg.Translation();
-            this.background = new svg.Rect();
-            this.title = new svg.Text("Saisir le code de sécurité");
-            this.buttons = new svg.Translation().mark("buttonGroup");
-            this.timer = new svg.Text("30");
-            this.message = new svg.Text("");
-            this.width = width;
-            this.height = height;
-            this.circleTimer = new svg.Circle(this.height/25);
-            this.arcTimer = new svg.Path(0,0);
-            this.onDrawing = false;
-            this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
-            this.lines = [];
-            this.currentLine=new svg.Line();
-
-            this.cross.onClick(()=>{
-                market.remove(market.payment.zoneCode.component);
-                market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
-                market.payment.cardIn=false;
-            });
-
-            this.component.onMouseUp(()=>{
-                if (this.onDrawing){
-                    this.onDrawing = false;
-                    let check=this.checkPassword(this.code);
-                    if(check===false){
-                        if(this.code.length>1){
-                            market.payment.iteration++;
-                            market.textToSpeech("Code erroné.");
-                            if (market.payment.iteration >3) {
-                                market.textToSpeech("Veuillez patienter"+10+"secondes");
-                                this.launchTimer(10);
+            let init=()=>{
+                this.component = new svg.Translation();
+                this.background = new svg.Rect();
+                this.title = new svg.Text("Saisir le code de sécurité");
+                this.buttons = new svg.Translation().mark("buttonGroup");
+                this.timer = new svg.Text("30");
+                this.message = new svg.Text("");
+                this.width = width;
+                this.height = height;
+                this.circleTimer = new svg.Circle(this.height/25);
+                this.arcTimer = new svg.Path(0,0);
+                this.onDrawing = false;
+                this.cross = new svg.Image("img/icone-supprimer.png").mark("cross");
+                this.lines = [];
+                this.currentLine=new svg.Line();
+            };
+            let initEvents=()=>{
+                let handleCancelPayment = ()=>{
+                    this.cross.onClick(()=>{
+                        market.remove(market.payment.zoneCode.component);
+                        market.payment.card.position(market.payment.width*0.1,market.payment.height/2);
+                        market.payment.cardIn=false;
+                    });
+                };
+                let handleEventsToTriggerEndCode = ()=>{
+                    let handleEndCode = ()=>{
+                        if (this.onDrawing){
+                            this.onDrawing = false;
+                            let check=this.checkPassword(this.code);
+                            if(check===false){
+                                if(this.code.length>1){
+                                    market.payment.iteration++;
+                                    market.textToSpeech("Code erroné.");
+                                    if (market.payment.iteration >3) {
+                                        market.textToSpeech("Veuillez patienter"+10+"secondes");
+                                        this.launchTimer(10);
+                                    }
+                                }
+                            }else{
+                                market.currentIndex=1;
+                                market.currentPage=market.mapPage.component;
+                                this.moveMainpage();
+                                this.paymentCookie();
                             }
+                            for(let i=0;i<this.lines.length;i++) this.buttons.remove(this.lines[i]);
+                            this.lines = [];
+                            this.buttons.remove(this.currentLine);
+                            this.currentLine=new svg.Line();
+                            this.buttons.add(this.currentLine);
                         }
-                    }else{
-                        market.currentIndex=1;
-                        market.currentPage=market.mapPage.component;
-                        this.moveMainpage();
-                        this.paymentCookie();
-                    }
-                    for(let i=0;i<this.lines.length;i++) this.buttons.remove(this.lines[i]);
-                    this.lines = [];
-                    this.buttons.remove(this.currentLine);
-                    this.currentLine=new svg.Line();
-                    this.buttons.add(this.currentLine);
-                }
-            });
+                    };
+                    this.component.onMouseUp(()=>{
+                        handleEndCode();
+                    });
 
-            svg.addEvent(this.component,"touchend",()=>{
-                if (this.onDrawing){
-                    this.onDrawing = false;
-                    let check=this.checkPassword(this.code);
-                    if(check===false){
-                        if(this.code.length>1){
-                            market.payment.iteration++;
-                            if (market.payment.iteration >3) {
-                                this.launchTimer(10);
+                    svg.addEvent(this.component,"touchend",()=>{
+                        handleEndCode();
+                    });
+                };
+                let handleEventsToTriggerBeginCode = ()=>{
+                    let beginCode = ()=>{
+                        this.onDrawing = true;
+                        this.code= "";
+                    };
+                    this.component.onMouseDown(()=>{
+                        beginCode();
+                    });
+                    svg.addEvent(this.component,"touchstart",()=>{
+                        beginCode();
+                    });
+                    this.code = "";
+                };
+                let handleEventsToDraw = ()=>{
+                    let mouseEvents = ()=>{
+                        this.component.onMouseMove((e)=>{
+                            if(this.onDrawing && this.code.length>0) {
+                                this.buttons.remove(this.currentLine);
+                                let buttonBase = this.tabButtons[parseInt(this.code.charAt(this.code.length-1))-1];
+                                this.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX,e.pageY-header.height).color(svg.WHITE,5,svg.WHITE);
+                                this.buttons.add(this.currentLine);
                             }
-                        }
-                    }
-                    else{
-                        this.moveMainpage();
-                        market.currentIndex=1;
-                        market.currentPage=market.mapPage.component;
-                        this.paymentCookie();
-                    }
-                    for(let i=0;i<this.lines.length;i++) this.buttons.remove(this.lines[i]);
-                    this.lines = [];
-                    this.buttons.remove(this.currentLine);
-                    this.currentLine=new svg.Line();
-                    this.buttons.add(this.currentLine);
+                        });
+                        this.onButton=false;
+                    };
+                    let touchEvents = ()=>{
+                        svg.addEvent(this.component,"touchmove",(e)=>{
+                            let button=null;
+                            for(let i = 0;i<this.tabButtons.length;i++) {
+                                if ((e.touches[0].clientX > (this.x + this.tabButtons[i].gapX) - this.tabButtons[i].ray) &&
+                                    (e.touches[0].clientX < (this.x + this.tabButtons[i].gapX) + this.tabButtons[i].ray) &&
+                                    (e.touches[0].clientY > (this.y + this.tabButtons[i].gapY) - this.tabButtons[i].ray) &&
+                                    (e.touches[0].clientY < (this.y + this.tabButtons[i].gapY) + this.tabButtons[i].ray)) {
+                                    button=this.tabButtons[i];
+                                }
+                            }
+
+                            if(button!=null&&(this.onButton==false)){
+                                if(this.code.length>0) {
+                                    let buttonBefore = this.tabButtons[parseInt(this.code.charAt(this.code.length - 1)) - 1];
+                                    this.lines.push(new svg.Line(buttonBefore.gapX, buttonBefore.gapY, button.gapX, button.gapY)
+                                        .color(svg.WHITE, 5, svg.WHITE));
+                                    this.buttons.add(this.lines[this.lines.length - 1]);
+                                }
+                                if(button.value != market.payment.zoneCode.code.slice(-1)) {
+                                    this.code += button.value;
+                                }
+                            }
+
+                            if(this.onDrawing && this.code.length>0) {
+                                this.buttons.remove(this.currentLine);
+                                let buttonBase = this.tabButtons[parseInt(this.code.charAt(this.code.length-1))-1];
+                                this.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,
+                                    e.touches[0].clientX,e.touches[0].clientY-header.height)
+                                    .color(svg.WHITE,5,svg.WHITE);
+                                this.buttons.add(this.currentLine);
+                            }
+                        });
+                    };
+
+                    mouseEvents();
+                    touchEvents();
+                };
+
+                handleCancelPayment();
+                handleEventsToTriggerEndCode();
+                handleEventsToTriggerBeginCode();
+                handleEventsToDraw();
+            };
+            let placeAndAddComponents = ()=>{
+                this.component.add(this.background);
+                this.component.add(this.title);
+                this.component.add(this.buttons);
+                this.component.add(this.circleTimer);
+                this.component.add(this.arcTimer);
+                this.component.add(this.timer);
+                this.component.add(this.message);
+                this.component.add(this.cross);
+
+                this.tabButtons = [];
+                for (let num = 1; num <10; num ++){
+                    this.tabButtons.push(new SecurityButton(num, width/2, height*0.45));
+                    this.buttons.add(this.tabButtons[num-1].get());
                 }
-            });
+                this.buttons.add(this.currentLine);
+                this.x = x;
+                this.y = y;
+                this.component.move(x,y);
+            };
 
-
-            this.component.onMouseDown(()=>{
-                this.onDrawing = true;
-                this.code= "";
-            });
-            svg.addEvent(this.component,"touchstart",()=>{
-                this.onDrawing = true;
-                this.code= "";
-            });
-            this.code = "";
-
-            //Ligne qui suis la souris
-            this.component.onMouseMove((e)=>{
-                if(this.onDrawing && this.code.length>0) {
-                    this.buttons.remove(this.currentLine);
-                    let buttonBase = this.tabButtons[parseInt(this.code.charAt(this.code.length-1))-1];
-                    this.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,e.pageX,e.pageY-header.height).color(svg.WHITE,5,svg.WHITE);
-                    this.buttons.add(this.currentLine);
-                }
-            });
-            this.onButton=false;
-
-            //Gestion Tactile
-            svg.addEvent(this.component,"touchmove",(e)=>{
-                let button=null;
-                for(let i = 0;i<this.tabButtons.length;i++) {
-                    if ((e.touches[0].clientX > (this.x + this.tabButtons[i].gapX) - this.tabButtons[i].ray) &&
-                        (e.touches[0].clientX < (this.x + this.tabButtons[i].gapX) + this.tabButtons[i].ray) &&
-                        (e.touches[0].clientY > (this.y + this.tabButtons[i].gapY) - this.tabButtons[i].ray) &&
-                        (e.touches[0].clientY < (this.y + this.tabButtons[i].gapY) + this.tabButtons[i].ray)) {
-                        button=this.tabButtons[i];
-                    }
-                }
-
-                //Simulate mouseEnter
-                if(button!=null&&(this.onButton==false)){
-                    if(this.code.length>0) {
-                        let buttonBefore = this.tabButtons[parseInt(this.code.charAt(this.code.length - 1)) - 1];
-                        this.lines.push(new svg.Line(buttonBefore.gapX, buttonBefore.gapY, button.gapX, button.gapY)
-                            .color(svg.WHITE, 5, svg.WHITE));
-                        this.buttons.add(this.lines[this.lines.length - 1]);
-                    }
-                    if(button.value != market.payment.zoneCode.code.slice(-1)) {
-                        this.code += button.value;
-                    }
-                }
-
-                //Dessin Dynamique
-                if(this.onDrawing && this.code.length>0) {
-                    this.buttons.remove(this.currentLine);
-                    let buttonBase = this.tabButtons[parseInt(this.code.charAt(this.code.length-1))-1];
-                    this.currentLine = new svg.Line(buttonBase.gapX,buttonBase.gapY,
-                        e.touches[0].clientX,e.touches[0].clientY-header.height)
-                        .color(svg.WHITE,5,svg.WHITE);
-                    this.buttons.add(this.currentLine);
-                }
-            });
-
-            // this.component.add(this.blur);
-            this.component.add(this.background);
-            this.component.add(this.title);
-            this.component.add(this.buttons);
-            this.component.add(this.circleTimer);
-            this.component.add(this.arcTimer);
-            this.component.add(this.timer);
-            this.component.add(this.message);
-            this.component.add(this.cross);
-
-            this.tabButtons = [];
-            for (let num = 1; num <10; num ++){
-                this.tabButtons.push(new SecurityButton(num, width/2, height*0.45));
-                this.buttons.add(this.tabButtons[num-1].get());
-            }
-            this.buttons.add(this.currentLine);
-            this.x = x;
-            this.y = y;
-            this.component.move(x,y);
+            init();
+            initEvents();
+            placeAndAddComponents();
         }
 
         paymentCookie(){

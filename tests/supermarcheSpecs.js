@@ -1937,11 +1937,12 @@ describe("Test",function (){
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
         let map = retrieve(market.component,"[mapPage]");
         let calendar = retrieve(market.component,"[calendarPage]");
+        let mainPage = retrieve(market.component,"[mainPage]");
         runtime.event(calendar,"click",{});
         runtime.advanceAll();
 
         setTimeout(function() {
-            runtime.event(map,"click",{});
+            runtime.event(mainPage,"click",{});
             runtime.advanceAll();
             let card = retrieve(market.component, "[payment].[card]");
             assert.ok(card);
