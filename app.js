@@ -23,8 +23,8 @@ app.get('/', function(req, res){
 });
 //
 var options = {
-    key: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.key'),
-    cert: fs.readFileSync('../../nginx/conf/Digimarket/virtualmarket.crt'),
+    key: fs.readFileSync('./virtualmarket.key'),
+    cert: fs.readFileSync('./virtualmarket.crt'),
 };
 
 var server = https.createServer(options, app).listen(port, function(){

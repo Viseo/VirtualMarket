@@ -40,4 +40,8 @@ exports.timer = class {
         return new Date(year,month+1,0).getDate();
     }
 
+    getFullDate(year,month,day){
+        return new Date(year,month,day);
+    }
+
 };

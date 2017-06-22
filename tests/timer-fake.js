@@ -42,4 +42,7 @@ exports.timer = class {
         this.currentDate=date;
         return this;
     }
+    getFullDate(year,month,day){
+        return new Date(year,month,day);
+    }
 };

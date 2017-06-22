@@ -1428,13 +1428,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     for(let i = 0; i<this.numberDaysThisMonth;i++){
                         let str = "";
                         if(i>=10)
-                            str += i+ "/";
+                            str += parseInt(i+1)+ "/";
                         else
-                            str +="0"+i +"/";
-                        if(this.monthNumber<10)
-                            str += "0"+(this.monthNumber+1) +"/"+this.year;
+                            str +="0"+parseInt(i+1) +"/";
+                        if(timer.getNextMonth()+1<10)
+                            str += "0"+(timer.getNextMonth()+1) +"/"+this.year;
                         else
-                            str += (this.monthNumber+1) +"/"+this.year;
+                            str += (timer.getNextMonth()+1) +"/"+this.year;
                         dayMonth.push(str);
                     }
                 }
@@ -1447,22 +1447,28 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 }
 
                 this.address=market.calendar.address;
-
+                var today = timer.getDate(timer.getTime()+3* 24 * 60 * 60 * 1000);
                 var tomorrow = timer.getDate(timer.getTime() + 24 * 60 * 60 * 1000);
                 var afterTomorrow = timer.getDate(timer.getTime() + 2 * 24 * 60 * 60 * 1000);
                 var dayTest = timer.getDate(1496268000000 + 24 * 60 * 60 * 1000);
                 var dayTest2 = timer.getDate(1496268000000 + 2 * 24 * 60 * 60 * 1000);
                 var dayTest3 = timer.getDate(1497045600000);
-                var nextMonth = timer.getDate(timer.getTime() + 31 * 24 * 60 * 60 * 1000);
-                var nextMonthAndOne = timer.getDate(timer.getTime() + 32 * 24 * 60 * 60 * 1000);
+                var nextMonth = timer.getFullDate(timer.getYear(),timer.getNextMonth(),1);
+                var nextMonthAndOne = timer.getFullDate(timer.getYear(),timer.getNextMonth(),2);
+                var tabday=[];
+                for(let i=today.getDate();i<timer.getNumberOfDaysInMonth(timer.getMonth(),timer.getYear());i++)
+                {
+                    tabday[i]=timer.getDate(today.getTime()+(i-today.getDate())*24*60*60*1000);
+                }
+                let modulday ="0";
                 let modul = timer.getDayInMonth()<=9?"0":"";
                 let modulTomorrow = tomorrow.getDate()<=9?"0":"";
                 let modulAfterTomorrow = afterTomorrow.getDate()<=9?"0":"";
                 let modulTest = "0";
                 let modulTest2 = "0";
                 let modulTest3 = "";
-                let modulDayNextMonth = nextMonth.getDate()<=9?"0":"";
-                let modulDayNextMonthAndOne = nextMonthAndOne.getDate()<=9?"0":"";
+                let modulDayNextMonth = "0";
+                let modulDayNextMonthAndOne = "0";
                 let modulMonth = timer.getMonth()<=9?"0":"";
                 let modulNextMonth = nextMonth.getMonth()<=9?"0":"";
                 tab.push({
@@ -1497,6 +1503,23 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     dayP: modulDayNextMonthAndOne+nextMonthAndOne.getDate() + "/" + modulNextMonth + (nextMonthAndOne.getMonth() + 1) + "/" + nextMonthAndOne.getFullYear(),
                     hourDL: "10", hourAL: "12", nbT: 2, left: 1, TPH: 2, address : this.address
                 });
+                for(let i=today.getDate();i<timer.getNumberOfDaysInMonth(timer.getMonth(),timer.getYear());i++)
+                {
+                    (parseInt(tabday[i].getDate())<10)?modulday="0":modulday="";
+                    let randomHour =  Math.ceil(Math.random()*(17-9)+9);
+                    if((randomHour<=10||randomHour>=13)&&(tabday[i].getDay()!=0)){
+                        tab.push({
+
+                            dayP: modulday + tabday[i].getDate() + "/" + modulMonth + (tabday[i].getMonth() + 1) + "/" + tabday[i].getFullYear(),
+                            hourDL: randomHour.toString(),
+                            hourAL: (randomHour + 2).toString(),
+                            nbT: 2,
+                            left: 1,
+                            TPH: 2,
+                            address: this.address
+                        });
+                    }
+                }
                 return tab;
             };
             let drawAllRoundsInEachDay = (dayMonth,tab) => {
@@ -1615,7 +1638,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         }
                         line.add(element);
                         this.calendarCases.push({background:element,hour:tabHours[j],day:tabDays[i],
-                            x:0+j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
+                            x:j*this.caseWidth,y:i*this.caseHeight+this.calendarPositionY});
 
                     }
                     line.move(this.caseWidth,this.caseHeight*i);
@@ -2661,7 +2684,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         market.map.mapOn=true;
         market.mapPage.component.add(market.map.component);
         setTimeout(function(){
+
             market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
+
             if (market.currentMapSearch != ""){
                 market.mapsfunction.research(market.currentMapSearch);
             }
