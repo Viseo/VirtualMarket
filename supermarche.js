@@ -305,7 +305,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             };
             let handleEvents=(newProd)=>{
                 newProd.component.onMouseDown((e)=>{
-                    console.log(market.pages[2].obj+" "+market.currentPage);
                     if(market.pages[2].obj==market.currentPage) this.dragBasket(newProd,e);
                 });
 
@@ -397,7 +396,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                                 this.dragged = new Thumbnail(current.image.src, current.name);
                                 this.dragged.placeElementsDnD(current);
                                 this.dragged.move(current.x + market.mainPage.pageWidth * 0.85, current.y + this.listProducts.y + header.height);
-                                console.log("sqdqs");
                                 this.dragged.component.opacity(0.9).mark("dragged");
                                 market.glassDnD.add(this.dragged.component);
                                 market.add(market.glassDnD);
@@ -655,17 +653,30 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.component.add(this.shadowTpe);
 
             this.zoneCode = new SecurityCode(market.mainPage.pageWidth,market.height-market.height/19,0,market.height/19);
+            this.start=false;
 
             svg.addEvent(this.card,"touchstart",()=>{
+                this.start=true;
                 svg.addEvent(this.card,"touchmove",(e)=>{
-                    if(this.card.x+this.card.width/2<this.component.width*0.90)
+                    if(this.card.x+this.card.width/2<this.component.width*0.90 && this.start==true){
                         this.card.position(e.touches[0].pageX-this.component.x,this.card.y);
+                    }
                     else if(this.cardIn==false){
-                        this.showCode();
-                        this.card.position(this.width*0.65,this.card.y);
-                        this.cardIn=true;
+                        if(market.basket.thumbnailsProducts.length>0){
+                            this.showCode();
+                            this.card.position(this.width*0.65,this.card.y);
+                            this.cardIn=true;
+                            svg.event(this.card,"touchend",{});
+                            this.start=false;
+                        }
+                        this.card.position(this.width*0.1,this.card.y);
+                        this.start=false;
                         svg.event(this.card,"touchend",{});
                     }
+                });
+                svg.addEvent(this.card,"touchend",(e)=>{
+                    this.card.position(this.width*0.1,this.card.y);
+                    this.start=false;
                 });
             });
 
@@ -677,9 +688,10 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                 this.card.onMouseUp(()=>{
                     if(draw) {
-                        if (this.card.x + this.card.width / 2 < this.component.width * 0.80)
+                        if (this.card.x + this.card.width / 2 < this.component.width * 0.80 || market.basket.thumbnailsProducts.length==0)
                             this.card.position(width * 0.1, this.card.y);
                         else{
+
                             this.showCode();
                             this.card.position(this.width * 0.65, this.card.y);
                             this.cardIn=true;
@@ -690,7 +702,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
                 this.card.onMouseOut(()=>{
                     if(draw) {
-                        if (this.card.x + this.card.width / 2 < this.component.width * 0.6)
+                        if (this.card.x + this.card.width / 2 < this.component.width * 0.6 || market.basket.thumbnailsProducts.length==0)
                             this.card.position(width * 0.1, this.card.y);
                         else if (this.cardIn == false) {
                             this.showCode();
@@ -2124,7 +2136,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                             loadMap();
                             setTimeout(()=>{
                                 if(market.map!=null)market.map.updateMarkersSide();
-                                console.log(market.map);
                             },3500);
                         }
                         if (market.currentIndex > index) {
@@ -2650,7 +2661,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         market.map.mapOn=true;
         market.mapPage.component.add(market.map.component);
         setTimeout(function(){
-            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap,market.map.updateMarkersSide);
+            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
             if (market.currentMapSearch != ""){
                 market.mapsfunction.research(market.currentMapSearch);
             }
