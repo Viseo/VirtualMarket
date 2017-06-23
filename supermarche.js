@@ -1117,110 +1117,111 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
 
     class Calendar{
         constructor(width,height,x,y){
-            this.component = new svg.Translation().mark("calendar");
-            this.header = new svg.Translation().mark("calendarHeader");
-            this.background = new svg.Translation().mark("calendarBackground");
-            this.title = new svg.Rect();
-            this.titleText = new svg.Text("Avril");
-            this.calendarFirstRow = new svg.Translation();
-            this.calendarFirstColumn = new svg.Translation();
-            this.calendarContent = new svg.Translation().mark("content");
-            this.calendarPositionY = 0;
-            this.calendarCases = [];
-            this.monthChoice = new svg.Translation().mark("monthChoice");
-            this.chevronWest = new svg.Chevron(10, height*0.05, 2, "W").color(svg.WHITE).opacity(0.5);
-            this.chevronEast = new svg.Chevron(10, height*0.05, 2, "E").color(svg.WHITE);
-            this.ellipseChevronWest = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0);
-            this.ellipseChevronEast = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0);
-            this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
-            this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
-            this.calendarOn=false;
-            this.selectedHourday=false;
-            this.rounds=[];
-            this.choice=null;
-            this.address="";
-            this.current=true;
-            this.hideBehind = new svg.Rect(width,height*0.5).position(width/2-width/24,0).color([230,230,230]);
-
-            this.dayCases = [];
-            this.component.add(this.background).add(this.header);
-            this.header.add(this.title).add(this.titleText).add(this.calendarFirstRow).add(this.monthChoice).add(this.hideBehind);
-            this.background.add(this.calendarFirstColumn).add(this.calendarContent);
-
-            this.x = x;
-            this.y = y;
-            this.component.move(x,y);
-            this.width = width;
-            this.height = height;
-
-            this.picto = new svg.Image("img/panier.png").mark("iconUser");
-            this.pictoPosX = this.width*0.15;
-            this.pictoPosY = this.height*0.09;
-            this.onMove=false;
-            this.header.add(this.picto);
-
-            this.calendarWidth = width;
-            this.calendarHeight = height*0.8;
-
-            timer.pickDate();
-            this.monthNumber = timer.getMonth();
-            this.presentMonth = this.monthNumber;
-            this.presentYear = timer.getYear();
-            this.month = this.getMonth()[this.monthNumber];
-            this.year = timer.getYear();
-
-            this.zoneChevronEast.onClick(()=>{
-                if(this.chevronEast._opacity!=0.5){
-                    this.monthNumber++;
-                    if (this.monthNumber===12){
-                        this.monthNumber=0;
-                        this.year++;
-                    }
-                    this.month = this.getMonth()[this.monthNumber];
-                    this.changeTitleText(this.month+" "+this.year);
-                    this.chevronWest.opacity(1);
-                    this.chevronEast.opacity(0.5);
-                    this.printMonthContent(this.monthNumber,this.year);
-                    if(this.choice==null) {
-                        this.picto.position(this.pictoPosX,this.pictoPosY);
-                    }
-                    else{
-                        this.header.remove(this.picto);
-                        for (let round in this.rounds) {
-                            if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
-                                this.checkPlace(this.rounds[round]);
-                                this.rounds[round].changeColor(2);
-                            }
+            let init=()=>{
+                this.component = new svg.Translation().mark("calendar");
+                this.header = new svg.Translation().mark("calendarHeader");
+                this.background = new svg.Translation().mark("calendarBackground");
+                this.title = new svg.Rect();
+                this.titleText = new svg.Text("Avril");
+                this.calendarFirstRow = new svg.Translation();
+                this.calendarFirstColumn = new svg.Translation();
+                this.calendarContent = new svg.Translation().mark("content");
+                this.calendarPositionY = 0;
+                this.calendarCases = [];
+                this.monthChoice = new svg.Translation().mark("monthChoice");
+                this.chevronWest = new svg.Chevron(10, height*0.05, 2, "W").color(svg.WHITE).opacity(0.5);
+                this.chevronEast = new svg.Chevron(10, height*0.05, 2, "E").color(svg.WHITE);
+                this.ellipseChevronWest = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0);
+                this.ellipseChevronEast = new svg.Ellipse(width*0.02, height*0.04).color(svg.BLACK).opacity(0);
+                this.zoneChevronWest = new svg.Translation().add(this.ellipseChevronWest).add(this.chevronWest).mark("chevronWCalendar");
+                this.zoneChevronEast = new svg.Translation().add(this.ellipseChevronEast).add(this.chevronEast).mark("chevronECalendar");
+                this.calendarOn=false;
+                this.selectedHourday=false;
+                this.rounds=[];
+                this.choice=null;
+                this.address="";
+                this.current=true;
+                this.hideBehind = new svg.Rect(width,height*0.5).position(width/2-width/24,0).color([230,230,230]);
+                this.dayCases = [];
+                this.component.add(this.background).add(this.header);
+                this.header.add(this.title).add(this.titleText).add(this.calendarFirstRow).add(this.monthChoice).add(this.hideBehind);
+                this.background.add(this.calendarFirstColumn).add(this.calendarContent);
+                this.x = x;
+                this.y = y;
+                this.component.move(x,y);
+                this.width = width;
+                this.height = height;
+                this.picto = new svg.Image("img/panier.png").mark("iconUser");
+                this.pictoPosX = this.width*0.15;
+                this.pictoPosY = this.height*0.09;
+                this.onMove=false;
+                this.header.add(this.picto);
+                this.calendarWidth = width;
+                this.calendarHeight = height*0.8;
+                timer.pickDate();
+                this.monthNumber = timer.getMonth();
+                this.presentMonth = this.monthNumber;
+                this.presentYear = timer.getYear();
+                this.month = this.getMonth()[this.monthNumber];
+                this.year = timer.getYear();
+            };
+            let initChevron=()=>{
+                this.zoneChevronEast.onClick(()=>{
+                    if(this.chevronEast._opacity!=0.5){
+                        this.monthNumber++;
+                        if (this.monthNumber===12){
+                            this.monthNumber=0;
+                            this.year++;
                         }
-                    }
-                }
-            });
-
-            this.zoneChevronWest.onClick(()=>{
-                if(this.chevronWest._opacity!=0.5){
-                    this.monthNumber--;
-                    if ((this.presentMonth === this.monthNumber) && (this.presentYear === this.year)) {
-                        this.chevronWest.opacity(0.5);
-                        this.chevronEast.opacity(1);
                         this.month = this.getMonth()[this.monthNumber];
-                        this.changeTitleText(this.month + " " + this.year);
-                        this.printCurrentMonthContent();
-                    }
-                    if (this.choice == null) {
-                        this.picto.position(this.pictoPosX, this.pictoPosY);
-                    }
-                    else {
-                        this.header.remove(this.picto);
-                        for (let round in this.rounds) {
-                            if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
-                                this.checkPlace(this.rounds[round]);
-                                this.rounds[round].changeColor(2);
-
+                        this.changeTitleText(this.month+" "+this.year);
+                        this.chevronWest.opacity(1);
+                        this.chevronEast.opacity(0.5);
+                        this.printMonthContent(this.monthNumber,this.year);
+                        if(this.choice==null) {
+                            this.picto.position(this.pictoPosX,this.pictoPosY);
+                        }
+                        else{
+                            this.header.remove(this.picto);
+                            for (let round in this.rounds) {
+                                if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
+                                    this.checkPlace(this.rounds[round]);
+                                    this.rounds[round].changeColor(2);
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+
+                this.zoneChevronWest.onClick(()=>{
+                    if(this.chevronWest._opacity!=0.5){
+                        this.monthNumber--;
+                        if ((this.presentMonth === this.monthNumber) && (this.presentYear === this.year)) {
+                            this.chevronWest.opacity(0.5);
+                            this.chevronEast.opacity(1);
+                            this.month = this.getMonth()[this.monthNumber];
+                            this.changeTitleText(this.month + " " + this.year);
+                            this.printCurrentMonthContent();
+                        }
+                        if (this.choice == null) {
+                            this.picto.position(this.pictoPosX, this.pictoPosY);
+                        }
+                        else {
+                            this.header.remove(this.picto);
+                            for (let round in this.rounds) {
+                                if((this.rounds[round].tabH.dayP == this.choice.tabH.dayP) && (this.rounds[round].tabH.hourAL == this.choice.tabH.hourAL)) {
+                                    this.checkPlace(this.rounds[round]);
+                                    this.rounds[round].changeColor(2);
+
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            init();
+            initChevron();
         }
 
         setEventsForScroll() {
