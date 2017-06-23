@@ -1588,7 +1588,7 @@ describe("Test",function (){
         },1000);
     });
 
-    it("ensures that you can change the page",function(){
+    it("ensures that you can change the page",function(done){
         fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
 
         let mainPage = retrieve(market.component,"[mainPage]");
@@ -1688,8 +1688,10 @@ describe("Test",function (){
         runtime.event(map,"click",{});
         runtime.event(calendar,"click",{});
         runtime.event(map,"click",{});
-
-        runtime.event(logo,"click",{});
+        setTimeout(function () {
+            runtime.event(logo,"click",{});
+            done();
+        },4000)
 
     });
 
