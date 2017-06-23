@@ -1597,6 +1597,12 @@ describe("Test",function (){
         assert(mainPage&&map&&calendar);
         runtime.event(calendar,"click",{});
 
+        let header = retrieve(market.component,"[header]");
+        inspect(header,{tag:"g",transform:"translate(0 0)"});
+        let logo = retrieve(header,"[logo]");
+        runtime.event(logo,"click",{});
+
+
         let payment_zone = retrieve(market.component,"[payment]");
         assert.ok(payment_zone);
         let card = retrieve(market.component,"[payment].[card]");
@@ -1682,6 +1688,8 @@ describe("Test",function (){
         runtime.event(map,"click",{});
         runtime.event(calendar,"click",{});
         runtime.event(map,"click",{});
+
+        runtime.event(logo,"click",{});
 
     });
 
@@ -1903,6 +1911,7 @@ describe("Test",function (){
                 done();
             },2000)
         },1000);
+
     });
 
     it('ensure that the calendar id reloaded after having chosen a relay point', function (done) {
@@ -2068,11 +2077,12 @@ describe("Test",function (){
         market = main(svg, gui, {data}, neural, mockRuntime(), MapFile, fakeTimer, fakeMap, fakeCookie, fakeSpeech, fakeListener,fakeWindow);
         let map = retrieve(market.component,"[mapPage]");
         let calendar = retrieve(market.component,"[calendarPage]");
+        let mainPage = retrieve(market.component,"[mainPage]");
         runtime.event(calendar,"click",{});
         runtime.advanceAll();
 
         setTimeout(function() {
-            runtime.event(map,"click",{});
+            runtime.event(mainPage,"click",{});
             runtime.advanceAll();
             let card = retrieve(market.component, "[payment].[card]");
             assert.ok(card);
