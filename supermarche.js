@@ -638,6 +638,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         constructor(width,height,x,y){
             super(width,height,x,y);
 
+
             let init=()=>{
                 this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE);
                 this.shadowCard = new svg.Translation().shadow('shadowcard',3,3,3).mark('shadowCard');
@@ -650,25 +651,38 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                 this.height = height;
                 this.cardIn = false;
                 this.zoneCode = new SecurityCode(market.mainPage.pageWidth,market.height-market.height/19,0,market.height/19);
+                this.start=false;
             };
             let initEventsTouch=()=>{
                 svg.addEvent(this.card,"touchstart",()=>{
+                    this.start=true;
                     svg.addEvent(this.card,"touchmove",(e)=>{
-                        if(this.card.x+this.card.width/2<this.component.width*0.90)
+                        if(this.card.x+this.card.width/2<this.component.width*0.90 && this.start==true){
                             this.card.position(e.touches[0].pageX-this.component.x,this.card.y);
+                        }
                         else if(this.cardIn==false){
-                            this.showCode();
-                            this.card.position(this.width*0.65,this.card.y);
-                            this.cardIn=true;
+                            if(market.basket.thumbnailsProducts.length>0){
+                                this.showCode();
+                                this.card.position(this.width*0.65,this.card.y);
+                                this.cardIn=true;
+                                svg.event(this.card,"touchend",{});
+                                this.start=false;
+                            }
+                            this.card.position(this.width*0.1,this.card.y);
+                            this.start=false;
                             svg.event(this.card,"touchend",{});
                         }
+                    });
+                    svg.addEvent(this.card,"touchend",(e)=>{
+                        this.card.position(this.width*0.1,this.card.y);
+                        this.start=false;
                     });
                 });
             };
             let initEventsMouse=()=>{
                 let endDraw=()=>{
                     if(this.draw) {
-                        if (this.card.x + this.card.width / 2 < this.component.width * 0.60)
+                        if (this.card.x + this.card.width / 2 < this.component.width * 0.6 || market.basket.thumbnailsProducts.length==0)
                             this.card.position(width * 0.1, this.card.y);
                         else{
                             this.showCode();
@@ -683,6 +697,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     svg.addEvent(this.card,"mousemove",(e)=>{
                         if(this.draw)this.card.position(e.pageX-this.component.x,this.card.y);
                     });
+
 
                     this.card.onMouseUp(()=>{
                         endDraw();
