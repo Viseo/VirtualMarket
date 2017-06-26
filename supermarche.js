@@ -1824,14 +1824,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     }
 
     class ThumbnailRayon extends Thumbnail {
-        constructor(image,title,price,complement,cat)
-        {
+        constructor(image,title,price,complement,cat) {
             super(image,title);
             this.component.add(this.image);
             this.component.add(this.title);
             this.price = price;
             this.complement = complement;
-            this.printPrice = new svg.Text(price + " €" + complement);
+            this.printPrice = new svg.Text(price + " € " + complement);
             this.component.add(this.printPrice);
             this.categorie=cat;
             this.name = title;
@@ -1840,7 +1839,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.toAdd=[];
             this.waitingNumber = new svg.Text("");
             this.component.add(this.waitingNumber);
-            this.anim=false;
 
             this.drawNumber = null;
             this.component.onMouseDown((e)=>{
@@ -1891,10 +1889,9 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     element.addAnimation("1");
                     market.basket.addProducts(element, "1");
                     element.anim = true;
-                    market.textToSpeech("Ok, j'ajoute 1" + element.complement.replace("/", "")
+                    market.textToSpeech("Ok, j'ajoute 1 " + element.complement.replace("/", "")
                         + " " + getGrammaticalTransition(element) + element.name + " au panier");
                     element.anim = true;
-
                 }
                 else if (number != "?") {
                     let nb = "";
@@ -2004,13 +2001,13 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             if((newText>1)&&(this.comp!="")){
                 this.component.remove(this.compTitle);
                 this.compTitle = new svg.Text(this.comp+"s");
-                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.27,1).color([255, 110, 0]).anchor("left");
                 this.component.add(this.compTitle);
             }
             else{
                 this.component.remove(this.compTitle);
                 this.compTitle = new svg.Text(this.comp);
-                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+                this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.27,1).color([255, 110, 0]).anchor("left");
                 this.component.add(this.compTitle);
             }
         }
@@ -2025,7 +2022,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.title.position(this.width*0.30,this.height*0.5).mark("title "+this.name).anchor("left").font("Tahoma",this.height*0.3,1);
 
             this.background.position(this.width/2,this.height/2).dimension(this.width,this.height).mark("background "+this.name);
-            this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.3,1).color([255, 110, 0]).anchor("left");
+            this.compTitle.position(this.width*0.15,this.height*0.5).font("Tahoma",this.height*0.27,1).color([255, 110, 0]).anchor("left");
         }
     }
 
@@ -2146,8 +2143,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
             this.component.add(this.tab.component);
         }
     }
-
-    windowFunc.setResize();
 
     let screenSize = svg.runtime.screenSize();
     let market = new svg.Drawing(screenSize.width,screenSize.height).show('content');
@@ -2697,7 +2692,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         market.mapPage.component.add(market.map.component);
         setTimeout(function(){
 
-            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap);
+            market.mapsfunction = Maps.initMap(param.data.getMarker(), market.toCalendar,targetMap,market.map.updateMarkersSide);
 
             if (market.currentMapSearch != ""){
                 market.mapsfunction.research(market.currentMapSearch);
@@ -2814,6 +2809,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
         }
     };
     welcomeMessage();
+
+    windowFunc.setResize();
 
     return market;
     //////////////////////////////

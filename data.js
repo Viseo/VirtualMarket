@@ -418,7 +418,7 @@ exports.data = function() {
                 },
                 "Tatooine": {
                     image: "img/produits/Voyages/tatooine.jpg",
-                    prix: 90000000000000,
+                    prix: 900000,
                     nom: "Tatooine",
                     complement: "",
                 }
@@ -470,7 +470,7 @@ exports.data = function() {
                 ,"Television": {
                     image: "img/produits/HighTech/tele.jpg",
                     prix: 2000,
-                    nom: "Television",
+                    nom: "Télévision",
                     complement: "",
                 }
                 ,"Ordinateur": {
@@ -648,7 +648,7 @@ exports.data = function() {
                     image: "img/produits/Soins/mouchoires.jpg",
                     prix: 2,
                     nom: "Mouchoires",
-                    complement: "",
+                    complement: "/paquet",
                 },
             },
 
@@ -675,7 +675,7 @@ exports.data = function() {
                     image: "img/produits/Mode/bottes.jpg",
                     prix: 20,
                     nom: "Bottes",
-                    complement: "",
+                    complement: "/paire",
                 },
                 "Echarpe": {
                     image: "img/produits/Mode/echarpe.jpg",
@@ -723,7 +723,7 @@ exports.data = function() {
                     image: "img/produits/Mode/sandales-a-talon.jpg",
                     prix: 100,
                     nom: "Sandales",
-                    complement: "",
+                    complement: "/paire",
                 },
                 "Short": {
                     image: "img/produits/Mode/short.jpg",
