@@ -10,44 +10,47 @@
     <link rel="icon" href="../img/panier.png" />
     <body style="margin:0">
     <div id="content" style="user-select: none"></div>
-    <!--<div id="map"></div>-->
+
     <script src="lib/module.js"></script>
     <script src="lib/runtimemock.js"></script>
     <script src="lib/targetruntime.js"></script>
     <script src="lib/svghandler.js"></script>
-    <script src="supermarche.js"></script>
     <script src="lib/svggui.js"></script>
-    <script src="data.js"></script>
-    <script src="neuralNetDrawing.js"></script>
     <script src="lib/recorder.js"></script>
     <script src="lib/map.js"></script>
-    <script src="timer-impl.js"></script>
-    <script src="cookie-impl.js"></script>
+
+    <script src="server/data/data.js"></script>
+
+    <script src="js/supermarche.js"></script>
+    <script src="js/timer-impl.js"></script>
+    <script src="js/cookie-impl.js"></script>
+    <script src="js/google-map-impl.js"></script>
+    <script src="js/textToSpeech-impl.js"></script>
+    <script src="js/speechToText-impl.js"></script>
+    <script src="js/window-impl.js"></script>
+    <script src="js/neuralNetDrawing.js"></script>
+
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKFdujE21jLap08Pg1dbb_Zp3NW2bO0Hk&libraries=places"></script>
-    <script src="google-map-impl.js"></script>
-    <script src="textToSpeech-impl.js"></script>
-    <script src="speechToText-impl.js"></script>
-    <script src="window-impl.js"></script>
 
     <script>
         document.documentElement.style.overflow = 'hidden';
         let targetRuntime = require("lib/targetruntime").targetRuntime;
         let SVG = require("lib/svghandler").SVG;
-        let main = require("supermarche").main;
+        let main = require("js/supermarche").main;
 
-        let DATA = require("data").data;
+        let DATA = require("server/data/data").data;
         let data = DATA();
         let Map = require("lib/map");
         let GUI = require("lib/svggui").Gui;
         let svg = SVG(targetRuntime());
-        let NEURAL=require("neuralNetDrawing").neural;
+        let NEURAL=require("js/neuralNetDrawing").neural;
         let neural=NEURAL(targetRuntime());
-        let timer = require("timer-impl").timer;
-        let cookie = require("cookie-impl").cookie;
-        let targetMap = require("google-map-impl").googleMap;
-        let speech = require("textToSpeech-impl").speech;
-        let listener = require("speechToText-impl").speechToText;
-        let windowFunc = require("window-impl").windowFunc;
+        let timer = require("js/timer-impl").timer;
+        let cookie = require("js/cookie-impl").cookie;
+        let targetMap = require("js/google-map-impl").googleMap;
+        let speech = require("js/textToSpeech-impl").speech;
+        let listener = require("js/speechToText-impl").speechToText;
+        let windowFunc = require("js/window-impl").windowFunc;
 
         main(SVG(targetRuntime()),GUI((svg),""),{data:data},neural,targetRuntime(),
             Map,new timer(),new targetMap(),new cookie(),new speech(),new listener(),new windowFunc());

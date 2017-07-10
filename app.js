@@ -1,8 +1,3 @@
-/**
- * Created by GEH3641 on 12/04/2017.
- */
-
-
 var express = require('express');
 var http = require('http');
 var https = require('https');
@@ -21,21 +16,12 @@ app.use(express.static(__dirname));
 app.get('/', function(req, res){
     res.render('index.html');
 });
-//
-// var options = {
-//     key: fs.readFileSync('./virtualmarket.key'),
-//     cert: fs.readFileSync('./virtualmarket.crt'),
-// };
-//
-// var server = https.createServer(options, app).listen(port, function(){
-//     console.log("Express server listening on port " + port);
-// });
 
 //
 console.log('server open on port ' + port);
 var server=http.createServer(app);
 
-var binaryServer = BinaryServer({server: server,port:3030});
+var binaryServer = BinaryServer({ server: server, port:3030});
 server.listen(port);
 
 binaryServer.on('connection', function(client) {
@@ -58,7 +44,7 @@ binaryServer.on('connection', function(client) {
             case 'request':
                 var fileWriter = new wav.FileWriter(outFile, {
                     channels: 1,
-                    sampleRate: 44100,
+                    sampleRate: 44100
                 });
                 console.log('new stream');
 
