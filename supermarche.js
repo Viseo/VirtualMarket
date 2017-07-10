@@ -627,7 +627,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     market.calendar.mapOn = false;
                 });
             };
-
             init();
             manageBackToHome();
             listener.listen(this.micro,market);
@@ -637,7 +636,6 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
     class Payment extends DrawingZone {
         constructor(width,height,x,y){
             super(width,height,x,y);
-
 
             let init=()=>{
                 this.background = new svg.Rect(width,height).position(width/2,height/2).color(svg.WHITE);

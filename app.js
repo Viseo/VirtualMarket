@@ -22,21 +22,21 @@ app.get('/', function(req, res){
     res.render('index.html');
 });
 //
-var options = {
-    key: fs.readFileSync('./virtualmarket.key'),
-    cert: fs.readFileSync('./virtualmarket.crt'),
-};
+// var options = {
+//     key: fs.readFileSync('./virtualmarket.key'),
+//     cert: fs.readFileSync('./virtualmarket.crt'),
+// };
+//
+// var server = https.createServer(options, app).listen(port, function(){
+//     console.log("Express server listening on port " + port);
+// });
 
-var server = https.createServer(options, app).listen(port, function(){
-    console.log("Express server listening on port " + port);
-});
+//
+console.log('server open on port ' + port);
+var server=http.createServer(app);
 
-
-// console.log('server open on port ' + port);
-// var server=http.createServer(app);
-
-binaryServer = BinaryServer({server: server,port:3030});
-// server.listen(port);
+var binaryServer = BinaryServer({server: server,port:3030});
+server.listen(port);
 
 binaryServer.on('connection', function(client) {
     console.log('new connection');
