@@ -5,13 +5,13 @@ let SVG = require("../lib/svghandler").SVG;
 let assert = require("assert");
 let testUtil = require ("./testutils");
 let mockRuntime = require("../lib/runtimemock").mockRuntime;
-let main = require("../supermarche").main;
+let main = require("../js/supermarche").main;
 let GUI = require("../lib/svggui").Gui;
 let MapFile = require("../lib/map.js");
 
-let DATA = require("../data").data;
+let DATA = require("../server/data/data").data;
 let data = DATA();
-let NEURAL = require("../neuralNetDrawing").neural;
+let NEURAL = require("../js/neuralNetDrawing").neural;
 let neural = NEURAL(mockRuntime());
 
 let timer = require("./timer-fake").timer;
@@ -1479,7 +1479,7 @@ describe("Test",function (){
         done();
     });
 
-    it("ensures that we can control the app by sending it command that represent the voice",function(done){
+    it("ensures that we can control the js by sending it command that represent the voice",function(done){
         fakeCookie.setCookie("Drone:1,Webcam:1", 0, "done", "HighTech", "64 boulevard garibaldi");
         market.vocalRecognition("je veux payer");
         market.vocalRecognition("journaux");

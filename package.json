@@ -2,14 +2,14 @@
   "name": "virtualmarket",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "app4Socket.js",
   "directories": {
     "test": "tests"
   },
   "dependencies": {
     "async": "^2.3.0",
     "binary-pack": "^1.0.2",
-    "binaryjs": "0.2.2",
+    "binaryjs": "0.2.1",
     "binarypack": "^0.0.4",
     "core-util-is": "^1.0.2",
     "ejs": "^2.5.6",
@@ -17,6 +17,8 @@
     "googleapis": "^19.0.0",
     "node-forge": "^0.7.1",
     "options": "^0.0.6",
+    "socket.io": "^2.0.3",
+    "socket.io-stream": "^0.9.1",
     "streamers": "^0.1.1",
     "wav": "^1.0.1"
   },
@@ -26,6 +28,7 @@
     "mocha": "^3.2.0"
   },
   "scripts": {
+    "start": "node ./app.js",
     "test": "mocha"
   },
   "repository": {
