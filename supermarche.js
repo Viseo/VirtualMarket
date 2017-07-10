@@ -1889,8 +1889,8 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     element.addAnimation("1");
                     market.basket.addProducts(element, "1");
                     element.anim = true;
-                    market.textToSpeech("Ok, j'ajoute 1 " + element.complement.replace("/", "")
-                        + " " + getGrammaticalTransition(element) + element.name + " au panier");
+                    market.textToSpeech("Ok, j'ajoute 1 " + (element.complement!=""?element.complement.replace("/", "")+" ":"")
+                        + getGrammaticalTransition(element) + element.name + " au panier");
                     element.anim = true;
                 }
                 else if (number != "?") {
@@ -1907,7 +1907,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                     element.addAnimation(number);
 
                     if (nb != "") {
-                        market.textToSpeech("Ok, j'ajoute " + nb + element.complement.replace("/kg", "kilogramme")
+                        market.textToSpeech("Ok, j'ajoute " + nb + element.complement.replace("/","").replace("kg", "kilogramme")
                             + " " + getGrammaticalTransition(element) + element.name + " au panier");
                         market.basket.addProducts(element, parseInt(nb));
                     } else{}
@@ -2382,7 +2382,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         market.textToSpeech("Ok, j'ajoute sept "+ tab[i].name+" au panier");
                         market.basket.addProducts(tab[i], 7);
                     } else if(determining.trim() == "un" || determining.trim() == "une") {
-                        market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
+                        market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+"au panier");
                         market.basket.addProducts(tab[i], 1);
                     } else {
                         let tor=false;
@@ -2395,7 +2395,7 @@ exports.main = function(svg,gui,param,neural,targetruntime,Maps,timer,targetMap,
                         }
                         if(tor==false){
                             market.basket.addProducts(tab[i],1);
-                            market.textToSpeech("Ok, j'ajoute un "+ tab[i].name+" au panier");
+                            market.textToSpeech("Ok, j'ajoute 1 "+ tab[i].name+" au panier");
                         }
                     }
                 }
