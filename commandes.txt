@@ -1,0 +1,16 @@
+Pour la doc : https://cloud.google.com/speech/docs/
+
+PREREQUIS : 
+
+- Aller sur Google Cloud Platform (https://console.cloud.google.com/home/dashboard) > Gestionnaire d'API > Identifiants
+- Créer des identifants et les exporter au format JSON.
+
+Après installation de node.js, suivre les étapes suivantes :
+
+SET GOOGLE_APPLICATION_CREDENTIALS=CHEMIN/COMPLET/credentials.json
+#export
+SET GCLOUD_PROJECT=NOM_DU_PROJET
+#export
+node recognize.js audio.raw
+
+Lancer l'application globale : node app
